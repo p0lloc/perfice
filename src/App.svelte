@@ -1,2 +1,5 @@
-<h2 class="text-2xl">Hello World!</h2>
+<script>
+    import Trackables from "@perfice/views/Trackables.svelte";
+</script>
 
+<Trackables />
