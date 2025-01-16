@@ -1,5 +1,5 @@
 import {expect, test} from "vitest";
-import {comparePrimitives, pList, pString} from "../src/model/primitive";
+import {comparePrimitives, pList, pString} from "../src/model/primitive/primitive";
 
 test("string primitives equal", () => {
     expect(comparePrimitives(pString("test"), pString("test"))).toBeTruthy()
