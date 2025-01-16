@@ -15,7 +15,8 @@ export class TrackableService {
         return this.collection.getTrackables();
     }
 
-    createTrackable(trackable: Trackable) {
-
+    async createTrackable(trackable: Trackable): Promise<void> {
+        await this.collection.createTrackable(trackable);
     }
+
 }
