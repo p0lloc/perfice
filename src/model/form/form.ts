@@ -4,6 +4,7 @@ import type {FormQuestionDisplaySettings} from "@perfice/model/form/display";
 export enum FormQuestionDataType {
     TEXT = "TEXT",
     RICH_TEXT = "RICH_TEXT",
+    HIERARCHY = "HIERARCHY",
     NUMBER = "NUMBER",
     DATE = "DATE",
     TIME_ELAPSED = "TIME_ELAPSED",
