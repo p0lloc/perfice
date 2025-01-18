@@ -5,18 +5,27 @@ import {
     type VariableTypeDef,
 } from "@perfice/model/variable/variable";
 import {deserializeVariableType, serializeVariableType} from "@perfice/services/variable/types/serialization";
+import type {VariableGraph} from "@perfice/services/variable/graph";
 
 export class VariableService {
 
     private variableCollection: VariableCollection;
+    private graph: VariableGraph;
 
-    constructor(variableCollection: VariableCollection) {
+    constructor(variableCollection: VariableCollection, variableGraph: VariableGraph) {
         this.variableCollection = variableCollection;
+        this.graph = variableGraph;
     }
 
-    async getVariables(): Promise<Variable[]> {
+    async loadVariables(): Promise<void> {
         let stored = await this.variableCollection.getVariables();
-        return stored.map(this.deserializeVariable);
+        let variables = stored.map(this.deserializeVariable);
+
+        this.graph.loadVariables(variables);
+    }
+
+    getVariables(): Variable[] {
+        return this.graph.getVariables();
     }
 
     async createVariable(variable: Variable): Promise<void> {

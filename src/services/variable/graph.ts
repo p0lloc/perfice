@@ -40,6 +40,11 @@ export class VariableGraph {
         this.weekStart = weekStart;
     }
 
+    loadVariables(variables: Variable[]) {
+        variables.forEach(v => this.nodes.set(v.id, v));
+        this.updateDependents();
+    }
+
     getVariableById(id: string): Variable | undefined {
         return this.nodes.get(id);
     }
@@ -151,6 +156,11 @@ export class VariableGraph {
             }
         }
     }
+
+    getVariables(): Variable[] {
+        return Array.from(this.nodes.values());
+    }
+
 }
 
 
