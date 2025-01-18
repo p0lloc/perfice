@@ -45,6 +45,62 @@ export enum TimeScopeType {
     FOREVER = "FOREVER",
 }
 
+export type TimeScope =
+    TS<TimeScopeType.SIMPLE, SimpleTimeScope>
+    | TS<TimeScopeType.RANGE, RangeTimeScope>
+    | TS<TimeScopeType.FOREVER, ForeverTimeScope>;
+
+export class RangeTimeScope implements TimeScopeDefinition {
+    private readonly start: number | null;
+    private readonly end: number | null;
+
+    constructor(start: number | null, end: number | null) {
+        this.start = start;
+        this.end = end;
+    }
+
+    convertToRange(): TimeRange {
+        let start = this.start;
+        let end = this.end;
+
+        if (start != null && end != null) {
+            return {type: TimeRangeType.BOTH, upper: end, lower: start};
+        }
+
+        if (start != null && end == null) {
+            return {type: TimeRangeType.UPPER, upper: start};
+        }
+
+        if (start == null && end != null) {
+            return {type: TimeRangeType.LOWER, lower: end};
+        }
+
+        // If both of them are null for some reason, return an open range
+        return {type: TimeRangeType.ALL};
+    }
+
+    getStart(): number | null {
+        return this.start;
+    }
+
+    getEnd(): number | null {
+        return this.end;
+    }
+}
+
+export class ForeverTimeScope implements TimeScopeDefinition {
+    convertToRange(): TimeRange {
+        return {type: TimeRangeType.ALL};
+    }
+}
+
+
+
+export interface TS<T extends TimeScopeType, V extends TimeScopeDefinition> {
+    type: T;
+    value: V;
+}
+
 export interface TimeScopeDefinition {
     convertToRange(): TimeRange;
 }

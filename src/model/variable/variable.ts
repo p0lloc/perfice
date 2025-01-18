@@ -26,6 +26,8 @@ export interface VariableType {
     evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue>;
 
     getDependencies(): string[];
+
+    getType(): VariableTypeName;
 }
 
 export interface VariableEvaluator {
@@ -38,4 +40,13 @@ export type VariableTypeDef = VT<VariableTypeName.LIST, ListVariableType> | VT<V
 
 export type Variable = StoredVariable & {
     type: VariableTypeDef;
+}
+
+
+export interface VariableIndex {
+    id: string;
+    variableId: string;
+    timeScope: string;
+    timestamp: number;
+    value: PrimitiveValue;
 }

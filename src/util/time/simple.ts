@@ -1,4 +1,4 @@
-import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time";
+import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
 
 export function dateToMidnight(now: Date) {
     return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
