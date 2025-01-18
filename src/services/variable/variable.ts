@@ -122,4 +122,11 @@ export class VariableService {
     async onEntryCreated(e: JournalEntry) {
         await this.graph.onEntryCreated(e);
     }
+
+    async onEntryDeleted(e: JournalEntry) {
+        await this.graph.onEntryDeleted(e);
+    }
+    async onEntryUpdated(e: JournalEntry) {
+        await this.graph.onEntryUpdated(e);
+    }
 }

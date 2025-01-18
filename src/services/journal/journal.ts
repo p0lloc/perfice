@@ -39,6 +39,13 @@ export class JournalService {
         await this.notifyObservers(JournalEntryObserverType.DELETED, entry);
     }
 
+    async deleteEntryById(id: string) {
+        let entry = await this.collection.getEntryById(id);
+        if(entry == undefined) return;
+
+        await this.deleteEntry(entry);
+    }
+
     private async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry) {
         let observers = this.observers
             .filter(o => o.type == JournalEntryObserverType.ANY || o.type == type);

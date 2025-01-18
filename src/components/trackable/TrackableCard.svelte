@@ -1,10 +1,10 @@
 <script lang="ts">
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
-    import {variable} from "@perfice/main";
-    import {prettyPrintPrimitive} from "@perfice/model/primitive/primitive";
+    import {journal, variable} from "@perfice/main";
+    import {prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 
-    let {trackable}: {trackable: Trackable} = $props();
+    let {trackable}: { trackable: Trackable } = $props();
 
     let res = variable("test", tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0));
 </script>
@@ -15,6 +15,14 @@
     {#await $res}
         Loading...
     {:then value}
-        {prettyPrintPrimitive(value)}
+        {#if value.type === PrimitiveValueType.LIST}
+            {#each value.value as v}
+                {#if v.type === PrimitiveValueType.ENTRY}
+                    <button class="block" onclick={() => journal.deleteEntryById(v.value.id)}>
+                        {v.value.id}
+                    </button>
+                {/if}
+            {/each}
+        {/if}
     {/await}
 </div>

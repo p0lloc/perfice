@@ -35,4 +35,8 @@ export class DexieJournalCollection implements JournalCollection {
         await this.table.where("formId").equals(formId).delete();
     }
 
+    async getEntryById(id: string): Promise<JournalEntry | undefined> {
+        return this.table.get(id);
+    }
+
 }

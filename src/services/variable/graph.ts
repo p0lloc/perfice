@@ -14,9 +14,28 @@ export interface EntryCreatedDependent {
                    indexCollection: IndexCollection, reevaluate: (context: TimeScope) => Promise<void>): Promise<void>;
 }
 
+export interface EntryDeletedDependent {
+    onEntryDeleted(entry: JournalEntry, variableId: string, weekStart: WeekStart,
+                   indexCollection: IndexCollection, reevaluate: (context: TimeScope) => Promise<void>): Promise<void>;
+}
+
+export interface EntryUpdatedDependent {
+    onEntryUpdated(entry: JournalEntry, variableId: string, weekStart: WeekStart,
+                   indexCollection: IndexCollection, reevaluate: (context: TimeScope) => Promise<void>): Promise<void>;
+}
+
 function isEntryCreatedDependent(v: any): v is EntryCreatedDependent {
     return (v as EntryCreatedDependent).onEntryCreated !== undefined;
 }
+
+function isEntryDeletedDependent(v: any): v is EntryDeletedDependent {
+    return (v as EntryDeletedDependent).onEntryDeleted !== undefined;
+}
+
+function isEntryUpdatedDependent(v: any): v is EntryUpdatedDependent {
+    return (v as EntryUpdatedDependent).onEntryUpdated !== undefined;
+}
+
 
 /**
  * A DAG that can be used to evaluate variables, and updates dependent variables when a variable is updated.
@@ -31,6 +50,8 @@ export class VariableGraph {
     private weekStart: WeekStart;
 
     private entryCreatedDependent: Map<string, EntryCreatedDependent> = new Map();
+    private entryDeletedDependent: Map<string, EntryDeletedDependent> = new Map();
+    private entryUpdatedDependent: Map<string, EntryUpdatedDependent> = new Map();
 
     constructor(indexCollection: IndexCollection, journalCollection: JournalCollection, weekStart: WeekStart) {
         this.nodes = new Map<string, Variable>();
@@ -95,6 +116,14 @@ export class VariableGraph {
         if (isEntryCreatedDependent(variable.type.value)) {
             this.entryCreatedDependent.set(variable.id, variable.type.value);
         }
+
+        if (isEntryDeletedDependent(variable.type.value)) {
+            this.entryDeletedDependent.set(variable.id, variable.type.value);
+        }
+
+        if (isEntryUpdatedDependent(variable.type.value)) {
+            this.entryUpdatedDependent.set(variable.id, variable.type.value);
+        }
     }
 
     onVariableCreated(v: Variable) {
@@ -103,6 +132,8 @@ export class VariableGraph {
 
         this.nodes.set(v.id, v);
     }
+
+    // TODO: fix this code duplication for  journal dependent variables
 
     async onEntryCreated(entry: JournalEntry) {
         // Loop through all journal dependent variables and notify them of the new entry
@@ -115,6 +146,37 @@ export class VariableGraph {
                 await this.reevaluateDependentVariables(variable, context, [])
 
             await dependent.onEntryCreated(entry, variableId, this.weekStart, this.indexCollection,
+                reevaluationFunction);
+        }
+    }
+
+
+    async onEntryDeleted(entry: JournalEntry) {
+        // Loop through all journal dependent variables and notify them of the new entry
+        for (let [variableId, dependent] of this.entryDeletedDependent.entries()) {
+            let variable = this.getVariableById(variableId);
+            if (variable == undefined) continue;
+
+            // Journal dependent type may call this function to reevaluate dependent variables
+            let reevaluationFunction = async (context: TimeScope) =>
+                await this.reevaluateDependentVariables(variable, context, [])
+
+            await dependent.onEntryDeleted(entry, variableId, this.weekStart, this.indexCollection,
+                reevaluationFunction);
+        }
+    }
+
+    async onEntryUpdated(entry: JournalEntry) {
+        // Loop through all journal dependent variables and notify them of the new entry
+        for (let [variableId, dependent] of this.entryUpdatedDependent.entries()) {
+            let variable = this.getVariableById(variableId);
+            if (variable == undefined) continue;
+
+            // Journal dependent type may call this function to reevaluate dependent variables
+            let reevaluationFunction = async (context: TimeScope) =>
+                await this.reevaluateDependentVariables(variable, context, [])
+
+            await dependent.onEntryUpdated(entry, variableId, this.weekStart, this.indexCollection,
                 reevaluationFunction);
         }
     }
@@ -166,6 +228,10 @@ export class VariableGraph {
 
     getVariables(): Variable[] {
         return Array.from(this.nodes.values());
+    }
+
+    setWeekStart(weekStart: WeekStart) {
+        this.weekStart = weekStart;
     }
 
 }

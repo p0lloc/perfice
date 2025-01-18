@@ -17,4 +17,8 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
         this.updateResolved(v => [...v, entry]);
     }
 
+    async deleteEntryById(id: string) {
+        await this.journalService.deleteEntryById(id);
+        this.updateResolved(v => v.filter(e => e.id != id));
+    }
 }

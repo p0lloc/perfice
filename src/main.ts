@@ -31,6 +31,12 @@ const variableService = new VariableService(variableCollection, indexCollection,
 journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => {
     await variableService.onEntryCreated(e);
 });
+journalService.addEntryObserver(JournalEntryObserverType.DELETED, async (e: JournalEntry) => {
+    await variableService.onEntryDeleted(e);
+});
+journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry) => {
+    await variableService.onEntryUpdated(e);
+});
 
 const trackableService = new TrackableService(trackableCollection, variableService);
 

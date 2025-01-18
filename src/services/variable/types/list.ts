@@ -8,8 +8,9 @@ import {
 } from "@perfice/model/primitive/primitive";
 import {isTimestampInRange, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {type VariableEvaluator, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
-import type {EntryCreatedDependent} from "@perfice/services/variable/graph";
+import type {EntryCreatedDependent, EntryDeletedDependent} from "@perfice/services/variable/graph";
 import {deserializeTimeScope} from "@perfice/model/variable/time/serialization";
+import Dexie from "dexie";
 
 export function extractRawValue(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY) {
@@ -32,7 +33,7 @@ export function extractFieldsFromAnswers(answers: Record<string, PrimitiveValue>
     return result;
 }
 
-export class ListVariableType implements VariableType, EntryCreatedDependent {
+export class ListVariableType implements VariableType, EntryCreatedDependent, EntryDeletedDependent {
 
     private readonly formId: string;
     private readonly fields: Record<string, boolean>;
@@ -63,6 +64,27 @@ export class ListVariableType implements VariableType, EntryCreatedDependent {
             await reevaluate(scope);
         }
 
+    }
+
+    async onEntryDeleted(entry: JournalEntry, variableId: string, weekStart: WeekStart, indexCollection: IndexCollection, reevaluate: (context: TimeScope) => Promise<void>): Promise<void> {
+        if (entry.formId != this.formId) return;
+
+        // TODO: we need to streamline this so that we don't fetch indices multiple times
+        let indices = await indexCollection.getIndicesByVariableId(variableId);
+        for (let index of indices) {
+            let scope = deserializeTimeScope(index.timeScope, weekStart);
+            if (!isTimestampInRange(entry.timestamp, scope.value.convertToRange()))
+                continue;
+
+            if (index.value.type != PrimitiveValueType.LIST)
+                continue;
+
+            index.value.value = index.value.value
+                .filter(v => v.type != PrimitiveValueType.ENTRY || v.value.id != entry.id)
+
+            await indexCollection.updateIndex(index);
+            await reevaluate(scope);
+        }
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {

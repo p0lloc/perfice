@@ -26,6 +26,8 @@ export interface JournalCollection {
     deleteEntryById(id: string): Promise<void>;
 
     deleteEntriesByFormId(formId: string): Promise<void>;
+
+    getEntryById(id: string): Promise<JournalEntry | undefined>;
 }
 
 
