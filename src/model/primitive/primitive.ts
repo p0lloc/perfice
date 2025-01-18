@@ -64,8 +64,8 @@ export function pDisplay(value: PrimitiveValue, display: PrimitiveValue | null):
     return {type: PrimitiveValueType.DISPLAY, value: {value, display}}
 }
 
-export function pEntry(value: EntryValue): PrimitiveValue {
-    return {type: PrimitiveValueType.ENTRY, value}
+export function pEntry(id: string, timestamp: number, value: Record<string, PrimitiveValue>): PrimitiveValue {
+    return {type: PrimitiveValueType.ENTRY, value: {id, timestamp, value}}
 }
 
 export function pNull(): PrimitiveValue {

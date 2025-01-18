@@ -28,7 +28,7 @@ export interface JournalCollection {
 
 
 export interface IndexCollection {
-    getIndexByVariableAndScopeAndTimeStamp(variableId: string, timeScope: string, timestamp: number): Promise<VariableIndex | undefined>;
+    getIndexByVariableAndTimeScope(variableId: string, timeScope: string): Promise<VariableIndex | undefined>;
 
     createIndex(index: VariableIndex): Promise<void>;
 

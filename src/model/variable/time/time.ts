@@ -1,11 +1,11 @@
-import {dateToStartOfTimeScope} from "@perfice/util/time/simple";
+import {dateToEndOfTimeScope, dateToStartOfTimeScope} from "@perfice/util/time/simple";
 
 export type TimeRange = {
     type: TimeRangeType.ALL,
 } | {
     type: TimeRangeType.BOTH,
-    upper: number,
     lower: number
+    upper: number,
 } | {
     type: TimeRangeType.LOWER,
     lower: number,
@@ -114,15 +114,19 @@ export enum SimpleTimeScopeType {
 
 export class SimpleTimeScope implements TimeScopeDefinition {
     private readonly type: SimpleTimeScopeType;
+    private readonly weekStart: WeekStart;
     private readonly timestamp: number;
 
     constructor(type: SimpleTimeScopeType, weekStart: WeekStart, timestamp: number) {
         this.type = type;
+        this.weekStart = weekStart;
         this.timestamp = dateToStartOfTimeScope(new Date(timestamp), type, weekStart).getTime();
     }
 
     convertToRange(): TimeRange {
-        throw new Error("Method not implemented.");
+        let end = dateToEndOfTimeScope(new Date(this.timestamp), this.type, this.weekStart).getTime();
+        let start = dateToStartOfTimeScope(new Date(this.timestamp), this.type, this.weekStart).getTime();
+        return {type: TimeRangeType.BOTH, upper: end, lower: start};
     }
 
     getType(): SimpleTimeScopeType {
@@ -132,6 +136,18 @@ export class SimpleTimeScope implements TimeScopeDefinition {
     getTimestamp(): number {
         return this.timestamp;
     }
+}
+
+export function tSimple(type: SimpleTimeScopeType, weekStart: WeekStart, timestamp: number) {
+    return {type: TimeScopeType.SIMPLE, value: new SimpleTimeScope(type, weekStart, timestamp)};
+}
+
+export function tRange(start: number, end: number) {
+    return {type: TimeScopeType.RANGE, value: new RangeTimeScope(start, end)};
+}
+
+export function tForever() {
+    return {type: TimeScopeType.FOREVER, value: new ForeverTimeScope()};
 }
 
 

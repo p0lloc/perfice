@@ -10,6 +10,7 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<string, (value: any) => Variabl
     [VariableTypeName.AGGREGATE]: (value: any) => new AggregateVariableType(
         value.aggregateType,
         value.listVariableId,
+        value.field,
     )
 };
 
@@ -26,6 +27,7 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
         return {
             aggregateType: aggregateType.getAggregateType(),
             listVariableId: aggregateType.getListVariableId(),
+            field: aggregateType.getField(),
         };
     }
 }

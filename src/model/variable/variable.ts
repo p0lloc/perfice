@@ -47,6 +47,5 @@ export interface VariableIndex {
     id: string;
     variableId: string;
     timeScope: string;
-    timestamp: number;
     value: PrimitiveValue;
 }
