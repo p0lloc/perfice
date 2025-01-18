@@ -1,6 +1,6 @@
 import {expect, test} from "vitest";
 import {dateToWeekEnd, dateToWeekStart} from "../src/util/time/simple";
-import {WeekStart} from "../src/model/variable/time";
+import {WeekStart} from "../src/model/variable/time/time";
 
 test("date to week start sunday", () => {
     let date = new Date();
