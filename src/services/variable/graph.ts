@@ -1,7 +1,7 @@
 import type {IndexCollection, JournalCollection} from "@perfice/db/collections";
 import type {Variable, VariableEvaluator} from "@perfice/model/variable/variable";
 import type {JournalEntry} from "@perfice/model/journal/journal";
-import {type TimeRange, TimeRangeType, type TimeScope} from "@perfice/model/variable/time/time";
+import {type TimeRange, TimeRangeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
 
@@ -9,13 +9,13 @@ import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
 /**
  * Represents a variable type that is dependent on journal entries.
  */
-export interface JournalDependent {
-    onEntryCreated(entry: JournalEntry, variableId: string,
+export interface EntryCreatedDependent {
+    onEntryCreated(entry: JournalEntry, variableId: string, weekStart: WeekStart,
                    indexCollection: IndexCollection, reevaluate: (context: TimeScope) => Promise<void>): Promise<void>;
 }
 
-function isJournalDependentType(v: any): v is JournalDependent {
-    return (v as JournalDependent).onEntryCreated !== undefined;
+function isEntryCreatedDependent(v: any): v is EntryCreatedDependent {
+    return (v as EntryCreatedDependent).onEntryCreated !== undefined;
 }
 
 /**
@@ -28,13 +28,16 @@ export class VariableGraph {
     private readonly indexCollection: IndexCollection;
     private readonly journalCollection: JournalCollection;
 
-    private journalDependent: Map<string, JournalDependent> = new Map();
+    private weekStart: WeekStart;
 
-    constructor(indexCollection: IndexCollection, journalCollection: JournalCollection) {
+    private entryCreatedDependent: Map<string, EntryCreatedDependent> = new Map();
+
+    constructor(indexCollection: IndexCollection, journalCollection: JournalCollection, weekStart: WeekStart) {
         this.nodes = new Map<string, Variable>();
         this.dependents = new Map<string, Set<string>>();
         this.indexCollection = indexCollection;
         this.journalCollection = journalCollection;
+        this.weekStart = weekStart;
     }
 
     getVariableById(id: string): Variable | undefined {
@@ -82,11 +85,26 @@ export class VariableGraph {
 
     onVariableCreated(v: Variable) {
         this.updateDependentsForVariable(v);
-        if (isJournalDependentType(v.type.value)) {
-            this.journalDependent.set(v.id, v.type.value);
+        if (isEntryCreatedDependent(v.type.value)) {
+            this.entryCreatedDependent.set(v.id, v.type.value);
         }
 
         this.nodes.set(v.id, v);
+    }
+
+    async onEntryCreated(entry: JournalEntry) {
+        // Loop through all journal dependent variables and notify them of the new entry
+        for (let [variableId, dependent] of this.entryCreatedDependent.entries()) {
+            let variable = this.getVariableById(variableId);
+            if (variable == undefined) continue;
+
+            // Journal dependent type may call this function to reevaluate dependent variables
+            let reevaluationFunction = async (context: TimeScope) =>
+                await this.reevaluateDependentVariables(variable, context, [])
+
+            await dependent.onEntryCreated(entry, variableId, this.weekStart, this.indexCollection,
+                reevaluationFunction);
+        }
     }
 
     async onVariableDeleted(id: string) {

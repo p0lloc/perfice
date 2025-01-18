@@ -1,11 +1,15 @@
-import type { JournalEntry } from "@perfice/model/journal/journal";
+import type { IndexCollection } from "@perfice/db/collections";
+import type {JournalEntry} from "@perfice/model/journal/journal";
 import {
     pEntry,
     pList,
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
+import {isTimestampInRange, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {type VariableEvaluator, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
+import type {EntryCreatedDependent} from "@perfice/services/variable/graph";
+import {deserializeTimeScope} from "@perfice/model/variable/time/serialization";
 
 export function extractRawValue(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY) {
@@ -28,7 +32,7 @@ export function extractFieldsFromAnswers(answers: Record<string, PrimitiveValue>
     return result;
 }
 
-export class ListVariableType implements VariableType {
+export class ListVariableType implements VariableType, EntryCreatedDependent {
 
     private readonly formId: string;
     private readonly fields: Record<string, boolean>;
@@ -36,6 +40,29 @@ export class ListVariableType implements VariableType {
     constructor(formId: string, fields: Record<string, boolean>) {
         this.formId = formId;
         this.fields = fields;
+    }
+
+    async onEntryCreated(entry: JournalEntry, variableId: string, weekStart: WeekStart, indexCollection: IndexCollection,
+                         reevaluate: (context: TimeScope) => Promise<void>): Promise<void> {
+
+        if (entry.formId != this.formId) return;
+
+        let indices = await indexCollection.getIndicesByVariableId(variableId);
+        for (let index of indices) {
+            let scope = deserializeTimeScope(index.timeScope, weekStart);
+            if (!isTimestampInRange(entry.timestamp, scope.value.convertToRange()))
+                continue;
+
+            if (index.value.type != PrimitiveValueType.LIST)
+                continue;
+
+            index.value.value
+                .push(pEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields)));
+
+            await indexCollection.updateIndex(index);
+            await reevaluate(scope);
+        }
+
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
