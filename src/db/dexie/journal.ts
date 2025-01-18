@@ -27,6 +27,10 @@ export class DexieJournalCollection implements JournalCollection {
         await this.table.put(entry);
     }
 
+    async deleteEntryById(id: string): Promise<void> {
+        await this.table.delete(id);
+    }
+
     async deleteEntriesByFormId(formId: string): Promise<void> {
         await this.table.where("formId").equals(formId).delete();
     }

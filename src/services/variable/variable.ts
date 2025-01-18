@@ -6,6 +6,9 @@ import {
 } from "@perfice/model/variable/variable";
 import {deserializeVariableType, serializeVariableType} from "@perfice/services/variable/types/serialization";
 import type {VariableGraph} from "@perfice/services/variable/graph";
+import type {TimeScope} from "@perfice/model/variable/time/time";
+import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
+import type {JournalEntry} from "@perfice/model/journal/journal";
 
 export class VariableService {
 
@@ -28,18 +31,23 @@ export class VariableService {
         return this.graph.getVariables();
     }
 
-    async createVariable(variable: Variable): Promise<void> {
-        let stored = this.serializeVariable(variable);
-        return this.variableCollection.createVariable(stored);
-    }
-
-    async getVariableById(id: string): Promise<Variable | undefined> {
-        let variable = await this.variableCollection.getVariableById(id);
-        if (variable === undefined) {
-            return undefined;
+    async evaluateVariable(id: string, timeScope: TimeScope): Promise<PrimitiveValue>{
+        let variable = this.getVariableById(id)
+        if(variable == null){
+            return pNull();
         }
 
-        return this.deserializeVariable(variable);
+        return this.graph.evaluateVariable(variable, timeScope, false, []);
+    }
+
+    async createVariable(variable: Variable): Promise<void> {
+        let stored = this.serializeVariable(variable);
+        await this.variableCollection.createVariable(stored);
+        this.graph.onVariableCreated(variable);
+    }
+
+    getVariableById(id: string): Variable | undefined {
+        return this.graph.getVariableById(id);
     }
 
     private serializeVariable(variable: Variable): StoredVariable {
@@ -62,4 +70,7 @@ export class VariableService {
         }
     }
 
+    async onEntryCreated(e: JournalEntry) {
+        await this.graph.onEntryCreated(e);
+    }
 }

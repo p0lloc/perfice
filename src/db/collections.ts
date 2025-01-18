@@ -23,6 +23,8 @@ export interface JournalCollection {
 
     updateEntry(entry: JournalEntry): Promise<void>;
 
+    deleteEntryById(id: string): Promise<void>;
+
     deleteEntriesByFormId(formId: string): Promise<void>;
 }
 

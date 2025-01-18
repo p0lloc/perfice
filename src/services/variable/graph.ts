@@ -41,7 +41,11 @@ export class VariableGraph {
     }
 
     loadVariables(variables: Variable[]) {
-        variables.forEach(v => this.nodes.set(v.id, v));
+        variables.forEach(v => {
+            this.nodes.set(v.id, v);
+            this.setupJournalDependencies(v);
+        });
+
         this.updateDependents();
     }
 
@@ -88,11 +92,15 @@ export class VariableGraph {
         return value;
     }
 
+    private setupJournalDependencies(variable: Variable) {
+        if (isEntryCreatedDependent(variable.type.value)) {
+            this.entryCreatedDependent.set(variable.id, variable.type.value);
+        }
+    }
+
     onVariableCreated(v: Variable) {
         this.updateDependentsForVariable(v);
-        if (isEntryCreatedDependent(v.type.value)) {
-            this.entryCreatedDependent.set(v.id, v.type.value);
-        }
+        this.setupJournalDependencies(v);
 
         this.nodes.set(v.id, v);
     }

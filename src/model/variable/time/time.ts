@@ -95,7 +95,6 @@ export class ForeverTimeScope implements TimeScopeDefinition {
 }
 
 
-
 export interface TS<T extends TimeScopeType, V extends TimeScopeDefinition> {
     type: T;
     value: V;
@@ -138,15 +137,15 @@ export class SimpleTimeScope implements TimeScopeDefinition {
     }
 }
 
-export function tSimple(type: SimpleTimeScopeType, weekStart: WeekStart, timestamp: number) {
+export function tSimple(type: SimpleTimeScopeType, weekStart: WeekStart, timestamp: number): TimeScope {
     return {type: TimeScopeType.SIMPLE, value: new SimpleTimeScope(type, weekStart, timestamp)};
 }
 
-export function tRange(start: number, end: number) {
+export function tRange(start: number, end: number): TimeScope {
     return {type: TimeScopeType.RANGE, value: new RangeTimeScope(start, end)};
 }
 
-export function tForever() {
+export function tForever(): TimeScope {
     return {type: TimeScopeType.FOREVER, value: new ForeverTimeScope()};
 }
 
