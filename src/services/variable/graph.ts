@@ -45,7 +45,6 @@ export class VariableGraph {
             this.nodes.set(v.id, v);
             this.setupJournalDependencies(v);
         });
-
         this.updateDependents();
     }
 

@@ -29,6 +29,7 @@ export interface JournalCollection {
 }
 
 
+export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
 export interface IndexCollection {
     getIndexByVariableAndTimeScope(variableId: string, timeScope: string): Promise<VariableIndex | undefined>;
 
@@ -39,4 +40,8 @@ export interface IndexCollection {
     getIndicesByVariableId(variableId: string): Promise<VariableIndex[]>;
 
     deleteIndicesByVariableId(id: string): Promise<void>;
+
+    addUpdateListener(listener: IndexUpdateListener): void;
+
+    removeUpdateListener(listener: IndexUpdateListener): void;
 }

@@ -48,6 +48,7 @@ export function pString(value: string): PrimitiveValue {
 export function pNumber(value: number): PrimitiveValue {
     return {type: PrimitiveValueType.NUMBER, value}
 }
+
 export function pBoolean(value: boolean): PrimitiveValue {
     return {type: PrimitiveValueType.BOOLEAN, value}
 }
@@ -139,5 +140,23 @@ function comparePrimitiveValues<T>(type: PrimitiveValueType, first: T, second: T
 
         default:
             return first == second;
+    }
+}
+
+export function prettyPrintPrimitive(v: PrimitiveValue): string {
+    switch (v.type) {
+        case PrimitiveValueType.DISPLAY: {
+            return prettyPrintPrimitive(v.value.display ?? v.value.value);
+        }
+        case PrimitiveValueType.ENTRY: {
+            return JSON.stringify(Object.fromEntries(Object.entries(v.value.value)
+                .map(([k, v]) => [k, prettyPrintPrimitive(v)])));
+        }
+        case PrimitiveValueType.LIST: {
+            return v.value.map(prettyPrintPrimitive).join(", ");
+        }
+
+        default:
+            return v.value?.toString() ?? "";
     }
 }

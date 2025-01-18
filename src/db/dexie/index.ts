@@ -1,11 +1,11 @@
-import type {IndexCollection} from "@perfice/db/collections";
+import type {IndexCollection, IndexUpdateListener} from "@perfice/db/collections";
 import type {EntityTable} from "dexie";
 import type {VariableIndex} from "@perfice/model/variable/variable";
 
 export class DexieIndexCollection implements IndexCollection {
 
     private table: EntityTable<VariableIndex, "id">;
-
+    private updateListeners: IndexUpdateListener[] = [];
 
     constructor(table: EntityTable<VariableIndex, "id">) {
         this.table = table;
@@ -21,6 +21,10 @@ export class DexieIndexCollection implements IndexCollection {
 
     async updateIndex(index: VariableIndex): Promise<void> {
         await this.table.put(index);
+
+        for (const callback of this.updateListeners) {
+            await callback(index);
+        }
     }
 
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {
@@ -31,4 +35,11 @@ export class DexieIndexCollection implements IndexCollection {
         await this.table.where("variableId").equals(id).delete();
     }
 
+    addUpdateListener(listener: IndexUpdateListener) {
+        this.updateListeners.push(listener);
+    }
+
+    removeUpdateListener(listener: IndexUpdateListener) {
+        this.updateListeners = this.updateListeners.filter(l => l != listener);
+    }
 }

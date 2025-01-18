@@ -10,11 +10,13 @@ import type {TrackableCollection, VariableCollection} from "@perfice/db/collecti
 import {DexieVariableCollection} from "@perfice/db/dexie/variable";
 import {DexieJournalCollection} from "@perfice/db/dexie/journal";
 import {DexieIndexCollection} from './db/dexie';
-import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
+import {type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {VariableGraph} from "@perfice/services/variable/graph";
 import {JournalEntryObserverType, JournalService} from "@perfice/services/journal/journal";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {JournalEntry} from './model/journal/journal';
+import {VariableStore} from "@perfice/stores/variable/value";
+import {writable} from "svelte/store";
 
 const db = setupDb();
 const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
@@ -25,7 +27,7 @@ const journalService = new JournalService(journalCollection);
 const indexCollection = new DexieIndexCollection(db.indices);
 const graph = new VariableGraph(indexCollection, journalCollection, WeekStart.MONDAY);
 
-const variableService = new VariableService(variableCollection, graph);
+const variableService = new VariableService(variableCollection, indexCollection, graph);
 journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => {
     await variableService.onEntryCreated(e);
 });
@@ -35,12 +37,16 @@ const trackableService = new TrackableService(trackableCollection, variableServi
 export const trackables = new TrackableStore(trackableService);
 export const journal = new JournalEntryStore(journalService);
 
+export const appReady = writable(false);
+
+// TODO: where do we actually want to put stores? we don't want to expose the services directly
+export function variable(id: string, timeContext: TimeScope) {
+    return VariableStore(id, timeContext, variableService);
+}
+
 (async () => {
     await variableService.loadVariables();
-
-    let val = await variableService.evaluateVariable("test", tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0));
-    console.log(val);
-
+    appReady.set(true);
 })();
 
 const app = mount(App, {

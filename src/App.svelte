@@ -1,5 +1,8 @@
-<script>
+<script lang="ts">
     import Trackables from "@perfice/views/Trackables.svelte";
+    import {appReady} from "./main";
 </script>
 
-<Trackables />
+{#if $appReady}
+    <Trackables/>
+{/if}
