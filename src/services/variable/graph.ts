@@ -1,9 +1,15 @@
 import type {IndexCollection, JournalCollection} from "@perfice/db/collections";
-import type {Variable, VariableEvaluator} from "@perfice/model/variable/variable";
+import type {Variable, VariableEvaluator, VariableIndex} from "@perfice/model/variable/variable";
 import type {JournalEntry} from "@perfice/model/journal/journal";
-import {type TimeRange, TimeRangeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
+import {
+    isTimestampInRange,
+    type TimeRange,
+    TimeRangeType,
+    type TimeScope,
+    WeekStart
+} from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
-import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
+import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
 
 
 /**
@@ -135,7 +141,24 @@ export class VariableGraph {
 
     // TODO: fix this code duplication for  journal dependent variables
 
+    private filterIndicesByTimestamp(indices: VariableIndex[], timestamp: number) {
+        let result: VariableIndex[] = [];
+        for (let index of indices) {
+            let scope = deserializeTimeScope(index.timeScope, this.weekStart);
+            if (!isTimestampInRange(timestamp, scope.value.convertToRange()))
+                continue;
+
+            result.push(index);
+        }
+
+        return result;
+    }
+
     async onEntryCreated(entry: JournalEntry) {
+        // TODO: check if there are any dependent variables first
+        //let indices = await this.indexCollection.getIndicesByVariableId(variableId);
+        // let filteredIndices = this.filterIndicesByTimestamp(indices, entry.timestamp);
+
         // Loop through all journal dependent variables and notify them of the new entry
         for (let [variableId, dependent] of this.entryCreatedDependent.entries()) {
             let variable = this.getVariableById(variableId);
@@ -145,11 +168,11 @@ export class VariableGraph {
             let reevaluationFunction = async (context: TimeScope) =>
                 await this.reevaluateDependentVariables(variable, context, [])
 
+            // TODO: have some index update/index delete action type
             await dependent.onEntryCreated(entry, variableId, this.weekStart, this.indexCollection,
                 reevaluationFunction);
         }
     }
-
 
     async onEntryDeleted(entry: JournalEntry) {
         // Loop through all journal dependent variables and notify them of the new entry

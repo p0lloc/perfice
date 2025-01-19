@@ -1,8 +1,9 @@
 import type {TrackableCollection} from "@perfice/db/collections";
 import {type VariableService} from "@perfice/services/variable/variable";
 import type {Trackable} from "@perfice/model/trackable/trackable";
-import {VariableTypeName, type Variable} from "@perfice/model/variable/variable";
+import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import {ListVariableType} from "@perfice/services/variable/types/list";
+import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -19,7 +20,7 @@ export class TrackableService {
 
     async createTrackable(trackable: Trackable): Promise<void> {
         let listVariable: Variable = {
-            id: "test",
+            id: `${trackable.id}_list`,
             type: {
                 type: VariableTypeName.LIST,
                 value: new ListVariableType(trackable.formId, {
@@ -27,7 +28,15 @@ export class TrackableService {
                 })
             }
         }
+        let aggregateVariable: Variable = {
+            id: trackable.id,
+            type: {
+                type: VariableTypeName.AGGREGATE,
+                value: new AggregateVariableType(AggregateType.SUM, `${trackable.id}_list`, "test")
+            }
+        }
         await this.variableService.createVariable(listVariable);
+        await this.variableService.createVariable(aggregateVariable);
         await this.collection.createTrackable(trackable);
     }
 

@@ -1,23 +1,13 @@
 <script lang="ts">
-    import {journal, trackables} from "@perfice/main";
+    import {trackables} from "@perfice/main";
     import TrackableCard from "@perfice/components/trackable/TrackableCard.svelte";
-    import {pNumber} from "@perfice/model/primitive/primitive";
 
     async function createTrackable(){
+        let trackableId = crypto.randomUUID();
         await trackables.createTrackable({
-            id: crypto.randomUUID(),
+            id: trackableId,
             name: "testing",
-            formId: "test"
-        })
-    }
-    async function createEntry(){
-        await journal.logEntry({
-            id: crypto.randomUUID(),
-            formId: "test",
-            timestamp: 0,
-            answers: {
-                "test": pNumber(10.0)
-            }
+            formId: trackableId
         })
     }
 </script>
@@ -30,5 +20,4 @@
     {/each}
 
     <button onclick={createTrackable}>Create trackable</button>
-    <button onclick={createEntry}>Create entry</button>
 {/await}
