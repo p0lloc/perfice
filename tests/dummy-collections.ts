@@ -1,8 +1,7 @@
-import {IndexCollection, JournalCollection} from "../src/db/collections";
+import {IndexCollection, IndexUpdateListener, JournalCollection} from "../src/db/collections";
 import {VariableIndex} from "../src/model/variable/variable";
 import {updateIdentifiedInArray} from "../src/util/array";
 import {JournalEntry} from "../src/model/journal/journal";
-import {pDisplay, pNumber, pString} from "../src/model/primitive/primitive";
 
 export class DummyJournalCollection implements JournalCollection {
     private entries: JournalEntry[];
@@ -26,9 +25,19 @@ export class DummyJournalCollection implements JournalCollection {
     async updateEntry(entry: JournalEntry): Promise<void> {
         this.entries = updateIdentifiedInArray(this.entries, entry);
     }
+
     async deleteEntriesByFormId(formId: string): Promise<void> {
         this.entries = this.entries.filter(e => e.formId != formId);
     }
+
+    async getEntryById(id: string): Promise<JournalEntry | undefined> {
+        return this.entries.find(e => e.id == id);
+    }
+
+    async deleteEntryById(id: string): Promise<void> {
+        this.entries = this.entries.filter(e => e.id != id);
+    }
+
 
 }
 
@@ -38,6 +47,16 @@ export class DummyIndexCollection implements IndexCollection {
 
     constructor(indices: VariableIndex[] = []) {
         this.indices = indices;
+    }
+
+    async deleteIndicesByIds(ids: string[]): Promise<void> {
+        this.indices = this.indices.filter(i => !ids.includes(i.id));
+    }
+    addUpdateListener(listener: IndexUpdateListener): void {
+        throw new Error("Method not implemented.");
+    }
+    removeUpdateListener(listener: IndexUpdateListener): void {
+        throw new Error("Method not implemented.");
     }
 
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {
@@ -51,6 +70,12 @@ export class DummyIndexCollection implements IndexCollection {
 
     async createIndex(index: VariableIndex): Promise<void> {
         this.indices.push(index);
+    }
+
+    async updateIndices(indices: VariableIndex[]): Promise<void> {
+        for (let index of indices) {
+            await this.updateIndex(index);
+        }
     }
 
     async updateIndex(index: VariableIndex): Promise<void> {

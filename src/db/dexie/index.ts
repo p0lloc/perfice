@@ -27,6 +27,14 @@ export class DexieIndexCollection implements IndexCollection {
         }
     }
 
+    async updateIndices(indices: VariableIndex[]): Promise<void> {
+        await this.table.bulkPut(indices);
+    }
+
+    async deleteIndicesByIds(ids: string[]): Promise<void> {
+        await this.table.bulkDelete(ids);
+    }
+
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {
         return this.table.where("variableId").equals(variableId).toArray();
     }

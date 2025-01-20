@@ -1,4 +1,3 @@
-import type { IndexCollection } from "@perfice/db/collections";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {
     pEntry,
@@ -6,11 +5,8 @@ import {
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
-import {isTimestampInRange, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
-import {type VariableEvaluator, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
-import type {EntryCreatedDependent, EntryDeletedDependent} from "@perfice/services/variable/graph";
-import {deserializeTimeScope} from "@perfice/model/variable/time/serialization";
-import Dexie from "dexie";
+import {type VariableEvaluator, type VariableIndex, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
+import {VariableIndexActionType, type EntryCreatedDependent, type EntryDeletedDependent, type VariableIndexAction} from "@perfice/services/variable/graph";
 
 export function extractRawValue(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY) {
@@ -43,48 +39,46 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
         this.fields = fields;
     }
 
-    async onEntryCreated(entry: JournalEntry, variableId: string, weekStart: WeekStart, indexCollection: IndexCollection,
-                         reevaluate: (context: TimeScope) => Promise<void>): Promise<void> {
+    async onEntryCreated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
+        if (entry.formId != this.formId) return [];
 
-        if (entry.formId != this.formId) return;
-
-        let indices = await indexCollection.getIndicesByVariableId(variableId);
+        let actions: VariableIndexAction[] = [];
         for (let index of indices) {
-            let scope = deserializeTimeScope(index.timeScope, weekStart);
-            if (!isTimestampInRange(entry.timestamp, scope.value.convertToRange()))
-                continue;
-
             if (index.value.type != PrimitiveValueType.LIST)
                 continue;
 
+            // Entry was created, add it to the list
             index.value.value
                 .push(pEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields)));
 
-            await indexCollection.updateIndex(index);
-            await reevaluate(scope);
+            actions.push({
+                type: VariableIndexActionType.UPDATE,
+                index
+            });
         }
 
+        return actions;
     }
 
-    async onEntryDeleted(entry: JournalEntry, variableId: string, weekStart: WeekStart, indexCollection: IndexCollection, reevaluate: (context: TimeScope) => Promise<void>): Promise<void> {
-        if (entry.formId != this.formId) return;
+    async onEntryDeleted(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
+        if (entry.formId != this.formId) return [];
 
-        // TODO: we need to streamline this so that we don't fetch indices multiple times
-        let indices = await indexCollection.getIndicesByVariableId(variableId);
+        let actions: VariableIndexAction[] = [];
         for (let index of indices) {
-            let scope = deserializeTimeScope(index.timeScope, weekStart);
-            if (!isTimestampInRange(entry.timestamp, scope.value.convertToRange()))
-                continue;
-
             if (index.value.type != PrimitiveValueType.LIST)
                 continue;
 
+            // Entry was deleted, remove it from the list
             index.value.value = index.value.value
                 .filter(v => v.type != PrimitiveValueType.ENTRY || v.value.id != entry.id)
 
-            await indexCollection.updateIndex(index);
-            await reevaluate(scope);
+            actions.push({
+                type: VariableIndexActionType.UPDATE,
+                index
+            });
         }
+
+        return actions;
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {

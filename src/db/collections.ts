@@ -43,7 +43,12 @@ export interface IndexCollection {
 
     deleteIndicesByVariableId(id: string): Promise<void>;
 
+    updateIndices(indices: VariableIndex[]): Promise<void>;
+
+    deleteIndicesByIds(ids: string[]): Promise<void>;
+
     addUpdateListener(listener: IndexUpdateListener): void;
 
     removeUpdateListener(listener: IndexUpdateListener): void;
+
 }
