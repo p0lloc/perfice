@@ -4,14 +4,15 @@
     import {journal, variable} from "@perfice/main";
     import {pNumber, prettyPrintPrimitive} from "@perfice/model/primitive/primitive";
 
-    let {trackable}: { trackable: Trackable } = $props();
+    let {trackable, date, weekStart}: { trackable: Trackable, date: Date, weekStart: WeekStart } = $props();
 
-    let res = variable(trackable.id, tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0));
-    async function createEntry(){
+    let res = $derived(variable(trackable.id, tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime())));
+
+    async function createEntry() {
         await journal.logEntry({
             id: crypto.randomUUID(),
             formId: trackable.id,
-            timestamp: 0,
+            timestamp: date.getTime(),
             answers: {
                 "test": pNumber(parseInt(prompt("Value") ?? "0"))
             }

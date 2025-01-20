@@ -1,23 +1,26 @@
 <script lang="ts">
-    import {trackables} from "@perfice/main";
-    import TrackableCard from "@perfice/components/trackable/TrackableCard.svelte";
+    import {trackables, categorizedTrackables, trackableCategories} from "@perfice/main";
+    import TrackableCategoryContainer from "@perfice/components/trackable/TrackableCategoryContainer.svelte";
+    import type {WeekStart} from "@perfice/model/variable/time/time";
 
-    async function createTrackable(){
-        let trackableId = crypto.randomUUID();
-        await trackables.createTrackable({
-            id: trackableId,
-            name: "testing",
-            formId: trackableId
+    let {date, weekStart}: { date: Date, weekStart: WeekStart } = $props();
+
+    async function createCategory() {
+        let categoryId = crypto.randomUUID();
+        await trackableCategories.createCategory({
+            id: categoryId,
+            name: prompt("Name") ?? "test"
         })
     }
 </script>
 
-{#await $trackables}
+{#await $categorizedTrackables}
     Loading...
-{:then trackables}
-    {#each trackables as trackable}
-        <TrackableCard {trackable}/>
-    {/each}
-
-    <button onclick={createTrackable}>Create trackable</button>
+{:then categories}
+    <button class="mb-10" onclick={createCategory}>Create category</button>
+    <div class="flex flex-col gap-4">
+        {#each categories as category(category.category?.id)}
+            <TrackableCategoryContainer {date} {category} {weekStart}/>
+        {/each}
+    </div>
 {/await}

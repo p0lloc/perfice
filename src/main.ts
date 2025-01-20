@@ -5,7 +5,7 @@ import {TrackableService} from "@perfice/services/trackable/trackable";
 import {VariableService} from "@perfice/services/variable/variable";
 import {setupDb} from "@perfice/db/dexie/db";
 import {DexieTrackableCollection} from "@perfice/db/dexie/trackable";
-import {TrackableStore} from "@perfice/stores/trackable/trackable";
+import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
 import type {TrackableCollection, VariableCollection} from "@perfice/db/collections";
 import {DexieVariableCollection} from "@perfice/db/dexie/variable";
 import {DexieJournalCollection} from "@perfice/db/dexie/journal";
@@ -17,12 +17,17 @@ import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {JournalEntry} from './model/journal/journal';
 import {VariableStore} from "@perfice/stores/variable/value";
 import {writable} from "svelte/store";
+import {DexieTrackableCategoryCollection} from "@perfice/db/dexie/category";
+import {TrackableCategoryService} from "@perfice/model/trackable/category";
+import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
+import { CategorizedTrackables } from './stores/trackable/categorized';
 
 const db = setupDb();
 const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
 const variableCollection: VariableCollection = new DexieVariableCollection(db.variables);
 const journalCollection = new DexieJournalCollection(db.entries);
 const journalService = new JournalService(journalCollection);
+const trackableCategoryCollection = new DexieTrackableCategoryCollection(db.trackableCategories);
 
 const indexCollection = new DexieIndexCollection(db.indices);
 const graph = new VariableGraph(indexCollection, journalCollection, WeekStart.MONDAY);
@@ -39,9 +44,14 @@ journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: Jour
 });
 
 const trackableService = new TrackableService(trackableCollection, variableService);
+const trackableCategoryService = new TrackableCategoryService(trackableCategoryCollection);
 
 export const trackables = new TrackableStore(trackableService);
+export const trackableDate = TrackableDate();
+export const weekStart = writable(WeekStart.MONDAY);
+export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);
 export const journal = new JournalEntryStore(journalService);
+export const categorizedTrackables = CategorizedTrackables();
 
 export const appReady = writable(false);
 

@@ -1,11 +1,11 @@
 import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
 
 export function dateToMidnight(now: Date) {
-    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 }
 
 export function dateToLastSecondOfDay(now: Date) {
-    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+    return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
 }
 
 /**
@@ -30,40 +30,40 @@ export function normalizeWeekDayToWeekStart(
 }
 
 export function cloneDateUTC(date: Date): Date {
-    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-        date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds()));
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(),
+        date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
 }
 
 export function dateToWeekStart(date: Date, weekStart: WeekStart): Date {
     let clone = cloneDateUTC(date);
     clone.setUTCDate(
-        date.getUTCDate() - normalizeWeekDayToWeekStart(date.getUTCDay(), weekStart),
+        date.getDate() - normalizeWeekDayToWeekStart(date.getDay(), weekStart),
     );
     return clone;
 }
 
 export function dateToMonthEnd(date: Date): Date {
-    return new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 0);
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0));
 }
 
 export function dateToYearEnd(date: Date): Date {
-    return new Date(date.getUTCFullYear(), 11, 31);
+    return new Date(Date.UTC(date.getFullYear(), 11, 31));
 }
 
 export function dateToWeekEnd(date: Date, weekStart: WeekStart): Date {
-    let clone = new Date(date);
+    let clone = cloneDateUTC(date);
     clone.setUTCDate(
-        date.getUTCDate() + (6 - normalizeWeekDayToWeekStart(date.getUTCDay(), weekStart)),
+        date.getDate() + (6 - normalizeWeekDayToWeekStart(date.getDay(), weekStart)),
     );
     return clone;
 }
 
 export function dateToMonthStart(date: Date): Date {
-    return new Date(date.getUTCFullYear(), date.getUTCMonth(), 1);
+    return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
 export function dateToYearStart(date: Date): Date {
-    return new Date(date.getUTCFullYear(), 0, 1);
+    return new Date(date.getFullYear(), 0, 1);
 }
 
 export function dateToStartOfTimeScope(date: Date, scope: SimpleTimeScopeType, weekStart: WeekStart): Date {
