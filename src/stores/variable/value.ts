@@ -24,7 +24,13 @@ export class VariableFetchContext {
     }
 }
 
-export function VariableStore(id: string, timeContext: TimeScope, variableService: VariableService): Readable<Promise<PrimitiveValue>> {
+let cached = new Map<string, PrimitiveValue>();
+
+export function unregisterKey(key: string) {
+    cached.delete(key);
+}
+
+export function VariableStore(id: string, timeContext: TimeScope, variableService: VariableService, key: string): Readable<Promise<PrimitiveValue>> {
     let context = new VariableFetchContext(variableService);
     const {subscribe, set} = writable<Promise<PrimitiveValue>>(new Promise<PrimitiveValue>(() => {
     }), () => {
@@ -33,11 +39,24 @@ export function VariableStore(id: string, timeContext: TimeScope, variableServic
     });
 
     let promise = new Promise<PrimitiveValue>(async (resolve) => {
+        let cachedValue = cached.get(key);
+        if (cachedValue != null) {
+            // If a cached value exists, resolve it immediately
+            resolve(cachedValue);
+        }
+
         // When the variable value is updated, update the store
         let onVariableUpdated = (res: PrimitiveValue) => set(resolvedPromise(res));
-
         let val = await context.evaluateVariableLive(id, timeContext, onVariableUpdated);
-        resolve(val);
+
+        cached.set(key, val);
+        if(cachedValue == null) {
+            // If there was no cached value, resolve with the calculated value
+            resolve(val);
+        } else {
+            // If there was, update the store with the newly calculated value
+            set(resolvedPromise(val));
+        }
     });
 
     set(promise);

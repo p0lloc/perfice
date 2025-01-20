@@ -1,16 +1,16 @@
 <script lang="ts">
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
     import {trackableDate, weekStart} from "@perfice/main";
-    import {formatDateYYYYMMDD} from "@perfice/util/time/format.js";
+    import CalendarScroll from "@perfice/components/base/calendarScroll/CalendarScroll.svelte";
 
-    let valueStr = $derived(formatDateYYYYMMDD($trackableDate));
-
-    function onDateChange(e: Event & { currentTarget: HTMLInputElement }) {
-        $trackableDate = new Date(e.currentTarget.value);
+    function onDateChange(e: Date) {
+        $trackableDate = e;
     }
 </script>
 
 <div class="mx-auto w-1/2 py-10">
-    <input type="date" value={valueStr} onchange={onDateChange}/>
+    <div class="flex justify-end">
+        <CalendarScroll value={$trackableDate} onChange={onDateChange}/>
+    </div>
     <TrackableList date={$trackableDate} weekStart={$weekStart}/>
 </div>

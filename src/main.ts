@@ -56,8 +56,8 @@ export const categorizedTrackables = CategorizedTrackables();
 export const appReady = writable(false);
 
 // TODO: where do we actually want to put stores? we don't want to expose the services directly
-export function variable(id: string, timeContext: TimeScope) {
-    return VariableStore(id, timeContext, variableService);
+export function variable(id: string, timeContext: TimeScope, key: string) {
+    return VariableStore(id, timeContext, variableService, key);
 }
 
 (async () => {

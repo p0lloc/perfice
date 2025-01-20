@@ -66,6 +66,17 @@ export function dateToYearStart(date: Date): Date {
     return new Date(date.getFullYear(), 0, 1);
 }
 
+export function addDaysDate(date: Date, days: number): Date {
+    let clone = new Date(date);
+    clone.setDate(date.getDate() + days);
+
+    return clone;
+}
+
+export function getDaysDifference(first: Date, second: Date) {
+    return Math.round((dateToMidnight(first).getTime() - dateToMidnight(second).getTime()) / (1000 * 60 * 60 * 24));
+}
+
 export function dateToStartOfTimeScope(date: Date, scope: SimpleTimeScopeType, weekStart: WeekStart): Date {
     let result: Date;
     switch (scope) {
@@ -114,3 +125,4 @@ export function dateToEndOfTimeScope(date: Date, scope: SimpleTimeScopeType, wee
 
     return dateToLastSecondOfDay(result);
 }
+
