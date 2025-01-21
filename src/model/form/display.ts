@@ -13,9 +13,13 @@ export type FormQuestionDisplaySettings =
     | DisplayDef<FormQuestionDisplayType.HIERARCHY, HierarchyFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.SEGMENTED, SegmentedFormQuestionSettings>;
 
+
+export type FormQuestionDisplaySettingsValue = InputFormQuestionSettings | SelectFormQuestionSettings |
+    RangeFormQuestionSettings | HierarchyFormQuestionSettings | SegmentedFormQuestionSettings;
+
 export type DisplayDef<K extends FormQuestionDisplayType, S extends object> = {
-    dataType: K,
-    dataSettings: S
+    displayType: K,
+    displaySettings: S
 }
 
 export interface FormDisplayTypeDefinition<S> {
