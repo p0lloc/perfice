@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {CategoryList} from "@perfice/util/category";
-    import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
+    import {type Trackable, TrackableCardType, type TrackableCategory} from "@perfice/model/trackable/trackable";
     import TrackableCard from "@perfice/components/trackable/card/TrackableCard.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
@@ -16,7 +16,9 @@
             id: trackableId,
             name: "testing",
             formId: trackableId,
-            categoryId: category.category?.id ?? null
+            categoryId: category.category?.id ?? null,
+            cardType: TrackableCardType.CHART,
+            dependencies: {}
         })
     }
 </script>

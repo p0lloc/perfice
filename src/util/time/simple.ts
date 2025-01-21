@@ -126,3 +126,37 @@ export function dateToEndOfTimeScope(date: Date, scope: SimpleTimeScopeType, wee
     return dateToLastSecondOfDay(result);
 }
 
+
+export function offsetDateByTimeScope(
+    timestampToOffset: Date,
+    timeScope: SimpleTimeScopeType,
+    count: number,
+): Date {
+    let timestamp = new Date(timestampToOffset);
+    switch (timeScope) {
+        case SimpleTimeScopeType.DAILY: {
+            timestamp.setDate(timestamp.getDate() + count);
+            return timestamp;
+        }
+
+        case SimpleTimeScopeType.WEEKLY: {
+            timestamp.setDate(timestamp.getDate() + 7 * count);
+            return timestamp;
+        }
+
+        case SimpleTimeScopeType.MONTHLY: {
+            return new Date(
+                timestamp.getFullYear(),
+                timestamp.getMonth() + count,
+                timestamp.getDate(),
+            );
+        }
+        case SimpleTimeScopeType.YEARLY: {
+            return new Date(
+                timestamp.getFullYear() + count,
+                timestamp.getMonth(),
+                timestamp.getDate(),
+            );
+        }
+    }
+}

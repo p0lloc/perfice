@@ -135,6 +135,10 @@ export class SimpleTimeScope implements TimeScopeDefinition {
     getTimestamp(): number {
         return this.timestamp;
     }
+
+    getWeekStart(): WeekStart {
+        return this.weekStart;
+    }
 }
 
 export function tSimple(type: SimpleTimeScopeType, weekStart: WeekStart, timestamp: number): TimeScope {

@@ -35,6 +35,12 @@ export class TrackableService {
                 value: new AggregateVariableType(AggregateType.SUM, `${trackable.id}_list`, "test")
             }
         }
+
+        trackable.dependencies = {
+            value: listVariable.id,
+            aggregate: aggregateVariable.id
+        }
+
         await this.variableService.createVariable(listVariable);
         await this.variableService.createVariable(aggregateVariable);
         await this.collection.createTrackable(trackable);

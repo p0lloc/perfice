@@ -21,6 +21,8 @@ import {DexieTrackableCategoryCollection} from "@perfice/db/dexie/category";
 import {TrackableCategoryService} from "@perfice/model/trackable/category";
 import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
 import { CategorizedTrackables } from './stores/trackable/categorized';
+import type {Trackable} from "@perfice/model/trackable/trackable";
+import {TrackableValueStore} from "@perfice/stores/trackable/value";
 
 const db = setupDb();
 const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
@@ -58,6 +60,10 @@ export const appReady = writable(false);
 // TODO: where do we actually want to put stores? we don't want to expose the services directly
 export function variable(id: string, timeContext: TimeScope, key: string) {
     return VariableStore(id, timeContext, variableService, key);
+}
+
+export function trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {
+    return TrackableValueStore(trackable, date, weekStart, key, variableService);
 }
 
 (async () => {

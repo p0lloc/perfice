@@ -1,15 +1,15 @@
 <script lang="ts">
     import type {Trackable} from "@perfice/model/trackable/trackable";
-    import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
-    import {journal, variable} from "@perfice/main";
+    import {WeekStart} from "@perfice/model/variable/time/time";
+    import {journal, trackableValue} from "@perfice/main";
     import {pNumber, prettyPrintPrimitive} from "@perfice/model/primitive/primitive";
     import {onDestroy} from "svelte";
-    import {unregisterKey} from "@perfice/stores/variable/value";
+    import {disposeCachedStoreKey} from "@perfice/stores/cached";
 
     let {trackable, date, weekStart}: { trackable: Trackable, date: Date, weekStart: WeekStart } = $props();
 
     let cardId = crypto.randomUUID();
-    let res = $derived(variable(trackable.id, tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), cardId));
+    let res = $derived(trackableValue(trackable, date, weekStart, cardId));
 
     async function createEntry() {
         await journal.logEntry({
@@ -22,7 +22,7 @@
         })
     }
 
-    onDestroy(() => unregisterKey(cardId));
+    onDestroy(() => disposeCachedStoreKey(cardId));
 </script>
 
 <div class="bg-white p-2 border">

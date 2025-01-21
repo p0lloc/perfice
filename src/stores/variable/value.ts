@@ -1,8 +1,10 @@
 import type {VariableCallback, VariableService} from "@perfice/services/variable/variable";
-import type {TimeScope} from "@perfice/model/variable/time/time";
+import {SimpleTimeScope, tSimple, type TimeScope} from "@perfice/model/variable/time/time";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
-import {writable, type Readable} from "svelte/store";
+import {type Readable} from "svelte/store";
 import {resolvedPromise} from "@perfice/util/promise";
+import {CachedPromiseStore} from "@perfice/stores/cached";
+import {offsetDateByTimeScope} from "@perfice/util/time/simple";
 
 export class VariableFetchContext {
     private variableService: VariableService;
@@ -24,42 +26,51 @@ export class VariableFetchContext {
     }
 }
 
-let cached = new Map<string, PrimitiveValue>();
-
-export function unregisterKey(key: string) {
-    cached.delete(key);
-}
-
 export function VariableStore(id: string, timeContext: TimeScope, variableService: VariableService, key: string): Readable<Promise<PrimitiveValue>> {
     let context = new VariableFetchContext(variableService);
-    const {subscribe, set} = writable<Promise<PrimitiveValue>>(new Promise<PrimitiveValue>(() => {
+    const {subscribe, set} = CachedPromiseStore<PrimitiveValue>(key, new Promise<PrimitiveValue>(async (resolve) => {
+        // When the variable value is updated, update the store
+        let onVariableUpdated = (res: PrimitiveValue) => set(resolvedPromise(res));
+        let val = await context.evaluateVariableLive(id, timeContext, onVariableUpdated);
+
+        resolve(val);
     }), () => {
         // When this store is destroyed, unregister the listener
         return () => context.unregister()
     });
 
-    let promise = new Promise<PrimitiveValue>(async (resolve) => {
-        let cachedValue = cached.get(key);
-        if (cachedValue != null) {
-            // If a cached value exists, resolve it immediately
-            resolve(cachedValue);
+    return {
+        subscribe,
+    }
+}
+
+export function RangedVariableStore(id: string, timeContext: SimpleTimeScope, variableService: VariableService, key: string, count: number): Readable<Promise<PrimitiveValue[]>> {
+    let context = new VariableFetchContext(variableService);
+    const {
+        subscribe,
+        set
+    } = CachedPromiseStore<PrimitiveValue[]>(key, new Promise<PrimitiveValue[]>(async (resolve) => {
+        let vals: PrimitiveValue[] = [];
+        for (let i = 0; i < count; i++) {
+            let onVariableUpdated = (res: PrimitiveValue) => {
+                // Update the corresponding value in the array and update the store
+                vals[i] = res;
+                set(resolvedPromise(vals));
+            };
+
+            // Count backwards from the specified date, for `count` amount of times
+            let offsetDate = offsetDateByTimeScope(new Date(timeContext.getTimestamp()), timeContext.getType(), -i);
+            let val = await context.evaluateVariableLive(id,
+                tSimple(timeContext.getType(), timeContext.getWeekStart(), offsetDate.getTime()), onVariableUpdated);
+
+            vals.push(val);
         }
 
-        // When the variable value is updated, update the store
-        let onVariableUpdated = (res: PrimitiveValue) => set(resolvedPromise(res));
-        let val = await context.evaluateVariableLive(id, timeContext, onVariableUpdated);
-
-        cached.set(key, val);
-        if(cachedValue == null) {
-            // If there was no cached value, resolve with the calculated value
-            resolve(val);
-        } else {
-            // If there was, update the store with the newly calculated value
-            set(resolvedPromise(val));
-        }
+        resolve(vals);
+    }), () => {
+        // When this store is destroyed, unregister the listener
+        return () => context.unregister()
     });
-
-    set(promise);
 
     return {
         subscribe,
