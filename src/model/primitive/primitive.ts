@@ -73,6 +73,28 @@ export function pNull(): PrimitiveValue {
     return {type: PrimitiveValueType.NULL, value: null}
 }
 
+export function getDefaultPrimitiveValue(t: PrimitiveValueType): PrimitiveValue {
+    switch (t) {
+        case PrimitiveValueType.LIST:
+            return pList([]);
+        case PrimitiveValueType.NUMBER:
+            return pNumber(0.0);
+        case PrimitiveValueType.BOOLEAN:
+            return pBoolean(false);
+        case PrimitiveValueType.ENTRY:
+            return pEntry("", 0, {});
+        case PrimitiveValueType.DISPLAY:
+            return pDisplay(pNull(), pNull());
+        case PrimitiveValueType.MAP:
+            return pMap({});
+        case PrimitiveValueType.NULL:
+            return pNull();
+        case PrimitiveValueType.STRING:
+            return pString("");
+
+    }
+}
+
 export function comparePrimitives(first: PrimitiveValue, second: PrimitiveValue): boolean {
     if (first.type != second.type)
         return false;
