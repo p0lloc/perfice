@@ -1,4 +1,13 @@
 import type {FormQuestionDataType} from "@perfice/model/form/form";
+import type { TextFormQuestionDataSettings } from "./data/text";
+import type { RichTextFormQuestionDataSettings } from "./data/rich-text";
+import type { HierarchyFormQuestionDataSettings } from "./data/hierarchy";
+import type { NumberFormQuestionDataSettings } from "./data/number";
+import type { BooleanFormQuestionDataSettings } from "./data/boolean";
+import type { DateFormQuestionDataSettings } from "./data/date";
+import type { DateTimeFormQuestionDataSettings } from "./data/date-time";
+import type { TimeElapsedFormQuestionDataSettings } from "./data/time-elapsed";
+import type { TimeOfDayFormQuestionDataSettings } from "./data/time-of-day";
 
 export type FormQuestionDataSettings =
     DataDef<FormQuestionDataType.TEXT, TextFormQuestionDataSettings>
@@ -17,18 +26,3 @@ export type DataDef<K extends FormQuestionDataType, S extends object> = {
     dataSettings: S
 }
 
-export interface TextFormQuestionDataSettings {
-    minLength: number | null;
-    maxLength: number | null;
-}
-export interface NumberFormQuestionDataSettings {
-    min: number | null;
-    max: number | null;
-}
-export interface BooleanFormQuestionDataSettings {}
-export interface DateFormQuestionDataSettings {}
-export interface DateTimeFormQuestionDataSettings {}
-export interface TimeElapsedFormQuestionDataSettings {}
-export interface RichTextFormQuestionDataSettings {}
-export interface HierarchyFormQuestionDataSettings {}
-export interface TimeOfDayFormQuestionDataSettings {}

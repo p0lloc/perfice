@@ -1,5 +1,9 @@
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
-import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import type {InputFormQuestionSettings} from "@perfice/model/form/display/input";
+import type {SelectFormQuestionSettings} from "./display/select";
+import type {HierarchyFormQuestionSettings} from "./display/hierarchy";
+import type {RangeFormQuestionSettings} from "@perfice/model/form/display/range";
+import type {SegmentedFormQuestionSettings} from "@perfice/model/form/display/segmented";
 
 export type FormQuestionDisplaySettings =
     DisplayDef<FormQuestionDisplayType.INPUT, InputFormQuestionSettings>
@@ -11,25 +15,4 @@ export type FormQuestionDisplaySettings =
 export type DisplayDef<K extends FormQuestionDisplayType, S extends object> = {
     dataType: K,
     dataSettings: S
-}
-
-export interface InputFormQuestionSettings {}
-
-export interface RangeFormQuestionSettings {
-}
-
-export interface HierarchyFormQuestionSettings {
-}
-
-export interface SegmentedFormQuestionSettings {
-}
-
-
-export interface SelectOption {
-    id: string;
-    text: string;
-    value: PrimitiveValue;
-}
-export interface SelectFormQuestionSettings {
-    options: SelectOption[];
 }
