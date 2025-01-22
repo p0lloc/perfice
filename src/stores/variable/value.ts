@@ -1,6 +1,6 @@
 import type {VariableCallback, VariableService} from "@perfice/services/variable/variable";
 import {SimpleTimeScope, tSimple, type TimeScope} from "@perfice/model/variable/time/time";
-import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {pNumber, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type Readable} from "svelte/store";
 import {resolvedPromise} from "@perfice/util/promise";
 import {CachedPromiseStore} from "@perfice/stores/cached";
@@ -37,7 +37,7 @@ export function VariableStore(id: string, timeContext: TimeScope, variableServic
     }), () => {
         // When this store is destroyed, unregister the listener
         return () => context.unregister()
-    });
+    }, pNumber(0.0));
 
     return {
         subscribe,

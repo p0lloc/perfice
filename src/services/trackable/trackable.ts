@@ -36,7 +36,7 @@ export class TrackableService {
                     dataType: FormQuestionDataType.NUMBER,
                     dataSettings: {
                         min: null,
-                        max: 30,
+                        max: null,
                     }
                 },
             ]

@@ -32,7 +32,7 @@
     </h1>
     <hr>
     <div class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-        {#each category.items as trackable}
+        {#each category.items as trackable(trackable.id)}
             <TrackableCard {trackable} {date} {weekStart} />
         {/each}
     </div>
