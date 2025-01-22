@@ -9,8 +9,8 @@
 </script>
 
 <div class="mx-auto w-full md:w-1/2 md:px-0 px-4 py-10">
-    <div class="flex justify-between mb-8 items-center">
-        <h1 class="text-4xl font-bold">Trackables</h1>
+    <div class="flex flex-wrap justify-center md:gap-0 gap-2 md:justify-between mb-8 items-center">
+        <h1 class="text-4xl font-bold text-center">Trackables</h1>
         <CalendarScroll value={$trackableDate} onChange={onDateChange}/>
     </div>
 

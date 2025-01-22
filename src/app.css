@@ -11,3 +11,7 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
+
+.icon-button {
+    @apply p-2 rounded-full active:bg-gray-100;
+}
