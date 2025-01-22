@@ -1,37 +1,39 @@
 <script lang="ts">
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
     import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
+    import FormModal from "@perfice/components/form/modals/FormModal.svelte";
 
-    let embed = $state<FormEmbed | undefined>();
+    let formModal: FormModal;
 
     function log() {
-        console.log(embed?.validateAndGetAnswers());
-    }
-
-    let questions: FormQuestion[] = [{
-        id: crypto.randomUUID(),
-        name: "test",
-        displayType: FormQuestionDisplayType.INPUT,
-        displaySettings: {},
-        dataType: FormQuestionDataType.TEXT,
-        dataSettings: {
-            minLength: null,
-            maxLength: null,
-        }
-    },
-        {
+        let questions: FormQuestion[] = [{
             id: crypto.randomUUID(),
             name: "test",
             displayType: FormQuestionDisplayType.INPUT,
             displaySettings: {},
-            dataType: FormQuestionDataType.NUMBER,
+            dataType: FormQuestionDataType.TEXT,
             dataSettings: {
-                min: 0,
-                max: 20,
+                minLength: null,
+                maxLength: null,
             }
-        }
-    ];
-</script>
-<FormEmbed bind:this={embed} questions={questions} answers={{}}/>
+        },
+            {
+                id: crypto.randomUUID(),
+                name: "test",
+                displayType: FormQuestionDisplayType.INPUT,
+                displaySettings: {},
+                dataType: FormQuestionDataType.NUMBER,
+                dataSettings: {
+                    min: 0,
+                    max: 20,
+                }
+            }
+        ];
 
+        formModal.open({id: crypto.randomUUID(), name: "test", questions}, new Date(), {});
+    }
+
+</script>
+
+<FormModal bind:this={formModal} />
 <button onclick={log}>log</button>

@@ -1,0 +1,108 @@
+<script lang="ts">
+    import ModalFooter from "./ModalFooter.svelte";
+    import {onDestroy, type Snippet} from "svelte";
+    import {
+        type ModalFooterProps,
+        ModalSize,
+        type ModalActions, modalNavigatorState
+    } from "../../../model/ui/modal";
+    import MobileModalHeader from "./MobileModalHeader.svelte";
+
+    let {
+        children,
+        zIndex = 140,
+        size = ModalSize.SMALL,
+        title,
+        closeWithBackground = true,
+
+        header,
+        confirmText = "Save",
+        cancelText = "Cancel",
+        deleteText = "Delete",
+        type,
+        onDelete, onConfirm, onClose
+    }: {
+        title: string,
+        children: Snippet,
+        zIndex?: number,
+        size?: ModalSize,
+        header?: Snippet,
+        closeWithBackground?: boolean
+    } & ModalFooterProps & ModalActions = $props();
+
+    let visible = $state(false);
+    let modalBackgroundContainer = $state<HTMLDivElement | null>(null);
+
+    const SIZE_CLASSES: Record<ModalSize, string> = {
+        [ModalSize.SMALL]: "md:w-[30%]"
+    }
+
+    export function open() {
+        // @ts-ignore Can't cast here due to circular dependency
+        modalNavigatorState.push(this);
+        visible = true;
+    }
+
+    export function close() {
+        visible = false;
+        popNavigator();
+        onClose?.();
+    }
+
+    function onBackgroundMousedown(e: MouseEvent) {
+        if (e.target != modalBackgroundContainer || !closeWithBackground) return;
+
+        // Close modal when clicking on background
+        close();
+    }
+
+    function popNavigator(){
+        if(!visible) return;
+
+        modalNavigatorState.pop();
+    }
+
+    onDestroy(() => {
+        popNavigator();
+    });
+</script>
+
+{#if visible}
+    <!-- svelte-ignore a11y_no_static_element_interactions (Needed for backdrop click to close modal, we also provide Close button for A11y) -->
+    <div class="modal-bg" onmousedown={onBackgroundMousedown} bind:this={modalBackgroundContainer}>
+        <div
+                style:z-index={zIndex}
+                class="w-screen h-screen md:h-auto {SIZE_CLASSES[
+        size
+      ]} md:rounded-lg bg-white overflow-y-auto overflow-x-hidden md:max-h-[90%] text-black flex flex-col md:justify-between">
+            <MobileModalHeader {title} {type} {onDelete} {onConfirm} onClose={close}/>
+            <div class="py-4 px-6 border-b-gray-300 border-b hidden md:block"><h2
+                    class="text-2xl font-semibold">{title}</h2></div>
+            {@render header?.()}
+            <div class="p-4 md:p-6">
+                {@render children?.()}
+            </div>
+            <ModalFooter {confirmText} {cancelText} {deleteText} {type} {onDelete} {onConfirm} onClose={close}/>
+        </div>
+    </div>
+{/if}
+
+<style>
+    .modal-bg {
+        position: fixed;
+        z-index: 1400;
+        left: 0;
+        top: 0;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+</style>

@@ -23,6 +23,9 @@ import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
 import { CategorizedTrackables } from './stores/trackable/categorized';
 import type {Trackable} from "@perfice/model/trackable/trackable";
 import {TrackableValueStore} from "@perfice/stores/trackable/value";
+import {DexieFormCollection} from "@perfice/db/dexie/form";
+import {FormService} from "@perfice/services/form/form";
+import {FormStore} from "@perfice/stores/form/form";
 
 const db = setupDb();
 const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
@@ -30,6 +33,7 @@ const variableCollection: VariableCollection = new DexieVariableCollection(db.va
 const journalCollection = new DexieJournalCollection(db.entries);
 const journalService = new JournalService(journalCollection);
 const trackableCategoryCollection = new DexieTrackableCategoryCollection(db.trackableCategories);
+const formCollection = new DexieFormCollection(db.forms);
 
 const indexCollection = new DexieIndexCollection(db.indices);
 const graph = new VariableGraph(indexCollection, journalCollection, WeekStart.MONDAY);
@@ -45,10 +49,12 @@ journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: Jour
     await variableService.onEntryUpdated(e);
 });
 
-const trackableService = new TrackableService(trackableCollection, variableService);
+const formService = new FormService(formCollection);
+const trackableService = new TrackableService(trackableCollection, variableService, formService);
 const trackableCategoryService = new TrackableCategoryService(trackableCategoryCollection);
 
 export const trackables = new TrackableStore(trackableService);
+export const forms = new FormStore(formService);
 export const trackableDate = TrackableDate();
 export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);

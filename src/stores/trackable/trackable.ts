@@ -3,6 +3,7 @@ import type {Trackable} from "@perfice/model/trackable/trackable";
 import type {TrackableService} from "@perfice/services/trackable/trackable";
 import { writable, type Writable } from "svelte/store";
 import {dateToMidnight} from "@perfice/util/time/simple";
+import {updateIdentifiedInArray} from "@perfice/util/array";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -20,6 +21,12 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
     async createTrackable(trackable: Trackable): Promise<void> {
         await this.trackableService.createTrackable(trackable);
         this.updateResolved(v => [...v, trackable]);
+    }
+
+
+    async updateTrackable(trackable: Trackable): Promise<void> {
+        await this.trackableService.updateTrackable(trackable);
+        this.updateResolved(v => updateIdentifiedInArray(v, trackable));
     }
 
 }

@@ -126,7 +126,13 @@ export class VariableService {
     async onEntryDeleted(e: JournalEntry) {
         await this.graph.onEntryDeleted(e);
     }
+
     async onEntryUpdated(e: JournalEntry) {
         await this.graph.onEntryUpdated(e);
+    }
+
+    async deleteVariableById(variableId: string) {
+        await this.variableCollection.deleteVariableById(variableId);
+        await this.graph.onVariableDeleted(variableId);
     }
 }

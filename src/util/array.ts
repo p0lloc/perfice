@@ -5,6 +5,7 @@ export function updateKeyedInArray<V, K>(v: V[], keyFinder: (v: V, k: K) => bool
 export function updateIdentifiedInArray<V extends { id: K }, K>(v: V[], update: V) {
     return updateKeyedInArray(v, (val, key) => val.id == key, update.id, update);
 }
-export function deleteIdentifiedInArray<V extends { id: K }, K>(v: V[], id: K) {
+
+export function deleteIdentifiedInArray<V extends { id: K }, K>(v: V[], id: K): V[] {
     return v.filter(val => val.id != id);
 }
