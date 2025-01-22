@@ -2,18 +2,17 @@
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
     import {trackableDate, weekStart} from "@perfice/main";
     import CalendarScroll from "@perfice/components/base/calendarScroll/CalendarScroll.svelte";
-    import FormTest from "@perfice/components/form/FormTest.svelte";
 
     function onDateChange(e: Date) {
         $trackableDate = e;
     }
 </script>
 
-<div class="mx-auto w-1/2 py-10">
-    <div class="flex justify-end">
+<div class="mx-auto w-full md:w-1/2 md:px-0 px-4 py-10">
+    <div class="flex justify-between mb-8 items-center">
+        <h1 class="text-4xl font-bold">Trackables</h1>
         <CalendarScroll value={$trackableDate} onChange={onDateChange}/>
     </div>
-    <FormTest />
 
     <TrackableList date={$trackableDate} weekStart={$weekStart}/>
 </div>
