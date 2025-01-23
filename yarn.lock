@@ -86,6 +86,11 @@
   resolved "https://registry.npmjs.org/@kurkle/color/-/color-0.3.4.tgz"
   integrity sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==
 
+"@mateothegreat/svelte5-router@^0.1.38":
+  version "0.1.38"
+  resolved "https://registry.npmjs.org/@mateothegreat/svelte5-router/-/svelte5-router-0.1.38.tgz"
+  integrity sha512-5J3sO2ZmpBmYX4CL7hfSmpqtcNORnolG/eLXM12O2CzdgMP5utezAqo9yzwpBw0g5XqtKWjsppKh3fH1WNVIqA==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz"
