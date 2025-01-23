@@ -5,13 +5,17 @@ import {HierarchyFieldDefinition, type HierarchyFormQuestionSettings} from "./di
 import {RangeFieldDefinition, type RangeFormQuestionSettings} from "@perfice/model/form/display/range";
 import {SegmentedFieldDefinition, type SegmentedFormQuestionSettings} from "@perfice/model/form/display/segmented";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {RichInputFieldDefinition, type RichInputFormQuestionSettings} from "@perfice/model/form/display/rich-input";
 
 export type FormQuestionDisplaySettings =
     DisplayDef<FormQuestionDisplayType.INPUT, InputFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.SELECT, SelectFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.RANGE, RangeFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.HIERARCHY, HierarchyFormQuestionSettings>
-    | DisplayDef<FormQuestionDisplayType.SEGMENTED, SegmentedFormQuestionSettings>;
+    | DisplayDef<FormQuestionDisplayType.SEGMENTED, SegmentedFormQuestionSettings>
+    | DisplayDef<FormQuestionDisplayType.RICH_INPUT, RichInputFormQuestionSettings>
+
+    ;
 
 
 export type FormQuestionDisplaySettingsValue = InputFormQuestionSettings | SelectFormQuestionSettings |
@@ -52,4 +56,5 @@ questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.SELECT, new Se
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.INPUT, new InputFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.HIERARCHY, new HierarchyFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.SEGMENTED, new SegmentedFieldDefinition());
+questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RICH_INPUT, new RichInputFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RANGE, new RangeFieldDefinition());

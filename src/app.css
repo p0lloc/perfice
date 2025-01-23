@@ -15,3 +15,20 @@
 .icon-button {
     @apply p-2 rounded-full active:bg-gray-100;
 }
+
+
+select {
+    @apply p-2.5 bg-gray-50 rounded-xl border-gray-300 border;
+}
+
+.row-gap {
+    @apply flex gap-2 items-center;
+}
+
+.row-between {
+    @apply flex justify-between items-center;
+}
+
+.label {
+    @apply text-lg font-bold text-gray-700;
+}

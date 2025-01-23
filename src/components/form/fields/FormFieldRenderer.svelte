@@ -9,6 +9,7 @@
     import SegmentedFormField from "@perfice/components/form/fields/segmented/SegmentedFormField.svelte";
     import SelectFormField from "@perfice/components/form/fields/select/SelectFormField.svelte";
     import HierarchyFormField from "@perfice/components/form/fields/hierarchy/HierarchyFormField.svelte";
+    import RichInputFormField from "@perfice/components/form/fields/richInput/RichInputFormField.svelte";
 
     let {displayType, value, onChange, disabled, dataSettings, displaySettings}: {
         dataSettings: FormQuestionDataSettings,
@@ -25,6 +26,7 @@
         [FormQuestionDisplayType.SEGMENTED]: SegmentedFormField,
         [FormQuestionDisplayType.SELECT]: SelectFormField,
         [FormQuestionDisplayType.HIERARCHY]: HierarchyFormField,
+        [FormQuestionDisplayType.RICH_INPUT]: RichInputFormField,
     }
 
     const RendererComponent = $derived(FIELD_RENDERERS[displayType]);

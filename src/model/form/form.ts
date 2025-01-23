@@ -18,7 +18,8 @@ export enum FormQuestionDisplayType {
     SELECT = "SELECT",
     HIERARCHY = "HIERARCHY",
     RANGE = "RANGE",
-    SEGMENTED = "SEGMENTED"
+    SEGMENTED = "SEGMENTED",
+    RICH_INPUT = "RICH_INPUT",
 }
 
 export interface Form {

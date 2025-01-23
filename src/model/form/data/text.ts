@@ -9,7 +9,7 @@ export interface TextFormQuestionDataSettings {
 
 export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<string, TextFormQuestionDataSettings> {
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {
-        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.SELECT, FormQuestionDisplayType.RANGE]
+        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.SELECT]
     }
 
     serialize(value: PrimitiveValue): string {

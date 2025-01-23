@@ -53,7 +53,7 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
     }
 
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {
-        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.RANGE];
+        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.RANGE, FormQuestionDisplayType.SELECT];
     }
 
 }

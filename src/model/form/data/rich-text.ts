@@ -6,7 +6,7 @@ export interface RichTextFormQuestionDataSettings {}
 
 export class RichTextFormQuestionDataType implements FormQuestionDataTypeDefinition<string, RichTextFormQuestionDataSettings> {
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {
-        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.SELECT, FormQuestionDisplayType.RANGE]
+        return [FormQuestionDisplayType.RICH_INPUT]
     }
 
     serialize(value: PrimitiveValue): string {

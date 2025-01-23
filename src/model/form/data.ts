@@ -1,13 +1,13 @@
 import {FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
-import {TextFormQuestionDataType, type TextFormQuestionDataSettings } from "./data/text";
-import {RichTextFormQuestionDataType, type RichTextFormQuestionDataSettings } from "./data/rich-text";
-import {HierarchyFormQuestionDataType, type HierarchyFormQuestionDataSettings } from "./data/hierarchy";
-import {NumberFormQuestionDataType, type NumberFormQuestionDataSettings } from "./data/number";
-import {BooleanFormQuestionDataType, type BooleanFormQuestionDataSettings } from "./data/boolean";
-import {DateFormQuestionDataType, type DateFormQuestionDataSettings } from "./data/date";
-import {DateTimeFormQuestionDataType, type DateTimeFormQuestionDataSettings } from "./data/date-time";
-import {TimeElapsedFormQuestionDataType, type TimeElapsedFormQuestionDataSettings } from "./data/time-elapsed";
-import {TimeOfDayFormQuestionDataType, type TimeOfDayFormQuestionDataSettings } from "./data/time-of-day";
+import {TextFormQuestionDataType, type TextFormQuestionDataSettings} from "./data/text";
+import {RichTextFormQuestionDataType, type RichTextFormQuestionDataSettings} from "./data/rich-text";
+import {HierarchyFormQuestionDataType, type HierarchyFormQuestionDataSettings} from "./data/hierarchy";
+import {NumberFormQuestionDataType, type NumberFormQuestionDataSettings} from "./data/number";
+import {BooleanFormQuestionDataType, type BooleanFormQuestionDataSettings} from "./data/boolean";
+import {DateFormQuestionDataType, type DateFormQuestionDataSettings} from "./data/date";
+import {DateTimeFormQuestionDataType, type DateTimeFormQuestionDataSettings} from "./data/date-time";
+import {TimeElapsedFormQuestionDataType, type TimeElapsedFormQuestionDataSettings} from "./data/time-elapsed";
+import {TimeOfDayFormQuestionDataType, type TimeOfDayFormQuestionDataSettings} from "./data/time-of-day";
 import {type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
 
 export type FormQuestionDataSettings =
@@ -21,6 +21,17 @@ export type FormQuestionDataSettings =
     | DataDef<FormQuestionDataType.TIME_ELAPSED, TimeElapsedFormQuestionDataSettings>
     | DataDef<FormQuestionDataType.TIME_OF_DAY, TimeOfDayFormQuestionDataSettings>
     ;
+
+export type DataSettingValues =
+    TextFormQuestionDataSettings
+    | NumberFormQuestionDataSettings
+    | DateFormQuestionDataSettings
+    | DateTimeFormQuestionDataSettings
+    | TimeElapsedFormQuestionDataSettings
+    | TimeOfDayFormQuestionDataSettings
+    | BooleanFormQuestionDataSettings
+    | RichTextFormQuestionDataSettings
+    | HierarchyFormQuestionDataType;
 
 export type DataDef<K extends FormQuestionDataType, S extends object> = {
     dataType: K,
