@@ -3,36 +3,34 @@
     import Modal from "@perfice/components/base/modal/Modal.svelte";
     import InvertedSegmentControl from "@perfice/components/base/invertedSegmented/InvertedSegmentControl.svelte";
     import type {Component} from "svelte";
-    import {TrackableEditViewType} from "@perfice/model/trackable/ui";
+    import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
     import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/EditTrackableGeneral.svelte";
     import EditTrackableIntegration from "@perfice/components/trackable/modals/edit/EditTrackableIntegration.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
-    import type {Trackable} from "@perfice/model/trackable/trackable";
+    import {trackables} from "@perfice/main";
 
     let viewType: TrackableEditViewType = $state(TrackableEditViewType.GENERAL);
+    let editState: EditTrackableState = $state({} as EditTrackableState);
     let modal: Modal;
 
-    export function open(trackable: Trackable) {
+    let {onStartDelete}: { onStartDelete: () => void } = $props();
+
+    export function open(state: EditTrackableState) {
+        editState = state;
         modal.open();
     }
 
-    function getViewComponent(e: TrackableEditViewType): Component {
-
-        switch (e) {
-            case TrackableEditViewType.GENERAL:
-                return EditTrackableGeneral;
-            case TrackableEditViewType.INTEGRATION:
-                return EditTrackableIntegration;
-            default:
-                throw new Error("Invalid view!")
-        }
+    function close(){
+        modal.close();
     }
 
-    function save() {
+    async function save() {
+        await trackables.updateTrackableFromState($state.snapshot(editState));
     }
 
     function onDelete() {
+        onStartDelete();
     }
 
     function switchView(type: string) {
@@ -45,6 +43,17 @@
         {name: "Integration", value: TrackableEditViewType.INTEGRATION}
     ];
 
+    function getViewComponent(e: TrackableEditViewType): Component<{ editState: EditTrackableState }> {
+        switch (e) {
+            case TrackableEditViewType.GENERAL:
+                return EditTrackableGeneral;
+            case TrackableEditViewType.INTEGRATION:
+                return EditTrackableIntegration;
+            default:
+                throw new Error("Invalid view!")
+        }
+    }
+
     const RendererComponent = $derived(getViewComponent(viewType));
 </script>
 
@@ -55,5 +64,5 @@
                                 segments={SEGMENTS}/>
     {/snippet}
 
-    <RendererComponent/>
+    <RendererComponent bind:editState={editState}/>
 </Modal>

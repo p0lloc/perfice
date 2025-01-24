@@ -1,7 +1,7 @@
 import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type Trackable, TrackableCardType} from "@perfice/model/trackable/trackable";
 import {derived, type Readable} from "svelte/store";
-import {RangedVariableStore, VariableStore} from "@perfice/stores/variable/value";
+import {RangedVariableValueStore, VariableValueStore} from "@perfice/stores/variable/value";
 import {SimpleTimeScope, SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
 import type {VariableService} from "@perfice/services/variable/variable";
 
@@ -12,10 +12,10 @@ export function TrackableValueStore(trackable: Trackable,
     let chartStore = trackable.cardType == TrackableCardType.CHART;
     if(chartStore) {
         let aggregateVariableId = trackable.dependencies["aggregate"];
-        store = RangedVariableStore(aggregateVariableId,
+        store = RangedVariableValueStore(aggregateVariableId,
             new SimpleTimeScope(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, 10);
     } else {
-        store = VariableStore(trackable.dependencies["value"],
+        store = VariableValueStore(trackable.dependencies["value"],
             tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key);
     }
 

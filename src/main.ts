@@ -15,7 +15,7 @@ import {VariableGraph} from "@perfice/services/variable/graph";
 import {JournalEntryObserverType, JournalService} from "@perfice/services/journal/journal";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {JournalEntry} from './model/journal/journal';
-import {VariableStore} from "@perfice/stores/variable/value";
+import {VariableValueStore} from "@perfice/stores/variable/value";
 import {writable} from "svelte/store";
 import {DexieTrackableCategoryCollection} from "@perfice/db/dexie/category";
 import {TrackableCategoryService} from "@perfice/model/trackable/category";
@@ -26,6 +26,7 @@ import {TrackableValueStore} from "@perfice/stores/trackable/value";
 import {DexieFormCollection} from "@perfice/db/dexie/form";
 import {FormService} from "@perfice/services/form/form";
 import {FormStore} from "@perfice/stores/form/form";
+import {VariableStore} from "@perfice/stores/variable/variable";
 
 const db = setupDb();
 const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
@@ -55,6 +56,7 @@ const trackableCategoryService = new TrackableCategoryService(trackableCategoryC
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService);
+export const variables = new VariableStore(variableService);
 export const trackableDate = TrackableDate();
 export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);
@@ -64,8 +66,8 @@ export const categorizedTrackables = CategorizedTrackables();
 export const appReady = writable(false);
 
 // TODO: where do we actually want to put stores? we don't want to expose the services directly
-export function variable(id: string, timeContext: TimeScope, key: string) {
-    return VariableStore(id, timeContext, variableService, key);
+export function variableValue(id: string, timeContext: TimeScope, key: string) {
+    return VariableValueStore(id, timeContext, variableService, key);
 }
 
 export function trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {
@@ -73,7 +75,7 @@ export function trackableValue(trackable: Trackable, date: Date, weekStart: Week
 }
 
 (async () => {
-    await variableService.loadVariables();
+    await variables.get();
     appReady.set(true);
 })();
 

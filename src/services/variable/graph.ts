@@ -238,11 +238,22 @@ export class VariableGraph {
     async onVariableDeleted(id: string) {
         // When a variable is deleted, we need to delete all of its indices
         await this.indexCollection.deleteIndicesByVariableId(id);
+        await this.deleteIndicesForDependentVariables(id);
     }
 
     async onVariableUpdated(variable: Variable) {
         // When a variable is updated, we need to delete all of its indices
         await this.indexCollection.deleteIndicesByVariableId(variable.id);
+        await this.deleteIndicesForDependentVariables(variable.id);
+    }
+
+    private async deleteIndicesForDependentVariables(variableId: string) {
+        let dependents = this.dependents.get(variableId);
+        if (dependents == undefined) return;
+
+        for (let dependentId of dependents) {
+            await this.indexCollection.deleteIndicesByVariableId(dependentId);
+        }
     }
 
     /**

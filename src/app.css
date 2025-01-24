@@ -32,3 +32,7 @@ select {
 .label {
     @apply text-lg font-bold text-gray-700;
 }
+
+.input {
+    @apply block w-full disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5 bg-gray-50 text-gray-900 border border-gray-300  text-sm rounded-lg;
+}

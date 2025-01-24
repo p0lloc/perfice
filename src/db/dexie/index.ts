@@ -6,6 +6,7 @@ export class DexieIndexCollection implements IndexCollection {
 
     private table: EntityTable<VariableIndex, "id">;
     private updateListeners: IndexUpdateListener[] = [];
+    private deleteListeners: IndexUpdateListener[] = [];
 
     constructor(table: EntityTable<VariableIndex, "id">) {
         this.table = table;
@@ -40,6 +41,14 @@ export class DexieIndexCollection implements IndexCollection {
     }
 
     async deleteIndicesByVariableId(id: string): Promise<void> {
+        let indices = await this.table.where("variableId").equals(id).toArray();
+
+        for (let index of indices) {
+            for (const callback of this.deleteListeners) {
+                await callback(index);
+            }
+        }
+
         await this.table.where("variableId").equals(id).delete();
     }
 
@@ -49,5 +58,14 @@ export class DexieIndexCollection implements IndexCollection {
 
     removeUpdateListener(listener: IndexUpdateListener) {
         this.updateListeners = this.updateListeners.filter(l => l != listener);
+    }
+
+
+    addDeleteListener(listener: IndexUpdateListener) {
+        this.deleteListeners.push(listener);
+    }
+
+    removeDeleteListener(listener: IndexUpdateListener) {
+        this.deleteListeners = this.deleteListeners.filter(l => l != listener);
     }
 }

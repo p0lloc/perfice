@@ -12,6 +12,7 @@
     import Fa from "svelte-fa";
     import {faHamburger} from "@fortawesome/free-solid-svg-icons";
     import EditTrackableModal from "@perfice/components/trackable/modals/edit/EditTrackableModal.svelte";
+    import {trackables} from "@perfice/main.js";
 
     let {trackable, date, weekStart}: { trackable: Trackable, date: Date, weekStart: WeekStart } = $props();
 
@@ -22,13 +23,15 @@
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
 
-    let CARD_TYPE_RENDERERS: Record<TrackableCardType, Component<{ value: PrimitiveValue }>> = {
+    let CARD_TYPE_RENDERERS: Record<TrackableCardType, Component<{ value: PrimitiveValue, cardSettings: any }>> = {
         "CHART": ChartTrackableRenderer,
         "VALUE": TableTrackableRenderer,
     }
 
     async function onEdit() {
-        editTrackableModal.open(trackable);
+        let state = await trackables.getEditTrackableState(trackable);
+        if (state == null) return;
+        editTrackableModal.open(state);
     }
 
     async function onLog() {
@@ -37,13 +40,17 @@
         formModal.open(form, date);
     }
 
+    function onDelete() {
+        trackables.deleteTrackable(trackable);
+    }
+
     onDestroy(() => disposeCachedStoreKey(cardId));
 
     const RendererComponent = $derived(CARD_TYPE_RENDERERS[trackable.cardType]);
 </script>
 
 <FormModal bind:this={formModal}/>
-<EditTrackableModal bind:this={editTrackableModal} />
+<EditTrackableModal onStartDelete={onDelete} bind:this={editTrackableModal}/>
 
 <div class="p-0 bg-white border rounded-xl  flex flex-col items-stretch min-h-40 max-h-40 text-gray-500">
     <button class="border-b p-2 flex gap-2 items-center hover:bg-gray-100 active:bg-gray-100" onclick={onEdit}>
@@ -55,7 +62,7 @@
         Loading...
     {:then value}
         <button class="flex-1 overflow-y-scroll scrollbar-hide" onclick={onLog}>
-            <RendererComponent value={value}/>
+            <RendererComponent value={value} cardSettings={trackable.cardSettings}/>
         </button>
     {/await}
 </div>

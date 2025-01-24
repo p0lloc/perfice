@@ -1,4 +1,9 @@
-import type {IndexCollection, IndexUpdateListener, VariableCollection} from "@perfice/db/collections";
+import type {
+    IndexCollection,
+    IndexDeleteListener,
+    IndexUpdateListener,
+    VariableCollection
+} from "@perfice/db/collections";
 import {
     type StoredVariable,
     type Variable, type VariableIndex,
@@ -10,6 +15,7 @@ import type {TimeScope} from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
+import {EntityObservers, EntityObserverType, type EntityObserverCallback} from "@perfice/services/observer";
 
 
 export type VariableCallback = (v: PrimitiveValue) => void;
@@ -20,6 +26,7 @@ interface VariableListener {
     callback: VariableCallback;
 
     updateListenerCallback: IndexUpdateListener;
+    deleteListenerCallback: IndexDeleteListener;
 }
 
 export class VariableService {
@@ -29,18 +36,22 @@ export class VariableService {
     private graph: VariableGraph;
 
     private listeners: VariableListener[] = [];
+    private observers: EntityObservers<Variable>;
 
     constructor(variableCollection: VariableCollection, indexCollection: IndexCollection, variableGraph: VariableGraph) {
         this.variableCollection = variableCollection;
         this.indexCollection = indexCollection;
         this.graph = variableGraph;
+
+        this.observers = new EntityObservers();
     }
 
-    async loadVariables(): Promise<void> {
+    async loadVariables(): Promise<Variable[]> {
         let stored = await this.variableCollection.getVariables();
         let variables = stored.map(this.deserializeVariable);
 
         this.graph.loadVariables(variables);
+        return variables;
     }
 
     async evaluateVariableLive(id: string, timeScope: TimeScope, callback: VariableCallback): Promise<PrimitiveValue> {
@@ -53,13 +64,24 @@ export class VariableService {
             callback(i.value);
         };
 
+        let deleteListener = async (i: VariableIndex) => {
+            // Index must match both variable id and time context fully
+            if (i.variableId != id ||
+                i.timeScope != serializeTimeScope(timeScope)) return;
+
+            let evaluated = await this.evaluateVariable(id, timeScope);
+            callback(evaluated);
+        }
+
         this.indexCollection.addUpdateListener(updateListener);
+        this.indexCollection.addDeleteListener(deleteListener);
 
         this.listeners.push({
             variableId: id,
             timeScope,
             callback,
-            updateListenerCallback: updateListener
+            updateListenerCallback: updateListener,
+            deleteListenerCallback: deleteListener
         });
 
         return await this.evaluateVariable(id, timeScope);
@@ -84,6 +106,7 @@ export class VariableService {
             }
 
             this.indexCollection.removeUpdateListener(listener.updateListenerCallback);
+            this.indexCollection.removeDeleteListener(listener.deleteListenerCallback);
         }
 
         this.listeners = remaining;
@@ -93,6 +116,7 @@ export class VariableService {
         let stored = this.serializeVariable(variable);
         await this.variableCollection.createVariable(stored);
         this.graph.onVariableCreated(variable);
+        await this.observers.notifyObservers(EntityObserverType.CREATED, variable);
     }
 
     getVariableById(id: string): Variable | undefined {
@@ -132,7 +156,25 @@ export class VariableService {
     }
 
     async deleteVariableById(variableId: string) {
+        let variable = this.getVariableById(variableId);
+        if (variable == null) return;
+
         await this.variableCollection.deleteVariableById(variableId);
         await this.graph.onVariableDeleted(variableId);
+        await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
+    }
+
+    async updateVariable(variable: Variable) {
+        await this.variableCollection.updateVariable(this.serializeVariable(variable));
+        await this.graph.onVariableUpdated(variable);
+        await this.observers.notifyObservers(EntityObserverType.UPDATED, variable);
+    }
+
+    public addObserver(type: EntityObserverType, callback: EntityObserverCallback<Variable>) {
+        this.observers.addObserver(type, callback);
+    }
+
+    public removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Variable>) {
+        this.observers.removeObserver(type, callback);
     }
 }

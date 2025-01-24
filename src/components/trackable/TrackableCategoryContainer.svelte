@@ -18,6 +18,7 @@
             formId: trackableId,
             categoryId: category.category?.id ?? null,
             cardType: TrackableCardType.CHART,
+            cardSettings: {},
             dependencies: {}
         })
     }

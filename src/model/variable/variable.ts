@@ -12,6 +12,12 @@ export interface StoredVariable {
     };
 }
 
+export interface TextOrDynamic {
+    value: string;
+    // If true, the value is a variable id that should be evaluated
+    dynamic: boolean;
+}
+
 export enum VariableTypeName {
     LIST = "LIST",
     AGGREGATE = "AGGREGATE"

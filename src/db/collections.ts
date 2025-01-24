@@ -23,6 +23,7 @@ export interface VariableCollection {
     createVariable(stored: StoredVariable): Promise<void>;
 
     deleteVariableById(variableId: string): Promise<void>;
+    updateVariable(variable: StoredVariable): Promise<void>;
 }
 
 export interface FormCollection {
@@ -51,6 +52,7 @@ export interface JournalCollection {
 
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
+export type IndexDeleteListener = (index: VariableIndex) => Promise<void>;
 export interface IndexCollection {
     getIndexByVariableAndTimeScope(variableId: string, timeScope: string): Promise<VariableIndex | undefined>;
 
@@ -69,5 +71,9 @@ export interface IndexCollection {
     addUpdateListener(listener: IndexUpdateListener): void;
 
     removeUpdateListener(listener: IndexUpdateListener): void;
+
+    addDeleteListener(listener: IndexDeleteListener): void;
+
+    removeDeleteListener(listener: IndexDeleteListener): void;
 
 }
