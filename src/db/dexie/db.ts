@@ -16,10 +16,10 @@ type DexieDB = Dexie & {
 
 export function setupDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(5).stores({
+    db.version(6).stores({
         "trackables": "id",
         "variables": "id",
-        "entries": "id, formId, snapshotId, [formId+timestamp]",
+        "entries": "id, formId, snapshotId, timestamp, [formId+timestamp]",
         "indices": "id, variableId, [variableId+timeScope]",
         "trackableCategories": "id",
         "forms": "id",

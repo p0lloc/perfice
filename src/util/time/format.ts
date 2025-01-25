@@ -41,3 +41,16 @@ export function formatDateYYYYMMDDHHMMSS(date: Date) {
 
     return `${formatDateYYYYMMDD(date)} ${hour}:${minutes}:${seconds}`;
 }
+
+
+function padTime(val: number) {
+    return val.toString().padStart(2, "0");
+}
+
+export function formatTimestampHHMM(timestamp: number) {
+    return formatDateHHMM(new Date(timestamp));
+}
+
+export function formatDateHHMM(date: Date) {
+    return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
+}

@@ -27,6 +27,7 @@ import {DexieFormCollection, DexieFormSnapshotCollection} from "@perfice/db/dexi
 import {FormService} from "@perfice/services/form/form";
 import {FormStore} from "@perfice/stores/form/form";
 import {VariableStore} from "@perfice/stores/variable/variable";
+import {GroupedJournal} from "@perfice/stores/journal/grouped";
 
 const db = setupDb();
 const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
@@ -65,6 +66,7 @@ export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);
 export const journal = new JournalEntryStore(journalService);
 export const categorizedTrackables = CategorizedTrackables();
+export const groupedJournal = GroupedJournal();
 
 export const appReady = writable(false);
 

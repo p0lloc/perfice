@@ -25,6 +25,7 @@ export enum FormQuestionDisplayType {
 export interface Form {
     id: string;
     name: string;
+    icon: string;
     snapshotId: string;
     questions: FormQuestion[];
 }

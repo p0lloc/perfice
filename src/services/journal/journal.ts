@@ -1,5 +1,7 @@
 import type {JournalCollection} from "@perfice/db/collections";
 import type {JournalEntry} from "@perfice/model/journal/journal";
+import type {Form} from "@perfice/model/form/form";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export enum JournalEntryObserverType {
     CREATED,
@@ -24,9 +26,24 @@ export class JournalService {
         this.observers = [];
     }
 
-    async logEntry(entry: JournalEntry) {
+    async getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<JournalEntry[]> {
+        return this.collection.getEntriesByOffsetAndLimit(offset, limit);
+    }
+
+    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, timestamp: number): Promise<JournalEntry> {
+        let entry = {
+            id: crypto.randomUUID(),
+            formId: form.id,
+            snapshotId: form.snapshotId,
+            answers,
+            timestamp,
+            name: form.name,
+            icon: form.icon
+        }
+
         await this.collection.createEntry(entry);
         await this.notifyObservers(JournalEntryObserverType.CREATED, entry);
+        return entry;
     }
 
     async updateEntry(entry: JournalEntry) {

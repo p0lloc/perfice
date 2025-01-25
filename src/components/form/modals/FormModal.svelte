@@ -25,29 +25,29 @@
         modal.open();
     }
 
-    function close(){
+    function close() {
         modal.close();
     }
 
-    function confirm(){
+    function confirm() {
         let answers = embed.validateAndGetAnswers();
-        if(answers == null) return; // If there are validation errors, don't save
+        if (answers == null) return; // If there are validation errors, don't save
 
-        if(editEntry != null){
+        if (editEntry != null) {
             journal.updateEntry({
                 ...editEntry,
                 answers
             });
         } else {
-            journal.logEntry(
-                {
-                    id: crypto.randomUUID(),
-                    formId: form.id,
-                    snapshotId: form.snapshotId,
-                    answers,
-                    timestamp: date.getTime()
+            if (false) {
+                for (let j = 0; j < 20; j++) {
+                    for (let i = 0; i < 5; i++) {
+                        journal.logEntry(form, answers, date.getTime() - (j * 1000 * 60 * 60 * 24));
+                    }
                 }
-            );
+            } else {
+                journal.logEntry(form, answers, date.getTime());
+            }
         }
 
         close();

@@ -43,4 +43,18 @@ export class DexieJournalCollection implements JournalCollection {
         return this.table.where("snapshotId").equals(snapshotId).toArray();
     }
 
+    async getEntriesByOffsetAndLimit(page: number, pageSize: number): Promise<JournalEntry[]> {
+        let entries = await this.table
+            .orderBy("timestamp")
+            .reverse()
+            .toArray();
+
+        // TODO: quite inefficient to fetch all entries, according
+        //  to https://dexie.org/docs/Collection/Collection.offset() we might be able to use something like "belowOrEqual"
+        //  Using just "offset" is not working when ordering by timestamp
+
+        let offset = page * pageSize;
+        return entries.slice(offset, offset + pageSize);
+    }
+
 }

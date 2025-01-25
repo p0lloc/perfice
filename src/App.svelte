@@ -5,9 +5,11 @@
     import TrackableView from "@perfice/views/TrackableView.svelte";
     import FormEditorView from "@perfice/views/FormEditorView.svelte";
     import {closeContextMenus} from "@perfice/model/ui/context-menu";
+    import JournalView from "@perfice/views/JournalView.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
+        {path: "/journal", component: JournalView},
         {path: "/", component: TrackableView},
     ]
 

@@ -47,6 +47,8 @@ export interface FormSnapshotCollection {
 }
 
 export interface JournalCollection {
+    getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<JournalEntry[]>;
+
     getAllEntriesByFormId(formId: string): Promise<JournalEntry[]>;
 
     getEntriesByFormIdAndTimeRange(formId: string, start: number, end: number): Promise<JournalEntry[]>;

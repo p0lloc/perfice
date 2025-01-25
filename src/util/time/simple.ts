@@ -4,6 +4,10 @@ export function dateToMidnight(now: Date) {
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 }
 
+export function timestampToMidnight(timestamp: number): number {
+    return dateToMidnight(new Date(timestamp)).getTime();
+}
+
 export function dateToLastSecondOfDay(now: Date) {
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
 }
