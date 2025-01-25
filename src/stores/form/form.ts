@@ -1,6 +1,6 @@
 import {AsyncStore} from "@perfice/stores/store";
 import type {FormService} from "@perfice/services/form/form";
-import type {Form} from "@perfice/model/form/form";
+import type {Form, FormSnapshot} from "@perfice/model/form/form";
 import { EntityObserverType } from "@perfice/services/observer";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
@@ -21,6 +21,10 @@ export class FormStore extends AsyncStore<Form[]> {
         return forms.find(f => f.id == id);
     }
 
+    async getFormSnapshotById(id: string): Promise<FormSnapshot | undefined> {
+        return this.formService.getFormSnapshotById(id);
+    }
+
     private async onFormCreated(form: Form) {
         this.updateResolved(v => [...v, form]);
     }
@@ -33,4 +37,7 @@ export class FormStore extends AsyncStore<Form[]> {
         this.updateResolved(v => deleteIdentifiedInArray(v, form.id));
     }
 
+    async updateForm(form: Form) {
+        await this.formService.updateForm(form);
+    }
 }

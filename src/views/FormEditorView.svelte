@@ -1,6 +1,11 @@
 <script lang="ts">
     import {forms} from "@perfice/main";
-    import {type Form, type FormQuestion, FormQuestionDisplayType} from "@perfice/model/form/form";
+    import {
+        type Form,
+        type FormQuestion,
+        FormQuestionDataType,
+        FormQuestionDisplayType
+    } from "@perfice/model/form/form";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
     import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
@@ -11,6 +16,13 @@
     import {faPlusCircle} from "@fortawesome/free-solid-svg-icons";
     import {QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
     import FormEditorSidebar from "@perfice/components/form/editor/sidebar/FormEditorSidebar.svelte";
+    import {
+        type FormQuestionDataSettings,
+        type FormQuestionDataTypeDefinition,
+        questionDataTypeRegistry
+    } from "@perfice/model/form/data";
+    import {type FormQuestionDisplaySettings, questionDisplayTypeRegistry} from "@perfice/model/form/display";
+    import {goto} from "@mateothegreat/svelte5-router";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -23,21 +35,51 @@
     });
 
     function createQuestion(type: FormQuestionDisplayType) {
+        if (form == null) return;
+
+        let displayDefinition = questionDisplayTypeRegistry.getFieldByType(type);
+        if (displayDefinition == null) return;
+        let pair = questionDataTypeRegistry.getFirstSuitableForDisplayType(type);
+        if (pair == null) return;
+
+        let [dataType, def] = pair as [FormQuestionDataType, FormQuestionDataTypeDefinition<any, any>];
+
+        let dataSettings: FormQuestionDataSettings = {
+            dataType,
+            dataSettings: def.getDefaultSettings(),
+        }
+
+        let displaySettings: FormQuestionDisplaySettings = {
+            displayType: type,
+            displaySettings: displayDefinition.getDefaultSettings(),
+        };
+
+        let question: FormQuestion = {
+            id: crypto.randomUUID(),
+            name: "",
+            ...dataSettings,
+            ...displaySettings,
+        };
+
+        form.questions.push(question)
     }
 
     function editQuestion(q: FormQuestion) {
         currentQuestion = q;
     }
 
-
     function deleteQuestion(q: FormQuestion) {
         currentQuestion = q;
     }
 
-    function save() {
+    async function save() {
+        if (form == undefined) return;
+        await forms.updateForm($state.snapshot(form));
+        back();
     }
 
     function back() {
+        goto("/");
     }
 
     async function loadForm() {

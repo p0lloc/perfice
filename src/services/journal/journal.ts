@@ -46,6 +46,10 @@ export class JournalService {
         await this.deleteEntry(entry);
     }
 
+    async getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]> {
+        return this.collection.getEntriesBySnapshotId(snapshotId);
+    }
+
     private async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry) {
         let observers = this.observers
             .filter(o => o.type == JournalEntryObserverType.ANY || o.type == type);

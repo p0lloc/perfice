@@ -43,6 +43,7 @@
                 {
                     id: crypto.randomUUID(),
                     formId: form.id,
+                    snapshotId: form.snapshotId,
                     answers,
                     timestamp: date.getTime()
                 }

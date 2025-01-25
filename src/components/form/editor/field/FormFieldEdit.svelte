@@ -27,6 +27,7 @@
             <Fa icon={faTrash}/>
         </button>
     {/if}
+    <p class="text-xl font-bold">{question.name}</p>
     <FormFieldRenderer dataSettings={question} value={null} disabled={true}
                        onChange={() => {}}
                        displayType={question.displayType}

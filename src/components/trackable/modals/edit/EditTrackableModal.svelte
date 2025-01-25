@@ -9,6 +9,7 @@
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
     import {trackables} from "@perfice/main";
+    import {goto} from "@mateothegreat/svelte5-router";
 
     let viewType: TrackableEditViewType = $state(TrackableEditViewType.GENERAL);
     let editState: EditTrackableState = $state({} as EditTrackableState);
@@ -39,7 +40,7 @@
 
     const SEGMENTS: SegmentedItem<string>[] = [
         {name: "General", value: TrackableEditViewType.GENERAL},
-        {name: "Form", suffix: faArrowUpRightFromSquare, onClick: () => console.log("edit form page")},
+        {name: "Form", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
         {name: "Integration", value: TrackableEditViewType.INTEGRATION}
     ];
 

@@ -30,6 +30,7 @@ export class TrackableService {
         let form: Form = {
             id: crypto.randomUUID(),
             name: trackable.name,
+            snapshotId: "",
             questions: [
                 {
                     id: "test",

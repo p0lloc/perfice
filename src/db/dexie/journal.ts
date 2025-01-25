@@ -39,4 +39,8 @@ export class DexieJournalCollection implements JournalCollection {
         return this.table.get(id);
     }
 
+    async getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]> {
+        return this.table.where("snapshotId").equals(snapshotId).toArray();
+    }
+
 }

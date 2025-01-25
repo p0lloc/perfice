@@ -70,6 +70,19 @@ export class FormQuestionDataTypeRegistry {
     getDefinition(type: string): FormQuestionDataTypeDefinition<any, any> | undefined {
         return this.types.get(type);
     }
+
+    /**
+     * Gets the first data type that supports the given display type
+     */
+    getFirstSuitableForDisplayType(type: FormQuestionDisplayType): [string, FormQuestionDataTypeDefinition<any, any>] | null {
+        for (let [key, value] of this.types.entries()) {
+            if(!value.getSupportedDisplayTypes().includes(type)) continue;
+
+            return [key, value];
+        }
+
+        return null;
+    }
 }
 
 export const questionDataTypeRegistry = new FormQuestionDataTypeRegistry();

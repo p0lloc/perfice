@@ -1,7 +1,7 @@
 import type { JournalEntry } from "@perfice/model/journal/journal";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
-import type {Form} from "@perfice/model/form/form";
+import type {Form, FormSnapshot} from "@perfice/model/form/form";
 
 export interface TrackableCollection {
     getTrackables(): Promise<Trackable[]>;
@@ -34,6 +34,18 @@ export interface FormCollection {
     deleteFormById(id: string): Promise<void>;
 }
 
+export interface FormSnapshotCollection {
+    getFormSnapshots(): Promise<FormSnapshot[]>;
+
+    getFormSnapshotById(id: string): Promise<FormSnapshot | undefined>;
+
+    createFormSnapshot(snapshot: FormSnapshot): Promise<void>;
+
+    deleteFormSnapshotsByFormId(formId: string): Promise<void>;
+
+    updateFormSnapshot(snapshot: FormSnapshot): Promise<void>;
+}
+
 export interface JournalCollection {
     getAllEntriesByFormId(formId: string): Promise<JournalEntry[]>;
 
@@ -48,6 +60,8 @@ export interface JournalCollection {
     deleteEntriesByFormId(formId: string): Promise<void>;
 
     getEntryById(id: string): Promise<JournalEntry | undefined>;
+
+    getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]>;
 }
 
 

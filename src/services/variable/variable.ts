@@ -6,8 +6,10 @@ import type {
 } from "@perfice/db/collections";
 import {
     type StoredVariable,
-    type Variable, type VariableIndex,
+    type Variable,
+    type VariableIndex,
     type VariableTypeDef,
+    VariableTypeName,
 } from "@perfice/model/variable/variable";
 import {deserializeVariableType, serializeVariableType} from "@perfice/services/variable/types/serialization";
 import type {VariableGraph} from "@perfice/services/variable/graph";
@@ -15,7 +17,8 @@ import type {TimeScope} from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
-import {EntityObservers, EntityObserverType, type EntityObserverCallback} from "@perfice/services/observer";
+import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import type {Form, FormQuestion} from "@perfice/model/form/form";
 
 
 export type VariableCallback = (v: PrimitiveValue) => void;
@@ -177,4 +180,31 @@ export class VariableService {
     public removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Variable>) {
         this.observers.removeObserver(type, callback);
     }
+
+    /*
+    TODO: Most likely not needed because variables fetch values from entries, that are not modified as the form changes.
+
+    private getVariablesReferencingQuestions(questions: FormQuestion[]): Variable[] {
+        let variables: Variable[] = [];
+        for (let variable of this.graph.getVariables()) {
+            if(variable.type.type != VariableTypeName.LIST) continue;
+
+            for (let field of Object.keys(variable.type.value.getFields())) {
+                if(!questions.some(q => q.id == field)) continue;
+
+                variables.push(variable);
+            }
+        }
+
+        return variables
+    }
+
+    async onFormUpdated(f: Form) {
+        let variables = this.getVariablesReferencingQuestions(f.questions);
+        for(let variable of variables) {
+            await this.indexCollection.deleteIndicesByVariableId(variable.id);
+        }
+    }*/
+
+
 }
