@@ -10,6 +10,7 @@
     import {journal} from "@perfice/main";
 
     let form: Form = $state({} as Form);
+    let questions: FormQuestion[] = $state([]);
     let date: Date = $state(new Date());
     let editEntry: JournalEntry | undefined;
     let answers: Record<string, PrimitiveValue> = $state({});
@@ -17,9 +18,12 @@
     let modal: Modal;
     let embed: FormEmbed;
 
-    export function open(logForm: Form, logDate: Date, existingAnswers?: Record<string, PrimitiveValue>, entry?: JournalEntry) {
+    export function open(logForm: Form, formQuestions: FormQuestion[], logDate: Date,
+                         existingAnswers?: Record<string, PrimitiveValue>, entry?: JournalEntry) {
+
         form = logForm;
         date = logDate;
+        questions = formQuestions;
         editEntry = entry;
         answers = existingAnswers ?? getDefaultAnswers(form.questions);
         modal.open();
@@ -39,15 +43,14 @@
                 answers
             });
         } else {
-            if (false) {
+            /*if (false) {
                 for (let j = 0; j < 20; j++) {
                     for (let i = 0; i < 5; i++) {
                         journal.logEntry(form, answers, date.getTime() - (j * 1000 * 60 * 60 * 24));
                     }
-                }
-            } else {
-                journal.logEntry(form, answers, date.getTime());
-            }
+                }*/
+
+            journal.logEntry(form, answers, date.getTime());
         }
 
         close();
@@ -77,5 +80,5 @@
 </script>
 
 <Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm}>
-    <FormEmbed bind:this={embed} questions={form.questions} answers={answers}/>
+    <FormEmbed bind:this={embed} questions={questions} answers={answers}/>
 </Modal>

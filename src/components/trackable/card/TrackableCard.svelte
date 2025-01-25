@@ -37,7 +37,7 @@
     async function onLog() {
         let form = await forms.getFormById(trackable.formId);
         if (form == undefined) return;
-        formModal.open(form, date);
+        formModal.open(form, form.questions, date);
     }
 
     function onDelete() {

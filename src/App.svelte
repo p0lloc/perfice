@@ -6,6 +6,7 @@
     import FormEditorView from "@perfice/views/FormEditorView.svelte";
     import {closeContextMenus} from "@perfice/model/ui/context-menu";
     import JournalView from "@perfice/views/JournalView.svelte";
+    import Sidebar from "@perfice/components/sidebar/Sidebar.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
@@ -20,5 +21,10 @@
 
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
-    <Router {routes}/>
+    <div class="flex">
+        <Sidebar />
+        <div class="flex-1">
+            <Router {routes}/>
+        </div>
+    </div>
 {/if}

@@ -6,7 +6,13 @@ import {
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
 import {type VariableEvaluator, type VariableIndex, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
-import {VariableIndexActionType, type EntryCreatedDependent, type EntryDeletedDependent, type VariableIndexAction} from "@perfice/services/variable/graph";
+import {
+    VariableIndexActionType,
+    type EntryCreatedDependent,
+    type EntryDeletedDependent,
+    type VariableIndexAction,
+    type EntryUpdatedDependent
+} from "@perfice/services/variable/graph";
 
 export function extractRawValue(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY) {
@@ -29,7 +35,7 @@ export function extractFieldsFromAnswers(answers: Record<string, PrimitiveValue>
     return result;
 }
 
-export class ListVariableType implements VariableType, EntryCreatedDependent, EntryDeletedDependent {
+export class ListVariableType implements VariableType, EntryCreatedDependent, EntryDeletedDependent, EntryUpdatedDependent {
 
     private readonly formId: string;
     private readonly fields: Record<string, boolean>;
@@ -37,6 +43,32 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
     constructor(formId: string, fields: Record<string, boolean>) {
         this.formId = formId;
         this.fields = fields;
+    }
+
+    async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
+        if (entry.formId != this.formId) return [];
+
+        let actions: VariableIndexAction[] = [];
+        for (let index of indices) {
+            if (index.value.type != PrimitiveValueType.LIST)
+                continue;
+
+            // Entry was updated, try to find and update it in the list
+            let val = index.value.value;
+            for(let entries of val){
+                if(entries.type == PrimitiveValueType.ENTRY && entries.value.id == entry.id){
+                    entries.value.value = extractFieldsFromAnswers(entry.answers, this.fields);
+                    entries.value.timestamp = entry.timestamp;
+                }
+            }
+
+            actions.push({
+                type: VariableIndexActionType.UPDATE,
+                index
+            });
+        }
+
+        return actions;
     }
 
     async onEntryCreated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {

@@ -21,6 +21,7 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
 
     async init() {
         this.setResolved([]);
+        this.page = 0;
         await this.nextPage();
     }
 
