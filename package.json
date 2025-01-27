@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.0.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
     "autoprefixer": "^10.4.20",
@@ -23,6 +24,8 @@
     "vitest": "^2.1.8"
   },
   "dependencies": {
+    "@capacitor/android": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@mateothegreat/svelte5-router": "^0.1.38",
     "chart.js": "^4.4.7",
