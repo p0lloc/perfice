@@ -103,6 +103,11 @@ export class VariableGraph {
                 return cached.value;
         }
 
+        // TODO: when evaluating variables we could probably fetch all indices for the time scope upfront
+        //  and pass them on in the chain. perhaps "getDependencies" could also return transitive dependencies
+        //  so we can include only variable ids that are relevant.
+        //  maybe this is a place to introduce some benchmarks for.
+
         evaluating.push(variable.id);
         let value = await this.runEvaluation(variable, timeScope, evaluating);
         evaluating.pop();
