@@ -17,4 +17,8 @@ export class HierarchyFieldDefinition implements FormDisplayTypeDefinition<Hiera
     getDisplayValue(value: PrimitiveValue, displaySettings: HierarchyFormQuestionSettings): PrimitiveValue {
         return value;
     }
+
+    onDataTypeChanged(s: HierarchyFormQuestionSettings, dataType: string): HierarchyFormQuestionSettings {
+        return s;
+    }
 }

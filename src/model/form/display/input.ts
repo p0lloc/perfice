@@ -19,4 +19,8 @@ export class InputFieldDefinition implements FormDisplayTypeDefinition<InputForm
     getDefaultSettings(): InputFormQuestionSettings {
         return {};
     }
+
+    onDataTypeChanged(s: InputFormQuestionSettings, dataType: string): InputFormQuestionSettings {
+        return s;
+    }
 }

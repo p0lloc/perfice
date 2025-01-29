@@ -15,4 +15,10 @@ export class SegmentedFieldDefinition implements FormDisplayTypeDefinition<Segme
     getDisplayValue(value: PrimitiveValue, displaySettings: SegmentedFormQuestionSettings): PrimitiveValue {
         return value;
     }
+
+
+    onDataTypeChanged(s: SegmentedFormQuestionSettings, dataType: string): SegmentedFormQuestionSettings {
+        return s;
+    }
+
 }

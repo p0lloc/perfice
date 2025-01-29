@@ -9,6 +9,7 @@
     import EditTextQuestionSettings from "@perfice/components/form/editor/data/text/EditTextQuestionSettings.svelte";
     import EditNumberQuestionSettings
         from "@perfice/components/form/editor/data/number/EditNumberQuestionSettings.svelte";
+    import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
 
     let {currentQuestion = $bindable()}: { currentQuestion: FormQuestion } = $props();
 
@@ -24,6 +25,12 @@
 
         currentQuestion.dataType = type;
         currentQuestion.dataSettings = definition.getDefaultSettings();
+
+        let displayDef = questionDisplayTypeRegistry.getFieldByType(currentQuestion.displayType)!;
+        if(displayDef != null) {
+            // Transform the display settings to the new data type
+            currentQuestion.displaySettings = displayDef.onDataTypeChanged(currentQuestion.displaySettings, type);
+        }
     }
 
     function getDataDropdownItems(): DropdownMenuItem<FormQuestionDataType>[] {

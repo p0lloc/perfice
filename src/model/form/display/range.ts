@@ -17,4 +17,9 @@ export class RangeFieldDefinition implements FormDisplayTypeDefinition<RangeForm
     getDisplayValue(value: PrimitiveValue, displaySettings: RangeFormQuestionSettings): PrimitiveValue {
         return value;
     }
+
+    onDataTypeChanged(s: RangeFormQuestionSettings, dataType: string): RangeFormQuestionSettings {
+        return s;
+    }
+
 }

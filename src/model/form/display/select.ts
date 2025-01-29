@@ -1,10 +1,17 @@
-import {PrimitiveValueType, pString, type PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {
+    PrimitiveValueType,
+    pString,
+    type PrimitiveValue,
+    prettyPrintPrimitive
+} from "@perfice/model/primitive/primitive";
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 
 export interface SelectOption {
     id: string;
     text: string;
     value: PrimitiveValue;
+    icon: string | null;
+    iconAndText: boolean;
 }
 
 export interface SelectGrid {
@@ -23,7 +30,8 @@ export class SelectFieldDefinition implements FormDisplayTypeDefinition<SelectFo
     getDisplayValue(value: PrimitiveValue, displaySettings: SelectFormQuestionSettings): PrimitiveValue {
         if (value.type == PrimitiveValueType.LIST) {
             // TODO: format the value
-            return pString(value.value.map(v => this.getDisplayValue(v, displaySettings)).join(","));
+            return pString(value.value.map(v =>
+                prettyPrintPrimitive(this.getDisplayValue(v, displaySettings))).join(", "));
         }
 
         let option = displaySettings.options.find(o => o.value.value == value.value);
@@ -42,5 +50,10 @@ export class SelectFieldDefinition implements FormDisplayTypeDefinition<SelectFo
 
     getDefaultSettings(): SelectFormQuestionSettings {
         return {options: [], grid: null, multiple: false};
+    }
+
+    onDataTypeChanged(s: SelectFormQuestionSettings, dataType: string): SelectFormQuestionSettings {
+        alert("on data type changed");
+        return s;
     }
 }

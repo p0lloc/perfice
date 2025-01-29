@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import {type FormQuestion, FormQuestionDisplayType} from "@perfice/model/form/form";
+    import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
@@ -44,7 +44,7 @@
     }
 
 
-    const FIELD_RENDERERS: Partial<Record<FormQuestionDisplayType, Component<{ settings: any }>>> = {
+    const FIELD_RENDERERS: Partial<Record<FormQuestionDisplayType, Component<{ settings: any, dataType: FormQuestionDataType }>>> = {
         [FormQuestionDisplayType.SELECT]: EditSelectQuestionSettings,
     }
 
@@ -55,7 +55,7 @@
 
 <div class="p-4">
     {#if RendererComponent != null}
-        <RendererComponent bind:settings={currentQuestion.displaySettings}/>
+        <RendererComponent bind:settings={currentQuestion.displaySettings} dataType={currentQuestion.dataType}/>
     {:else}
         There are no settings for this display type
     {/if}

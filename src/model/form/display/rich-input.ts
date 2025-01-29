@@ -15,4 +15,9 @@ export class RichInputFieldDefinition implements FormDisplayTypeDefinition<RichI
     getDisplayValue(value: PrimitiveValue, displaySettings: RichInputFormQuestionSettings): PrimitiveValue {
         return value;
     }
+
+    onDataTypeChanged(s: RichInputFormQuestionSettings, dataType: string): RichInputFormQuestionSettings {
+        return s;
+    }
+
 }

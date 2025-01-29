@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {forms, groupedJournal} from "@perfice/main";
+    import {forms, groupedJournal, journal} from "@perfice/main";
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
     import type {JournalEntry} from "@perfice/model/journal/journal";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
@@ -42,7 +42,7 @@
     }
 
     function onEntryDelete(entry: JournalEntry) {
-        console.log("delete", entry);
+        journal.deleteEntryById(entry.id);
     }
 </script>
 

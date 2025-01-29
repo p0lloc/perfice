@@ -11,7 +11,7 @@
     let {
         children,
         zIndex = 140,
-        size = ModalSize.SMALL,
+        size = ModalSize.MEDIUM,
         title,
         closeWithBackground = true,
 
@@ -34,7 +34,8 @@
     let modalBackgroundContainer = $state<HTMLDivElement | null>(null);
 
     const SIZE_CLASSES: Record<ModalSize, string> = {
-        [ModalSize.SMALL]: "md:w-[30%]"
+        [ModalSize.SMALL]: "2xl:w-[20%] lg:w-[40%] md:w-[50%]",
+        [ModalSize.MEDIUM]: "md:w-[40%]"
     }
 
     export function open() {
@@ -56,8 +57,8 @@
         close();
     }
 
-    function popNavigator(){
-        if(!visible) return;
+    function popNavigator() {
+        if (!visible) return;
 
         modalNavigatorState.pop();
     }
