@@ -1,4 +1,4 @@
-import type { FormQuestionDataTypeDefinition } from "../data";
+import type {FormQuestionDataTypeDefinition} from "../data";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 
@@ -9,7 +9,7 @@ export interface TextFormQuestionDataSettings {
 
 export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<string, TextFormQuestionDataSettings> {
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {
-        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.SELECT]
+        return [FormQuestionDisplayType.INPUT, FormQuestionDisplayType.SELECT, FormQuestionDisplayType.SEGMENTED]
     }
 
     serialize(value: PrimitiveValue): string {

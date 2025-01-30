@@ -16,6 +16,8 @@
     import RichInputFormField from "@perfice/components/form/fields/richInput/RichInputFormField.svelte";
     import EditSelectQuestionSettings
         from "@perfice/components/form/editor/display/select/EditSelectQuestionSettings.svelte";
+    import EditSegmentedQuestionSettings
+        from "@perfice/components/form/editor/display/segmented/EditSegmentedQuestionSettings.svelte";
 
     let {currentQuestion = $bindable(), dataTypeDef}: {
         currentQuestion: FormQuestion,
@@ -44,8 +46,13 @@
     }
 
 
-    const FIELD_RENDERERS: Partial<Record<FormQuestionDisplayType, Component<{ settings: any, dataType: FormQuestionDataType }>>> = {
+    const FIELD_RENDERERS: Partial<Record<FormQuestionDisplayType, Component<{
+        settings: any,
+        dataType: FormQuestionDataType,
+        dataSettings: any
+    }>>> = {
         [FormQuestionDisplayType.SELECT]: EditSelectQuestionSettings,
+        [FormQuestionDisplayType.SEGMENTED]: EditSegmentedQuestionSettings,
     }
 
     const RendererComponent = $derived(FIELD_RENDERERS[currentQuestion.displayType]);
@@ -55,7 +62,8 @@
 
 <div class="p-4">
     {#if RendererComponent != null}
-        <RendererComponent bind:settings={currentQuestion.displaySettings} dataType={currentQuestion.dataType}/>
+        <RendererComponent bind:settings={currentQuestion.displaySettings} dataType={currentQuestion.dataType}
+                           dataSettings={currentQuestion.dataSettings}/>
     {:else}
         There are no settings for this display type
     {/if}

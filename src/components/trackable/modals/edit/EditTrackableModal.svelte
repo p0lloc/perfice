@@ -1,7 +1,7 @@
 <script lang="ts">
     import {ModalType} from "@perfice/model/ui/modal.js";
     import Modal from "@perfice/components/base/modal/Modal.svelte";
-    import InvertedSegmentControl from "@perfice/components/base/invertedSegmented/InvertedSegmentControl.svelte";
+    import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
     import type {Component} from "svelte";
     import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
     import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/EditTrackableGeneral.svelte";
@@ -60,9 +60,9 @@
 
 <Modal type={ModalType.DELETE_CONFIRM_CANCEL} title="Edit trackable" bind:this={modal} {onDelete} onConfirm={save}>
     {#snippet header()}
-        <InvertedSegmentControl value={viewType}
-                                onChange={(t) => switchView(t)}
-                                segments={SEGMENTS}/>
+        <InvertedSegmentedControl value={viewType}
+                                  onChange={(t) => switchView(t)}
+                                  segments={SEGMENTS}/>
     {/snippet}
 
     <RendererComponent bind:editState={editState}/>

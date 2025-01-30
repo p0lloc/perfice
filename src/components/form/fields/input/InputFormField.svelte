@@ -3,6 +3,7 @@
     import {FormQuestionDataType} from "@perfice/model/form/form";
     import type {FormFieldProps, InputFieldProps} from "@perfice/model/form/ui";
     import VanillaInputFormField from "@perfice/components/form/fields/input/VanillaInputFormField.svelte";
+    import BooleanInputFormField from "@perfice/components/form/fields/input/BooleanInputFormField.svelte";
 
     let {dataSettings, disabled, value, onChange}: FormFieldProps = $props();
 
@@ -13,6 +14,8 @@
             case FormQuestionDataType.DATE:
             case FormQuestionDataType.DATE_TIME:
                 return VanillaInputFormField;
+            case FormQuestionDataType.BOOLEAN:
+                return BooleanInputFormField;
             default:
                 return VanillaInputFormField;
         }

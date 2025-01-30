@@ -1,7 +1,15 @@
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
-export interface SegmentedFormQuestionSettings {}
+export interface SegmentedOption {
+    id: string;
+    value: PrimitiveValue;
+    text: string;
+}
+
+export interface SegmentedFormQuestionSettings {
+    options: SegmentedOption[];
+}
 export class SegmentedFieldDefinition implements FormDisplayTypeDefinition<SegmentedFormQuestionSettings> {
     validate(value: PrimitiveValue): string | null {
         return null;
@@ -10,7 +18,9 @@ export class SegmentedFieldDefinition implements FormDisplayTypeDefinition<Segme
         return false;
     }
     getDefaultSettings(): SegmentedFormQuestionSettings {
-        return {};
+        return {
+            options: []
+        };
     }
     getDisplayValue(value: PrimitiveValue, displaySettings: SegmentedFormQuestionSettings): PrimitiveValue {
         return value;

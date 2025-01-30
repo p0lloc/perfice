@@ -61,10 +61,11 @@
 
     export function validateAndGetValue(): PrimitiveValue | null {
         let value: PrimitiveValue | null;
+        let valueSnapshot = $state.snapshot(serializedValue);
         if (displayTypeDef.hasMultiple(question.displaySettings) && Array.isArray(serializedValue)) {
-            value = deserializeMultiple(serializedValue);
+            value = deserializeMultiple(valueSnapshot);
         } else {
-            value = dataTypeDef.deserialize(serializedValue);
+            value = dataTypeDef.deserialize(valueSnapshot);
         }
 
         if (value == null) {

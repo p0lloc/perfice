@@ -1,31 +1,25 @@
 <script lang="ts">
     import Modal from "@perfice/components/base/modal/Modal.svelte";
     import {ModalSize, ModalType} from "@perfice/model/ui/modal";
-    import type {SelectOption} from "@perfice/model/form/display/select";
-    import Button from "@perfice/components/base/button/Button.svelte";
-    import {faTimes} from "@fortawesome/free-solid-svg-icons";
-    import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
-    import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import {getHtmlInputFromQuestionType} from "@perfice/model/form/ui";
-    import {
-        type DataSettingValues,
-        questionDataTypeRegistry
-    } from "@perfice/model/form/data";
+    import {type DataSettingValues, questionDataTypeRegistry} from "@perfice/model/form/data";
+    import type {SegmentedOption} from "@perfice/model/form/display/segmented";
+    import Button from "@perfice/components/base/button/Button.svelte";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
 
     let modal: Modal;
-    let option: SelectOption = $state({} as SelectOption);
     let sameDisplayText = $state(false);
+    let option: SegmentedOption = $state({} as SegmentedOption);
 
-    let completer: (o: SelectOption | null) => void;
+    let completer: (o: SegmentedOption | null) => void;
 
     let dataDef = $derived(questionDataTypeRegistry.getDefinition(dataType)!);
     let valueStr: string = $state("");
 
-    export async function open(editOption: SelectOption | null): Promise<SelectOption | null> {
-        let promise = new Promise<SelectOption | null>((resolve) => completer = resolve);
+    export async function open(editOption: SegmentedOption | null): Promise<SegmentedOption | null> {
+        let promise = new Promise<SegmentedOption | null>((resolve) => completer = resolve);
 
         if (editOption != null) {
             option = structuredClone(editOption);
@@ -38,31 +32,19 @@
 
             valueStr = dataDef.serialize(defaultValue);
             sameDisplayText = true;
-
             option = {
                 id: crypto.randomUUID(),
                 text: valueStr,
-                value: defaultValue,
-                icon: null,
-                iconAndText: false
-            };
+                value: dataDef.getDefaultValue(dataSettings),
+            }
         }
 
         modal.open();
         return promise;
     }
 
-    function addIcon() {
-        option.icon = "star";
-        option.iconAndText = false;
-    }
-
-    function removeIcon() {
-        option.icon = null;
-        option.iconAndText = false;
-    }
-
     function addOtherDisplayText() {
+        // Deserialize the current value as text
         let value = dataDef.deserialize($state.snapshot(valueStr)) ?? dataDef.getDefaultValue(dataSettings);
         option.text = dataDef.serialize(value);
         sameDisplayText = false;
@@ -73,6 +55,7 @@
         if (value == null) return;
         option.value = value;
 
+        // If using same display text, copy from the value
         if(sameDisplayText){
             option.text = dataDef.serialize(value);
         }
@@ -97,22 +80,5 @@
                 <input type="text" bind:value={option.text} class="border"/>
             {/if}
         </div>
-        <div class="row-between">
-            <span class="label">Icon</span>
-            {#if option.icon == null}
-                <Button onClick={addIcon}>Add icon</Button>
-            {:else}
-                <div class="row-gap">
-                    <IconPickerButton/>
-                    <IconButton icon={faTimes} onClick={removeIcon}/>
-                </div>
-            {/if}
-        </div>
-        {#if option.icon != null}
-            <div class="row-between">
-                <span class="label">Show icon & text</span>
-                <input type="checkbox" class="border" bind:checked={option.iconAndText}/>
-            </div>
-        {/if}
     </div>
 </Modal>

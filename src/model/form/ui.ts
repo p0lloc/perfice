@@ -18,7 +18,7 @@ export interface InputFieldProps {
     dataType: FormQuestionDataType;
     disabled: boolean;
     value: string;
-    onChange: (v: string) => void;
+    onChange: (v: any) => void;
 }
 
 export function getHtmlInputFromQuestionType(type: FormQuestionDataType): string {
