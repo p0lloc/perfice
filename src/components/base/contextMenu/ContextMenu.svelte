@@ -12,17 +12,17 @@
 
     let container: HTMLDivElement | undefined = $state();
 
-    export function openFromClick(e: MouseEvent, useParentWidth: boolean = false) {
+    export function openFromClick(e: MouseEvent, initiator: HTMLElement, useParentWidth: boolean = false) {
         let target = e.target as HTMLElement;
         let rect = target.getBoundingClientRect();
         if (useParentWidth)
             minWidth = `${rect.width}px`;
 
-        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height, rect.x, rect.y));
+        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height, initiator, rect.x, rect.y));
     }
 
-    export function openAtPosition(x: number, y: number, relativeX: number, _relativeY: number) {
-        openContextMenu(close);
+    export function openAtPosition(x: number, y: number, initiator: HTMLElement, relativeX: number, _relativeY: number) {
+        openContextMenu(close, initiator);
         inLayout = true;
         top = y;
         left = x;

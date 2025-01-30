@@ -13,7 +13,7 @@
     import FormFieldEdit from "@perfice/components/form/editor/field/FormFieldEdit.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+    import {faArrowLeft, faCheck, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
     import {QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
     import FormEditorSidebar from "@perfice/components/form/editor/sidebar/FormEditorSidebar.svelte";
     import {
@@ -23,6 +23,7 @@
     } from "@perfice/model/form/data";
     import {type FormQuestionDisplaySettings, questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {goto} from "@mateothegreat/svelte5-router";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -91,6 +92,18 @@
 </script>
 
 {#if form !== undefined}
+    <MobileTopBar title={form.name}>
+        {#snippet leading()}
+            <button class="icon-button" onclick={back}>
+                <Fa icon={faArrowLeft}/>
+            </button>
+        {/snippet}
+        {#snippet actions()}
+            <button class="icon-button" onclick={save}>
+                <Fa icon={faCheck}/>
+            </button>
+        {/snippet}
+    </MobileTopBar>
     <div class="flex justify-between">
         <div class="p-2 flex-1 flex">
             <div class="mx-auto w-full md:w-1/2 mt-8">
@@ -104,7 +117,7 @@
                                        onDelete={() => deleteQuestion(question)}/>
                     {/each}
                     <button class="border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center"
-                            onclick={(e) => contextMenu?.openFromClick(e)}>
+                            onclick={(e) => contextMenu?.openFromClick(e, e.currentTarget)}>
                         <Fa icon={faPlusCircle} class="pointer-events-none"/>
                     </button>
                 </div>

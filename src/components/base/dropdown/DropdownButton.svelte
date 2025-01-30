@@ -7,15 +7,16 @@
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
 
     let contextMenu: ContextMenu;
+    let button: HTMLButtonElement;
     let {value, items, class: className = ''}: { value: T, items: DropdownMenuItem<T>[], class?: string } = $props();
 
     function open(e: MouseEvent) {
-        contextMenu.openFromClick(e, true);
+        contextMenu.openFromClick(e, button, true);
     }
 
     let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => i.value == value));
 </script>
-<button class="border rounded-xl px-3 py-2 flex items-center justify-between {className} gap-2" onclick={open}>
+<button class="border rounded-xl px-3 py-2 flex items-center justify-between {className} gap-2 context-menu-button" onclick={open} bind:this={button}>
     {#if selectedItem != null}
         <div class="row-gap pointer-events-none">
             {#if selectedItem.icon != null}

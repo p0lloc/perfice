@@ -14,8 +14,8 @@
         {path: "/", component: TrackableView},
     ]
 
-    function onBodyClick() {
-        closeContextMenus();
+    function onBodyClick(e: MouseEvent) {
+        closeContextMenus(e.target as HTMLElement);
     }
 </script>
 
