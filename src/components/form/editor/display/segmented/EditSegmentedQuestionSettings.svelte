@@ -3,7 +3,6 @@
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
-    import {pString} from "@perfice/model/primitive/primitive";
     import EditSegmentedOptionCard from "@perfice/components/form/editor/display/segmented/EditSegmentedOptionCard.svelte";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
     import EditSegmentedOptionModal

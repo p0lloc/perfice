@@ -35,6 +35,9 @@ test("simple single list variable", async () => {
             {
                 id: "entry_one",
                 formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
                 timestamp: 0,
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -67,6 +70,9 @@ test("simple multiple list variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
                 }
@@ -75,6 +81,9 @@ test("simple multiple list variable", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
                 }
@@ -107,6 +116,9 @@ test("simple multiple fields list variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "one": pDisplay(pNumber(10.0), pString("10.0")),
                     "two": pDisplay(pNumber(10.0), pString("10.0"))
@@ -140,6 +152,9 @@ test("simple aggregate sum variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
                 }
@@ -147,6 +162,9 @@ test("simple aggregate sum variable", async () => {
             {
                 id: "entry_two",
                 formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
                 timestamp: 0,
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -182,12 +200,18 @@ test("simple aggregate mean variable", async () => {
             {
                 id: "entry_one",
                 formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
                 timestamp: 0,
                 answers: {
                     "ok": pNumber(60.0)
                 }
             },
             {
+                name: "",
+                icon: "",
+                snapshotId: "",
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
@@ -227,6 +251,9 @@ test("simple single list variable new entry", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
                 }
@@ -253,6 +280,9 @@ test("simple single list variable new entry", async () => {
         id: "entry_two",
         formId: "ok",
         timestamp: 0,
+        name: "",
+        icon: "",
+        snapshotId: "",
         answers: {
             "ok": pDisplay(pNumber(13.0), pString("13.0"))
         }
@@ -277,6 +307,9 @@ test("simple aggregate sum new entry", async () => {
             {
                 id: "entry_one",
                 formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
                 timestamp: 0,
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -285,6 +318,9 @@ test("simple aggregate sum new entry", async () => {
             {
                 id: "entry_two",
                 formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
                 timestamp: 0,
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -316,6 +352,9 @@ test("simple aggregate sum new entry", async () => {
         id: "entry_two",
         formId: "ok",
         timestamp: 0,
+        name: "",
+        icon: "",
+        snapshotId: "",
         answers: {
             "ok": pDisplay(pNumber(13.0), pString("13.0"))
         }
@@ -340,6 +379,9 @@ test("simple aggregate mean new entry", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(30.0), pString("10.0"))
                 }
@@ -348,6 +390,9 @@ test("simple aggregate mean new entry", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(20.0), pString("13.0"))
                 }
@@ -378,6 +423,9 @@ test("simple aggregate mean new entry", async () => {
         id: "entry_two",
         formId: "ok",
         timestamp: 0,
+        name: "",
+        icon: "",
+        snapshotId: "",
         answers: {
             "ok": pDisplay(pNumber(43.0), pString("13.0"))
         }
