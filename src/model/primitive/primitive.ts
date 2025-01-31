@@ -6,6 +6,7 @@ export enum PrimitiveValueType {
     MAP = "MAP",
     ENTRY = "ENTRY",
     DISPLAY = "DISPLAY",
+    COMPARISON_RESULT = "COMPARISON_RESULT",
     NULL = "NULL",
 }
 
@@ -17,6 +18,7 @@ export type PrimitiveValue =
     | PV<PrimitiveValueType.LIST, PrimitiveValue[]>
     | PV<PrimitiveValueType.ENTRY, EntryValue>
     | PV<PrimitiveValueType.DISPLAY, DisplayValue>
+    | PV<PrimitiveValueType.COMPARISON_RESULT, ComparisonResultValue>
     | PV<PrimitiveValueType.NULL, null>;
 
 
@@ -32,6 +34,12 @@ export interface EntryValue {
     timestamp: number;
     // Entry values
     value: Record<string, PrimitiveValue>;
+}
+
+export interface ComparisonResultValue {
+    source: PrimitiveValue;
+    target: PrimitiveValue;
+    met: boolean;
 }
 
 export interface DisplayValue {
@@ -69,6 +77,10 @@ export function pEntry(id: string, timestamp: number, value: Record<string, Prim
     return {type: PrimitiveValueType.ENTRY, value: {id, timestamp, value}}
 }
 
+export function pComparisonResult(source: PrimitiveValue, target: PrimitiveValue, result: boolean): PrimitiveValue {
+    return {type: PrimitiveValueType.COMPARISON_RESULT, value: {source, target, met: result}}
+}
+
 export function pNull(): PrimitiveValue {
     return {type: PrimitiveValueType.NULL, value: null}
 }
@@ -85,6 +97,8 @@ export function getDefaultPrimitiveValue(t: PrimitiveValueType): PrimitiveValue 
             return pEntry("", 0, {});
         case PrimitiveValueType.DISPLAY:
             return pDisplay(pNull(), pNull());
+        case PrimitiveValueType.COMPARISON_RESULT:
+            return pComparisonResult(pNull(), pNull(), false);
         case PrimitiveValueType.MAP:
             return pMap({});
         case PrimitiveValueType.NULL:

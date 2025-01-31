@@ -321,6 +321,10 @@ export class BaseVariableEvaluator implements VariableEvaluator {
         this.journalCollection = journalCollection;
     }
 
+    overrideTimeScope(newTimeScope: TimeScope): VariableEvaluator {
+        return new BaseVariableEvaluator(newTimeScope, this.evaluating, this.graph, this.journalCollection);
+    }
+
     async getEntriesInTimeRange(formId: string): Promise<JournalEntry[]> {
         let action: TimeRange = this.timeContext.value.convertToRange();
         switch (action.type) {

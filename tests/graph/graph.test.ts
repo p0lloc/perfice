@@ -1,12 +1,19 @@
-import {DummyIndexCollection, DummyJournalCollection} from "./dummy-collections";
-import {VariableGraph} from "../src/services/variable/graph";
+import {DummyIndexCollection, DummyJournalCollection} from "../dummy-collections";
+import {VariableGraph} from "../../src/services/variable/graph";
 import {expect, test} from "vitest";
-import {Variable, VariableTypeName} from "../src/model/variable/variable";
-import {ListVariableType} from "../src/services/variable/types/list";
-import {SimpleTimeScope, SimpleTimeScopeType, TimeScopeType, tSimple, WeekStart} from "../src/model/variable/time/time";
-import {pDisplay, pEntry, pList, pMap, pNumber, pString} from "../src/model/primitive/primitive";
-import {AggregateType, AggregateVariableType} from "../src/services/variable/types/aggregate";
-import { JournalEntry } from "../src/model/journal/journal";
+import {Variable, VariableTypeName} from "../../src/model/variable/variable";
+import {ListVariableType} from "../../src/services/variable/types/list";
+import {SimpleTimeScope, SimpleTimeScopeType, TimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
+import {pComparisonResult, pDisplay, pEntry, pList, pMap, pNumber, pString} from "../../src/model/primitive/primitive";
+import {AggregateType, AggregateVariableType} from "../../src/services/variable/types/aggregate";
+import {JournalEntry} from "../../src/model/journal/journal";
+import {
+    ComparisonGoalCondition,
+    ComparisonOperator,
+    GoalCondition,
+    GoalConditionType,
+    GoalVariableType
+} from "../../src/services/variable/types/goal";
 
 
 test("empty list variable", async () => {
@@ -439,3 +446,4 @@ test("simple aggregate mean new entry", async () => {
 
     expect(val2).toEqual(pNumber(31.0));
 })
+

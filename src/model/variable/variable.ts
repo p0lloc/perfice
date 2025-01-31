@@ -2,6 +2,7 @@ import type {ListVariableType} from "@perfice/services/variable/types/list";
 import type {AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
+import type {TimeScope} from "@perfice/model/variable/time/time";
 
 export interface StoredVariable {
     id: string;
@@ -20,7 +21,8 @@ export interface TextOrDynamic {
 
 export enum VariableTypeName {
     LIST = "LIST",
-    AGGREGATE = "AGGREGATE"
+    AGGREGATE = "AGGREGATE",
+    GOAL = "GOAL"
 }
 
 export interface VT<T extends VariableTypeName, V extends VariableType> {
@@ -40,6 +42,8 @@ export interface VariableEvaluator {
     getEntriesInTimeRange(formId: string): Promise<JournalEntry[]>;
 
     evaluateVariable(variableId: string): Promise<PrimitiveValue>;
+
+    overrideTimeScope(timeScope: TimeScope): VariableEvaluator;
 }
 
 export type VariableTypeDef = VT<VariableTypeName.LIST, ListVariableType> | VT<VariableTypeName.AGGREGATE, AggregateVariableType>;
