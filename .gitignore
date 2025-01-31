@@ -25,3 +25,6 @@ dist-ssr
 
 Perfice.drawio
 .$Perfice.drawio.bkp
+
+dev-dist
+deploy-apk.sh
