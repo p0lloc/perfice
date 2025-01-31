@@ -17,7 +17,7 @@ import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
 import { CategorizedTrackables } from './stores/trackable/categorized';
 import type {Trackable} from "@perfice/model/trackable/trackable";
 import {TrackableValueStore} from "@perfice/stores/trackable/value";
-import {FormService} from "@perfice/services/form/form";
+import {BaseFormService} from "@perfice/services/form/form";
 import {FormStore} from "@perfice/stores/form/form";
 import {VariableStore} from "@perfice/stores/variable/variable";
 import {GroupedJournal} from "@perfice/stores/journal/grouped";
@@ -37,7 +37,7 @@ journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: Jour
     await variableService.onEntryUpdated(e);
 });
 
-const formService = new FormService(db.forms, db.formSnapshots);
+const formService = new BaseFormService(db.forms, db.formSnapshots);
 formService.initLazyDependencies(journalService);
 
 const trackableService = new TrackableService(db.trackables, variableService, formService);

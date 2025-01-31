@@ -3,7 +3,27 @@ import type {Form, FormSnapshot} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {JournalService} from "@perfice/services/journal/journal";
 
-export class FormService {
+export interface FormService {
+    initLazyDependencies(journalService: JournalService): void;
+
+    getForms(): Promise<Form[]>;
+
+    getFormById(id: string): Promise<Form | undefined>;
+
+    getFormSnapshotById(id: string): Promise<FormSnapshot | undefined>;
+
+    createForm(form: Form): Promise<void>;
+
+    updateForm(form: Form): Promise<void>;
+
+    deleteFormById(id: string): Promise<void>;
+
+    addObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void;
+
+    removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void;
+}
+
+export class BaseFormService implements FormService {
 
     private formCollection: FormCollection;
     private snapshotCollection: FormSnapshotCollection;

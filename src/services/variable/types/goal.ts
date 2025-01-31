@@ -1,12 +1,20 @@
-import {type VariableEvaluator, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
+import {
+    type ExpandedVariable,
+    type ExpandedVariableType, expandVariable,
+    type VariableEvaluator,
+    type VariableType,
+    VariableTypeName
+} from "@perfice/model/variable/variable";
 import {
     pBoolean,
     pComparisonResult,
     pMap,
     type PrimitiveValue,
-    PrimitiveValueType
+    PrimitiveValueType, pString
 } from "@perfice/model/primitive/primitive";
 import {type TimeScope, TimeScopeType} from "@perfice/model/variable/time/time";
+import {type FormService} from "@perfice/services/form/form";
+import {type VariableGraph} from "@perfice/services/variable/graph";
 
 export type GoalCondition = {
     id: string;
@@ -22,7 +30,18 @@ export type GoalConditionValues =
     | GoalConditionDef<GoalConditionType.GOAL_MET, GoalMetGoalCondition>;
 
 
+export type ExpandedGoalConditionValues =
+    ExpandedGoalConditionDef<GoalConditionType.COMPARISON, ExpandedComparisonGoalCondition>
+    | ExpandedGoalConditionDef<GoalConditionType.GOAL_MET, ExpandedGoalMetGoalCondition>;
+
+
 export type GoalConditionDef<T extends GoalConditionType, V extends GoalConditionValue> = {
+    type: T,
+    value: V
+}
+
+
+export type ExpandedGoalConditionDef<T extends GoalConditionType, V extends ExpandedGoalConditionValue> = {
     type: T,
     value: V
 }
@@ -34,6 +53,45 @@ export enum ComparisonOperator {
     GREATER_THAN_EQUAL = "GREATER_THAN_EQUAL",
     LESS_THAN = "LESS_THAN",
     LESS_THAN_EQUAL = "LESS_THAN_EQUAL",
+}
+
+export type ExpandedConstantOrVariable = {
+    value: PrimitiveValue,
+    constant: true,
+} | {
+    value: ExpandedVariable,
+    constant: false,
+}
+
+export class ExpandedComparisonGoalCondition implements ExpandedGoalConditionValue {
+    private readonly source: ExpandedConstantOrVariable;
+    private readonly operator: ComparisonOperator;
+    private readonly target: ExpandedConstantOrVariable;
+
+    constructor(source: ExpandedConstantOrVariable, operator: ComparisonOperator, target: ExpandedConstantOrVariable) {
+        this.source = source;
+        this.operator = operator;
+        this.target = target;
+    }
+
+    private shrinkConstantOrVariable(v: ExpandedConstantOrVariable): ConstantOrVariable {
+        if (v.constant) {
+            return {
+                value: v.value,
+                constant: true
+            }
+        }
+
+        return {
+            value: pString(v.value.id), // Variable ID of expanded variable
+            constant: false
+        };
+    }
+
+    shrink(): GoalConditionValue {
+        return new ComparisonGoalCondition(this.shrinkConstantOrVariable(this.source),
+            this.operator, this.shrinkConstantOrVariable(this.target));
+    }
 }
 
 export class ComparisonGoalCondition implements GoalConditionValue {
@@ -57,7 +115,7 @@ export class ComparisonGoalCondition implements GoalConditionValue {
     }
 
     private compareValues(source: PrimitiveValue, target: PrimitiveValue): boolean {
-        if(source.type != PrimitiveValueType.NUMBER || target.type != PrimitiveValueType.NUMBER) return false;
+        if (source.type != PrimitiveValueType.NUMBER || target.type != PrimitiveValueType.NUMBER) return false;
 
         switch (this.operator) {
             case ComparisonOperator.EQUAL: {
@@ -101,6 +159,48 @@ export class ComparisonGoalCondition implements GoalConditionValue {
         return dependencies;
     }
 
+    private async expandValue(value: ConstantOrVariable, graph: VariableGraph, formService: FormService): Promise<ExpandedConstantOrVariable | null> {
+        if (value.constant || value.value.type != PrimitiveValueType.STRING) {
+            return {
+                value: value.value,
+                constant: true
+            };
+        }
+
+        let variable = graph.getVariableById(value.value.value);
+        if (variable == null) return null;
+        let expanded = await expandVariable(variable, graph, formService);
+        if (expanded == null) return null;
+
+        return {
+            value: expanded,
+            constant: false
+        };
+    }
+
+    async expand(graph: VariableGraph, formService: FormService): Promise<ExpandedGoalConditionValue | null> {
+        let sourceExpanded = await this.expandValue(this.source, graph, formService);
+        if (sourceExpanded == null) return null;
+
+        let targetExpanded = await this.expandValue(this.target, graph, formService);
+        if (targetExpanded == null) return null;
+
+        return new ExpandedComparisonGoalCondition(sourceExpanded, this.operator, targetExpanded);
+    }
+
+}
+
+export class ExpandedGoalMetGoalCondition implements ExpandedGoalConditionValue {
+    // TODO: actually expand this to its goal variable
+    private readonly goalVariableId: string;
+
+    constructor(goalVariableId: string) {
+        this.goalVariableId = goalVariableId;
+    }
+
+    shrink(): GoalConditionValue {
+        return new GoalMetGoalCondition(this.goalVariableId);
+    }
 }
 
 export class GoalMetGoalCondition implements GoalConditionValue {
@@ -113,10 +213,10 @@ export class GoalMetGoalCondition implements GoalConditionValue {
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
         let value = await evaluator.evaluateVariable(this.goalVariableId);
 
-        if(value.type != PrimitiveValueType.MAP)
+        if (value.type != PrimitiveValueType.MAP)
             return pBoolean(false);
 
-        for(let result of Object.values(value.value)){
+        for (let result of Object.values(value.value)) {
             let bool = false;
             switch (result.type) {
                 case PrimitiveValueType.BOOLEAN:
@@ -127,7 +227,7 @@ export class GoalMetGoalCondition implements GoalConditionValue {
                     break;
             }
 
-            if(!bool) return pBoolean(false);
+            if (!bool) return pBoolean(false);
         }
 
         return pBoolean(true);
@@ -136,6 +236,11 @@ export class GoalMetGoalCondition implements GoalConditionValue {
     getDependencies(): string[] {
         return [this.goalVariableId];
     }
+
+    async expand(graph: VariableGraph, formService: FormService): Promise<ExpandedGoalConditionValue | null> {
+        return new ExpandedGoalMetGoalCondition(this.goalVariableId);
+    }
+
 }
 
 export enum GoalConditionType {
@@ -143,11 +248,46 @@ export enum GoalConditionType {
     GOAL_MET = "GOAL_MET",
 }
 
+interface ExpandedGoalConditionValue {
+    shrink(): GoalConditionValue;
+}
 
 interface GoalConditionValue {
     evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue>;
 
     getDependencies(): string[];
+
+    expand(graph: VariableGraph, formService: FormService): Promise<ExpandedGoalConditionValue | null>;
+}
+
+
+export type ExpandedGoalCondition = {
+    id: string;
+} & ExpandedGoalConditionValues;
+
+export class ExpandedGoalVariableType implements ExpandedVariableType {
+
+    private readonly conditions: ExpandedGoalCondition[];
+    private readonly timeScope: TimeScope;
+
+    constructor(conditions: ExpandedGoalCondition[], timeScope: TimeScope) {
+        this.conditions = conditions;
+        this.timeScope = timeScope;
+    }
+
+    shrink(): VariableType {
+        let conditions: GoalCondition[] = [];
+        for (let condition of this.conditions) {
+            conditions.push({
+                id: condition.id,
+                type: condition.type,
+                // @ts-ignore
+                value: condition.value.shrink()
+            });
+        }
+
+        return new GoalVariableType(conditions, this.timeScope);
+    }
 }
 
 export class GoalVariableType implements VariableType {
@@ -163,7 +303,7 @@ export class GoalVariableType implements VariableType {
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
         let newEvaluator = evaluator;
-        if(this.timeScope.type != TimeScopeType.SIMPLE) {
+        if (this.timeScope.type != TimeScopeType.SIMPLE) {
             // If time scope is not simple, we use the time scope specified here.
             // This allows us to override the time scope for RANGED / FOREVER time scopes that don't depend on the current time.
             newEvaluator = newEvaluator.overrideTimeScope(this.timeScope);
@@ -175,6 +315,22 @@ export class GoalVariableType implements VariableType {
         }
 
         return pMap(result);
+    }
+
+    async expand(graph: VariableGraph, formService: FormService): Promise<ExpandedVariableType | null> {
+        let conditions: ExpandedGoalCondition[] = [];
+        for (let condition of this.conditions) {
+            let expanded = await condition.value.expand(graph, formService);
+            if (expanded == null) return null;
+
+            conditions.push({
+                id: condition.id,
+                type: condition.type,
+                // @ts-ignore
+                value: expanded
+            });
+        }
+        return new ExpandedGoalVariableType(conditions, this.timeScope);
     }
 
     getDependencies(): string[] {

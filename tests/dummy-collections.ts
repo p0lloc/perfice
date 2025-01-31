@@ -1,7 +1,11 @@
-import {IndexCollection, IndexUpdateListener, JournalCollection} from "../src/db/collections";
+import {IndexCollection, IndexDeleteListener, IndexUpdateListener, JournalCollection} from "../src/db/collections";
 import {VariableIndex} from "../src/model/variable/variable";
 import {updateIdentifiedInArray} from "../src/util/array";
 import {JournalEntry} from "../src/model/journal/journal";
+import {FormService} from "../src/services/form/form";
+import {Form, FormSnapshot} from "../src/model/form/form";
+import {JournalService} from "../src/services/journal/journal";
+import {EntityObserverCallback, EntityObserverType} from "../src/services/observer";
 
 export class DummyJournalCollection implements JournalCollection {
     private entries: JournalEntry[];
@@ -38,6 +42,14 @@ export class DummyJournalCollection implements JournalCollection {
         this.entries = this.entries.filter(e => e.id != id);
     }
 
+    getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]> {
+        throw new Error("Method not implemented.");
+    }
+
+    getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<JournalEntry[]> {
+        throw new Error("Method not implemented.");
+    }
+
 
 }
 
@@ -47,6 +59,13 @@ export class DummyIndexCollection implements IndexCollection {
 
     constructor(indices: VariableIndex[] = []) {
         this.indices = indices;
+    }
+
+    addDeleteListener(listener: IndexDeleteListener): void {
+        throw new Error("Method not implemented.");
+    }
+    removeDeleteListener(listener: IndexDeleteListener): void {
+        throw new Error("Method not implemented.");
     }
 
     async deleteIndicesByIds(ids: string[]): Promise<void> {
@@ -86,4 +105,41 @@ export class DummyIndexCollection implements IndexCollection {
         this.indices = this.indices.filter(i => i.variableId != id);
     }
 
+}
+
+export class DummyFormService implements FormService {
+
+    private forms: Form[];
+
+    constructor(forms: Form[] = []) {
+        this.forms = forms;
+    }
+
+    initLazyDependencies(journalService: JournalService): void {
+        throw new Error("Method not implemented.");
+    }
+    async getForms(): Promise<Form[]> {
+        return this.forms;
+    }
+    async getFormById(id: string): Promise<Form | undefined> {
+        return this.forms.find(f => f.id == id);
+    }
+    getFormSnapshotById(id: string): Promise<FormSnapshot | undefined> {
+        throw new Error("Method not implemented.");
+    }
+    async createForm(form: Form): Promise<void> {
+        this.forms.push(form);
+    }
+    async updateForm(form: Form): Promise<void> {
+        this.forms = updateIdentifiedInArray(this.forms, form);
+    }
+    deleteFormById(id: string): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    addObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void {
+        throw new Error("Method not implemented.");
+    }
+    removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void {
+        throw new Error("Method not implemented.");
+    }
 }
