@@ -71,6 +71,7 @@ test("expand list variable", async () => {
     const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
     let variable: Variable = {
         id: "test",
+        name: "test",
         type: {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true})
@@ -81,6 +82,7 @@ test("expand list variable", async () => {
     let expanded = await expandVariable(variable, graph, formService);
     expect(expanded).toEqual({
         id: "test",
+        name: "test",
         type: {
             type: VariableTypeName.LIST,
             value: new ExpandedListVariableType(form, {ok: true})
@@ -148,6 +150,7 @@ test("expand aggregate variable", async () => {
     });
     let aggregate: Variable = {
         id: "aggregate",
+        name: "test",
         type: {
             type: VariableTypeName.AGGREGATE,
             value: new AggregateVariableType(AggregateType.SUM, "test", "ok")
@@ -238,6 +241,7 @@ test("expand goal variable", async () => {
 
     let goal: Variable = {
         id: "goal",
+        name: "test",
         type: {
             type: VariableTypeName.GOAL,
             value: new GoalVariableType([

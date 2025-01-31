@@ -9,11 +9,16 @@ import type {VariableGraph} from "@perfice/services/variable/graph";
 
 export interface StoredVariable {
     id: string;
+    name: string;
     type: {
         type: VariableTypeName;
         // Value is stored as an object, but deserialized into the actual class
         value: object;
     };
+}
+
+export type Variable = StoredVariable & {
+    type: VariableTypeDef;
 }
 
 export interface TextOrDynamic {
@@ -63,6 +68,7 @@ export interface VariableEvaluator {
 
 export type ExpandedVariable = {
     id: string;
+    name: string;
     type: ExpandedVariableTypeDef;
 };
 
@@ -85,6 +91,7 @@ export function shrinkExpandedVariable(v: ExpandedVariable): Variable {
     let variableType = v.type.value.shrink();
     return {
         id: v.id,
+        name: v.name,
         type: {
             type: v.type.type,
             // @ts-ignore Doesn't seem to be possible to narrow the type here
@@ -103,9 +110,6 @@ export type VariableTypeDef =
     | VT<VariableTypeName.AGGREGATE, AggregateVariableType>
     | VT<VariableTypeName.GOAL, GoalVariableType>;
 
-export type Variable = StoredVariable & {
-    type: VariableTypeDef;
-}
 
 
 export interface VariableIndex {

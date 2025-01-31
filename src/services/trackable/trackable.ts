@@ -62,6 +62,7 @@ export class TrackableService {
         trackable.formId = form.id;
         let listVariable: Variable = {
             id: `${trackable.id}_list`,
+            name: trackable.name,
             type: {
                 type: VariableTypeName.LIST,
                 value: new ListVariableType(trackable.formId, {
@@ -72,6 +73,7 @@ export class TrackableService {
 
         let aggregateVariable: Variable = {
             id: trackable.id,
+            name: trackable.name,
             type: {
                 type: VariableTypeName.AGGREGATE,
                 value: new AggregateVariableType(AggregateType.SUM, listVariable.id, "test")
