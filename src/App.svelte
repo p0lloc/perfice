@@ -7,10 +7,12 @@
     import {closeContextMenus} from "@perfice/model/ui/context-menu";
     import JournalView from "@perfice/views/JournalView.svelte";
     import Sidebar from "@perfice/components/sidebar/Sidebar.svelte";
+    import GoalView from "@perfice/views/GoalView.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
         {path: "/journal", component: JournalView},
+        {path: "/goals", component: GoalView},
         {path: "/", component: TrackableView},
     ]
 

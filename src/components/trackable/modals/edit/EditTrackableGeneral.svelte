@@ -5,9 +5,14 @@
     import Fa from "svelte-fa";
     import type {EditTrackableState} from "@perfice/model/trackable/ui";
     import EditTrackableCard from "@perfice/components/trackable/modals/edit/EditTrackableCard.svelte";
+    import Button from "@perfice/components/base/button/Button.svelte";
+    import {goals} from "@perfice/main";
 
     let {editState = $bindable()}: { editState: EditTrackableState } = $props();
 
+    function createGoal() {
+        goals.createGoal(editState.trackable.name, editState.trackable.dependencies["aggregate"]);
+    }
 </script>
 
 <div>
@@ -30,4 +35,5 @@
     </div>
 
     <EditTrackableCard bind:cardState={editState.cardState} availableQuestions={editState.form.questions}/>
+    <Button onClick={createGoal}>create goal</Button>
 </div>

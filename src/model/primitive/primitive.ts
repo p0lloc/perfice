@@ -196,3 +196,11 @@ export function prettyPrintPrimitive(v: PrimitiveValue): string {
             return v.value?.toString() ?? "";
     }
 }
+
+export function primitiveAsNumber(value: PrimitiveValue): number {
+    if (value.type == PrimitiveValueType.NUMBER) {
+        return value.value;
+    }
+
+    return 0;
+}

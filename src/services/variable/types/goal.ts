@@ -188,6 +188,18 @@ export class ComparisonGoalCondition implements GoalConditionValue {
         return new ExpandedComparisonGoalCondition(sourceExpanded, this.operator, targetExpanded);
     }
 
+    getSource(): ConstantOrVariable {
+        return this.source;
+    }
+
+    getTarget(): ConstantOrVariable {
+        return this.target;
+    }
+
+    getOperator(): ComparisonOperator {
+        return this.operator;
+    }
+
 }
 
 export class ExpandedGoalMetGoalCondition implements ExpandedGoalConditionValue {
@@ -248,11 +260,11 @@ export enum GoalConditionType {
     GOAL_MET = "GOAL_MET",
 }
 
-interface ExpandedGoalConditionValue {
+export interface ExpandedGoalConditionValue {
     shrink(): GoalConditionValue;
 }
 
-interface GoalConditionValue {
+export interface GoalConditionValue {
     evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue>;
 
     getDependencies(): string[];
@@ -294,7 +306,6 @@ export class GoalVariableType implements VariableType {
 
     private readonly conditions: GoalCondition[];
     private readonly timeScope: TimeScope;
-
 
     constructor(conditions: GoalCondition[], timeScope: TimeScope) {
         this.conditions = conditions;

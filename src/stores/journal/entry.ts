@@ -11,7 +11,6 @@ const PAGE_SIZE = 30;
 export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
 
     private journalService: JournalService;
-
     private page: number = 0;
 
     constructor(journalService: JournalService) {

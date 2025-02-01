@@ -21,6 +21,10 @@ import {BaseFormService} from "@perfice/services/form/form";
 import {FormStore} from "@perfice/stores/form/form";
 import {VariableStore} from "@perfice/stores/variable/variable";
 import {GroupedJournal} from "@perfice/stores/journal/grouped";
+import {GoalService} from "@perfice/services/goal/goal";
+import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
+import type {Goal} from "@perfice/model/goal/goal";
+import {GoalValueStore} from "@perfice/stores/goal/value";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -42,16 +46,19 @@ formService.initLazyDependencies(journalService);
 
 const trackableService = new TrackableService(db.trackables, variableService, formService);
 const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);
+const goalService = new GoalService(db.goals, variableService);
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService);
 export const variables = new VariableStore(variableService);
 export const trackableDate = TrackableDate();
+export const goalDate = GoalDate();
 export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);
 export const journal = new JournalEntryStore(journalService);
 export const categorizedTrackables = CategorizedTrackables();
 export const groupedJournal = GroupedJournal();
+export const goals = new GoalStore(goalService);
 
 export const appReady = writable(false);
 
@@ -62,6 +69,10 @@ export function variableValue(id: string, timeContext: TimeScope, key: string) {
 
 export function trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {
     return TrackableValueStore(trackable, date, weekStart, key, variableService);
+}
+
+export function goalValue(goal: Goal, date: Date, weekStart: WeekStart, key: string) {
+    return GoalValueStore(goal, date, weekStart, key, variableService);
 }
 
 (async () => {

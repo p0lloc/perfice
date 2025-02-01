@@ -37,7 +37,7 @@ export function VariableValueStore(id: string, timeContext: TimeScope, variableS
     }), () => {
         // When this store is destroyed, unregister the listener
         return () => context.unregister()
-    }, pNumber(0.0));
+    });
 
     return {
         subscribe,
