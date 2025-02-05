@@ -116,7 +116,7 @@
                                        onClick={() => editQuestion(question)}
                                        onDelete={() => deleteQuestion(question)}/>
                     {/each}
-                    <button class="border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center"
+                    <button class="horizontal-add-button"
                             onclick={(e) => contextMenu?.openFromClick(e, e.currentTarget)}>
                         <Fa icon={faPlusCircle} class="pointer-events-none"/>
                     </button>

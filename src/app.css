@@ -45,6 +45,10 @@ input[type="checkbox"] {
     @apply h-5 w-5;
 }
 
+.horizontal-add-button {
+    @apply border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center hover-feedback;
+}
+
 
 @media (pointer: fine) {
     .hover-feedback:hover {
@@ -56,4 +60,17 @@ input[type="checkbox"] {
     .hover-feedback:active {
         background-color: rgb(243, 244, 246);
     }
+}
+
+input[type="color"]::-moz-color-swatch {
+    border: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
 }
