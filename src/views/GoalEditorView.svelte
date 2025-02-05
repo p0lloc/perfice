@@ -1,18 +1,24 @@
 <script lang="ts">
     import {onMount} from "svelte";
-    import {NEW_GOAL_ROUTE} from "@perfice/model/goal/ui";
+    import {type GoalSidebarAction, GoalSidebarActionType, NEW_GOAL_ROUTE} from "@perfice/model/goal/ui";
     import {back, goals, variableEditProvider} from "@perfice/main";
     import type {Goal} from "@perfice/model/goal/goal";
     import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
-    import type {GoalVariableType} from "@perfice/services/variable/types/goal";
+    import {type GoalCondition, GoalVariableType} from "@perfice/services/variable/types/goal";
     import ColorPickerButton from "@perfice/components/base/color/ColorPickerButton.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
     import {faArrowLeft, faCheck, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+    // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import GoalEditorSidebar from "@perfice/components/goal/editor/sidebar/GoalEditorSidebar.svelte";
+    import GoalConditionCard from "@perfice/components/goal/editor/GoalConditionCard.svelte";
+    import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
     let {params}: { params: Record<string, string> } = $props();
+
+    let sidebar: GoalEditorSidebar;
 
     let goal = $state<Goal | undefined>(undefined);
     let goalVariable = $state<Variable | undefined>(undefined);
@@ -56,6 +62,34 @@
         goalData = goalVariable.type.value;
     }
 
+    function addCondition() {
+        if (goalData == null || goalVariable == null) return;
+
+        sidebar.open({
+            type: GoalSidebarActionType.ADD_CONDITION, value: {
+                onConditionSelected: (c: GoalCondition) => {
+                    goalData = new GoalVariableType(goalData!.getConditions().concat([c]), goalData!.getTimeScope());
+                }
+            }
+        });
+    }
+
+    function onOpenSidebar(action: GoalSidebarAction) {
+        sidebar.open(action);
+    }
+
+    function onConditionUpdate(condition: GoalCondition) {
+        if (goalData == null || goalVariable == null) return;
+        goalData = new GoalVariableType(
+            updateIdentifiedInArray(goalData.getConditions(), condition), goalData.getTimeScope());
+    }
+
+    function onConditionDelete(condition: GoalCondition) {
+        if (goalData == null || goalVariable == null) return;
+        goalData = new GoalVariableType(
+            deleteIdentifiedInArray(goalData.getConditions(), condition.id), goalData.getTimeScope());
+    }
+
     function save() {
     }
 
@@ -81,7 +115,7 @@
     </MobileTopBar>
     <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
     <div class="md:w-1/2 p-4">
-        {#if goal !== undefined}
+        {#if goal != null && goalData != null}
             <p class="block mb-2 label mt-4">Name & color</p>
             <div class="row-gap">
                 <input bind:value={goal.name} placeholder="Goal name" type="text" class="input">
@@ -89,9 +123,18 @@
             </div>
 
             <p class="block mb-2 label mt-4">Conditions</p>
-            <button class="horizontal-add-button">
-                <Fa icon={faPlusCircle} class="pointer-events-none"/>
-            </button>
+            <div class="flex flex-col gap-2 mt-2">
+                {#each goalData.getConditions() as condition(condition.id)}
+                    <GoalConditionCard {condition}
+                                       onOpenSidebar={onOpenSidebar}
+                                       onUpdate={(condition) => onConditionUpdate(condition)}
+                                       onDelete={() => onConditionDelete(condition)}
+                    />
+                {/each}
+                <button class="horizontal-add-button rounded-xl" onclick={addCondition}>
+                    <Fa icon={faPlusCircle} class="pointer-events-none"/>
+                </button>
+            </div>
 
             <div class="hidden mt-4 md:flex items-center gap-2">
                 <Button onClick={save}>Save</Button>
@@ -101,4 +144,5 @@
             <p>Goal not found</p>
         {/if}
     </div>
+    <GoalEditorSidebar bind:this={sidebar}/>
 </div>

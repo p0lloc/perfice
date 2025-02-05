@@ -49,6 +49,9 @@ input[type="checkbox"] {
     @apply border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center hover-feedback;
 }
 
+.right-sidebar {
+    @apply absolute top-0 md:static z-10 border-l bg-white h-screen w-screen;
+}
 
 @media (pointer: fine) {
     .hover-feedback:hover {

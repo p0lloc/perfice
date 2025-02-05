@@ -7,6 +7,7 @@ import {
     pBoolean,
     pComparisonResult,
     pMap,
+    pNumber,
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
@@ -41,17 +42,19 @@ export enum ComparisonOperator {
 
 export class ComparisonGoalCondition implements GoalConditionValue {
 
-    private readonly source: ConstantOrVariable;
+    private readonly source: ConstantOrVariable | null;
     private readonly operator: ComparisonOperator;
-    private readonly target: ConstantOrVariable;
+    private readonly target: ConstantOrVariable | null;
 
-    constructor(source: ConstantOrVariable, operator: ComparisonOperator, target: ConstantOrVariable) {
+    constructor(source: ConstantOrVariable | null, operator: ComparisonOperator, target: ConstantOrVariable | null) {
         this.source = source;
         this.operator = operator;
         this.target = target;
     }
 
-    private async evaluateValue(value: ConstantOrVariable, evaluator: VariableEvaluator): Promise<PrimitiveValue> {
+    private async evaluateValue(value: ConstantOrVariable | null, evaluator: VariableEvaluator): Promise<PrimitiveValue> {
+        if(value == null) return pNumber(0.0);
+
         if (value.constant || value.value.type != PrimitiveValueType.STRING) {
             return value.value;
         }
@@ -93,22 +96,22 @@ export class ComparisonGoalCondition implements GoalConditionValue {
 
     getDependencies(): string[] {
         let dependencies: string[] = [];
-        if (!this.source.constant && this.source.value.type == PrimitiveValueType.STRING) {
+        if (this.source != null && !this.source.constant && this.source.value.type == PrimitiveValueType.STRING) {
             dependencies.push(this.source.value.value);
         }
 
-        if (!this.target.constant && this.target.value.type == PrimitiveValueType.STRING) {
+        if (this.target != null && !this.target.constant && this.target.value.type == PrimitiveValueType.STRING) {
             dependencies.push(this.target.value.value);
         }
 
         return dependencies;
     }
 
-    getSource(): ConstantOrVariable {
+    getSource(): ConstantOrVariable | null {
         return this.source;
     }
 
-    getTarget(): ConstantOrVariable {
+    getTarget(): ConstantOrVariable | null {
         return this.target;
     }
 
@@ -156,6 +159,15 @@ export class GoalMetGoalCondition implements GoalConditionValue {
 export enum GoalConditionType {
     COMPARISON = "COMPARISON",
     GOAL_MET = "GOAL_MET",
+}
+
+export function createGoalConditionValue(type: GoalConditionType): GoalConditionValue {
+    switch (type) {
+        case GoalConditionType.COMPARISON:
+            return new ComparisonGoalCondition(null, ComparisonOperator.EQUAL, null);
+        case GoalConditionType.GOAL_MET:
+            return new GoalMetGoalCondition("");
+    }
 }
 
 export interface GoalConditionValue {

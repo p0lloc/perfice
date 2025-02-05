@@ -16,7 +16,7 @@
     let dataTypeDef = $derived(questionDataTypeRegistry.getDefinition(currentQuestion?.dataType ?? FormQuestionDataType.TEXT)!);
 </script>
 <div class:invisible={currentQuestion == null}
-     class="absolute top-0 md:static z-10 border-l bg-white h-screen w-screen md:w-96">
+     class="right-sidebar md:w-96">
     {#if currentQuestion != null}
         <div class="row-between text-2xl p-4 font-bold border-b">
             Edit question
