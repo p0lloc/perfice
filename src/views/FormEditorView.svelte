@@ -106,7 +106,7 @@
     </MobileTopBar>
     <div class="flex justify-between">
         <div class="p-2 flex-1 flex">
-            <div class="mx-auto w-full md:w-1/2 mt-8">
+            <div class="mx-auto w-screen md:w-1/2 mt-8">
                 <h2 class="text-3xl font-bold">{form.name}</h2>
                 <label for="first_name" class=" mb-2 label">Format</label>
                 <h2 class="text-2xl font-bold">Questions</h2>

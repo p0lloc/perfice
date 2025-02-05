@@ -49,7 +49,7 @@
 <svelte:window onwheel={onScroll}/>
 
 <FormModal bind:this={formModal}/>
-<div class="mx-auto w-full md:w-1/2 md:px-0 px-4 py-10">
+<div class="mx-auto w-screen md:w-1/2 md:px-0 px-4 py-10">
     {#await $groupedJournal}
         Loading...
     {:then days}

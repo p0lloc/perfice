@@ -11,7 +11,7 @@
     ];
 </script>
 
-<div class="md:min-h-screen max-h-screen fixed bg-green-500 md:w-16 w-full p-2 bottom-0">
+<div class="md:min-h-screen max-h-screen left-0 fixed bg-green-500 md:w-16 w-screen p-2 bottom-0">
     <div class="flex md:flex-col items-center gap-2">
         {#each links as link}
             <button onclick={() => goto(link.path)}

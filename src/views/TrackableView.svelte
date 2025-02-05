@@ -9,7 +9,7 @@
     }
 </script>
 
-<div class="mx-auto w-full md:w-1/2 md:px-0 px-4 py-10">
+<div class="mx-auto w-screen md:w-1/2 md:px-0 px-4 py-10">
     <TitleAndCalendar date={$trackableDate} onDateChange={onDateChange} title="Trackables"/>
 
     <TrackableList date={$trackableDate} weekStart={$weekStart}/>

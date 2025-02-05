@@ -4,14 +4,14 @@
     let {title, leading, actions}: { title: string, leading?: Snippet, actions?: Snippet } = $props();
 </script>
 
-<div class="w-screen border-b md:hidden p-2 flex items-center relative justify-between">
+<div class="w-screen max-w-screen border-b md:hidden p-2 flex items-center relative justify-between">
     <div class="z-10">
         {@render leading?.()}
     </div>
     <div class="z-10">
         {@render actions?.()}
     </div>
-    <div class="flex w-full justify-center absolute font-bold text-lg">
+    <div class="flex flex-1 w-screen justify-center absolute font-bold text-lg left-0">
         {title}
     </div>
 </div>
