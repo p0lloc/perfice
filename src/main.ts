@@ -30,6 +30,7 @@ import { modalNavigatorState } from './model/ui/modal';
 import { routingNavigatorState } from './model/ui/router';
 import { goto } from '@mateothegreat/svelte5-router';
 import { Capacitor } from '@capacitor/core';
+import {VariableEditProvider} from "@perfice/stores/variable/edit";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -64,6 +65,7 @@ export const journal = new JournalEntryStore(journalService);
 export const categorizedTrackables = CategorizedTrackables();
 export const groupedJournal = GroupedJournal();
 export const goals = new GoalStore(goalService);
+export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
 
 export const appReady = writable(false);
 
