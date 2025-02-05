@@ -1,6 +1,7 @@
 import {mount} from 'svelte'
 import './app.css'
 import App from './App.svelte'
+import {App as CapacitorApp} from '@capacitor/app';
 import {TrackableService} from "@perfice/services/trackable/trackable";
 import {VariableService} from "@perfice/services/variable/variable";
 import {setupDb} from "@perfice/db/dexie/db";
@@ -25,6 +26,10 @@ import {GoalService} from "@perfice/services/goal/goal";
 import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
 import type {Goal} from "@perfice/model/goal/goal";
 import {GoalValueStore} from "@perfice/stores/goal/value";
+import { modalNavigatorState } from './model/ui/modal';
+import { routingNavigatorState } from './model/ui/router';
+import { goto } from '@mateothegreat/svelte5-router';
+import { Capacitor } from '@capacitor/core';
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -82,6 +87,32 @@ export function goalValue(goal: Goal, date: Date, weekStart: WeekStart, key: str
 
 const app = mount(App, {
     target: document.getElementById('app')!,
-})
+});
+
+export async function back() {
+    let modalRoute = modalNavigatorState.pop();
+    if (modalRoute != undefined) {
+        modalRoute.close();
+        return true;
+    }
+
+    let currentRoute = routingNavigatorState.pop();
+    if (currentRoute != null) {
+        let previousRoute = routingNavigatorState.pop();
+        if (previousRoute != null) {
+            goto(previousRoute);
+            return;
+        }
+    }
+
+    // Exit app on mobile and go to root route on web
+    if (Capacitor.getPlatform() != "web") {
+        await CapacitorApp.exitApp();
+    } else {
+        goto("/");
+    }
+}
+
+CapacitorApp.addListener("backButton", back);
 
 export default app

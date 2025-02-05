@@ -9,6 +9,7 @@
     import Sidebar from "@perfice/components/sidebar/Sidebar.svelte";
     import GoalView from "@perfice/views/GoalView.svelte";
     import GoalEditorView from "@perfice/views/GoalEditorView.svelte";
+    import {routingNavigatorState} from "@perfice/model/ui/router";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
@@ -21,6 +22,11 @@
     function onBodyClick(e: MouseEvent) {
         closeContextMenus(e.target as HTMLElement);
     }
+
+    function onRouterRoute(r: Route) {
+        routingNavigatorState.push(r.path.toString());
+        return r;
+    }
 </script>
 
 <svelte:body onclick={onBodyClick}/>
@@ -28,7 +34,7 @@
     <div class="flex">
         <Sidebar />
         <div class="flex-1">
-            <Router {routes}/>
+            <Router post={onRouterRoute} {routes}/>
         </div>
     </div>
 {/if}
