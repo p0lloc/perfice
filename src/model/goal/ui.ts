@@ -1,5 +1,7 @@
 import {PrimitiveValueType, type PrimitiveValue, primitiveAsNumber} from "../primitive/primitive";
 
+export const NEW_GOAL_ROUTE = "new";
+
 export interface ConditionProgress {
     first: number;
     second: number;

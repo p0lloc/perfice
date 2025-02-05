@@ -29,6 +29,10 @@ select {
     @apply flex justify-between items-center;
 }
 
+.flex-center {
+    @apply flex justify-center items-center;
+}
+
 .label {
     @apply text-lg font-bold text-gray-700;
 }
@@ -39,4 +43,17 @@ select {
 
 input[type="checkbox"] {
     @apply h-5 w-5;
+}
+
+
+@media (pointer: fine) {
+    .hover-feedback:hover {
+        background-color: rgb(243, 244, 246);
+    }
+}
+
+@media (pointer: coarse) {
+    .hover-feedback:active {
+        background-color: rgb(243, 244, 246);
+    }
 }

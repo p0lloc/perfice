@@ -8,9 +8,11 @@
     import JournalView from "@perfice/views/JournalView.svelte";
     import Sidebar from "@perfice/components/sidebar/Sidebar.svelte";
     import GoalView from "@perfice/views/GoalView.svelte";
+    import GoalEditorView from "@perfice/views/GoalEditorView.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
+        {path: "/goals/(?<goalId>.*)", component: GoalEditorView},
         {path: "/journal", component: JournalView},
         {path: "/goals", component: GoalView},
         {path: "/", component: TrackableView},
