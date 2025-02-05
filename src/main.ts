@@ -89,6 +89,10 @@ const app = mount(App, {
     target: document.getElementById('app')!,
 });
 
+/**
+ * Goes to the previous route (or closes the opened modal).
+ * Exits the app on mobile if there are no more routes in history.
+ */
 export async function back() {
     let modalRoute = modalNavigatorState.pop();
     if (modalRoute != undefined) {

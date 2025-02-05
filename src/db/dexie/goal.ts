@@ -10,6 +10,10 @@ export class DexieGoalCollection implements GoalCollection {
         this.table = table;
     }
 
+    async getGoalById(id: string): Promise<Goal | undefined> {
+        return this.table.get(id);
+    }
+
     async getGoals(): Promise<Goal[]> {
         return this.table.toArray();
     }

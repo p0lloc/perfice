@@ -3,9 +3,14 @@
     import GoalCard from "@perfice/components/goal/GoalCard.svelte";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import GoalNewCard from "@perfice/components/goal/GoalNewCard.svelte";
+    import {onMount} from "svelte";
     function onDateChange(e: Date) {
         $goalDate = e;
     }
+
+    onMount(() => {
+        goals.load();
+    })
 </script>
 
 <div class="w-1/2 mx-auto mt-8">

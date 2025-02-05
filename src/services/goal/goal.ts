@@ -1,4 +1,4 @@
-import type { GoalCollection } from "@perfice/db/collections";
+import type {GoalCollection} from "@perfice/db/collections";
 import type {Goal} from "@perfice/model/goal/goal";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {VariableService} from "@perfice/services/variable/variable";
@@ -24,8 +24,12 @@ export class GoalService {
         this.variableService = variableService;
     }
 
-    getGoals(): Promise<Goal[]> {
-        return this.goalCollection.getGoals();
+    async getGoals(): Promise<Goal[]> {
+        return await this.goalCollection.getGoals();
+    }
+
+    async getGoalById(id: string): Promise<Goal | undefined> {
+        return await this.goalCollection.getGoalById(id);
     }
 
     async createGoal(name: string, aggregateVariableId: string): Promise<void> {
@@ -61,6 +65,20 @@ export class GoalService {
         await this.observers.notifyObservers(EntityObserverType.CREATED, goal);
     }
 
+
+    async updateGoal(goal: Goal) {
+        await this.goalCollection.updateGoal(goal);
+        await this.observers.notifyObservers(EntityObserverType.UPDATED, goal);
+    }
+
+
+    async deleteGoalById(id: string) {
+        let goal = await this.goalCollection.getGoalById(id);
+        if (goal == null) return;
+
+        await this.goalCollection.deleteGoalById(id);
+        await this.observers.notifyObservers(EntityObserverType.DELETED, goal);
+    }
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<Goal>) {
         this.observers.addObserver(type, callback);

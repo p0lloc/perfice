@@ -9,7 +9,6 @@ import {
     type Variable,
     type VariableIndex,
     type VariableTypeDef,
-    VariableTypeName,
 } from "@perfice/model/variable/variable";
 import {deserializeVariableType, serializeVariableType} from "@perfice/services/variable/types/serialization";
 import type {VariableGraph} from "@perfice/services/variable/graph";
@@ -18,8 +17,6 @@ import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
-import type {Form, FormQuestion} from "@perfice/model/form/form";
-
 
 export type VariableCallback = (v: PrimitiveValue) => void;
 
@@ -57,6 +54,24 @@ export class VariableService {
         return variables;
     }
 
+    /**
+     * Gets all the variables that are currently in the graph.
+     * Note that loadVariables must have been called before.
+     */
+    getVariables() {
+        return this.graph.getVariables();
+    }
+
+    getVariableById(id: string): Variable | undefined {
+        return this.graph.getVariableById(id);
+    }
+
+    /**
+     * Evaluates a variable live, i.e. as soon as the value changes, the callback is called.
+     * @param id Id of the variable to evaluate
+     * @param timeScope Time scope to evaluate the variable in
+     * @param callback Called when the variable value changes
+     */
     async evaluateVariableLive(id: string, timeScope: TimeScope, callback: VariableCallback): Promise<PrimitiveValue> {
         let updateListener = async (i: VariableIndex) => {
             // Index must match both variable id and time context fully
@@ -90,6 +105,9 @@ export class VariableService {
         return await this.evaluateVariable(id, timeScope);
     }
 
+    /**
+     * Evaluates a variable and returns the value.
+     */
     async evaluateVariable(id: string, timeScope: TimeScope): Promise<PrimitiveValue> {
         let variable = this.getVariableById(id)
         if (variable == null) {
@@ -99,7 +117,9 @@ export class VariableService {
         return this.graph.evaluateVariable(variable, timeScope, false, []);
     }
 
-
+    /**
+     * Unregisters a callback from the variable value updates.
+     */
     unregisterListener(callback: VariableCallback) {
         let remaining: VariableListener[] = [];
         for (let listener of this.listeners) {
@@ -122,9 +142,6 @@ export class VariableService {
         await this.observers.notifyObservers(EntityObserverType.CREATED, variable);
     }
 
-    getVariableById(id: string): Variable | undefined {
-        return this.graph.getVariableById(id);
-    }
 
     private serializeVariable(variable: Variable): StoredVariable {
         return {
@@ -180,31 +197,5 @@ export class VariableService {
     public removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Variable>) {
         this.observers.removeObserver(type, callback);
     }
-
-    /*
-    TODO: Most likely not needed because variables fetch values from entries, that are not modified as the form changes.
-
-    private getVariablesReferencingQuestions(questions: FormQuestion[]): Variable[] {
-        let variables: Variable[] = [];
-        for (let variable of this.graph.getVariables()) {
-            if(variable.type.type != VariableTypeName.LIST) continue;
-
-            for (let field of Object.keys(variable.type.value.getFields())) {
-                if(!questions.some(q => q.id == field)) continue;
-
-                variables.push(variable);
-            }
-        }
-
-        return variables
-    }
-
-    async onFormUpdated(f: Form) {
-        let variables = this.getVariablesReferencingQuestions(f.questions);
-        for(let variable of variables) {
-            await this.indexCollection.deleteIndicesByVariableId(variable.id);
-        }
-    }*/
-
 
 }

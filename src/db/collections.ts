@@ -50,6 +50,8 @@ export interface FormSnapshotCollection {
 export interface GoalCollection {
     getGoals(): Promise<Goal[]>;
 
+    getGoalById(id: string): Promise<Goal | undefined>;
+
     createGoal(goal: Goal): Promise<void>;
 
     updateGoal(goal: Goal): Promise<void>;
