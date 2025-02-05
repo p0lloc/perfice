@@ -1,13 +1,9 @@
 import {
-    type ExpandedVariable,
-    type ExpandedVariableType, expandVariable,
     type VariableEvaluator,
     type VariableType,
     VariableTypeName
 } from "@perfice/model/variable/variable";
 import {pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-import type {VariableGraph} from "@perfice/services/variable/graph";
-import type {FormService} from "@perfice/services/form/form";
 
 export enum AggregateType {
     SUM = "SUM",
@@ -37,23 +33,6 @@ function sumNumbers(list: number[]): number {
     }
 
     return sum;
-}
-
-
-export class ExpandedAggregateVariableType implements ExpandedVariableType {
-    private readonly aggregateType: AggregateType;
-    private readonly listVariable: ExpandedVariable;
-    private readonly field: string;
-
-    constructor(aggregateType: AggregateType, listVariable: ExpandedVariable, field: string) {
-        this.aggregateType = aggregateType;
-        this.listVariable = listVariable;
-        this.field = field;
-    }
-
-    shrink(): VariableType {
-        return new AggregateVariableType(this.aggregateType, this.listVariable.id, this.field);
-    }
 }
 
 export class AggregateVariableType implements VariableType {
@@ -109,17 +88,6 @@ export class AggregateVariableType implements VariableType {
                 return pNumber(sum / numbers.length);
             }
         }
-    }
-
-
-    async expand(graph: VariableGraph, formService: FormService): Promise<ExpandedVariableType | null> {
-        let listVariable = graph.getVariableById(this.listVariableId);
-        if(listVariable == null) return null;
-
-        let list = await expandVariable(listVariable, graph, formService);
-        if(list == null) return null;
-
-        return new ExpandedAggregateVariableType(this.aggregateType, list, this.field);
     }
 
     getDependencies(): string[] {

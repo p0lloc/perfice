@@ -6,7 +6,6 @@ import {
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
 import {
-    type ExpandedVariableType,
     type VariableEvaluator,
     type VariableIndex,
     type VariableType,
@@ -17,10 +16,8 @@ import {
     type EntryCreatedDependent,
     type EntryDeletedDependent,
     type VariableIndexAction,
-    type EntryUpdatedDependent, type VariableGraph
+    type EntryUpdatedDependent,
 } from "@perfice/services/variable/graph";
-import type {Form} from "@perfice/model/form/form";
-import type {FormService} from "@perfice/services/form/form";
 
 export function extractRawValue(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY) {
@@ -43,20 +40,6 @@ export function extractFieldsFromAnswers(answers: Record<string, PrimitiveValue>
     return result;
 }
 
-export class ExpandedListVariableType implements ExpandedVariableType {
-    private readonly form: Form;
-    private readonly fields: Record<string, boolean>;
-
-    constructor(form: Form, fields: Record<string, boolean>) {
-        this.form = form;
-        this.fields = fields;
-    }
-
-    shrink(): VariableType {
-        return new ListVariableType(this.form.id, this.fields);
-    }
-}
-
 export class ListVariableType implements VariableType, EntryCreatedDependent, EntryDeletedDependent, EntryUpdatedDependent {
 
     private readonly formId: string;
@@ -65,12 +48,6 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
     constructor(formId: string, fields: Record<string, boolean>) {
         this.formId = formId;
         this.fields = fields;
-    }
-
-    async expand(_graph: VariableGraph, formService: FormService): Promise<ExpandedVariableType | null> {
-        let form = await formService.getFormById(this.formId);
-        if (form == null) return null;
-        return new ExpandedListVariableType(form, this.fields);
     }
 
     async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
