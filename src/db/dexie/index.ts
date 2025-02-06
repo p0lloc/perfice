@@ -12,6 +12,7 @@ export class DexieIndexCollection implements IndexCollection {
         this.table = table;
     }
 
+
     async getIndexByVariableAndTimeScope(variableId: string, timeScope: string): Promise<VariableIndex | undefined> {
         return this.table.where("[variableId+timeScope]").equals([variableId, timeScope]).first();
     }
@@ -41,15 +42,29 @@ export class DexieIndexCollection implements IndexCollection {
     }
 
     async deleteIndicesByVariableId(id: string): Promise<void> {
-        let indices = await this.table.where("variableId").equals(id).toArray();
+        let query = this.table.where("variableId").equals(id);
+        let indices = await query.toArray();
 
+        await query.delete();
+        await this.notifyDeletion(indices);
+    }
+
+    async deleteIndicesByVariableIds(variablesToDelete: string[]): Promise<void> {
+        let query = this.table
+            .where("variableId")
+            .anyOf(variablesToDelete);
+
+        let indices = await query.toArray();
+        await query.delete();
+        await this.notifyDeletion(indices);
+    }
+
+    private async notifyDeletion(indices: VariableIndex[]){
         for (let index of indices) {
             for (const callback of this.deleteListeners) {
                 await callback(index);
             }
         }
-
-        await this.table.where("variableId").equals(id).delete();
     }
 
     addUpdateListener(listener: IndexUpdateListener) {
@@ -59,7 +74,6 @@ export class DexieIndexCollection implements IndexCollection {
     removeUpdateListener(listener: IndexUpdateListener) {
         this.updateListeners = this.updateListeners.filter(l => l != listener);
     }
-
 
     addDeleteListener(listener: IndexUpdateListener) {
         this.deleteListeners.push(listener);

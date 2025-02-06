@@ -8,13 +8,14 @@
     import ColorPickerButton from "@perfice/components/base/color/ColorPickerButton.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
-    import {faArrowLeft, faCheck, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+    import {faArrowLeft, faCheck, faPlusCircle, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import GoalEditorSidebar from "@perfice/components/goal/editor/sidebar/GoalEditorSidebar.svelte";
     import GoalConditionCard from "@perfice/components/goal/editor/GoalConditionCard.svelte";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
+    import {goto} from "@mateothegreat/svelte5-router";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -90,11 +91,34 @@
             deleteIdentifiedInArray(goalData.getConditions(), condition.id), goalData.getTimeScope());
     }
 
-    function save() {
+    async function save() {
+        if (goal == null || goalData == null || goalVariable == null) return;
+
+        // @ts-ignore
+        let variable: Variable = $state.snapshot<Variable>(goalVariable);
+        variable.type.value = goalData;
+        variableEditProvider.updateVariable(variable);
+        await variableEditProvider.save();
+
+        let goalSnapshot: Goal = $state.snapshot(goal);
+        if (creating) {
+            await goals.createGoal(goalSnapshot.name, variable);
+        } else {
+            await goals.updateGoal(goalSnapshot);
+        }
+
+        goto("/goals");
     }
 
     function discard() {
         back();
+    }
+
+    async function deleteGoal() {
+        if(goal == null) return;
+        // TODO: modal
+        await goals.deleteGoalById(goal.id);
+        await back();
     }
 
     onMount(() => loadGoal());
@@ -114,7 +138,7 @@
         {/snippet}
     </MobileTopBar>
     <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
-    <div class="md:w-1/2 p-4">
+    <div class="md:w-1/2 md:p-0 p-4">
         {#if goal != null && goalData != null}
             <p class="block mb-2 label mt-4">Name & color</p>
             <div class="row-gap">
@@ -136,13 +160,21 @@
                 </button>
             </div>
 
-            <div class="hidden mt-4 md:flex items-center gap-2">
-                <Button onClick={save}>Save</Button>
-                <Button onClick={discard} color={ButtonColor.RED}>Discard</Button>
-            </div>
         {:else}
             <p>Goal not found</p>
         {/if}
     </div>
-    <GoalEditorSidebar bind:this={sidebar}/>
+    <div class="hidden mt-4 row-between">
+        <div class="md:flex items-center gap-2">
+            <Button onClick={save}>Save</Button>
+            <Button onClick={discard} color={ButtonColor.RED}>Discard</Button>
+        </div>
+        <Button onClick={deleteGoal} color={ButtonColor.RED}>
+            <span class="row-gap">
+                <Fa icon={faTrash}/>
+                Delete
+            </span>
+        </Button>
+    </div>
 </div>
+<GoalEditorSidebar bind:this={sidebar}/>

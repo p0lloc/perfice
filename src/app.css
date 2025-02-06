@@ -50,7 +50,7 @@ input[type="checkbox"] {
 }
 
 .right-sidebar {
-    @apply absolute top-0 md:static z-10 border-l bg-white h-screen w-screen;
+    @apply absolute top-0 right-0 z-10 border-l bg-white h-screen w-screen;
 }
 
 @media (pointer: fine) {
@@ -76,4 +76,9 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 
 input[type="color"]::-webkit-color-swatch {
     border: none;
+}
+
+
+input[type="text"], input[type="number"] {
+    @apply border py-1 px-2 rounded-md;
 }

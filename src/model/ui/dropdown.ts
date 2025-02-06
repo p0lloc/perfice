@@ -3,9 +3,9 @@ import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 export interface DropdownMenuItemDetails<T> {
     name: string;
     value: T;
-    icon: IconDefinition | null;
+    icon?: IconDefinition;
 }
 
 export type DropdownMenuItem<T> = DropdownMenuItemDetails<T> & {
-    action: () => void;
+    action?: () => void;
 }

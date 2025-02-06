@@ -214,7 +214,7 @@ export class VariableGraph {
     }
 
     async onEntryCreated(entry: JournalEntry) {
-        if(this.entryCreatedDependent.size == 0) return;
+        if (this.entryCreatedDependent.size == 0) return;
 
         for (let [variableId, dependent] of this.entryCreatedDependent.entries()) {
             await this.handleEntryAction(entry, variableId,
@@ -223,7 +223,7 @@ export class VariableGraph {
     }
 
     async onEntryDeleted(entry: JournalEntry) {
-        if(this.entryDeletedDependent.size == 0) return;
+        if (this.entryDeletedDependent.size == 0) return;
 
         for (let [variableId, dependent] of this.entryDeletedDependent.entries()) {
             await this.handleEntryAction(entry, variableId,
@@ -232,7 +232,7 @@ export class VariableGraph {
     }
 
     async onEntryUpdated(entry: JournalEntry) {
-        if(this.entryUpdatedDependent.size == 0) return;
+        if (this.entryUpdatedDependent.size == 0) return;
 
         for (let [variableId, dependent] of this.entryUpdatedDependent.entries()) {
             await this.handleEntryAction(entry, variableId,
@@ -240,14 +240,39 @@ export class VariableGraph {
         }
     }
 
+    async deleteVariableAndDependencies(id: string): Promise<Variable[]> {
+        let variable = this.getVariableById(id);
+        if(variable == null) return [];
+
+        let variablesToDelete: Variable[] = [variable];
+
+        let dependents = this.dependents.get(id);
+        if (dependents != null) {
+            for(let dependent of dependents){
+                let variable = this.getVariableById(dependent);
+                if(variable == null) continue;
+
+                variablesToDelete.push(variable);
+            }
+        }
+
+        let variableIds = variablesToDelete.map(v => v.id);
+        variableIds.forEach(v => this.nodes.delete(v));
+
+        await this.indexCollection.deleteIndicesByVariableIds(variableIds);
+        return variablesToDelete;
+    }
+
     async onVariableDeleted(id: string) {
         // When a variable is deleted, we need to delete all of its indices
+        this.nodes.delete(id);
         await this.indexCollection.deleteIndicesByVariableId(id);
         await this.deleteIndicesForDependentVariables(id);
     }
 
     async onVariableUpdated(variable: Variable) {
         // When a variable is updated, we need to delete all of its indices
+        this.nodes.set(variable.id, variable);
         await this.indexCollection.deleteIndicesByVariableId(variable.id);
         await this.deleteIndicesForDependentVariables(variable.id);
     }

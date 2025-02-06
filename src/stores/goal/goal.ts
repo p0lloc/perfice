@@ -6,6 +6,7 @@ import { EntityObserverType } from "@perfice/services/observer";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight} from "@perfice/util/time/simple";
 import {resolvedPromise} from "@perfice/util/promise";
+import type {Variable} from "@perfice/model/variable/variable";
 
 
 export function GoalDate(): Writable<Date> {
@@ -49,8 +50,8 @@ export class GoalStore extends AsyncStore<Goal[]> {
         await this.goalService.deleteGoalById(id);
     }
 
-    createGoal(name: string, aggregateVariableId: string): Promise<void> {
-        return this.goalService.createGoal(name, aggregateVariableId);
+    createGoal(name: string, variable: Variable): Promise<void> {
+        return this.goalService.createGoal(name, variable);
     }
 
     private async onGoalCreated(goal: Goal) {

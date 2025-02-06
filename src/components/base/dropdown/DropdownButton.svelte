@@ -8,32 +8,46 @@
 
     let contextMenu: ContextMenu;
     let button: HTMLButtonElement;
-    let {value, items, class: className = ''}: { value: T, items: DropdownMenuItem<T>[], class?: string } = $props();
+    let {value, items, class: className = '', onChange}: {
+        value: T,
+        items: DropdownMenuItem<T>[],
+        class?: string,
+        onChange: (v: T) => void
+    } = $props();
 
     function open(e: MouseEvent) {
         contextMenu.openFromClick(e, button, true);
     }
 
+    function onAction(e: DropdownMenuItem<T>) {
+        e.action?.();
+        onChange(e.value);
+    }
+
     let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => i.value == value));
 </script>
-<button class="border rounded-xl px-3 py-2 flex items-center justify-between {className} gap-2 context-menu-button" onclick={open} bind:this={button}>
-    {#if selectedItem != null}
-        <div class="row-gap pointer-events-none">
+<button class="border min-h-8 min-w-16 rounded-xl px-3 py-2 flex items-center justify-between {className} gap-2 context-menu-button"
+        onclick={open} bind:this={button}>
+    <div class="row-gap pointer-events-none">
+        {#if selectedItem != null}
             {#if selectedItem.icon != null}
                 <Fa icon={selectedItem.icon} class="w-4"/>
             {/if}
             {selectedItem.name}
-        </div>
-    {/if}
+        {:else}
+            <span class="text-gray-500">Select value</span>
+        {/if}
+    </div>
     <Fa icon={faChevronDown} class="text-xs pointer-events-none"/>
 </button>
+
 <ContextMenu bind:this={contextMenu}>
     <ContextMenuButtons buttons={
-        items.map((t) => {
+        items.map((item) => {
             return {
-            name: t.name,
-            icon: t.icon,
-            action: t.action,
+            name: item.name,
+            icon: item.icon ?? null,
+            action: () => onAction(item),
         }
     })}/>
 </ContextMenu>

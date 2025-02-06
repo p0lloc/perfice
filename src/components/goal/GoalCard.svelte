@@ -26,7 +26,7 @@
     {#await $res}
         Loading...
     {:then value}
-        <button class="border-b w-full p-2 hover-feedback row-between" onclick={editGoal}>
+        <button class="border-b w-full p-2 hover-feedback row-between rounded-t-xl" onclick={editGoal}>
             {goal.name}
             <Fa icon={faCheck} class="text-green-500"/>
         </button>

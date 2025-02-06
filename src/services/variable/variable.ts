@@ -184,6 +184,14 @@ export class VariableService {
         await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
     }
 
+    async deleteVariableAndDependencies(variableId: string) {
+        let variablesToDelete = await this.graph.deleteVariableAndDependencies(variableId);
+        for(let variable of variablesToDelete) {
+            await this.variableCollection.deleteVariableById(variable.id);
+            await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
+        }
+    }
+
     async updateVariable(variable: Variable) {
         await this.variableCollection.updateVariable(this.serializeVariable(variable));
         await this.graph.onVariableUpdated(variable);

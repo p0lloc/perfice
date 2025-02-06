@@ -6,7 +6,9 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import type {Component} from "svelte";
     import ComparisonConditionRenderer
-        from "@perfice/components/goal/editor/condition/ComparisonConditionRenderer.svelte";
+        from "@perfice/components/goal/editor/condition/comparison/ComparisonConditionRenderer.svelte";
+    import GoalMetConditionRenderer
+        from "@perfice/components/goal/editor/condition/goalMet/GoalMetConditionRenderer.svelte";
 
     let {condition, onOpenSidebar, onUpdate, onDelete}: {
         condition: GoalCondition,
@@ -21,6 +23,7 @@
         onSidebar: (v: GoalSidebarAction) => void
     }>>> = {
         [GoalConditionType.COMPARISON]: ComparisonConditionRenderer,
+        [GoalConditionType.GOAL_MET]: GoalMetConditionRenderer,
     };
 
     function onValueChange(v: any) {

@@ -97,6 +97,8 @@ export interface IndexCollection {
 
     deleteIndicesByIds(ids: string[]): Promise<void>;
 
+    deleteIndicesByVariableIds(variablesToDelete: string[]): Promise<void>;
+
     addUpdateListener(listener: IndexUpdateListener): void;
 
     removeUpdateListener(listener: IndexUpdateListener): void;

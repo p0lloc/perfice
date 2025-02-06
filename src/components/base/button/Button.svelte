@@ -15,7 +15,7 @@
     }
 </script>
 
-<button class="{BUTTON_COLOR_CLASSES[color]} font-bold" onclick={onClick}>
+<button class="{BUTTON_COLOR_CLASSES[color]} font-bold " onclick={onClick}>
     {@render children()}
 </button>
 <style>
