@@ -159,4 +159,8 @@ export class VariableEditProvider {
         this.changes = [];
     }
 
+    getVariables(): Variable[] {
+        return this.variables;
+    }
+
 }

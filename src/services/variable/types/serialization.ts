@@ -4,7 +4,7 @@ import {ListVariableType} from "@perfice/services/variable/types/list";
 import {
     ComparisonGoalCondition, type GoalCondition,
     GoalConditionType,
-    type GoalConditionValue,
+    type GoalConditionValue, GoalMetGoalCondition,
     GoalVariableType
 } from "@perfice/services/variable/types/goal";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
@@ -17,6 +17,7 @@ export const GOAL_CONDITION_DESERIALIZERS:
         value.operator,
         value.target,
     ),
+    [GoalConditionType.GOAL_MET]: (value: any) => new GoalMetGoalCondition(value.goalVariableId)
 }
 
 export const GOAL_CONDITION_SERIALIZERS: Record<GoalConditionType, (value: GoalConditionValue) => object> = {
@@ -29,7 +30,10 @@ export const GOAL_CONDITION_SERIALIZERS: Record<GoalConditionType, (value: GoalC
         }
     },
     [GoalConditionType.GOAL_MET]: (value: GoalConditionValue) => {
-        return {};
+        let goalMet = value as GoalMetGoalCondition;
+        return {
+            goalVariableId: goalMet.getGoalVariableId()
+        };
     }
 }
 

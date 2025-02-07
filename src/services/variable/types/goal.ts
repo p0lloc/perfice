@@ -151,6 +151,10 @@ export class GoalMetGoalCondition implements GoalConditionValue {
         return pBoolean(true);
     }
 
+    getGoalVariableId(): string {
+        return this.goalVariableId;
+    }
+
     getDependencies(): string[] {
         return [this.goalVariableId];
     }

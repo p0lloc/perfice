@@ -103,6 +103,7 @@
 
         let goalSnapshot: Goal = $state.snapshot(goal);
         if (creating) {
+            variable.name = goalSnapshot.name;
             await goals.createGoal(goalSnapshot.name, variable);
         } else {
             await goals.updateGoal(goalSnapshot);

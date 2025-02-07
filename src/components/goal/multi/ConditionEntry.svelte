@@ -17,6 +17,10 @@
         <GoalMetIndicator {value}/>
     {/if}
     <div>
-        {first} of {second}
+        {#if value.type === PrimitiveValueType.COMPARISON_RESULT}
+            {first} of {second}
+        {:else}
+            Goal met
+        {/if}
     </div>
 </div>
