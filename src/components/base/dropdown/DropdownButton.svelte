@@ -12,7 +12,7 @@
         value: T,
         items: DropdownMenuItem<T>[],
         class?: string,
-        onChange: (v: T) => void
+        onChange?: (v: T) => void
     } = $props();
 
     function open(e: MouseEvent) {
@@ -21,7 +21,7 @@
 
     function onAction(e: DropdownMenuItem<T>) {
         e.action?.();
-        onChange(e.value);
+        onChange?.(e.value);
     }
 
     let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => i.value == value));

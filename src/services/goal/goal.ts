@@ -3,6 +3,7 @@ import type {Goal} from "@perfice/model/goal/goal";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {type Variable} from "@perfice/model/variable/variable";
+import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 
 export class GoalService {
 
@@ -58,4 +59,13 @@ export class GoalService {
         this.observers.removeObserver(type, callback);
     }
 
+}
+
+export function areGoalConditionsMet(conditions: Record<string, PrimitiveValue>): boolean {
+    for(let value of Object.values(conditions)) {
+        if(value.type == PrimitiveValueType.BOOLEAN && !value.value) return false;
+        if(value.type == PrimitiveValueType.COMPARISON_RESULT && !value.value.met) return false;
+    }
+
+    return true;
 }

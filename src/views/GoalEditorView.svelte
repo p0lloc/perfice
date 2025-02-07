@@ -123,7 +123,7 @@
 </script>
 
 <svelte:body onclick={closeSidebar} />
-<div class="md:w-1/2 mx-auto md:mt-8">
+<div class="md:w-1/2 mx-auto md:mt-8 pb-8">
     <MobileTopBar title={creating ? "New goal" : "Edit goal"}>
         {#snippet leading()}
             <button class="icon-button" onclick={discard}>

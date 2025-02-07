@@ -11,6 +11,7 @@
     import {goto} from "@mateothegreat/svelte5-router";
     import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
     import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
+    import {areGoalConditionsMet} from "@perfice/services/goal/goal";
 
     let {goal, date}: { goal: Goal, date: Date } = $props();
     let cardId = crypto.randomUUID();
@@ -34,15 +35,18 @@
     onDestroy(() => disposeCachedStoreKey(cardId));
 </script>
 
-<div class="border aspect-auto rounded-xl flex flex-col items-center">
+<div class="border aspect-auto rounded-xl flex flex-col items-center min-h-48 max-h-48">
     {#await $res}
         Loading...
     {:then value}
         <div class="border-b w-full p-2 row-between rounded-t-xl font-bold text-gray-600">
             <span class="flex items-center gap-3">
-            {goal.name}
-                <Fa icon={faCheck} class="text-green-500"/>
-                </span>
+                {goal.name}
+
+                {#if areGoalConditionsMet(value)}
+                    <Fa icon={faCheck} class="text-green-500"/>
+                {/if}
+            </span>
             <PopupIconButton buttons={EDIT_POPUP} icon={faEllipsisV}/>
         </div>
 
