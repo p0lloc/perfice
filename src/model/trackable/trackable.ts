@@ -8,6 +8,7 @@ export enum TrackableCardType {
 export type Trackable = {
     id: string;
     name: string;
+    icon: string;
     formId: string;
     categoryId: string | null;
     // Mapping of dependency to variable id

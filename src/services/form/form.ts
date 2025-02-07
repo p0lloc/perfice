@@ -14,7 +14,7 @@ export interface FormService {
 
     createForm(form: Form): Promise<void>;
 
-    updateForm(form: Form): Promise<void>;
+    updateForm(form: Form, snapshot?: boolean): Promise<void>;
 
     deleteFormById(id: string): Promise<void>;
 
@@ -85,8 +85,15 @@ export class BaseFormService implements FormService {
         }
     }
 
-    async updateForm(form: Form): Promise<void> {
-        await this.createSnapshotAndUpdateSnapshotId(form);
+    /**
+     * Updates a form and potentially creates a snapshot.
+     * @param form Form to update.
+     * @param snapshot Whether we should check to create a new snapshot.
+     */
+    async updateForm(form: Form, snapshot: boolean = true): Promise<void> {
+        if(snapshot)
+            await this.createSnapshotAndUpdateSnapshotId(form);
+
         await this.formCollection.updateForm(form);
         await this.observers.notifyObservers(EntityObserverType.UPDATED, form);
     }

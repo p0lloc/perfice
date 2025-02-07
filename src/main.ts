@@ -27,7 +27,7 @@ import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
 import type {Goal} from "@perfice/model/goal/goal";
 import {GoalValueStore} from "@perfice/stores/goal/value";
 import { modalNavigatorState } from './model/ui/modal';
-import { routingNavigatorState } from './model/ui/router';
+import { routingNavigatorState } from './model/ui/router.svelte';
 import { goto } from '@mateothegreat/svelte5-router';
 import { Capacitor } from '@capacitor/core';
 import {VariableEditProvider} from "@perfice/stores/variable/edit";

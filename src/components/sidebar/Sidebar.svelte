@@ -1,23 +1,14 @@
 <script lang="ts">
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
-    import {faBook, faBullseye, faRuler} from "@fortawesome/free-solid-svg-icons";
-    import {goto} from "@mateothegreat/svelte5-router";
+    import {getCurrentRoute, routingNavigatorState} from "@perfice/model/ui/router.svelte";
+    import {SIDEBAR_LINKS} from "@perfice/model/ui/sidebar";
+    import SidebarButton from "@perfice/components/sidebar/SidebarButton.svelte";
 
-    let links = [
-        {name: "Trackables", icon: faRuler, path: "/trackables"},
-        {name: "Journal", icon: faBook, path: "/journal"},
-        {name: "Goals", icon: faBullseye, path: "/goals"},
-    ];
 </script>
 
-<div class="md:min-h-screen max-h-screen left-0 fixed bg-green-500 md:w-16 w-screen p-2 bottom-0">
-    <div class="flex md:flex-col items-center gap-2">
-        {#each links as link}
-            <button onclick={() => goto(link.path)}
-                    class="flex items-center bg-green-600 w-12 h-12 text-white justify-center rounded-xl text-xl">
-                <Fa icon={link.icon}></Fa>
-            </button>
+<div class="md:min-h-screen max-h-screen left-0 fixed bg-gray-100 md:bg-green-500 md:w-14 w-screen px-6 py-2 md:p-2 bottom-0">
+    <div class="flex md:flex-col justify-between items-center gap-2">
+        {#each SIDEBAR_LINKS as link}
+            <SidebarButton {link} active={link.path === getCurrentRoute(routingNavigatorState)} />
         {/each}
     </div>
 </div>

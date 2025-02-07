@@ -1,5 +1,5 @@
 import type {TrackableCollection} from "@perfice/db/collections";
-import type {EntityTable} from "dexie";
+import {Dexie, type EntityTable} from "dexie";
 import type {Trackable} from "@perfice/model/trackable/trackable";
 
 export class DexieTrackableCollection implements TrackableCollection {
@@ -12,6 +12,10 @@ export class DexieTrackableCollection implements TrackableCollection {
 
     getTrackables(): Promise<Trackable[]> {
         return this.table.toArray();
+    }
+
+    async getTrackableById(id: string): Promise<Trackable | undefined> {
+        return this.table.get(id);
     }
 
     async createTrackable(trackable: Trackable): Promise<void> {

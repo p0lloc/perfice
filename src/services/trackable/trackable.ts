@@ -7,6 +7,7 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import pre = $effect.pre;
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -20,6 +21,10 @@ export class TrackableService {
         this.variableService = variableService;
         this.formService = formService;
         this.observers = new EntityObservers();
+    }
+
+    getTrackableById(id: string): Promise<Trackable | undefined> {
+        return this.collection.getTrackableById(id);
     }
 
     getTrackables(): Promise<Trackable[]> {
@@ -93,8 +98,23 @@ export class TrackableService {
     }
 
     async updateTrackable(trackable: Trackable) {
+        let previous = await this.getTrackableById(trackable.id);
+        if (previous == null) return;
+
+        await this.updateTrackableForm(previous, trackable);
         await this.collection.updateTrackable(trackable);
         await this.observers.notifyObservers(EntityObserverType.UPDATED, trackable);
+    }
+
+    private async updateTrackableForm(previous: Trackable, trackable: Trackable) {
+        if (trackable.name != previous.name || trackable.icon != previous.icon) {
+            let form = await this.formService.getFormById(trackable.formId);
+            if (form == null) return;
+
+            form.name = trackable.name;
+            form.icon = trackable.icon;
+            await this.formService.updateForm(form, false);
+        }
     }
 
     async deleteTrackable(trackable: Trackable) {

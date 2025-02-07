@@ -16,7 +16,7 @@
     let dayOfMonth = $derived(date.getDate().toString().padStart(2, "0"));
 </script>
 
-<div class="bg-white border p-4 md:p-8 rounded-xl shadow-md w-[95vw] md:w-[55vw]">
+<div class="bg-white border p-4 md:p-8 rounded-xl shadow-md w-full md:w-[55vw]">
     <div class="flex gap-8 items-start">
 
         <JournalDayDate {date} {dayOfMonth} {weekDay}/>

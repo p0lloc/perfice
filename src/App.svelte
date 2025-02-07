@@ -9,7 +9,7 @@
     import Sidebar from "@perfice/components/sidebar/Sidebar.svelte";
     import GoalView from "@perfice/views/GoalView.svelte";
     import GoalEditorView from "@perfice/views/GoalEditorView.svelte";
-    import {routingNavigatorState} from "@perfice/model/ui/router";
+    import {routingNavigatorState} from "@perfice/model/ui/router.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},

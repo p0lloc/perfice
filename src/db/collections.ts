@@ -6,6 +6,7 @@ import type { Goal } from "@perfice/model/goal/goal";
 
 export interface TrackableCollection {
     getTrackables(): Promise<Trackable[]>;
+    getTrackableById(id: string): Promise<Trackable | undefined>;
     createTrackable(trackable: Trackable): Promise<void>;
     updateTrackable(trackable: Trackable): Promise<void>;
     deleteTrackableById(trackableId: string): Promise<void>;
