@@ -2,10 +2,11 @@
     import type {Snippet} from "svelte";
     import {ButtonColor} from "../../../model/ui/button";
 
-    let {onClick, children, color = ButtonColor.GREEN}: {
+    let {onClick, children, color = ButtonColor.GREEN, class: className = ''}: {
         color?: ButtonColor,
         onClick?: (e: MouseEvent & { currentTarget: HTMLButtonElement }) => void,
-        children: Snippet
+        children: Snippet,
+        class?: string,
     } = $props();
 
     const BUTTON_COLOR_CLASSES: Record<ButtonColor, string> = {
@@ -15,7 +16,7 @@
     }
 </script>
 
-<button class="{BUTTON_COLOR_CLASSES[color]} font-bold " onclick={onClick}>
+<button class="{BUTTON_COLOR_CLASSES[color]} font-bold {className}" onclick={onClick}>
     {@render children()}
 </button>
 <style>

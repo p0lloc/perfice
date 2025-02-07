@@ -66,7 +66,7 @@
     function addCondition() {
         if (goalData == null || goalVariable == null) return;
 
-        sidebar.open({
+        openSidebar({
             type: GoalSidebarActionType.ADD_CONDITION, value: {
                 onConditionSelected: (c: GoalCondition) => {
                     goalData = new GoalVariableType(goalData!.getConditions().concat([c]), goalData!.getTimeScope());
@@ -75,8 +75,9 @@
         });
     }
 
-    function onOpenSidebar(action: GoalSidebarAction) {
-        sidebar.open(action);
+    function openSidebar(action: GoalSidebarAction) {
+        // Delay opening so that the click doesn't immediately close the sidebar
+        setTimeout(() => sidebar.open(action));
     }
 
     function onConditionUpdate(condition: GoalCondition) {
@@ -114,16 +115,14 @@
         back();
     }
 
-    async function deleteGoal() {
-        if(goal == null) return;
-        // TODO: modal
-        await goals.deleteGoalById(goal.id);
-        await back();
+    function closeSidebar(){
+        sidebar.close();
     }
 
     onMount(() => loadGoal());
 </script>
 
+<svelte:body onclick={closeSidebar} />
 <div class="md:w-1/2 mx-auto md:mt-8">
     <MobileTopBar title={creating ? "New goal" : "Edit goal"}>
         {#snippet leading()}
@@ -137,7 +136,12 @@
             </button>
         {/snippet}
     </MobileTopBar>
-    <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
+    <div class="flex items-center gap-4">
+        <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
+        <button>
+            <Fa icon={faTrash}/>
+        </button>
+    </div>
     <div class="md:w-1/2 md:p-0 p-4">
         {#if goal != null && goalData != null}
             <p class="block mb-2 label mt-4">Name & color</p>
@@ -150,7 +154,7 @@
             <div class="flex flex-col gap-2 mt-2">
                 {#each goalData.getConditions() as condition(condition.id)}
                     <GoalConditionCard {condition}
-                                       onOpenSidebar={onOpenSidebar}
+                                       onOpenSidebar={openSidebar}
                                        onUpdate={(condition) => onConditionUpdate(condition)}
                                        onDelete={() => onConditionDelete(condition)}
                     />
@@ -164,17 +168,9 @@
             <p>Goal not found</p>
         {/if}
     </div>
-    <div class="hidden mt-4 row-between">
-        <div class="md:flex items-center gap-2">
-            <Button onClick={save}>Save</Button>
-            <Button onClick={discard} color={ButtonColor.RED}>Discard</Button>
-        </div>
-        <Button onClick={deleteGoal} color={ButtonColor.RED}>
-            <span class="row-gap">
-                <Fa icon={faTrash}/>
-                Delete
-            </span>
-        </Button>
+    <div class="md:flex hidden items-center gap-2 mt-6">
+        <Button onClick={save}>Save</Button>
+        <Button onClick={discard} color={ButtonColor.RED}>Discard</Button>
     </div>
 </div>
 <GoalEditorSidebar bind:this={sidebar}/>

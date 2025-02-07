@@ -46,8 +46,8 @@ export class GoalService {
         if (goal == null) return;
 
         await this.goalCollection.deleteGoalById(id);
-        await this.variableService.deleteVariableAndDependencies(goal.variableId);
         await this.observers.notifyObservers(EntityObserverType.DELETED, goal);
+        await this.variableService.deleteVariableAndDependencies(goal.variableId);
     }
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<Goal>) {

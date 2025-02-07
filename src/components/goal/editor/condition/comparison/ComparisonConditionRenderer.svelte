@@ -44,6 +44,9 @@
     }
 
     function updateSourceOrTarget(v: ConstantOrVariable, source: boolean) {
+        editing = v;
+        editingSource = source;
+
         if (source) {
             onValueChange(new ComparisonGoalCondition(v, condition.getOperator(), condition.getTarget()));
         } else {

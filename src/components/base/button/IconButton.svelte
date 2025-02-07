@@ -4,7 +4,7 @@
     import {type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
     let {onClick, icon, class: className = ""}: {
-        onClick: () => void,
+        onClick: (e: MouseEvent & { currentTarget: HTMLButtonElement }) => void,
         icon: IconDefinition,
         class?: string
     } = $props();

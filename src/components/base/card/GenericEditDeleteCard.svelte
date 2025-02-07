@@ -15,7 +15,7 @@
 
         {text}
     </div>
-    <div class="row-gap">
+    <div class="row-gap text-gray-500">
         <IconButton icon={faPen} onClick={onEdit}/>
         <IconButton icon={faTrash} onClick={onDelete}/>
     </div>

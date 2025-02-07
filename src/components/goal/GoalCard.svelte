@@ -2,13 +2,15 @@
     import type {Goal} from "@perfice/model/goal/goal";
     import {onDestroy} from "svelte";
     import {disposeCachedStoreKey} from "@perfice/stores/cached";
-    import {goalValue} from "@perfice/main";
+    import {goals, goalValue} from "@perfice/main";
     import {WeekStart} from "@perfice/model/variable/time/time";
     import GoalValueRenderer from "@perfice/components/goal/GoalValueRenderer.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faCheck} from "@fortawesome/free-solid-svg-icons";
+    import {faCheck, faEllipsisV, faPen, faTrash} from "@fortawesome/free-solid-svg-icons";
     import {goto} from "@mateothegreat/svelte5-router";
+    import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
+    import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
 
     let {goal, date}: { goal: Goal, date: Date } = $props();
     let cardId = crypto.randomUUID();
@@ -19,18 +21,34 @@
         goto(`/goals/${goal.id}`);
     }
 
+    async function deleteGoal() {
+        if (goal == null) return;
+        await goals.deleteGoalById(goal.id);
+    }
+
+    const EDIT_POPUP: ContextMenuButton[] = [
+        {name: "Edit", action: editGoal, icon: faPen},
+        {name: "Delete", action: deleteGoal, icon: faTrash}
+    ];
+
     onDestroy(() => disposeCachedStoreKey(cardId));
 </script>
 
-<div class="border rounded-xl w-40 flex flex-col items-center">
+<div class="border aspect-auto rounded-xl flex flex-col items-center">
     {#await $res}
         Loading...
     {:then value}
-        <button class="border-b w-full p-2 hover-feedback row-between rounded-t-xl" onclick={editGoal}>
+        <div class="border-b w-full p-2 row-between rounded-t-xl font-bold text-gray-600">
+            <span class="flex items-center gap-3">
             {goal.name}
-            <Fa icon={faCheck} class="text-green-500"/>
-        </button>
+                <Fa icon={faCheck} class="text-green-500"/>
+                </span>
+            <PopupIconButton buttons={EDIT_POPUP} icon={faEllipsisV}/>
+        </div>
 
         <GoalValueRenderer {value} color="magenta"/>
+        <div class="border-t w-full text-center text-gray-500">
+            Daily
+        </div>
     {/await}
 </div>

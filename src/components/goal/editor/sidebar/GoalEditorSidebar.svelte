@@ -15,7 +15,7 @@
         [GoalSidebarActionType.ADD_CONDITION]: AddConditionSidebar,
     };
 
-    function onClose(){
+    export function close(){
         action = null;
     }
 
@@ -24,6 +24,6 @@
 
 {#if action != null}
     <div class="right-sidebar md:w-96 p-4">
-        <RendererComponent action={action.value} {onClose}/>
+        <RendererComponent action={action.value} onClose={close}/>
     </div>
 {/if}

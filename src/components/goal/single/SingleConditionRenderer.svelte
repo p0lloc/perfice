@@ -8,6 +8,8 @@
     let {first, second, progress} = $derived(getGoalConditionProgress(value));
 </script>
 
-<CircularProgressBar {progress} strokeColor={color}>
-    {first} of {second}
-</CircularProgressBar>
+<div class="flex-center h-full">
+    <CircularProgressBar {progress} strokeColor={color}>
+        {first} of {second}
+    </CircularProgressBar>
+</div>

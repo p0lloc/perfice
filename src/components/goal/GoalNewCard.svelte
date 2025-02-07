@@ -10,6 +10,6 @@
     }
 </script>
 
-<button class="rounded-xl w-40 min-h-40 flex-center border-2 border-dashed text-gray-500 hover-feedback" onclick={onClick}>
+<button class="rounded-xl h-48 flex-center border-2 border-dashed text-gray-500 hover-feedback" onclick={onClick}>
     <Fa icon={faPlusCircle} />
 </button>

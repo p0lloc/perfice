@@ -26,7 +26,9 @@
 </script>
 
 {#if RendererComponent != null}
-    <RendererComponent value={result} {color}/>
+    <div class="flex-1">
+        <RendererComponent value={result} {color}/>
+    </div>
 {:else}
     This goal has no conditions
 {/if}

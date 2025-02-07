@@ -15,6 +15,7 @@
         await trackables.createTrackable({
             id: trackableId,
             name: "testing",
+            icon: "",
             formId: trackableId,
             categoryId: category.category?.id ?? null,
             cardType: TrackableCardType.CHART,

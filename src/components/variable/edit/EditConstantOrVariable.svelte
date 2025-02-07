@@ -3,6 +3,11 @@
     import type {ConstantOrVariable} from "@perfice/services/variable/types/goal";
     import EditConstant from "@perfice/components/variable/edit/EditConstant.svelte";
     import EditVariable from "@perfice/components/variable/edit/EditVariable.svelte";
+    import Button from "@perfice/components/base/button/Button.svelte";
+    import {ButtonColor} from "@perfice/model/ui/button";
+    // noinspection ES6UnusedImports
+    import Fa from "svelte-fa";
+    import {faCheck} from "@fortawesome/free-solid-svg-icons";
 
     let {value, onBack, onChange}: {
         value: ConstantOrVariable,
@@ -17,7 +22,10 @@
 </script>
 
 {#if value.constant || value.value.type !== PrimitiveValueType.STRING}
-    <EditConstant value={value.value} {onBack} onChange={onConstantChange} />
+    <EditConstant value={value.value} onChange={onConstantChange} />
 {:else}
-    <EditVariable variableId={value.value.value} {onBack} />
+    <EditVariable variableId={value.value.value} />
 {/if}
+<Button class="flex justify-center items-center" color={ButtonColor.WHITE} onClick={onBack}>
+    <Fa icon={faCheck} />
+</Button>

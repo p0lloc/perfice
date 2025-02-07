@@ -1,13 +1,10 @@
 <script lang="ts">
     import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
-    import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
     import {type Component, onMount} from "svelte";
     import {variableEditProvider} from "@perfice/main";
     import EditAggregationVariable from "@perfice/components/variable/edit/aggregation/EditAggregationVariable.svelte";
 
-    let {variableId, onBack}: { variableId: string, onBack: () => void } = $props();
+    let {variableId}: { variableId: string } = $props();
 
     let variable = $state<Variable | null>(null);
     let editState = $state<any>(null);
@@ -47,10 +44,7 @@
     let RendererComponent = $derived(variable != null ? RENDERERS[variable.type.type] : null);
 </script>
 {#if variable != null && editState != null}
-    <div class="flex justify-between">
-        <button class="icon-button" onclick={onBack}>
-            <Fa icon={faArrowLeft}/>
-        </button>
+    <div class="flex justify-end">
         <input value={variable.name} type="text" class="border" onchange={onNameChange}/>
     </div>
     <div>

@@ -18,7 +18,7 @@
     {#await $goals}
         Loading...
     {:then value}
-        <div class="flex gap-4 mt-4 flex-wrap">
+        <div class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {#each value as goal(goal.id)}
                 <GoalCard date={$goalDate} goal={goal}/>
             {/each}
