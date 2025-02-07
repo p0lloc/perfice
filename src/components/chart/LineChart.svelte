@@ -13,6 +13,9 @@
                 borderColor: '#36A2EB',
                 backgroundColor: '#9BD0F5',
                 tension: 0.5,
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHoverRadius: 10
             }
         ]
     });
@@ -28,8 +31,10 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-
-                    padding: -5,
+                    padding: {
+                        left: -10,
+                        bottom: -10,
+                    }
                 },
                 scales: {
 
@@ -40,14 +45,17 @@
                             display: !hideLabels
                         },
                         grid: {
-                            display: !hideGrid
+                            display: !hideGrid,
+                        },
+                        border: {
+                            display: false
                         }
                     },
                     xAxis: {
                         display: !hideLabels
                     },
                     yAxis: {
-                        display: !hideLabels
+                        display: !hideLabels,
                     },
                     x: {
                         ticks: {
@@ -56,6 +64,9 @@
                         },
                         grid: {
                             display: !hideGrid
+                        },
+                        border: {
+                            display: false
                         }
                     }
                 }
@@ -77,4 +88,4 @@
     Chart.defaults.set('plugins.legend', {display: false});
 </script>
 
-<canvas class="rounded-md" bind:this={canvasElem} {...rest}></canvas>
+<canvas class="rounded-b-xl" bind:this={canvasElem} {...rest}></canvas>

@@ -52,8 +52,8 @@
 <FormModal bind:this={formModal}/>
 <EditTrackableModal onStartDelete={onDelete} bind:this={editTrackableModal}/>
 
-<div class="p-0 bg-white border rounded-xl  flex flex-col items-stretch min-h-40 max-h-40 text-gray-500">
-    <button class="border-b p-2 flex gap-2 items-center hover:bg-gray-100 active:bg-gray-100" onclick={onEdit}>
+<div class="p-0 bg-white border rounded-xl flex flex-col items-stretch min-h-40 max-h-40 text-gray-500">
+    <button class="border-b rounded-t-xl p-2 flex gap-2 items-center hover:bg-gray-100 active:bg-gray-100" onclick={onEdit}>
         <Fa icon={faHamburger} class="text-green-500"/>
         <p class="text-left font-semibold text-gray-700">{trackable.name}</p>
     </button>
