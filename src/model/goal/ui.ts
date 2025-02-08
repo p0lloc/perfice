@@ -10,6 +10,8 @@ import {
     faLessThanEqual,
     faNotEqual, faPlusMinus
 } from "@fortawesome/free-solid-svg-icons";
+import type {ComparisonValueResult} from "@perfice/stores/goal/value";
+import {calculateProgressSafe} from "@perfice/util/math";
 
 export const NEW_GOAL_ROUTE = "new";
 
@@ -19,21 +21,11 @@ export interface ConditionProgress {
     progress: number;
 }
 
-export function getGoalConditionProgress(value: PrimitiveValue): ConditionProgress {
-    if (value.type == PrimitiveValueType.BOOLEAN) {
-        return {first: 0, second: 0, progress: value.value ? 100 : 0};
-    }
+export function getGoalConditionProgress(value: ComparisonValueResult): ConditionProgress {
+    let first = primitiveAsNumber(value.source);
+    let second = primitiveAsNumber(value.target);
 
-    if (value.type == PrimitiveValueType.COMPARISON_RESULT) {
-        let first = primitiveAsNumber(value.value.source);
-        let second = primitiveAsNumber(value.value.target);
-
-        if (second == 0) return {first: 0, second: 0, progress: 0};
-
-        return {first, second, progress: (first / second) * 100};
-    }
-
-    return {first: 0, second: 0, progress: 0};
+    return {first, second, progress: calculateProgressSafe(first, second)};
 }
 
 export enum GoalSidebarActionType {

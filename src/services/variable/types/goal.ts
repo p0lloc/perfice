@@ -1,8 +1,4 @@
-import {
-    type VariableEvaluator,
-    type VariableType,
-    VariableTypeName
-} from "@perfice/model/variable/variable";
+import {type VariableEvaluator, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
 import {
     pBoolean,
     pComparisonResult,
@@ -11,7 +7,7 @@ import {
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
-import {type TimeScope, TimeScopeType} from "@perfice/model/variable/time/time";
+import {SimpleTimeScope, type TimeScope, TimeScopeType, tSimple} from "@perfice/model/variable/time/time";
 
 export type GoalCondition = {
     id: string;
@@ -53,7 +49,7 @@ export class ComparisonGoalCondition implements GoalConditionValue {
     }
 
     private async evaluateValue(value: ConstantOrVariable | null, evaluator: VariableEvaluator): Promise<PrimitiveValue> {
-        if(value == null) return pNumber(0.0);
+        if (value == null) return pNumber(0.0);
 
         if (value.constant || value.value.type != PrimitiveValueType.STRING) {
             return value.value;
@@ -180,6 +176,19 @@ export interface GoalConditionValue {
     getDependencies(): string[];
 }
 
+export function convertTimeScopeToGoalTimeScope(timeScope: TimeScope, goalTimeScope: TimeScope): TimeScope {
+    if (goalTimeScope.type == TimeScopeType.SIMPLE && timeScope.type == TimeScopeType.SIMPLE) {
+        // Override time scope to use same timestamp as passed in
+        return tSimple(
+            goalTimeScope.value.getType(),
+            timeScope.value.getWeekStart(),
+            timeScope.value.getTimestamp());
+    }
+
+    // Simply use the goal time scope, ignore anything else.
+    return goalTimeScope;
+}
+
 export class GoalVariableType implements VariableType {
 
     private readonly conditions: GoalCondition[];
@@ -191,12 +200,8 @@ export class GoalVariableType implements VariableType {
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
-        let newEvaluator = evaluator;
-        if (this.timeScope.type != TimeScopeType.SIMPLE) {
-            // If time scope is not simple, we use the time scope specified here.
-            // This allows us to override the time scope for RANGED / FOREVER time scopes that don't depend on the current time.
-            newEvaluator = newEvaluator.overrideTimeScope(this.timeScope);
-        }
+        let newEvaluator = evaluator.overrideTimeScope(
+            convertTimeScopeToGoalTimeScope(evaluator.getTimeScope(), this.timeScope));
 
         let result: Record<string, PrimitiveValue> = {};
         for (let condition of this.conditions) {

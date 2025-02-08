@@ -68,11 +68,11 @@ export class RangeTimeScope implements TimeScopeDefinition {
         }
 
         if (start != null && end == null) {
-            return {type: TimeRangeType.UPPER, upper: start};
+            return {type: TimeRangeType.LOWER, lower: start};
         }
 
         if (start == null && end != null) {
-            return {type: TimeRangeType.LOWER, lower: end};
+            return {type: TimeRangeType.UPPER, upper: end};
         }
 
         // If both of them are null for some reason, return an open range

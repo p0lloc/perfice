@@ -12,6 +12,7 @@
     import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
     import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
     import {areGoalConditionsMet} from "@perfice/services/goal/goal";
+    import {formatTimeScopeType} from "@perfice/model/variable/ui.js";
 
     let {goal, date}: { goal: Goal, date: Date } = $props();
     let cardId = crypto.randomUUID();
@@ -43,16 +44,16 @@
             <span class="flex items-center gap-3">
                 {goal.name}
 
-                {#if areGoalConditionsMet(value)}
+                {#if areGoalConditionsMet(value.results)}
                     <Fa icon={faCheck} class="text-green-500"/>
                 {/if}
             </span>
             <PopupIconButton buttons={EDIT_POPUP} icon={faEllipsisV}/>
         </div>
 
-        <GoalValueRenderer {value} color="magenta"/>
+        <GoalValueRenderer value={value.results} color="magenta"/>
         <div class="border-t w-full text-center text-gray-500">
-            Daily
+            {formatTimeScopeType(value.timeScope)}
         </div>
     {/await}
 </div>

@@ -19,6 +19,14 @@ export class DexieJournalCollection implements JournalCollection {
             .toArray();
     }
 
+    async getEntriesByFormIdFromTime(formId: string, start: number): Promise<JournalEntry[]> {
+        return this.table.where("[formId+timestamp]").aboveOrEqual([formId, start]).toArray();
+    }
+
+    async getEntriesByFormIdUntilTime(formId: string, start: number): Promise<JournalEntry[]> {
+        return this.table.where("[formId+timestamp]").belowOrEqual([formId, start]).toArray();
+    }
+
     async createEntry(entry: JournalEntry): Promise<void> {
         await this.table.add(entry);
     }

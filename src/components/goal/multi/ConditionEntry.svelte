@@ -1,26 +1,20 @@
 <script lang="ts">
-    import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-    import {getGoalConditionProgress} from "@perfice/model/goal/ui";
-    import CircularProgressBar from "@perfice/components/base/progress/CircularProgressBar.svelte";
-    import GoalMetIndicator from "@perfice/components/goal/GoalMetIndicator.svelte";
+    import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
+    import {GoalConditionType} from "@perfice/services/variable/types/goal";
+    import ComparisonConditionEntry from "@perfice/components/goal/multi/ComparisonConditionEntry.svelte";
+    import type {Component} from "svelte";
+    import GoalMetConditionEntry from "@perfice/components/goal/multi/GoalMetConditionEntry.svelte";
 
-    let {value, color}: { value: PrimitiveValue, color: string } = $props();
+    let {value, color}: { value: GoalConditionValueResult, color: string } = $props();
 
-    let {first, second, progress} = $derived(getGoalConditionProgress(value));
+    const RENDERERS: Record<GoalConditionType, Component<{ value: any, color: string }>> = {
+        [GoalConditionType.COMPARISON]: ComparisonConditionEntry,
+        [GoalConditionType.GOAL_MET]: GoalMetConditionEntry,
+    }
+
+    let RendererComponent = $derived(RENDERERS[value.type]);
 </script>
 
-<div class="row-between p-2 gap-2 w-full border-b">
-    {#if value.type === PrimitiveValueType.COMPARISON_RESULT}
-        <CircularProgressBar width={30} height={30} strokeWidth={60} {progress}
-                             strokeColor={color}></CircularProgressBar>
-    {:else}
-        <GoalMetIndicator {value}/>
-    {/if}
-    <div>
-        {#if value.type === PrimitiveValueType.COMPARISON_RESULT}
-            {first} of {second}
-        {:else}
-            Goal met
-        {/if}
-    </div>
+<div class="p-2 gap-2 w-full border-b">
+    <RendererComponent value={value.value} {color} />
 </div>

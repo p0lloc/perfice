@@ -16,6 +16,8 @@
     import GoalConditionCard from "@perfice/components/goal/editor/GoalConditionCard.svelte";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
     import {goto} from "@mateothegreat/svelte5-router";
+    import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
+    import {type TimeScope, TimeScopeType} from "@perfice/model/variable/time/time";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -112,18 +114,22 @@
         goto("/goals");
     }
 
+    function updateTimeScope(value: TimeScope) {
+        goalData = new GoalVariableType(goalData!.getConditions(), value);
+    }
+
     function discard() {
         back();
     }
 
-    function closeSidebar(){
+    function closeSidebar() {
         sidebar.close();
     }
 
     onMount(() => loadGoal());
 </script>
 
-<svelte:body onclick={closeSidebar} />
+<svelte:body onclick={closeSidebar}/>
 <div class="md:w-1/2 mx-auto md:mt-8 pb-8">
     <MobileTopBar title={creating ? "New goal" : "Edit goal"}>
         {#snippet leading()}
@@ -137,14 +143,9 @@
             </button>
         {/snippet}
     </MobileTopBar>
-    <div class="flex items-center gap-4">
-        <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
-        <button>
-            <Fa icon={faTrash}/>
-        </button>
-    </div>
-    <div class="md:w-1/2 md:p-0 p-4">
-        {#if goal != null && goalData != null}
+    <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
+    {#if goal != null && goalData != null}
+        <div class="md:w-1/2 md:p-0 p-4">
             <p class="block mb-2 label mt-4">Name & color</p>
             <div class="row-gap">
                 <input bind:value={goal.name} placeholder="Goal name" type="text" class="input">
@@ -164,11 +165,15 @@
                     <Fa icon={faPlusCircle} class="pointer-events-none"/>
                 </button>
             </div>
+        </div>
+        <div class="inline-block">
+            <p class="block mb-2 label mt-4">Time scope</p>
+            <TimeScopePicker value={goalData.getTimeScope()} onChange={updateTimeScope}/>
+        </div>
+    {:else}
+        <p>Goal not found</p>
+    {/if}
 
-        {:else}
-            <p>Goal not found</p>
-        {/if}
-    </div>
     <div class="md:flex hidden items-center gap-2 mt-6">
         <Button onClick={save}>Save</Button>
         <Button onClick={discard} color={ButtonColor.RED}>Discard</Button>

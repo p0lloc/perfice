@@ -4,7 +4,8 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import type {VariableService} from "@perfice/services/variable/variable";
 import {type Variable} from "@perfice/model/variable/variable";
 import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-import pre = $effect.pre;
+import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
+import {GoalConditionType} from "@perfice/services/variable/types/goal";
 
 export class GoalService {
 
@@ -75,10 +76,11 @@ export class GoalService {
 
 }
 
-export function areGoalConditionsMet(conditions: Record<string, PrimitiveValue>): boolean {
-    for (let value of Object.values(conditions)) {
-        if (value.type == PrimitiveValueType.BOOLEAN && !value.value) return false;
-        if (value.type == PrimitiveValueType.COMPARISON_RESULT && !value.value.met) return false;
+
+export function areGoalConditionsMet(results: GoalConditionValueResult[]): boolean {
+    for (let value of results) {
+        if (value.type == GoalConditionType.GOAL_MET && !value.value.met) return false;
+        if (value.type == GoalConditionType.COMPARISON && !value.value.met) return false;
     }
 
     return true;

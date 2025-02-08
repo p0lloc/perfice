@@ -50,6 +50,8 @@ export interface VariableEvaluator {
     evaluateVariable(variableId: string): Promise<PrimitiveValue>;
 
     overrideTimeScope(timeScope: TimeScope): VariableEvaluator;
+
+    getTimeScope(): TimeScope;
 }
 
 export type VariableTypeDef =

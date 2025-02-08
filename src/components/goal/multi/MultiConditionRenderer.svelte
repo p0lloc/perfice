@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import ConditionEntry from "@perfice/components/goal/multi/ConditionEntry.svelte";
+    import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
 
-    let {value}: { value: Record<string, PrimitiveValue> } = $props();
+    let {value}: { value: GoalConditionValueResult[] } = $props();
 </script>
 
 <div class="flex flex-col items-start w-full h-full overflow-y-scroll scrollbar-hide">
-    {#each Object.entries(value) as [key, val]}
+    {#each value as val}
         <ConditionEntry value={val} color="magenta"/>
     {/each}
 </div>

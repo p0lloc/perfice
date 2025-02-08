@@ -359,6 +359,12 @@ export class BaseVariableEvaluator implements VariableEvaluator {
             case TimeRangeType.BOTH: {
                 return this.journalCollection.getEntriesByFormIdAndTimeRange(formId, action.lower, action.upper);
             }
+            case TimeRangeType.UPPER: {
+                return this.journalCollection.getEntriesByFormIdUntilTime(formId, action.upper);
+            }
+            case TimeRangeType.LOWER: {
+                return this.journalCollection.getEntriesByFormIdFromTime(formId, action.lower);
+            }
             default:
                 throw new Error("Not yet implemented");
         }
@@ -371,5 +377,9 @@ export class BaseVariableEvaluator implements VariableEvaluator {
         }
 
         return this.graph.evaluateVariable(variable, this.timeContext, false, this.evaluating);
+    }
+
+    getTimeScope(): TimeScope {
+        return this.timeContext;
     }
 }

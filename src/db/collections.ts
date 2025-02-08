@@ -67,6 +67,10 @@ export interface JournalCollection {
 
     getEntriesByFormIdAndTimeRange(formId: string, start: number, end: number): Promise<JournalEntry[]>;
 
+    getEntriesByFormIdUntilTime(formId: string, upper: number): Promise<JournalEntry[]>;
+
+    getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]>;
+
     createEntry(entry: JournalEntry): Promise<void>;
 
     updateEntry(entry: JournalEntry): Promise<void>;
@@ -79,7 +83,6 @@ export interface JournalCollection {
 
     getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]>;
 }
-
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
 export type IndexDeleteListener = (index: VariableIndex) => Promise<void>;

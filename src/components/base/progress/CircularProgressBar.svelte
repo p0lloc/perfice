@@ -14,7 +14,7 @@
     <svg
             width={width} height={height} viewBox="0 0 250 250"
             style:--stroke-width="{strokeWidth}px"
-            style:--progress="{progress}"
+            style:--progress="{progress * 100}"
             style:--stroke-color="{strokeColor}"
             class="circular-progress"
     >

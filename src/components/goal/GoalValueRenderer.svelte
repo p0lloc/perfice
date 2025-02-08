@@ -3,10 +3,11 @@
     import type {Component} from "svelte";
     import SingleConditionRenderer from "@perfice/components/goal/single/SingleConditionRenderer.svelte";
     import MultiConditionRenderer from "@perfice/components/goal/multi/MultiConditionRenderer.svelte";
+    import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
 
-    let {value, color}: { value: Record<string, PrimitiveValue>, color: string } = $props();
+    let {value, color}: { value: GoalConditionValueResult[], color: string } = $props();
 
-    function getRenderer(value: Record<string, PrimitiveValue>): [Component<{
+    function getRenderer(value: GoalConditionValueResult[]): [Component<{
         value: any,
         color: string
     }> | null, any] {
