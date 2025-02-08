@@ -3,7 +3,8 @@
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
     import type {JournalEntry} from "@perfice/model/journal/journal";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
-    import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+    import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 
     let formModal: FormModal;
 
@@ -30,11 +31,7 @@
 
         let answers: Record<string, PrimitiveValue> = {};
         for (let [id, value] of Object.entries(entry.answers)) {
-            if(value.type == PrimitiveValueType.DISPLAY) {
-                answers[id] = value.value.value
-            } else {
-                answers[id] = value;
-            }
+            answers[id] = extractValueFromDisplay(value);
         }
 
         formModal.open(form, snapshot.questions, new Date(entry.timestamp),

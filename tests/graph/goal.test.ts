@@ -47,7 +47,7 @@ test("simple goal", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -123,7 +123,7 @@ test("multi-condition goal", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -214,7 +214,7 @@ test("goal with dynamic target", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -295,14 +295,14 @@ test("goal with dynamic target and new entry", async () => {
         id: "expense_list",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("expense", {ok: true})
+            value: new ListVariableType("expense", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
         id: "income_list",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("income", {ok: true})
+            value: new ListVariableType("income", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -399,7 +399,7 @@ test("simple goal with new entry", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({

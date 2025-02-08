@@ -1,7 +1,8 @@
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {
+    comparePrimitives,
     pEntry,
-    pList,
+    pList, primitiveAsNumber,
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
@@ -19,7 +20,7 @@ import {
     type EntryUpdatedDependent,
 } from "@perfice/services/variable/graph";
 
-export function extractRawValue(p: PrimitiveValue): PrimitiveValue {
+export function extractValueFromDisplay(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY) {
         return p.value.value;
     }
@@ -34,20 +35,45 @@ export function extractFieldsFromAnswers(answers: Record<string, PrimitiveValue>
         if (answer == undefined)
             continue;
 
-        result[key] = display ? answer : extractRawValue(answer);
+        result[key] = display ? answer : extractValueFromDisplay(answer);
     }
 
     return result;
+}
+
+export enum FilterComparisonOperator {
+    EQUAL = "EQUAL",
+    NOT_EQUAL = "NOT_EQUAL",
+    GREATER_THAN = "GREATER_THAN",
+    GREATER_THAN_EQUAL = "GREATER_THAN_EQUAL",
+    LESS_THAN = "LESS_THAN",
+    LESS_THAN_EQUAL = "LESS_THAN_EQUAL",
+    IN = "IN",
+    NOT_IN = "NOT_IN",
+}
+
+export type NumberFilterComparisonOperator =
+    FilterComparisonOperator.GREATER_THAN |
+    FilterComparisonOperator.GREATER_THAN_EQUAL |
+    FilterComparisonOperator.LESS_THAN |
+    FilterComparisonOperator.LESS_THAN_EQUAL;
+
+export interface ListVariableFilter {
+    field: string;
+    operator: FilterComparisonOperator;
+    value: PrimitiveValue;
 }
 
 export class ListVariableType implements VariableType, EntryCreatedDependent, EntryDeletedDependent, EntryUpdatedDependent {
 
     private readonly formId: string;
     private readonly fields: Record<string, boolean>;
+    private readonly filters: ListVariableFilter[];
 
-    constructor(formId: string, fields: Record<string, boolean>) {
+    constructor(formId: string, fields: Record<string, boolean>, filters: ListVariableFilter[]) {
         this.formId = formId;
         this.fields = fields;
+        this.filters = filters;
     }
 
     async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
@@ -118,10 +144,67 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
         return actions;
     }
 
+    private isInList(value: PrimitiveValue, filter: ListVariableFilter): boolean {
+        if (filter.value.type != PrimitiveValueType.LIST) return false;
+
+        return filter.value.value.some(v => comparePrimitives(value, v));
+    }
+
+    private isFilterMet(value: PrimitiveValue, filter: ListVariableFilter): boolean {
+        switch (filter.operator) {
+            case FilterComparisonOperator.EQUAL:
+                return comparePrimitives(value, filter.value);
+            case FilterComparisonOperator.NOT_EQUAL:
+                return !comparePrimitives(value, filter.value);
+            case FilterComparisonOperator.GREATER_THAN:
+            case FilterComparisonOperator.GREATER_THAN_EQUAL:
+            case FilterComparisonOperator.LESS_THAN:
+            case FilterComparisonOperator.LESS_THAN_EQUAL:
+                return this.isNumberFilterMet(value, filter, filter.operator);
+            case FilterComparisonOperator.IN:
+                return this.isInList(value, filter);
+            case FilterComparisonOperator.NOT_IN:
+                return !this.isInList(value, filter);
+        }
+    }
+
+    private isNumberFilterMet(first: PrimitiveValue, filter: ListVariableFilter, operator: NumberFilterComparisonOperator): boolean {
+        let value = primitiveAsNumber(first);
+        let filterValue = primitiveAsNumber(filter.value);
+
+        switch (operator) {
+            case FilterComparisonOperator.GREATER_THAN:
+                return value > filterValue;
+            case FilterComparisonOperator.GREATER_THAN_EQUAL:
+                return value >= filterValue;
+            case FilterComparisonOperator.LESS_THAN:
+                return value < filterValue;
+            case FilterComparisonOperator.LESS_THAN_EQUAL:
+                return value <= filterValue;
+        }
+    }
+
+    private shouldFilterEntry(entry: JournalEntry): boolean {
+        for (let filter of this.filters) {
+            let answer = entry.answers[filter.field];
+            if (answer == undefined) return false;
+
+            if (!this.isFilterMet(extractValueFromDisplay(answer), filter)) return true;
+        }
+        return false;
+    }
+
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
         let entries = await evaluator.getEntriesInTimeRange(this.formId);
-        return pList(entries.map((e: JournalEntry) =>
-            pEntry(e.id, e.timestamp, extractFieldsFromAnswers(e.answers, this.fields))));
+        let result: PrimitiveValue[] = [];
+        for (let entry of entries) {
+            if (this.shouldFilterEntry(entry)) continue;
+
+            let fields = extractFieldsFromAnswers(entry.answers, this.fields);
+            result.push(pEntry(entry.id, entry.timestamp, fields));
+        }
+
+        return pList(result);
     }
 
     getDependencies(): string[] {
@@ -138,6 +221,10 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
 
     getType(): VariableTypeName {
         return VariableTypeName.LIST;
+    }
+
+    getFilters(): ListVariableFilter[] {
+        return this.filters;
     }
 
 }

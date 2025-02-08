@@ -4,6 +4,7 @@ import {
     VariableTypeName
 } from "@perfice/model/variable/variable";
 import {pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 
 export enum AggregateType {
     SUM = "SUM",
@@ -13,12 +14,7 @@ export enum AggregateType {
 export function extractNumbers(list: PrimitiveValue[]): number[] {
     let result: number[] = [];
     for (let val of list) {
-        let value: PrimitiveValue = val;
-        if (val.type == PrimitiveValueType.DISPLAY) {
-            // Extract value if of type display
-            value = val.value.value;
-        }
-
+        let value: PrimitiveValue = extractValueFromDisplay(val);
         if (value.type != PrimitiveValueType.NUMBER) continue;
 
         result.push(value.value);

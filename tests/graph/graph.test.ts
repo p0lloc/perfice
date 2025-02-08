@@ -2,7 +2,7 @@ import {DummyIndexCollection, DummyJournalCollection} from "../dummy-collections
 import {VariableGraph} from "../../src/services/variable/graph";
 import {expect, test} from "vitest";
 import {Variable, VariableTypeName} from "../../src/model/variable/variable";
-import {ListVariableType} from "../../src/services/variable/types/list";
+import {FilterComparisonOperator, ListVariableType} from "../../src/services/variable/types/list";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {pDisplay, pEntry, pList, pNumber, pString} from "../../src/model/primitive/primitive";
 import {AggregateType, AggregateVariableType} from "../../src/services/variable/types/aggregate";
@@ -18,7 +18,7 @@ test("empty list variable", async () => {
         id: "test",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     }
     graph.onVariableCreated(variable);
@@ -51,7 +51,7 @@ test("simple single list variable", async () => {
         id: "test",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: false})
+            value: new ListVariableType("ok", {ok: false}, [])
         }
     }
     graph.onVariableCreated(variable);
@@ -97,7 +97,7 @@ test("simple multiple list variable", async () => {
         id: "test",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     }
     graph.onVariableCreated(variable);
@@ -134,7 +134,7 @@ test("simple multiple fields list variable", async () => {
         id: "test",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {one: true, two: false})
+            value: new ListVariableType("ok", {one: true, two: false}, [])
         }
     }
     graph.onVariableCreated(variable);
@@ -180,7 +180,7 @@ test("simple aggregate sum variable", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -229,7 +229,7 @@ test("simple aggregate mean variable", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -269,7 +269,7 @@ test("simple single list variable new entry", async () => {
         id: "test",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: false})
+            value: new ListVariableType("ok", {ok: false}, [])
         }
     }
     graph.onVariableCreated(variable);
@@ -337,7 +337,7 @@ test("simple aggregate sum new entry", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -408,7 +408,7 @@ test("simple aggregate mean new entry", async () => {
         id: "list_variable",
         type: {
             type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true})
+            value: new ListVariableType("ok", {ok: true}, [])
         }
     });
     graph.onVariableCreated({
@@ -444,3 +444,178 @@ test("simple aggregate mean new entry", async () => {
     expect(val2).toEqual(pNumber(31.0));
 })
 
+
+// Returns all entries with field > 10
+test("simple list variable with filter", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            {
+                id: "entry_one",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
+                }
+            },
+            {
+                id: "entry_two",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
+                }
+            }
+        ]
+    );
+    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    let variable: Variable = {
+        name: "test",
+        id: "test",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("ok", {ok: true}, [
+                {field: "ok", operator: FilterComparisonOperator.GREATER_THAN, value: pNumber(10.0)}
+            ])
+        }
+    }
+    graph.onVariableCreated(variable);
+    let val = await graph.evaluateVariable(variable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(pList([
+        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+    ]));
+})
+
+// Returns all entries that have an alcoholic beverage
+test("simple list variable with list filter", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            {
+                id: "entry_one",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(10.0), pString("10.0")),
+                    "beverage_type": pDisplay(pString("beer"), pString("Beer"))
+                }
+            },
+            {
+                id: "entry_two",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(13.0), pString("13.0")),
+                    "beverage_type": pDisplay(pString("wine"), pString("Wine"))
+                }
+            },
+            {
+                id: "entry_three",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(13.0), pString("13.0")),
+                    "beverage_type": pDisplay(pString("water"), pString("Water"))
+                }
+            }
+        ]
+    );
+    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    let variable: Variable = {
+        name: "test",
+        id: "test",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("ok", {ok: true}, [
+                {field: "beverage_type", operator: FilterComparisonOperator.IN, value: pList([pString("beer"), pString("wine")])}
+            ])
+        }
+    }
+    graph.onVariableCreated(variable);
+    let val = await graph.evaluateVariable(variable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(pList([
+        pEntry("entry_one", 0, {"ok": pDisplay(pNumber(10.0), pString("10.0"))}),
+        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+    ]));
+})
+
+// Returns all entries with 10 < field < 20
+test("simple list variable with multiple filters", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            {
+                id: "entry_one",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
+                }
+            },
+            {
+                id: "entry_two",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
+                }
+            },
+
+            {
+                id: "entry_three",
+                formId: "ok",
+                timestamp: 0,
+                name: "",
+                icon: "",
+                snapshotId: "",
+                answers: {
+                    "ok": pDisplay(pNumber(20.0), pString("20.0"))
+                }
+            }
+        ]
+    );
+    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    let variable: Variable = {
+        name: "test",
+        id: "test",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("ok", {ok: true}, [
+                {field: "ok", operator: FilterComparisonOperator.GREATER_THAN, value: pNumber(10.0)},
+                {field: "ok", operator: FilterComparisonOperator.LESS_THAN, value: pNumber(20.0)}
+            ])
+        }
+    }
+    graph.onVariableCreated(variable);
+    let val = await graph.evaluateVariable(variable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(pList([
+        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+    ]));
+})
