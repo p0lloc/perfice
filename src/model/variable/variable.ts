@@ -4,6 +4,7 @@ import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {TimeScope} from "@perfice/model/variable/time/time";
 import {type GoalVariableType} from "@perfice/services/variable/types/goal";
+import type {CalculationVariableType} from "@perfice/services/variable/types/calculation";
 
 export interface StoredVariable {
     id: string;
@@ -28,7 +29,8 @@ export interface TextOrDynamic {
 export enum VariableTypeName {
     LIST = "LIST",
     AGGREGATE = "AGGREGATE",
-    GOAL = "GOAL"
+    GOAL = "GOAL",
+    CALCULATION = "CALCULATION"
 }
 
 export interface VT<T extends VariableTypeName, V extends VariableType> {
@@ -57,8 +59,8 @@ export interface VariableEvaluator {
 export type VariableTypeDef =
     VT<VariableTypeName.LIST, ListVariableType>
     | VT<VariableTypeName.AGGREGATE, AggregateVariableType>
-    | VT<VariableTypeName.GOAL, GoalVariableType>;
-
+    | VT<VariableTypeName.GOAL, GoalVariableType>
+    | VT<VariableTypeName.CALCULATION, CalculationVariableType>;
 
 
 export interface VariableIndex {

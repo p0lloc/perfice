@@ -4,13 +4,15 @@ import {
     faEquals,
     faGreaterThan,
     faGreaterThanEqual, faLessThan, faLessThanEqual, faList,
+    faMinus,
     faNotEqual,
     faPlus, faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import {TimeScopeType, type TimeScope, SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {formatDateYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format";
 import {ComparisonOperator} from "@perfice/services/variable/types/goal";
-import { FilterComparisonOperator } from "@perfice/services/variable/types/list";
+import {FilterComparisonOperator} from "@perfice/services/variable/types/list";
+import {CalculationOperator} from "@perfice/services/variable/types/calculation";
 
 export const AGGREGATE_TYPES = [
     {
@@ -66,6 +68,13 @@ export const FILTER_COMPARISON_OPERATORS = [
     {name: "", value: FilterComparisonOperator.LESS_THAN_EQUAL, icon: faLessThanEqual},
     {name: "", value: FilterComparisonOperator.IN, icon: faList},
     {name: "", value: FilterComparisonOperator.NOT_IN, icon: faTimes},
+];
+
+export const CALCULATION_OPERATORS = [
+    {name: "Plus", value: CalculationOperator.PLUS, icon: faPlus},
+    {name: "Minus", value: CalculationOperator.MINUS, icon: faMinus},
+    {name: "Multiply", value: CalculationOperator.MULTIPLY, icon: faTimes},
+    {name: "Divide", value: CalculationOperator.DIVIDE, icon: faDivide},
 ];
 
 export function formatTimeScopeType(ts: TimeScope) {

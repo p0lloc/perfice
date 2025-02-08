@@ -8,8 +8,16 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {AGGREGATE_TYPES} from "@perfice/model/variable/ui";
     import EditListFilters from "@perfice/components/variable/edit/aggregation/EditListFilters.svelte";
+    import EditVariableName from "@perfice/components/variable/edit/EditVariableName.svelte";
+    import type {ConstantOrVariable} from "@perfice/services/variable/types/goal";
+    import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
 
-    let {variable, value, editState}: { variable: Variable, value: AggregateVariableType, editState: EditAggregationVariableState } = $props();
+    let {variable, value, editState}: {
+        variable: Variable,
+        value: AggregateVariableType,
+        editState: EditAggregationVariableState,
+        onEdit: (v: EditConstantOrVariableState) => void
+    } = $props();
 
     let aggregateType = $state<string>(value.getAggregateType());
     let field = $state<string>(value.getField());
@@ -87,5 +95,5 @@
             <DropdownButton items={dropdownQuestions} value={field} onChange={onFieldChange}/>
         {/if}
     </div>
-    <EditListFilters fields={dropdownQuestions} filters={filters} onChange={onFilterChange} />
+    <EditListFilters fields={dropdownQuestions} filters={filters} onChange={onFilterChange}/>
 </div>

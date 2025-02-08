@@ -3,20 +3,18 @@
     import type {ConstantOrVariable} from "@perfice/services/variable/types/goal";
     import EditConstant from "@perfice/components/variable/edit/EditConstant.svelte";
     import EditVariable from "@perfice/components/variable/edit/EditVariable.svelte";
-    import Button from "@perfice/components/base/button/Button.svelte";
-    import {ButtonColor} from "@perfice/model/ui/button";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
-    import {faCheck} from "@fortawesome/free-solid-svg-icons";
+    import EditBackButton from "@perfice/components/variable/edit/EditBackButton.svelte";
+    import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
 
-    let {value, onBack, onChange}: {
+    let {value, onBack, onChange, onEdit}: {
         value: ConstantOrVariable,
         onBack: () => void,
-        onChange: (v: ConstantOrVariable) => void } = $props();
+        onChange: (v: ConstantOrVariable) => void,
+        onEdit: (v: EditConstantOrVariableState) => void
+    } = $props();
 
     function onConstantChange(v: PrimitiveValue) {
-        value.value = v;
-        onChange($state.snapshot(value));
+        onChange({...$state.snapshot(value), value: v});
     }
 
 </script>
@@ -24,8 +22,6 @@
 {#if value.constant || value.value.type !== PrimitiveValueType.STRING}
     <EditConstant value={value.value} onChange={onConstantChange} />
 {:else}
-    <EditVariable variableId={value.value.value} />
+    <EditVariable variableId={value.value.value} {onEdit} />
 {/if}
-<Button class="flex justify-center items-center" color={ButtonColor.WHITE} onClick={onBack}>
-    <Fa icon={faCheck} />
-</Button>
+<EditBackButton {onBack} />

@@ -1,8 +1,8 @@
 import {PrimitiveValueType, type PrimitiveValue, primitiveAsNumber} from "../primitive/primitive";
 import {VariableTypeName} from "@perfice/model/variable/variable";
-import {ComparisonOperator, type GoalCondition, GoalConditionType} from "@perfice/services/variable/types/goal";
+import {ComparisonOperator, type ConstantOrVariable, type GoalCondition, GoalConditionType} from "@perfice/services/variable/types/goal";
 import {
-    faBullseye,
+    faBullseye, faDivide,
     faEquals,
     faGreaterThan,
     faGreaterThanEqual,
@@ -81,6 +81,17 @@ export const COMPARISON_SOURCE_TYPES = [
         type: VariableTypeName.AGGREGATE,
         name: "Aggregation",
         description: "Operations like sum, average, etc",
+        icon: faDivide,
+    },
+    {
+        type: VariableTypeName.CALCULATION,
+        name: "Calculation",
+        description: "Calculation between variables",
         icon: faPlusMinus,
     },
 ];
+
+export interface EditConstantOrVariableState {
+    value: ConstantOrVariable;
+    onChange: (v: ConstantOrVariable) => void;
+}

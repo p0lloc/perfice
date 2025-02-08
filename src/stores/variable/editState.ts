@@ -3,8 +3,8 @@ import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import {AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {VariableEditProvider} from "@perfice/stores/variable/edit";
-import type { ListVariableType } from "@perfice/services/variable/types/list";
-import type { Form } from "@perfice/model/form/form";
+import type {ListVariableType} from "@perfice/services/variable/types/list";
+import type {Form} from "@perfice/model/form/form";
 import type {Trackable} from "@perfice/model/trackable/trackable";
 
 export interface EditAggregationVariableState {
@@ -29,6 +29,8 @@ export class VariableEditStateProvider {
         switch (variable.type.type) {
             case VariableTypeName.AGGREGATE:
                 return this.getEditStateForAggregateVariable(variable.type.value);
+            case VariableTypeName.CALCULATION:
+                return {};
         }
 
         return null;
@@ -38,7 +40,7 @@ export class VariableEditStateProvider {
         let listVariable = this.editProvider.getVariableById(value.getListVariableId());
         if (listVariable == null) return null;
 
-        if(listVariable.type.type != VariableTypeName.LIST) return null;
+        if (listVariable.type.type != VariableTypeName.LIST) return null;
 
         let forms = await this.formService.getForms();
         let entities = await this.trackableService.getTrackables();

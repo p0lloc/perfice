@@ -7,6 +7,7 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/
 import {pDisplay, pEntry, pList, pNumber, pString} from "../../src/model/primitive/primitive";
 import {AggregateType, AggregateVariableType} from "../../src/services/variable/types/aggregate";
 import {JournalEntry} from "../../src/model/journal/journal";
+import {CalculationOperator, CalculationVariableType} from "../../src/services/variable/types/calculation";
 
 test("empty list variable", async () => {
     const index = new DummyIndexCollection();
@@ -618,4 +619,163 @@ test("simple list variable with multiple filters", async () => {
     expect(val).toEqual(pList([
         pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
+})
+
+test("static calculation variable", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            {
+                id: "entry_one",
+                formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
+                timestamp: 0,
+                answers: {
+                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
+                }
+            },
+            {
+                id: "entry_two",
+                formId: "ok",
+                name: "",
+                icon: "",
+                snapshotId: "",
+                timestamp: 0,
+                answers: {
+                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
+                }
+            }
+        ]
+    );
+    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    graph.onVariableCreated({
+        id: "list_variable",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("ok", {ok: true}, [])
+        }
+    });
+    graph.onVariableCreated({
+        id: "aggregate_variable",
+        type: {
+            type: VariableTypeName.AGGREGATE,
+            value: new AggregateVariableType(AggregateType.SUM, "list_variable", "ok"),
+        }
+    });
+    graph.onVariableCreated({
+        id: "calculation_variable",
+        type: {
+            type: VariableTypeName.CALCULATION,
+            value: new CalculationVariableType([
+                {constant: false, value: pString("aggregate_variable")},
+                CalculationOperator.PLUS,
+                {constant: true, value: pNumber(10.0)}
+            ]),
+        }
+    });
+    let val = await graph.evaluateVariable(graph.getVariableById("calculation_variable")!,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(pNumber(33.0));
+
+})
+
+test("calculation variable between two dynamic variables", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            {
+                id: "entry_one",
+                formId: "income",
+                name: "",
+                icon: "",
+                snapshotId: "",
+                timestamp: 0,
+                answers: {
+                    "ok": pDisplay(pNumber(1500.0), pString("1500.0"))
+                }
+            },
+            {
+                id: "entry_two",
+                formId: "expense",
+                name: "",
+                icon: "",
+                snapshotId: "",
+                timestamp: 0,
+                answers: {
+                    "ok": pDisplay(pNumber(1000.0), pString("1000.0"))
+                }
+            }
+        ]
+    );
+    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    graph.onVariableCreated({
+        id: "expense_list",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("expense", {ok: true}, [])
+        }
+    });
+    graph.onVariableCreated({
+        id: "income_list",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("income", {ok: true}, [])
+        }
+    });
+    graph.onVariableCreated({
+        id: "total_expense",
+        type: {
+            type: VariableTypeName.AGGREGATE,
+            value: new AggregateVariableType(AggregateType.SUM, "expense_list", "ok"),
+        }
+    });
+    graph.onVariableCreated({
+        id: "total_income",
+        type: {
+            type: VariableTypeName.AGGREGATE,
+            value: new AggregateVariableType(AggregateType.SUM, "income_list", "ok"),
+        }
+    });
+
+    graph.onVariableCreated({
+        id: "calculation_variable",
+        type: {
+            type: VariableTypeName.CALCULATION,
+            value: new CalculationVariableType([
+                {constant: false, value: pString("total_income")},
+                CalculationOperator.MINUS,
+                {constant: false, value: pString("total_expense")},
+            ]),
+        }
+    });
+    let val = await graph.evaluateVariable(graph.getVariableById("calculation_variable")!,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(pNumber(500.0));
+
+
+    let entryTwo: JournalEntry = {
+        id: "entry_two",
+        formId: "income",
+        timestamp: 0,
+        name: "",
+        icon: "",
+        snapshotId: "",
+        answers: {
+            "ok": pDisplay(pNumber(500.0), pString("13.0"))
+        }
+    };
+
+    await journal.createEntry(entryTwo);
+    await graph.onEntryCreated(entryTwo);
+
+
+    let val2 = await graph.evaluateVariable(graph.getVariableById("calculation_variable")!,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val2).toEqual(pNumber(1000.0));
+
 })

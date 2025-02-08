@@ -9,6 +9,7 @@ import {
 } from "@perfice/services/variable/types/goal";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
 import {WeekStart} from "@perfice/model/variable/time/time";
+import {CalculationVariableType} from "@perfice/services/variable/types/calculation";
 
 export const GOAL_CONDITION_DESERIALIZERS:
     Record<string, (value: any) => GoalConditionValue> = {
@@ -82,6 +83,9 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<string, (value: any) => Variabl
         value.conditions.map(deserializeGoalCondition),
         deserializeTimeScope(value.timeScope, WeekStart.MONDAY), // TODO: do we pass in week start?
     ),
+    [VariableTypeName.CALCULATION]: (value: any) => new CalculationVariableType(
+        value.entries,
+    ),
 };
 
 export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: VariableType) => object> = {
@@ -106,6 +110,12 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
         return {
             conditions: goalType.getConditions().map(c => serializeGoalCondition(c)),
             timeScope: serializeTimeScope(goalType.getTimeScope()),
+        }
+    },
+    [VariableTypeName.CALCULATION]: (value: VariableType) => {
+        let calculationType = value as CalculationVariableType;
+        return {
+            entries: calculationType.getEntries(),
         }
     }
 }

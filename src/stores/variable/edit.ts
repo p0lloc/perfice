@@ -5,9 +5,12 @@ import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
-import {GoalVariableType} from "@perfice/services/variable/types/goal";
+import {type ConstantOrVariable, GoalVariableType} from "@perfice/services/variable/types/goal";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
 import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
+import {CalculationOperator, CalculationVariableType} from "@perfice/services/variable/types/calculation";
+import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {variableEditProvider} from "@perfice/main";
 
 export enum VariableChangeType {
     CREATE,
@@ -56,6 +59,17 @@ export class VariableEditProvider {
         return this.variables.find(v => v.id == id);
     }
 
+    textForConstantOrVariable(v: ConstantOrVariable): string {
+        if (v.constant || v.value.type != PrimitiveValueType.STRING) {
+            return prettyPrintPrimitive(v.value);
+        }
+
+        let variable = this.getVariableById(v.value.value);
+        if (variable == null) return "Unknown source";
+
+        return variable.name;
+    }
+
     async getEditState(variable: Variable): Promise<any> {
         return this.editStateProvider.getEditState(variable);
     }
@@ -93,6 +107,21 @@ export class VariableEditProvider {
                         type: {
                             type: VariableTypeName.GOAL,
                             value: new GoalVariableType([], tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0))
+                        }
+                    },
+                };
+            case VariableTypeName.CALCULATION:
+                return {
+                    variable: {
+                        id: crypto.randomUUID(),
+                        name: "Calculation",
+                        type: {
+                            type: VariableTypeName.CALCULATION,
+                            value: new CalculationVariableType([
+                                {constant: true, value: pNull()},
+                                CalculationOperator.PLUS,
+                                {constant: true, value: pNull()}
+                            ])
                         }
                     },
                 };
