@@ -9,3 +9,7 @@ export function updateIdentifiedInArray<V extends { id: K }, K>(v: V[], update: 
 export function deleteIdentifiedInArray<V extends { id: K }, K>(v: V[], id: K): V[] {
     return v.filter(val => val.id != id);
 }
+
+export function updateIndexInArray<V>(v: V[], index: number, update: V) {
+    return v.map((val, i) => i == index ? update : val);
+}

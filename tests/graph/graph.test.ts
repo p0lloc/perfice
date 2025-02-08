@@ -481,7 +481,7 @@ test("simple list variable with filter", async () => {
         type: {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
-                {field: "ok", operator: FilterComparisonOperator.GREATER_THAN, value: pNumber(10.0)}
+                {id: crypto.randomUUID(), field: "ok", operator: FilterComparisonOperator.GREATER_THAN, value: pNumber(10.0)}
             ])
         }
     }
@@ -544,7 +544,7 @@ test("simple list variable with list filter", async () => {
         type: {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
-                {field: "beverage_type", operator: FilterComparisonOperator.IN, value: pList([pString("beer"), pString("wine")])}
+                {id: crypto.randomUUID(), field: "beverage_type", operator: FilterComparisonOperator.IN, value: pList([pString("beer"), pString("wine")])}
             ])
         }
     }
@@ -606,8 +606,8 @@ test("simple list variable with multiple filters", async () => {
         type: {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
-                {field: "ok", operator: FilterComparisonOperator.GREATER_THAN, value: pNumber(10.0)},
-                {field: "ok", operator: FilterComparisonOperator.LESS_THAN, value: pNumber(20.0)}
+                {id: crypto.randomUUID(), field: "ok", operator: FilterComparisonOperator.GREATER_THAN, value: pNumber(10.0)},
+                {id: crypto.randomUUID(), field: "ok", operator: FilterComparisonOperator.LESS_THAN, value: pNumber(20.0)}
             ])
         }
     }

@@ -18,7 +18,7 @@
         if (useParentWidth)
             minWidth = `${rect.width}px`;
 
-        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height, initiator, rect.x, rect.y));
+        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height + window.scrollY, initiator, rect.x, rect.y));
     }
 
     export function openAtPosition(x: number, y: number, initiator: HTMLElement, relativeX: number, _relativeY: number) {

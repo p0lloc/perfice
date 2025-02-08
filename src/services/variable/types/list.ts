@@ -1,6 +1,6 @@
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {
-    comparePrimitives,
+    comparePrimitivesLoosely,
     pEntry,
     pList, primitiveAsNumber,
     type PrimitiveValue,
@@ -59,6 +59,7 @@ export type NumberFilterComparisonOperator =
     FilterComparisonOperator.LESS_THAN_EQUAL;
 
 export interface ListVariableFilter {
+    id: string;
     field: string;
     operator: FilterComparisonOperator;
     value: PrimitiveValue;
@@ -84,12 +85,26 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
             if (index.value.type != PrimitiveValueType.LIST)
                 continue;
 
-            // Entry was updated, try to find and update it in the list
             let val = index.value.value;
-            for (let entries of val) {
-                if (entries.type == PrimitiveValueType.ENTRY && entries.value.id == entry.id) {
-                    entries.value.value = extractFieldsFromAnswers(entry.answers, this.fields);
-                    entries.value.timestamp = entry.timestamp;
+            if(this.shouldFilterEntry(entry)){
+                // Entry no longer matches filter, attempt to remove it from list
+                index.value.value = val.filter(v =>
+                    v.type == PrimitiveValueType.ENTRY && v.value.id != entry.id);
+            } else {
+                let found = false;
+                // Entry was updated, try to find and update it in the list
+                for (let entries of val) {
+                    if (entries.type == PrimitiveValueType.ENTRY && entries.value.id == entry.id) {
+                        found = true;
+                        entries.value.value = extractFieldsFromAnswers(entry.answers, this.fields);
+                        entries.value.timestamp = entry.timestamp;
+                    }
+                }
+
+                // Entry went from being filtered to not filtered, add it to the list
+                if(!found) {
+                    index.value.value.push(pEntry(entry.id, entry.timestamp,
+                        extractFieldsFromAnswers(entry.answers, this.fields)));
                 }
             }
 
@@ -104,6 +119,9 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
 
     async onEntryCreated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
         if (entry.formId != this.formId) return [];
+
+        // Don't create list entries for entries that should be filtered
+        if(this.shouldFilterEntry(entry)) return [];
 
         let actions: VariableIndexAction[] = [];
         for (let index of indices) {
@@ -147,15 +165,15 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
     private isInList(value: PrimitiveValue, filter: ListVariableFilter): boolean {
         if (filter.value.type != PrimitiveValueType.LIST) return false;
 
-        return filter.value.value.some(v => comparePrimitives(value, v));
+        return filter.value.value.some(v => comparePrimitivesLoosely(value, v));
     }
 
     private isFilterMet(value: PrimitiveValue, filter: ListVariableFilter): boolean {
         switch (filter.operator) {
             case FilterComparisonOperator.EQUAL:
-                return comparePrimitives(value, filter.value);
             case FilterComparisonOperator.NOT_EQUAL:
-                return !comparePrimitives(value, filter.value);
+                let comparison = comparePrimitivesLoosely(value, filter.value);
+                return (filter.operator == FilterComparisonOperator.EQUAL) ? comparison : !comparison;
             case FilterComparisonOperator.GREATER_THAN:
             case FilterComparisonOperator.GREATER_THAN_EQUAL:
             case FilterComparisonOperator.LESS_THAN:
@@ -198,7 +216,9 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
         let entries = await evaluator.getEntriesInTimeRange(this.formId);
         let result: PrimitiveValue[] = [];
         for (let entry of entries) {
-            if (this.shouldFilterEntry(entry)) continue;
+            if (this.shouldFilterEntry(entry)) {
+                continue;
+            }
 
             let fields = extractFieldsFromAnswers(entry.answers, this.fields);
             result.push(pEntry(entry.id, entry.timestamp, fields));

@@ -72,7 +72,7 @@ export class TrackableService {
                 type: VariableTypeName.LIST,
                 value: new ListVariableType(trackable.formId, {
                     test: false,
-                })
+                }, [])
             }
         }
 
@@ -139,13 +139,13 @@ export class TrackableService {
 
     async updateTrackableChartSettings(trackable: Trackable, aggregateType: AggregateType, field: string) {
         let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null) return;
+        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
 
         listVariable.type = {
             type: VariableTypeName.LIST,
             value: new ListVariableType(trackable.formId, {
                 [field]: false
-            })
+            }, listVariable.type.value.getFilters())
         }
 
         let chartVariable = this.variableService.getVariableById(trackable.dependencies["aggregate"]);
@@ -176,12 +176,12 @@ export class TrackableService {
 
     async updateTrackableValueSettings(trackable: Trackable, representation: TextOrDynamic[]) {
         let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null) return;
+        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
 
         let fields = this.extractFieldsFromRepresentation(representation);
         listVariable.type = {
             type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, fields)
+            value: new ListVariableType(trackable.formId, fields, listVariable.type.value.getFilters())
         }
 
         await this.variableService.updateVariable(listVariable);

@@ -71,6 +71,7 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<string, (value: any) => Variabl
     [VariableTypeName.LIST]: (value: any) => new ListVariableType(
         value.formId,
         value.fields,
+        value.filters
     ),
     [VariableTypeName.AGGREGATE]: (value: any) => new AggregateVariableType(
         value.aggregateType,
@@ -89,6 +90,7 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
         return {
             formId: listType.getFormId(),
             fields: listType.getFields(),
+            filters: listType.getFilters(),
         }
     },
     [VariableTypeName.AGGREGATE]: (value: VariableType) => {

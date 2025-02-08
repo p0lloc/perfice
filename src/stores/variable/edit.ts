@@ -69,7 +69,7 @@ export class VariableEditProvider {
                         name: "List",
                         type: {
                             type: VariableTypeName.LIST,
-                            value: new ListVariableType("", {})
+                            value: new ListVariableType("", {}, [])
                         }
                     }
                 };

@@ -8,11 +8,12 @@
 
     let contextMenu: ContextMenu;
     let button: HTMLButtonElement;
-    let {value, items, class: className = '', onChange}: {
+    let {value, items, small = false, class: className = '', onChange}: {
         value: T,
         items: DropdownMenuItem<T>[],
         class?: string,
-        onChange?: (v: T) => void
+        onChange?: (v: T) => void,
+        small?: boolean,
     } = $props();
 
     function open(e: MouseEvent) {
@@ -26,7 +27,7 @@
 
     let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => i.value == value));
 </script>
-<button class="border min-h-8 min-w-6 rounded-xl px-3 py-2 flex items-center justify-between {className} gap-2 context-menu-button"
+<button class="border min-h-8 min-w-6 rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
         onclick={open} bind:this={button}>
     <div class="row-gap pointer-events-none">
         {#if selectedItem != null}

@@ -116,6 +116,15 @@ export function comparePrimitives(first: PrimitiveValue, second: PrimitiveValue)
     return comparePrimitiveValues(first.type, first.value, second.value);
 }
 
+
+/**
+ * Compares two primitive values, but first converts the first value to the type of the second value.
+ */
+export function comparePrimitivesLoosely(first: PrimitiveValue, second: PrimitiveValue): boolean {
+    let valueConverted = primitiveAsType(first, second.type);
+    return comparePrimitives(valueConverted, second);
+}
+
 function comparePrimitiveLists(firstList: PrimitiveValue[], secondList: PrimitiveValue[]): boolean {
     if (firstList.length != secondList.length) // Lengths must clearly match
         return false;
@@ -198,9 +207,30 @@ export function prettyPrintPrimitive(v: PrimitiveValue): string {
 }
 
 export function primitiveAsNumber(value: PrimitiveValue): number {
+    if (value.type == PrimitiveValueType.STRING) {
+        let float = parseFloat(value.value);
+        if(isFinite(float)) {
+            return float;
+        }
+    }
     if (value.type == PrimitiveValueType.NUMBER) {
         return value.value;
     }
 
     return 0;
+}
+
+
+export function primitiveAsType(value: PrimitiveValue, type: PrimitiveValueType): PrimitiveValue {
+    if(value.type == type) return value;
+
+    if(type == PrimitiveValueType.NUMBER) {
+        return pNumber(primitiveAsNumber(value));
+    }
+
+    if(type == PrimitiveValueType.STRING) {
+        return pString(value.value?.toString() ?? "");
+    }
+
+    return getDefaultPrimitiveValue(type);
 }
