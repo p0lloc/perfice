@@ -39,6 +39,7 @@
         goal = {
             id: crypto.randomUUID(),
             name: "New goal",
+            color: "#ff0000",
             variableId: variable.id,
         };
         goalVariable = variable;
@@ -149,7 +150,7 @@
             <p class="block mb-2 label mt-4">Name & color</p>
             <div class="row-gap">
                 <input bind:value={goal.name} placeholder="Goal name" type="text" class="input">
-                <ColorPickerButton value="#ff0000"/>
+                <ColorPickerButton bind:value={goal.color}/>
             </div>
 
             <p class="block mb-2 label mt-4">Conditions</p>

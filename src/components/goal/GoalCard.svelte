@@ -51,7 +51,7 @@
             <PopupIconButton buttons={EDIT_POPUP} icon={faEllipsisV}/>
         </div>
 
-        <GoalValueRenderer value={value.results} color="magenta"/>
+        <GoalValueRenderer value={value.results} color={goal.color}/>
         <div class="border-t w-full text-center text-gray-500">
             {formatTimeScopeType(value.timeScope)}
         </div>
