@@ -20,11 +20,17 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async getEntriesByFormIdFromTime(formId: string, start: number): Promise<JournalEntry[]> {
-        return this.table.where("[formId+timestamp]").aboveOrEqual([formId, start]).toArray();
+        return this.table.where("timestamp")
+            .aboveOrEqual(start)
+            .and(v => v.formId == formId)
+            .toArray();
     }
 
     async getEntriesByFormIdUntilTime(formId: string, start: number): Promise<JournalEntry[]> {
-        return this.table.where("[formId+timestamp]").belowOrEqual([formId, start]).toArray();
+        return this.table.where("timestamp")
+            .belowOrEqual(start)
+            .and(v => v.formId == formId)
+            .toArray();
     }
 
     async createEntry(entry: JournalEntry): Promise<void> {
