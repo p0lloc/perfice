@@ -12,18 +12,24 @@ import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
 
 
+export interface FormIdDependent {
+    /**
+     * Returns ids of forms that this variable depends on.
+     */
+    getFormDependencies(): string[];
+}
 /**
  * Represents a variable type that is dependent on journal entries.
  */
-export interface EntryCreatedDependent {
+export interface EntryCreatedDependent extends FormIdDependent {
     onEntryCreated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
 }
 
-export interface EntryDeletedDependent {
+export interface EntryDeletedDependent extends FormIdDependent {
     onEntryDeleted(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
 }
 
-export interface EntryUpdatedDependent {
+export interface EntryUpdatedDependent extends FormIdDependent {
     onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
 }
 
@@ -131,6 +137,12 @@ export class VariableGraph {
         return value;
     }
 
+    private deleteJournalDependencies(variableId: string) {
+        this.entryCreatedDependent.delete(variableId);
+        this.entryDeletedDependent.delete(variableId);
+        this.entryUpdatedDependent.delete(variableId);
+    }
+
     private setupJournalDependencies(variable: Variable) {
         if (isEntryCreatedDependent(variable.type.value)) {
             this.entryCreatedDependent.set(variable.id, variable.type.value);
@@ -146,10 +158,36 @@ export class VariableGraph {
     }
 
     onVariableCreated(v: Variable) {
+        this.nodes.set(v.id, v);
         this.updateDependentsForVariable(v);
         this.setupJournalDependencies(v);
+    }
 
-        this.nodes.set(v.id, v);
+    async onVariableDeleted(id: string) {
+        this.nodes.delete(id);
+
+        // Delete any entry dependents
+        this.deleteJournalDependencies(id);
+
+        // When a variable is deleted, we need to delete all of its indices
+        await this.indexCollection.deleteIndicesByVariableId(id);
+        await this.deleteIndicesForDependentVariables(id);
+    }
+
+    async onVariableUpdated(variable: Variable) {
+        // When a variable is updated, we need to delete all of its indices
+        this.nodes.set(variable.id, variable);
+
+        // Variable might have a completely different form, so we need to update any journal dependencies.
+        this.deleteJournalDependencies(variable.id);
+        this.setupJournalDependencies(variable);
+        // Do the same for internal graph dependencies
+        this.removeDependenciesForVariable(variable.id);
+        this.updateDependentsForVariable(variable);
+
+
+        await this.indexCollection.deleteIndicesByVariableId(variable.id);
+        await this.deleteIndicesForDependentVariables(variable.id);
     }
 
     private filterIndicesByTimestamp(indices: VariableIndex[], timestamp: number) {
@@ -216,7 +254,7 @@ export class VariableGraph {
     async onEntryCreated(entry: JournalEntry) {
         if (this.entryCreatedDependent.size == 0) return;
 
-        for (let [variableId, dependent] of this.entryCreatedDependent.entries()) {
+        for (let [variableId, dependent] of this.filterEntryDependents(this.entryCreatedDependent, entry.formId).entries()) {
             await this.handleEntryAction(entry, variableId,
                 (indices: VariableIndex[]) => dependent.onEntryCreated(entry, indices));
         }
@@ -225,7 +263,7 @@ export class VariableGraph {
     async onEntryDeleted(entry: JournalEntry) {
         if (this.entryDeletedDependent.size == 0) return;
 
-        for (let [variableId, dependent] of this.entryDeletedDependent.entries()) {
+        for (let [variableId, dependent] of this.filterEntryDependents(this.entryDeletedDependent, entry.formId).entries()) {
             await this.handleEntryAction(entry, variableId,
                 (indices: VariableIndex[]) => dependent.onEntryDeleted(entry, indices));
         }
@@ -234,10 +272,21 @@ export class VariableGraph {
     async onEntryUpdated(entry: JournalEntry) {
         if (this.entryUpdatedDependent.size == 0) return;
 
-        for (let [variableId, dependent] of this.entryUpdatedDependent.entries()) {
+        for (let [variableId, dependent] of this.filterEntryDependents(this.entryUpdatedDependent, entry.formId).entries()) {
             await this.handleEntryAction(entry, variableId,
                 (indices: VariableIndex[]) => dependent.onEntryUpdated(entry, indices));
         }
+    }
+
+    private filterEntryDependents<V extends FormIdDependent>(map: Map<string, V>, formId: string): Map<string, V> {
+        let result: Map<string, V> = new Map();
+        for (let [id, dependent] of map.entries()) {
+            if (dependent.getFormDependencies().includes(formId)) {
+                result.set(id, dependent);
+            }
+        }
+
+        return result;
     }
 
     async deleteVariableAndDependencies(id: string): Promise<Variable[]> {
@@ -263,19 +312,6 @@ export class VariableGraph {
         return variablesToDelete;
     }
 
-    async onVariableDeleted(id: string) {
-        // When a variable is deleted, we need to delete all of its indices
-        this.nodes.delete(id);
-        await this.indexCollection.deleteIndicesByVariableId(id);
-        await this.deleteIndicesForDependentVariables(id);
-    }
-
-    async onVariableUpdated(variable: Variable) {
-        // When a variable is updated, we need to delete all of its indices
-        this.nodes.set(variable.id, variable);
-        await this.indexCollection.deleteIndicesByVariableId(variable.id);
-        await this.deleteIndicesForDependentVariables(variable.id);
-    }
 
     private async deleteIndicesForDependentVariables(variableId: string) {
         let dependents = this.dependents.get(variableId);
@@ -307,6 +343,28 @@ export class VariableGraph {
 
     private async runEvaluation(variable: Variable, timeScope: TimeScope, evaluating: string[]): Promise<PrimitiveValue> {
         return variable.type.value.evaluate(new BaseVariableEvaluator(timeScope, evaluating, this, this.journalCollection));
+    }
+
+    // TODO: should we have a bidirectional relation?
+    private getStoredDependenciesForVariable(variableId: string): string[] {
+        let result: string[] = [];
+        for(let [dependent, dependencies] of this.dependents.entries()){
+            if(dependencies.has(variableId)){
+                result.push(dependent);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Removes all dependencies for the given variable.
+     */
+    private removeDependenciesForVariable(variableId: string){
+        for(let dependencies of this.dependents.values()){
+            dependencies.delete(variableId);
+        }
     }
 
     private updateDependentsForVariable(node: Variable) {

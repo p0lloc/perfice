@@ -1,17 +1,31 @@
-import {IndexCollection, IndexDeleteListener, IndexUpdateListener, JournalCollection} from "../src/db/collections";
-import {VariableIndex} from "../src/model/variable/variable";
+import {
+    IndexCollection,
+    IndexUpdateListener,
+    JournalCollection, TrackableCollection,
+    VariableCollection
+} from "../src/db/collections";
+import {StoredVariable, VariableIndex} from "../src/model/variable/variable";
 import {updateIdentifiedInArray} from "../src/util/array";
 import {JournalEntry} from "../src/model/journal/journal";
 import {FormService} from "../src/services/form/form";
 import {Form, FormSnapshot} from "../src/model/form/form";
 import {JournalService} from "../src/services/journal/journal";
 import {EntityObserverCallback, EntityObserverType} from "../src/services/observer";
+import {Trackable} from "../src/model/trackable/trackable";
 
 export class DummyJournalCollection implements JournalCollection {
     private entries: JournalEntry[];
 
     constructor(entries: JournalEntry[] = []) {
         this.entries = entries;
+    }
+
+    async getEntriesByFormIdUntilTime(formId: string, upper: number): Promise<JournalEntry[]> {
+        return this.entries.filter(e => e.formId == formId && e.timestamp <= upper);
+    }
+
+    async getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]> {
+        return this.entries.filter(e => e.formId == formId && e.timestamp >= lower);
     }
 
     async createEntry(entry: JournalEntry) {
@@ -56,27 +70,34 @@ export class DummyJournalCollection implements JournalCollection {
 export class DummyIndexCollection implements IndexCollection {
 
     private indices: VariableIndex[];
+    private updateListeners: IndexUpdateListener[] = [];
+    private deleteListeners: IndexUpdateListener[] = [];
 
     constructor(indices: VariableIndex[] = []) {
         this.indices = indices;
     }
 
-    addDeleteListener(listener: IndexDeleteListener): void {
-        throw new Error("Method not implemented.");
+    async deleteIndicesByVariableIds(variablesToDelete: string[]): Promise<void> {
+        let toDelete = this.indices.filter(i => variablesToDelete.includes(i.variableId));
+        this.indices = this.indices.filter(i => !toDelete.includes(i));
+        await this.notifyDeletion(toDelete);
     }
-    removeDeleteListener(listener: IndexDeleteListener): void {
-        throw new Error("Method not implemented.");
+
+
+    private async notifyDeletion(indices: VariableIndex[]){
+        for (let index of indices) {
+            for (const callback of this.deleteListeners) {
+                await callback(index);
+            }
+        }
     }
 
     async deleteIndicesByIds(ids: string[]): Promise<void> {
-        this.indices = this.indices.filter(i => !ids.includes(i.id));
+        let toDelete = this.indices.filter(i => ids.includes(i.id));
+        this.indices = this.indices.filter(i => !toDelete.includes(i));
+        await this.notifyDeletion(toDelete);
     }
-    addUpdateListener(listener: IndexUpdateListener): void {
-        throw new Error("Method not implemented.");
-    }
-    removeUpdateListener(listener: IndexUpdateListener): void {
-        throw new Error("Method not implemented.");
-    }
+
 
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {
         return this.indices.filter(i => i.variableId == variableId);
@@ -99,12 +120,61 @@ export class DummyIndexCollection implements IndexCollection {
 
     async updateIndex(index: VariableIndex): Promise<void> {
         this.indices = updateIdentifiedInArray(this.indices, index);
+        for (const callback of this.updateListeners) {
+            await callback(index);
+        }
     }
 
     async deleteIndicesByVariableId(id: string): Promise<void> {
-        this.indices = this.indices.filter(i => i.variableId != id);
+        let toDelete = this.indices.filter(i => i.variableId == id);
+        this.indices = this.indices.filter(i => !toDelete.includes(i));
+        await this.notifyDeletion(toDelete);
     }
 
+    addUpdateListener(listener: IndexUpdateListener) {
+        this.updateListeners.push(listener);
+    }
+
+    removeUpdateListener(listener: IndexUpdateListener) {
+        this.updateListeners = this.updateListeners.filter(l => l != listener);
+    }
+
+    addDeleteListener(listener: IndexUpdateListener) {
+        this.deleteListeners.push(listener);
+    }
+
+    removeDeleteListener(listener: IndexUpdateListener) {
+        this.deleteListeners = this.deleteListeners.filter(l => l != listener);
+    }
+
+}
+
+export class DummyTrackableCollection implements TrackableCollection {
+    private trackables: Trackable[] = [];
+
+    constructor(trackables: Trackable[] = []) {
+        this.trackables = trackables;
+    }
+
+    async getTrackables(): Promise<Trackable[]> {
+        return this.trackables;
+    }
+
+    async getTrackableById(id: string): Promise<Trackable | undefined> {
+        return this.trackables.find(t => t.id == id);
+    }
+
+    async createTrackable(trackable: Trackable): Promise<void> {
+        this.trackables.push(trackable);
+    }
+
+    async updateTrackable(trackable: Trackable): Promise<void> {
+        this.trackables = updateIdentifiedInArray(this.trackables, trackable);
+    }
+
+    async deleteTrackableById(trackableId: string): Promise<void> {
+        this.trackables = this.trackables.filter(t => t.id != trackableId);
+    }
 }
 
 export class DummyFormService implements FormService {
@@ -118,28 +188,64 @@ export class DummyFormService implements FormService {
     initLazyDependencies(journalService: JournalService): void {
         throw new Error("Method not implemented.");
     }
+
     async getForms(): Promise<Form[]> {
         return this.forms;
     }
+
     async getFormById(id: string): Promise<Form | undefined> {
         return this.forms.find(f => f.id == id);
     }
+
     getFormSnapshotById(id: string): Promise<FormSnapshot | undefined> {
         throw new Error("Method not implemented.");
     }
+
     async createForm(form: Form): Promise<void> {
         this.forms.push(form);
     }
+
     async updateForm(form: Form): Promise<void> {
         this.forms = updateIdentifiedInArray(this.forms, form);
     }
+
     deleteFormById(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
+
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void {
         throw new Error("Method not implemented.");
     }
+
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void {
         throw new Error("Method not implemented.");
+    }
+}
+
+export class DummyVariableCollection implements VariableCollection {
+    private variables: StoredVariable[];
+
+    constructor(variables: StoredVariable[] = []) {
+        this.variables = variables;
+    }
+
+    async getVariables(): Promise<StoredVariable[]> {
+        return this.variables;
+    }
+
+    async getVariableById(id: string): Promise<StoredVariable | undefined> {
+        return this.variables.find(v => v.id == id);
+    }
+
+    async createVariable(stored: StoredVariable): Promise<void> {
+        this.variables.push(stored);
+    }
+
+    async deleteVariableById(variableId: string): Promise<void> {
+        this.variables = this.variables.filter(v => v.id != variableId);
+    }
+
+    async updateVariable(variable: StoredVariable): Promise<void> {
+        this.variables = updateIdentifiedInArray(this.variables, variable);
     }
 }

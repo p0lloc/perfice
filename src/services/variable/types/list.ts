@@ -231,6 +231,10 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
         return [];
     }
 
+    getFormDependencies(): string[] {
+        return [this.formId];
+    }
+
     getFormId(): string {
         return this.formId;
     }

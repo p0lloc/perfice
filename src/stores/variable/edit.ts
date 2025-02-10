@@ -10,7 +10,6 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/t
 import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
 import {CalculationOperator, CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-import {variableEditProvider} from "@perfice/main";
 
 export enum VariableChangeType {
     CREATE,
