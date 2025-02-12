@@ -5,17 +5,23 @@
     import Segment from "@perfice/components/base/segmented/Segment.svelte";
 
     let {
-        segments, value, onChange, inverted = false,
+        segments,
+        value,
+        onChange,
+        inverted = false,
+        disabled = false,
         comparisonFunction = (first, second) => first === second
     }: {
         segments: SegmentedItem<T>[],
         value: T,
         onChange?: (value: T) => void,
         inverted?: boolean,
+        disabled?: boolean,
         comparisonFunction?: (first: T | undefined, second: T | undefined) => boolean
     } = $props();
 
     function onSegmentClick(value: SegmentedItem<T>) {
+        if(disabled) return;
         value.onClick?.();
 
         if (value.value != null && onChange != null) {

@@ -10,9 +10,9 @@
 
 <div>
     <label for="first_name" class=" mb-2 label">Name & icon</label>
-    <div class="row-gap">
+    <div class="row-gap w-full">
         <input id="first_name" bind:value={editState.trackable.name} placeholder="Trackable name" type="text"
-               class="input">
+               class="input flex-1">
         <button class="min-w-10 bg-gray-50 border-gray-300 border min-h-10 flex justify-center items-center icon-button">
             <Fa icon={faHamburger}/>
         </button>

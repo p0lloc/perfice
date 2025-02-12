@@ -8,15 +8,17 @@
 
     let contextMenu: ContextMenu;
     let button: HTMLButtonElement;
-    let {value, items, small = false, class: className = '', onChange}: {
+    let {value, items, small = false, class: className = '', onChange, disabled = false}: {
         value: T,
         items: DropdownMenuItem<T>[],
         class?: string,
         onChange?: (v: T) => void,
         small?: boolean,
+        disabled?: boolean
     } = $props();
 
     function open(e: MouseEvent) {
+        if(disabled) return;
         contextMenu.openFromClick(e, button, true);
     }
 

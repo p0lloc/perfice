@@ -17,7 +17,7 @@ export interface FormFieldProps {
 export interface InputFieldProps {
     dataType: FormQuestionDataType;
     disabled: boolean;
-    value: string;
+    value: any;
     onChange: (v: any) => void;
 }
 

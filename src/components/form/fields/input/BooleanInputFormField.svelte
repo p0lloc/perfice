@@ -2,7 +2,7 @@
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import type {InputFieldProps} from "@perfice/model/form/ui";
 
-    let {value, onChange}: InputFieldProps = $props();
+    let {value, onChange, disabled}: InputFieldProps = $props();
 
     const BOOLEAN_SEGMENTS = [
         {name: "True", value: true},
@@ -10,4 +10,4 @@
     ];
 </script>
 
-<SegmentedControl {value} inverted={false} segments={BOOLEAN_SEGMENTS} {onChange}/>
+<SegmentedControl {disabled} {value} inverted={false} segments={BOOLEAN_SEGMENTS} {onChange}/>

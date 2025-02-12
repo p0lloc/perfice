@@ -19,5 +19,5 @@
         <Fa icon={icon} class="w-4"/>
         <p>{title}</p>
     </div>
-    <DropdownButton class="min-w-32 bg-white text-black" value={value} items={items}/>
+    <DropdownButton class="min-w-40 bg-white text-black" value={value} items={items}/>
 </div>

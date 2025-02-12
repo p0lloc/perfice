@@ -53,7 +53,7 @@
 </script>
 
 {#if inLayout}
-    <div class:invisible={!visible} class="absolute z-50 border rounded-xl bg-white text-black font-normal" style:top="{top}px"
+    <div class:invisible={!visible} class="fixed z-50 border rounded-xl bg-white text-black font-normal" style:top="{top}px"
          style:left="{left}px"
          style:min-width="{minWidth}"
          bind:this={container}>
