@@ -33,6 +33,7 @@
     "@mateothegreat/svelte5-router": "^0.1.38",
     "chart.js": "^4.4.7",
     "dexie": "^4.0.10",
-    "svelte-fa": "^4.0.3"
+    "svelte-fa": "^4.0.3",
+    "svelty-picker": "^6.1.3"
   }
 }
