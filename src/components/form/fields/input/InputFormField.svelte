@@ -5,6 +5,7 @@
     import VanillaInputFormField from "@perfice/components/form/fields/input/VanillaInputFormField.svelte";
     import BooleanInputFormField from "@perfice/components/form/fields/input/BooleanInputFormField.svelte";
     import TimeElapsedInputFormField from "@perfice/components/form/fields/input/TimeElapsedInputFormField.svelte";
+    import TimeOfDayInputFormField from "@perfice/components/form/fields/input/TimeOfDayInputFormField.svelte";
 
     let {dataSettings, disabled, value, onChange}: FormFieldProps = $props();
 
@@ -19,6 +20,8 @@
                 return BooleanInputFormField;
             case FormQuestionDataType.TIME_ELAPSED:
                 return TimeElapsedInputFormField;
+            case FormQuestionDataType.TIME_OF_DAY:
+                return TimeOfDayInputFormField;
             default:
                 return VanillaInputFormField;
         }

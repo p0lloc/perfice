@@ -69,7 +69,7 @@
                 let definition = questionDataTypeRegistry.getDefinition(question.dataType);
                 if (definition == null) continue;
 
-                value = definition.getDefaultValue(question.dataSettings);
+                value = definition.deserialize(definition.getDefaultValue(question.dataSettings));
             }
 
             answers[question.id] = value;

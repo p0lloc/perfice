@@ -9,3 +9,5 @@ export interface DropdownMenuItemDetails<T> {
 export type DropdownMenuItem<T> = DropdownMenuItemDetails<T> & {
     action?: () => void;
 }
+
+export const DROPDOWN_BUTTON_HEIGHT = 40;

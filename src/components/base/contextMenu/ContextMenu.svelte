@@ -12,23 +12,29 @@
 
     let container: HTMLDivElement | undefined = $state();
 
-    export function openFromClick(e: MouseEvent, initiator: HTMLElement, useParentWidth: boolean = false) {
+    export function openFromClick(e: MouseEvent, initiator: HTMLElement, useParentWidth: boolean = false, scrollTop: number = 0) {
         let target = e.target as HTMLElement;
         let rect = target.getBoundingClientRect();
         if (useParentWidth)
             minWidth = `${rect.width}px`;
 
-        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height + window.scrollY, initiator, rect.x, rect.y));
+        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height + window.scrollY, initiator, rect.x, rect.y, scrollTop));
     }
 
-    export function openAtPosition(x: number, y: number, initiator: HTMLElement, relativeX: number, _relativeY: number) {
+    export function openAtPosition(x: number, y: number, initiator: HTMLElement, relativeX: number, _relativeY: number, scrollOffset: number) {
         openContextMenu(close, initiator);
         inLayout = true;
         top = y;
         left = x;
 
         setTimeout(() => {
-            if(container == null) return;
+            if (container == null) return;
+
+            if (container.children.length > 0) {
+                // Scroll the context menu to the selected offset
+                container.children[0].scrollTop = scrollOffset;
+            }
+
             let selfRect = container.getBoundingClientRect();
             // Make sure we aren't rendering outside the screen on the left
             // If we are, render on the left of the relative element
@@ -53,7 +59,8 @@
 </script>
 
 {#if inLayout}
-    <div class:invisible={!visible} class="fixed z-50 border rounded-xl bg-white text-black font-normal" style:top="{top}px"
+    <div class:invisible={!visible} class="fixed z-50 border rounded-xl bg-white text-black font-normal"
+         style:top="{top}px"
          style:left="{left}px"
          style:min-width="{minWidth}"
          bind:this={container}>

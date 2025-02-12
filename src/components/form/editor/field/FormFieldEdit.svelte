@@ -4,6 +4,8 @@
     import {faTrash} from "@fortawesome/free-solid-svg-icons";
     import FormFieldRenderer from "@perfice/components/form/fields/FormFieldRenderer.svelte";
     import type {FormQuestion} from "@perfice/model/form/form";
+    import {questionDataTypeRegistry} from "@perfice/model/form/data";
+    import {getDefaultPrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {question, selected, onClick, onDelete}: {
         question: FormQuestion,
@@ -17,6 +19,8 @@
 
         onClick();
     }
+
+    let defaultValue = $derived(questionDataTypeRegistry.getDefaultValue(question.dataType)!);
 </script>
 
 <div role="button" tabindex="0" onkeydown={onKeyDown}
@@ -28,7 +32,7 @@
         </button>
     {/if}
     <p class="text-xl font-bold">{question.name}</p>
-    <FormFieldRenderer dataSettings={question} value={null} disabled={true}
+    <FormFieldRenderer dataSettings={question} value={defaultValue} disabled={true}
                        onChange={() => {}}
                        displayType={question.displayType}
                        displaySettings={question}/>

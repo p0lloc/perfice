@@ -1,13 +1,13 @@
 import {FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
-import {TextFormQuestionDataType, type TextFormQuestionDataSettings} from "./data/text";
-import {RichTextFormQuestionDataType, type RichTextFormQuestionDataSettings} from "./data/rich-text";
-import {HierarchyFormQuestionDataType, type HierarchyFormQuestionDataSettings} from "./data/hierarchy";
-import {NumberFormQuestionDataType, type NumberFormQuestionDataSettings} from "./data/number";
-import {BooleanFormQuestionDataType, type BooleanFormQuestionDataSettings} from "./data/boolean";
-import {DateFormQuestionDataType, type DateFormQuestionDataSettings} from "./data/date";
-import {DateTimeFormQuestionDataType, type DateTimeFormQuestionDataSettings} from "./data/date-time";
-import {TimeElapsedFormQuestionDataType, type TimeElapsedFormQuestionDataSettings} from "./data/time-elapsed";
-import {TimeOfDayFormQuestionDataType, type TimeOfDayFormQuestionDataSettings} from "./data/time-of-day";
+import {type TextFormQuestionDataSettings, TextFormQuestionDataType} from "./data/text";
+import {type RichTextFormQuestionDataSettings, RichTextFormQuestionDataType} from "./data/rich-text";
+import {type HierarchyFormQuestionDataSettings, HierarchyFormQuestionDataType} from "./data/hierarchy";
+import {type NumberFormQuestionDataSettings, NumberFormQuestionDataType} from "./data/number";
+import {type BooleanFormQuestionDataSettings, BooleanFormQuestionDataType} from "./data/boolean";
+import {type DateFormQuestionDataSettings, DateFormQuestionDataType} from "./data/date";
+import {type DateTimeFormQuestionDataSettings, DateTimeFormQuestionDataType} from "./data/date-time";
+import {type TimeElapsedFormQuestionDataSettings, TimeElapsedFormQuestionDataType} from "./data/time-elapsed";
+import {type TimeOfDayFormQuestionDataSettings, TimeOfDayFormQuestionDataType} from "./data/time-of-day";
 import {type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
 
 export type FormQuestionDataSettings =
@@ -69,6 +69,12 @@ export class FormQuestionDataTypeRegistry {
 
     getDefinition(type: string): FormQuestionDataTypeDefinition<any, any> | undefined {
         return this.types.get(type);
+    }
+
+    getDefaultValue(type: string): any {
+        let definition = this.getDefinition(type);
+        if(definition === undefined) return undefined;
+        return definition.getDefaultValue(definition.getDefaultSettings());
     }
 
     /**

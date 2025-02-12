@@ -15,7 +15,7 @@ export class TimeOfDayFormQuestionDataType implements FormQuestionDataTypeDefini
     }
 
     getDefaultValue(): number {
-        return 0;
+        return 8 * 60;
     }
 
     getPrimitiveType(): PrimitiveValueType {

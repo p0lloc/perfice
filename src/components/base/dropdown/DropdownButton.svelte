@@ -4,7 +4,7 @@
     import Fa from "svelte-fa";
     import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
     import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
-    import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
+    import {DROPDOWN_BUTTON_HEIGHT, type DropdownMenuItem} from "@perfice/model/ui/dropdown";
 
     let contextMenu: ContextMenu;
     let button: HTMLButtonElement;
@@ -17,9 +17,14 @@
         disabled?: boolean
     } = $props();
 
+    function getSelectedItemPosition(){
+        if(selectedItem == null) return 0;
+        return items.indexOf(selectedItem) * DROPDOWN_BUTTON_HEIGHT;
+    }
+
     function open(e: MouseEvent) {
         if(disabled) return;
-        contextMenu.openFromClick(e, button, true);
+        contextMenu.openFromClick(e, button, true, getSelectedItemPosition());
     }
 
     function onAction(e: DropdownMenuItem<T>) {
