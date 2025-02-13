@@ -32,6 +32,9 @@ select {
 .flex-center {
     @apply flex justify-center items-center;
 }
+.flex-col-center {
+    @apply flex flex-col justify-center items-center;
+}
 
 .label {
     @apply text-lg font-bold text-gray-700;

@@ -1,5 +1,5 @@
 import type {FormQuestionDisplaySettingsValue} from "./display";
-import type {FormQuestionDataSettings} from "@perfice/model/form/data";
+import type {DataSettingValues, FormQuestionDataSettings} from "@perfice/model/form/data";
 import {FormQuestionDataType, FormQuestionDisplayType } from "./form";
 import {faBorderAll, faCalendar, faCircleDot, faFolderTree, faHashtag, faKeyboard,
     faRulerHorizontal, faStopwatch, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import { faFont } from "@fortawesome/free-solid-svg-icons/faFont";
 
 export interface FormFieldProps {
     displaySettings: FormQuestionDisplaySettingsValue;
-    dataSettings: FormQuestionDataSettings;
+    dataSettings: DataSettingValues;
     disabled: boolean;
     value: any;
     onChange: (v: any) => void;

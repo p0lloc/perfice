@@ -11,8 +11,8 @@
     import EditTrackableValueCard from "@perfice/components/trackable/modals/edit/EditTrackableValueCard.svelte";
 
     const CARD_TYPES = [
-        {value: TrackableCardType.CHART, name: "Chart", icon: null},
-        {value: TrackableCardType.VALUE, name: "Value", icon: null}
+        {value: TrackableCardType.CHART, name: "Chart"},
+        {value: TrackableCardType.VALUE, name: "Value"}
     ];
 
     let {cardState = $bindable(), availableQuestions}: {
@@ -69,5 +69,6 @@
 </IconLabel>
 
 {#if RendererComponent != null}
+    <hr class="mt-4">
     <RendererComponent bind:cardSettings={cardState.cardSettings} availableQuestions={availableQuestions}/>
 {/if}

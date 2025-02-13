@@ -1,5 +1,6 @@
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import type { PrimitiveValue } from "@perfice/model/primitive/primitive";
+import type {HierarchyOption} from "@perfice/model/form/data/hierarchy";
 
 export interface HierarchyFormQuestionSettings {
 }
