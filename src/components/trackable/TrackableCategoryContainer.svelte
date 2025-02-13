@@ -12,6 +12,7 @@
 
     async function createTrackable(){
         let trackableId = crypto.randomUUID();
+        // TODO: move logic to trackable service
         await trackables.createTrackable({
             id: trackableId,
             name: "testing",
@@ -19,7 +20,9 @@
             formId: trackableId,
             categoryId: category.category?.id ?? null,
             cardType: TrackableCardType.CHART,
-            cardSettings: {},
+            cardSettings: {
+                color: "#ff0000",
+            },
             dependencies: {}
         })
     }

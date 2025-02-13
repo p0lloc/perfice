@@ -2,7 +2,15 @@
     import {Chart} from 'chart.js';
     import 'chart.js/auto';
 
-    const {dataPoints, labels, hideLabels = false, hideGrid = false, ...rest} = $props();
+    const {
+        dataPoints,
+        labels,
+        hideLabels = false,
+        hideGrid = false,
+        fillColor = "#9BD0F5",
+        borderColor = "#36A2EB",
+        ...rest
+    } = $props();
 
     const data = $derived({
         labels: labels,
@@ -10,8 +18,8 @@
             {
                 data: dataPoints,
                 fill: true,
-                borderColor: '#36A2EB',
-                backgroundColor: '#9BD0F5',
+                borderColor: borderColor,
+                backgroundColor: fillColor,
                 tension: 0.5,
                 borderWidth: 2,
                 pointRadius: 0,

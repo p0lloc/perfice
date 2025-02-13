@@ -7,7 +7,6 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
-import pre = $effect.pre;
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -137,7 +136,7 @@ export class TrackableService {
         this.observers.removeObserver(type, callback);
     }
 
-    async updateTrackableChartSettings(trackable: Trackable, aggregateType: AggregateType, field: string) {
+    async updateTrackableChartSettings(trackable: Trackable, aggregateType: AggregateType, field: string, color: string) {
         let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
         if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
 
@@ -156,7 +155,9 @@ export class TrackableService {
             value: new AggregateVariableType(aggregateType, listVariable.id, field)
         }
 
-        trackable.cardSettings = {}
+        trackable.cardSettings = {
+            color
+        }
 
         // TODO: could we update both variables in conjunction to avoid spamming index listeners?
         await this.variableService.updateVariable(listVariable);

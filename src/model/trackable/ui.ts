@@ -25,6 +25,7 @@ export type EditTrackableCardState =
 export interface EditTrackableChartSettings {
     aggregateType: AggregateType;
     field: string;
+    color: string;
 }
 
 export interface EditTrackableValueSettings {

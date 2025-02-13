@@ -20,7 +20,7 @@ export type TrackableCardSettings =
     | CS<TrackableCardType.VALUE, TrackableValueSettings>;
 
 export interface TrackableChartSettings {
-
+    color: string;
 }
 
 export interface TrackableValueSettings {

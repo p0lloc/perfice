@@ -54,7 +54,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         switch (cardState.cardType) {
             case TrackableCardType.CHART:
                 await this.trackableService.updateTrackableChartSettings(editState.trackable,
-                    cardState.cardSettings.aggregateType, cardState.cardSettings.field);
+                    cardState.cardSettings.aggregateType, cardState.cardSettings.field, cardState.cardSettings.color);
                 break;
             case TrackableCardType.VALUE:
                 await this.trackableService.updateTrackableValueSettings(editState.trackable, cardState.cardSettings.representation);
@@ -82,7 +82,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
                     cardType: TrackableCardType.CHART,
                     cardSettings: {
                         aggregateType: value.getAggregateType(),
-                        field: value.getField()
+                        field: value.getField(),
+                        color: trackable.cardSettings.color
                     }
                 };
                 break;
