@@ -7,7 +7,6 @@ export function longPress(node: HTMLElement) {
     let isGrabbed = false;
     let isDragging = false;
     let initialTouchPos = {x: 0, y: 0};
-    let mouseDownTime;
 
     function handleStart(e: TouchEvent | MouseEvent) {
         if(!e.isTrusted) return; // Prevent redispatch from infinitely looping
@@ -30,7 +29,6 @@ export function longPress(node: HTMLElement) {
                 window.setTimeout(() => node.dispatchEvent(e), 0);
             }, TIME_MS);
         } else {
-            mouseDownTime = Date.now();
             timeoutPtr = window.setTimeout(() => {
                 isGrabbed = true;
                 node.dispatchEvent(new CustomEvent('long'));
@@ -63,7 +61,7 @@ export function longPress(node: HTMLElement) {
         }
     }
 
-    function handleEnd(e: TouchEvent | MouseEvent) {
+    function handleEnd() {
         if (isTouchEvent) {
             window.clearTimeout(timeoutPtr);
             window.removeEventListener('touchmove', handleMoveBeforeLong);
@@ -80,9 +78,6 @@ export function longPress(node: HTMLElement) {
     }
 
     node.style.userSelect = 'none';
-    node.style.webkitUserSelect = 'none';
-    node.style.msUserSelect = 'none';
-    node.style.webkitTapHighlightColor = 'transparent';
 
     node.addEventListener('mousedown', handleStart, {passive: false});
     node.addEventListener('mouseup', handleEnd);
@@ -102,9 +97,6 @@ export function longPress(node: HTMLElement) {
             window.removeEventListener('touchmove', handleMoveAfterLong);
 
             node.style.userSelect = '';
-            node.style.webkitUserSelect = '';
-            node.style.msUserSelect = '';
-            node.style.webkitTapHighlightColor = '';
         }
     };
 }

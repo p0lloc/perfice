@@ -1467,39 +1467,6 @@
     magic-string "^0.30.15"
     vitefu "^1.0.4"
 
-"@thisux/sveltednd@0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@thisux/sveltednd/-/sveltednd-0.0.12.tgz#0e9e8bb0de22fb4bd1d202c901e8bb85d9e7a9a7"
-  integrity sha512-9edVcakYkoCzU6pNIwmJ6Cf+9anECod26Ue/rL3Ssf5LyuLaBLXtBx4H4U8YwQCkwtMeSGFf0OsiMpPpFjvCcg==
-
-"@thisux/sveltednd@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.npmjs.org/@thisux/sveltednd/-/sveltednd-0.0.14.tgz"
-  integrity sha512-Vbq69SU3HUomPg6oCXtb89OG89hka0YIkdaErYibn3waK7tYE66IcQxD/Fzg8YNW3EVsXoA9kc7kW5EUBCSQGg==
-  dependencies:
-    "@thisux/sveltednd" "0.0.12"
-
-"@thisux/sveltednd@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.npmjs.org/@thisux/sveltednd/-/sveltednd-0.0.17.tgz"
-  integrity sha512-lRninjw439phhA8xAHqCpMAX0hnwFMdbXW4M0XJgAdnGxeum+QsLiIC4P3HnkNXAygsVKUqxRcbS84CxDZ9hPw==
-  dependencies:
-    "@thisux/sveltednd" "^0.0.14"
-
-"@thisux/sveltednd@^0.0.18":
-  version "0.0.18"
-  resolved "https://registry.npmjs.org/@thisux/sveltednd/-/sveltednd-0.0.18.tgz"
-  integrity sha512-MO+iR9ZRHApvtwgWujmqwUbhv9mKs0jLOmeG4tn98GmU1/9wVOi02jrNqeggKg3c8dXz6pMmUHfOfmcq7WwYZg==
-  dependencies:
-    "@thisux/sveltednd" "^0.0.17"
-
-"@thisux/sveltednd@^0.0.20":
-  version "0.0.20"
-  resolved "https://registry.npmjs.org/@thisux/sveltednd/-/sveltednd-0.0.20.tgz"
-  integrity sha512-VE0HopIlHIvNOfSZ1SsiIzl1AmTU0VSd2Nz2Q2nIdqIUsT/UP4hiLw2ed2jFqTKTbqC+kbCYL9vuBpkYnEw+Kw==
-  dependencies:
-    "@thisux/sveltednd" "^0.0.18"
-
 "@tsconfig/svelte@^5.0.4":
   version "5.0.4"
   resolved "https://registry.npmjs.org/@tsconfig/svelte/-/svelte-5.0.4.tgz"
