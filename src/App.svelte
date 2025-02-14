@@ -33,7 +33,7 @@
 {#if $appReady}
     <div class="flex">
         <Sidebar/>
-        <div class="flex-1 md:pb-0 pb-20">
+        <div class="flex-1">
             <Router post={onRouterRoute} {routes}/>
         </div>
     </div>

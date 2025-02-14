@@ -8,10 +8,9 @@
     import {trackables} from "@perfice/main";
     import type {WeekStart} from "@perfice/model/variable/time/time";
 
-    import {draggable, droppable, type DragDropState, dndState} from '@thisux/sveltednd';
-    import {flip} from 'svelte/animate';
+    import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
 
-    let {category = $bindable(), date, weekStart, onReorder, onEdit, onLog}: {
+    let {category, date, weekStart, onReorder, onEdit, onLog}: {
         category: CategoryList<TrackableCategory, Trackable>,
         date: Date,
         weekStart: WeekStart,
@@ -27,6 +26,7 @@
             id: trackableId,
             name: "testing",
             icon: "",
+            order: (await trackables.get()).length,
             formId: trackableId,
             categoryId: category.category?.id ?? null,
             cardType: TrackableCardType.CHART,
@@ -37,18 +37,8 @@
         })
     }
 
-    function handleDrop(state: DragDropState<Trackable>) {
-        const {draggedItem, targetContainer} = state;
-        const dragIndex = category.items.findIndex((item: Trackable) => item.id === draggedItem.id);
-        const dropIndex = parseInt(targetContainer ?? '0');
-
-        if (dragIndex !== -1 && !isNaN(dropIndex)) {
-            const [item] = category.items.splice(dragIndex, 1);
-            category.items.splice(dropIndex, 0, item);
-        }
-
-        onReorder(category.items);
-        dndState.isDragging = false;
+    function onFinalize(items: Trackable[]) {
+        onReorder(items);
     }
 </script>
 
@@ -60,18 +50,11 @@
         </button>
     </h1>
     <hr>
-    <div class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-        {#each category.items as trackable, index (trackable.id)}
-            <div class="rounded-xl"
-                 use:draggable={{ container: index.toString(), dragData: trackable, interactive: ['.interactive'] }}
-                 use:droppable={{
-							container: index.toString(),
-							callbacks: { onDrop: handleDrop }
-						}}
-                 animate:flip={{ duration: 300 }}
-            >
-                <TrackableCard {trackable} {date} {weekStart} onEdit={() => onEdit(trackable)} onLog={() => onLog(trackable)}/>
-            </div>
-        {/each}
-    </div>
+    <DragAndDropContainer items={category.items} onFinalize={onFinalize}
+                          class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+        {#snippet item(trackable)}
+            <TrackableCard {trackable} {date} {weekStart} onEdit={() => onEdit(trackable)}
+                           onLog={() => onLog(trackable)}/>
+        {/snippet}
+    </DragAndDropContainer>
 </div>

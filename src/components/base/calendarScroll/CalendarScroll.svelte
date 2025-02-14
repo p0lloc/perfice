@@ -48,14 +48,16 @@
             .fill(new Date(0))
             .map((_, i) => addDaysDate(endDate, -(DAY_RANGE - 1 - i)))
     );
+
+    let atEnd = $derived(endDate.getTime() == todayDate.getTime());
 </script>
 
-<div class="flex items-center flex-wrap justify-center gap-2">
+<div class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border px-4 md:px-0 w-full rounded-xl md:w-auto md:h-12 h-10">
     <button onclick={left} class="mr-3">
         <Fa icon={faChevronLeft}/>
     </button>
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center md:gap-2 md:flex-initial flex-1 h-full">
         {#each dates as date }
             <CalendarScrollItem
                     onClick={() => onChange(date)}
@@ -65,25 +67,26 @@
         {/each}
     </div>
     <div class="md:w-10 flex items-center">
-        {#if endDate.getTime() !== todayDate.getTime()}
-            <button onclick={right} class="ml-3">
-                <Fa icon={faChevronRight}/>
-            </button>
-        {:else}
-            <input
-                    type="date"
-                    class="invisible"
-                    style="width: 0; height: 0; padding: 0"
-                    onchange={onDatePickerChange}
-                    bind:this={datePickerElement}
-            />
-            <button
-                    onclick={openDatePicker}
-                    class="bg-white p-2 border rounded-full hover:bg-gray-100 ml-2"
-            >
-                <Fa icon={faCalendarAlt}/>
-            </button
-            >
+        <button onclick={right} class="ml-3" class:md:hidden={atEnd}>
+            <Fa icon={faChevronRight}/>
+        </button>
+        {#if atEnd}
+            <div class="hidden md:flex items-center justify-center">
+                <input
+                        type="date"
+                        class="invisible"
+                        style="width: 0; height: 0; padding: 0"
+                        onchange={onDatePickerChange}
+                        bind:this={datePickerElement}
+                />
+                <button
+                        onclick={openDatePicker}
+                        class="bg-white p-2 border rounded-full hover:bg-gray-100 ml-2"
+                >
+                    <Fa icon={faCalendarAlt}/>
+                </button
+                >
+            </div>
         {/if}
     </div>
 </div>

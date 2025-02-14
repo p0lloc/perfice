@@ -188,4 +188,12 @@ export class TrackableService {
         await this.variableService.updateVariable(listVariable);
         trackable.cardSettings = {representation};
     }
+
+    async reorderTrackables(trackables: Trackable[]) {
+        for (let i = 0; i < trackables.length; i++) {
+            trackables[i].order = i;
+        }
+
+        await this.collection.updateTrackables(trackables);
+    }
 }

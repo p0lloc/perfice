@@ -7,6 +7,7 @@ import { faFont } from "@fortawesome/free-solid-svg-icons/faFont";
 
 export interface FormFieldProps {
     displaySettings: FormQuestionDisplaySettingsValue;
+    dataType: FormQuestionDataType;
     dataSettings: DataSettingValues;
     disabled: boolean;
     value: any;

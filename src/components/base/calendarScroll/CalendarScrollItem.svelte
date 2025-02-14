@@ -8,9 +8,10 @@
 
 <button
         onclick={onClick}
-        class="hover:bg-gray-100 flex w-[53px] h-[52px] flex-col justify-center items-center px-4 py-2 text-xs rounded-md border
-	bg-white {selected ? 'border-2 border-green-500' : 'border'}"
+        class="hover-feedback flex md:h-full h-full md:w-12 flex-1 md:flex-initial flex-col aspect-square
+        justify-center items-center px-4 py-2 text-xs md:rounded-md md:border
+	bg-white {selected ? 'md:border-green-500 text-green-500' : 'md:border'}"
 >
-    <span class="text-[10px] font-bold">{WEEK_DAYS_SHORT[value.getDay()]}</span>
+    <span class="text-[10px] font-bold ">{WEEK_DAYS_SHORT[value.getDay()]}</span>
     {value.getDate()}
 </button>

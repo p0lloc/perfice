@@ -1,5 +1,5 @@
 import type {TrackableCollection} from "@perfice/db/collections";
-import {Dexie, type EntityTable} from "dexie";
+import {type EntityTable} from "dexie";
 import type {Trackable} from "@perfice/model/trackable/trackable";
 
 export class DexieTrackableCollection implements TrackableCollection {
@@ -27,6 +27,10 @@ export class DexieTrackableCollection implements TrackableCollection {
     }
     async deleteTrackableById(trackableId: string): Promise<void> {
         await this.table.delete(trackableId);
+    }
+
+    async updateTrackables(trackables: Trackable[]): Promise<void> {
+        await this.table.bulkPut(trackables);
     }
 
 }

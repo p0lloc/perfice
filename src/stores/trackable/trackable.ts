@@ -107,5 +107,13 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
     async deleteTrackable(trackable: Trackable) {
         await this.trackableService.deleteTrackable(trackable);
     }
+
+    async reorderTrackables(items: Trackable[]) {
+        await this.trackableService.reorderTrackables(items);
+
+        let current = await this.get();
+        items.forEach((t) => current = updateIdentifiedInArray(current, t));
+        this.setResolved(current);
+    }
 }
 

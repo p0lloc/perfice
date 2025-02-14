@@ -9,6 +9,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {faHamburger} from "@fortawesome/free-solid-svg-icons";
+    import {dragHandle} from "svelte-dnd-action";
 
     let {trackable, date, weekStart, onEdit, onLog}: {
         trackable: Trackable,
@@ -25,13 +26,17 @@
         "VALUE": TableTrackableRenderer,
     }
 
+    function onEditClick(){
+        onEdit();
+    }
+
     const RendererComponent = $derived(CARD_TYPE_RENDERERS[trackable.cardType]);
 </script>
 
 
 <div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch min-h-40 max-h-40 text-gray-500">
-    <button class="interactive border-b rounded-t-xl p-2 flex gap-2 items-center hover:bg-gray-100 active:bg-gray-100"
-            onclick={onEdit}>
+    <button class="border-b rounded-t-xl p-2 flex gap-2 items-center hover-feedback"
+            onclick={onEditClick}>
         <Fa icon={faHamburger} class="text-green-500"/>
         <p class="text-left font-semibold text-gray-700">{trackable.name}</p>
     </button>

@@ -34,6 +34,7 @@
     "@thisux/sveltednd": "^0.0.20",
     "chart.js": "^4.4.7",
     "dexie": "^4.0.10",
+    "svelte-dnd-action": "^0.9.57",
     "svelte-fa": "^4.0.3",
     "svelty-picker": "^6.1.3"
   }

@@ -94,3 +94,17 @@ input[type="text"], input[type="number"] {
     outline: 2px solid limegreen;
     outline-offset: -2px;
 }
+
+body {
+    @apply overflow-hidden md:overflow-auto;
+}
+
+.lock-screen {
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+.main-content {
+    @apply h-screen md:h-auto overflow-y-scroll md:overflow-auto pb-32 md:pb-0 scrollbar-hide;
+}

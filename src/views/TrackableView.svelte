@@ -5,6 +5,9 @@
     import EditTrackableModal from "@perfice/components/trackable/modals/edit/EditTrackableModal.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import type {Trackable} from "@perfice/model/trackable/trackable";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import {faBars} from "@fortawesome/free-solid-svg-icons";
+    import Fa from "svelte-fa";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
@@ -31,9 +34,17 @@
     }
 </script>
 
+<MobileTopBar title="Trackables">
+    {#snippet leading()}
+        <button class="icon-button" onclick={() => console.log("TODO")}>
+            <Fa icon={faBars}/>
+        </button>
+    {/snippet}
+</MobileTopBar>
 <FormModal bind:this={formModal}/>
 <EditTrackableModal onStartDelete={onDeleteTrackable} bind:this={editTrackableModal}/>
-<div class="mx-auto w-screen md:w-1/2 md:px-0 px-4 py-10">
+
+<div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar date={$trackableDate} onDateChange={onDateChange} title="Trackables"/>
 
     <TrackableList date={$trackableDate} weekStart={$weekStart} onEdit={onEditTrackable} onLog={onLogTrackable}/>

@@ -9,7 +9,7 @@
     import DateInputFormField from "@perfice/components/form/fields/input/DateInputFormField.svelte";
     import DateTimeInputFormField from "@perfice/components/form/fields/input/DateTimeInputFormField.svelte";
 
-    let {dataSettings, disabled, value, onChange}: FormFieldProps = $props();
+    let {dataSettings, disabled, value, onChange, dataType}: FormFieldProps = $props();
 
     function renderInput(type: FormQuestionDataType): Component<InputFieldProps> {
         switch (type) {
@@ -31,7 +31,7 @@
         }
     }
 
-    let RenderComponent = $derived(renderInput(dataSettings.dataType));
+    let RenderComponent = $derived(renderInput(dataType));
 </script>
 
-<RenderComponent {disabled} {value} {onChange} dataType={dataSettings.dataType}/>
+<RenderComponent {disabled} {value} {onChange} dataType={dataType}/>

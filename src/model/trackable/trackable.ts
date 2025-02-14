@@ -10,6 +10,7 @@ export type Trackable = {
     name: string;
     icon: string;
     formId: string;
+    order: number;
     categoryId: string | null;
     // Mapping of dependency to variable id
     dependencies: Record<string, string>;

@@ -23,12 +23,18 @@
         modal.open();
     }
 
+    function close(){
+        modal.close();
+    }
+
     async function save() {
         await trackables.updateTrackableFromState($state.snapshot(editState));
+        close();
     }
 
     function onDelete() {
         onStartDelete(editState.trackable);
+        close();
     }
 
     function switchView(type: string) {

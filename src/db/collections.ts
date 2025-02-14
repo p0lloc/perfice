@@ -10,6 +10,7 @@ export interface TrackableCollection {
     createTrackable(trackable: Trackable): Promise<void>;
     updateTrackable(trackable: Trackable): Promise<void>;
     deleteTrackableById(trackableId: string): Promise<void>;
+    updateTrackables(items: Trackable[]): Promise<void>;
 }
 
 export interface TrackableCategoryCollection {

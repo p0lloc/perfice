@@ -3985,6 +3985,11 @@ svelte-check@^4.1.1:
     picocolors "^1.0.0"
     sade "^1.7.4"
 
+svelte-dnd-action@^0.9.57:
+  version "0.9.57"
+  resolved "https://registry.yarnpkg.com/svelte-dnd-action/-/svelte-dnd-action-0.9.57.tgz#d94e0715ece41425b188609a60615c0153d743df"
+  integrity sha512-H1QPlthwAH+xjaISKbp/dQJYeC3Jt1mlTNqJDko0f7XgEyi5ee3PMEuAfF1soJXA0Y5ceb+W8xJXiSZ+2CeMNA==
+
 svelte-fa@^4.0.3:
   version "4.0.3"
   resolved "https://registry.npmjs.org/svelte-fa/-/svelte-fa-4.0.3.tgz"

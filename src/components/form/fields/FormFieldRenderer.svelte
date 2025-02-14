@@ -32,4 +32,4 @@
     const RendererComponent = $derived(FIELD_RENDERERS[displayType]);
 </script>
 <RendererComponent {value} {onChange} {disabled} dataSettings={dataSettings.dataSettings}
-                   displaySettings={displaySettings.displaySettings}/>
+                   displaySettings={displaySettings.displaySettings} dataType={dataSettings.dataType}/>

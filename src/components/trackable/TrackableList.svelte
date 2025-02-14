@@ -4,7 +4,6 @@
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import type {TrackableCategory} from "@perfice/model/trackable/trackable.js";
-    import {onReorderTrackables} from "@perfice/stores/trackable/categorized";
     import {onDestroy} from "svelte";
     import {disposeCachedStoreKey} from "@perfice/stores/cached";
 
@@ -15,8 +14,8 @@
         onLog: (t: Trackable) => void
     } = $props();
 
-    function onReorder(category: TrackableCategory | null, items: Trackable[]) {
-        onReorderTrackables(category, items);
+    function onReorder(items: Trackable[]) {
+        trackables.reorderTrackables(items);
     }
 
     async function disposeTrackableKeys() {
@@ -41,7 +40,7 @@
         {#each categories as category (category.category?.id)}
             <TrackableCategoryContainer {date} category={category} {weekStart}
                                         {onEdit} {onLog}
-                                        onReorder={(items) => onReorder(category.category, items)}/>
+                                        onReorder={(items) => onReorder(items)}/>
         {/each}
     </div>
 {/await}

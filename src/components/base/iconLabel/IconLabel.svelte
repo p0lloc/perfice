@@ -7,7 +7,7 @@
     let {icon, title, children}: { icon: IconDefinition, title: string, children: Snippet } = $props();
 </script>
 
-<div class="row-between mt-4">
+<div class="row-between mt-4 flex-wrap gap-2">
     <div class="row-gap label">
         <Fa icon={icon}/>
         <p>{title}</p>

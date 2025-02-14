@@ -5,17 +5,11 @@ import {trackableCategories, trackables} from "@perfice/main";
 
 let order: Writable<Record<string, string[]>> = writable({});
 
-export function onReorderTrackables(category: TrackableCategory | null, items: Trackable[]) {
-    order.update(o => {
-        return {...o, [category?.id ?? ""]: items.map(t => t.id)};
-    });
-}
-
 export function CategorizedTrackables(): Readable<Promise<CategoryList<TrackableCategory, Trackable>[]>> {
-    return derived<[Readable<Promise<Trackable[]>>, Readable<Promise<TrackableCategory[]>>, Writable<Record<string, string[]>>],
+    return derived<[Readable<Promise<Trackable[]>>, Readable<Promise<TrackableCategory[]>>],
         Promise<CategoryList<TrackableCategory, Trackable>[]>>
 
-    ([trackables, trackableCategories, order], ([$trackables, $categories, order], set) => {
+    ([trackables, trackableCategories], ([$trackables, $categories], set) => {
         let promise = new Promise<CategoryList<TrackableCategory, Trackable>[]>(async (resolve) => {
             let trackables = await $trackables;
             let categories = await $categories;
@@ -40,18 +34,13 @@ export function CategorizedTrackables(): Readable<Promise<CategoryList<Trackable
                 // Group each trackable by category
                 let category = res.find(c => c.category?.id == trackable.categoryId
                     || (trackable.categoryId == null && c.category == null));
-                if(category == null) continue;
+                if (category == null) continue;
+
                 category.items.push(trackable);
             }
 
-            for(let [categoryId, trackableIds] of Object.entries(order)){
-                let category = res.find(c =>
-                    c.category?.id == categoryId || (categoryId == "" && c.category == null));
-                if(category == null) continue;
-
-                console.log(category);
-
-                category.items = trackableIds.map(id => trackables.find(t => t.id == id)).filter(t => t != null);
+            for (let category of res) {
+                category.items = category.items.sort((a, b) => a.order - b.order);
             }
 
             resolve(res);
