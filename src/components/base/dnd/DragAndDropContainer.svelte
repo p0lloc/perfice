@@ -1,6 +1,6 @@
 <script lang="ts">
     import {type DndEvent, dndzone, SOURCES, TRIGGERS} from "svelte-dnd-action";
-    import {longPress} from "@perfice/util/longPress";
+    import {longPress} from "@perfice/util/long-press";
     import type {Snippet} from "svelte";
 
     let {items, item, class: className = '', onFinalize}: {
