@@ -31,6 +31,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@mateothegreat/svelte5-router": "^0.1.38",
+    "@thisux/sveltednd": "^0.0.20",
     "chart.js": "^4.4.7",
     "dexie": "^4.0.10",
     "svelte-fa": "^4.0.3",

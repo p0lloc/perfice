@@ -85,3 +85,12 @@ input[type="color"]::-webkit-color-swatch {
 input[type="text"], input[type="number"] {
     @apply border py-1 px-2 rounded-md;
 }
+
+.dragging {
+    @apply opacity-50 shadow-lg ring-2 ring-green-800;
+}
+
+.drag-over {
+    outline: 2px solid limegreen;
+    outline-offset: -2px;
+}

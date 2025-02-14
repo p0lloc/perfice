@@ -10,20 +10,17 @@
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
     import {trackables} from "@perfice/main";
     import {goto} from "@mateothegreat/svelte5-router";
+    import type {Trackable} from "@perfice/model/trackable/trackable";
 
     let viewType: TrackableEditViewType = $state(TrackableEditViewType.GENERAL);
     let editState: EditTrackableState = $state({} as EditTrackableState);
     let modal: Modal;
 
-    let {onStartDelete}: { onStartDelete: () => void } = $props();
+    let {onStartDelete}: { onStartDelete: (t: Trackable) => void } = $props();
 
     export function open(state: EditTrackableState) {
         editState = state;
         modal.open();
-    }
-
-    function close(){
-        modal.close();
     }
 
     async function save() {
@@ -31,7 +28,7 @@
     }
 
     function onDelete() {
-        onStartDelete();
+        onStartDelete(editState.trackable);
     }
 
     function switchView(type: string) {
