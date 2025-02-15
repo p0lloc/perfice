@@ -18,11 +18,11 @@
     <JournalCardBase onClick={() =>  onEntryClick(entry)}>
         <div class="flex items-center gap-4">
             <p class="text-2xl">
-                <Fa icon={faStar}/>
+                <Fa icon={faStar} class="text-green-500"/>
             </p>
             <div class="flex-1 w-[60%]">
                 <JournalCardHeader {entry} onDelete={() => onEntryDelete(entry)}>
-                    <h2 class="text-xl font-bold">
+                    <h2 class="text-xl font-bold text-gray-600">
                         {entry.name}
                     </h2>
                 </JournalCardHeader>

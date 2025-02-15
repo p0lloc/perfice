@@ -40,7 +40,8 @@ export function CategorizedTrackables(): Readable<Promise<CategoryList<Trackable
             }
 
             for (let category of res) {
-                category.items = category.items.sort((a, b) => a.order - b.order);
+                category.items = category.items.sort((a, b) =>
+                    a.order - b.order);
             }
 
             resolve(res);

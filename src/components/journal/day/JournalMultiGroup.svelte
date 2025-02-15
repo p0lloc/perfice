@@ -16,7 +16,7 @@
 
 <div>
     <h2 class="text-2xl font-bold mb-2 flex gap-2 items-center text-gray-600">
-        <Fa icon={faStar}/>
+        <Fa icon={faStar} class="text-green-500"/>
         {group.name}
     </h2>
     <div class="flex gap-2 flex-col">
