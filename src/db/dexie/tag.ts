@@ -11,6 +11,10 @@ export class DexieTagEntryCollection implements TagEntryCollection {
         this.table = table;
     }
 
+    async getEntryById(entryId: string): Promise<TagEntry | undefined> {
+        return this.table.get(entryId);
+    }
+
     async createEntry(entry: TagEntry): Promise<void> {
         await this.table.add(entry);
     }

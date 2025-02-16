@@ -10,7 +10,7 @@ import {
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
 import {WeekStart} from "@perfice/model/variable/time/time";
 import {CalculationVariableType} from "@perfice/services/variable/types/calculation";
-import type {TagVariableType} from "@perfice/services/variable/types/tag";
+import {TagVariableType} from "@perfice/services/variable/types/tag";
 
 export const GOAL_CONDITION_DESERIALIZERS:
     Record<string, (value: any) => GoalConditionValue> = {
@@ -69,7 +69,7 @@ function serializeGoalCondition(condition: GoalCondition): object {
     }
 }
 
-export const VARIABLE_TYPE_DESERIALIZERS: Record<string, (value: any) => VariableType> = {
+export const VARIABLE_TYPE_DESERIALIZERS: Record<VariableTypeName, (value: any) => VariableType> = {
     [VariableTypeName.LIST]: (value: any) => new ListVariableType(
         value.formId,
         value.fields,
@@ -87,6 +87,7 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<string, (value: any) => Variabl
     [VariableTypeName.CALCULATION]: (value: any) => new CalculationVariableType(
         value.entries,
     ),
+    [VariableTypeName.TAG]: (value: any) => new TagVariableType(value.tagId),
 };
 
 export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: VariableType) => object> = {

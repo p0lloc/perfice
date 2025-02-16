@@ -102,6 +102,8 @@ export interface TagCollection {
 }
 
 export interface TagEntryCollection {
+    getEntryById(entryId: string): Promise<TagEntry | undefined>;
+
     getTagEntriesByTagId(tagId: string): Promise<TagEntry[]>;
 
     getAllEntriesByTagId(tagId: string): Promise<TagEntry[]>;

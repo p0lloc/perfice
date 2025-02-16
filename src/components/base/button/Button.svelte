@@ -10,9 +10,9 @@
     } = $props();
 
     const BUTTON_COLOR_CLASSES: Record<ButtonColor, string> = {
-        [ButtonColor.GREEN]: "bg-green-600 hover:bg-green-700 text-white",
-        [ButtonColor.RED]: "bg-red-600 hover:bg-red-700 text-white",
-        [ButtonColor.WHITE]: "bg-white hover:bg-gray-100 border"
+        [ButtonColor.GREEN]: "bg-green-600 pointer-feedback:bg-green-700 text-white",
+        [ButtonColor.RED]: "bg-red-600 pointer-feedback:bg-red-700 text-white",
+        [ButtonColor.WHITE]: "bg-white pointer-feedback:bg-gray-100 border"
     }
 </script>
 

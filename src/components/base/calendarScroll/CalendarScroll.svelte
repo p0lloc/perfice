@@ -81,7 +81,7 @@
                 />
                 <button
                         onclick={openDatePicker}
-                        class="bg-white p-2 border rounded-full hover:bg-gray-100 ml-2"
+                        class="bg-white p-2 border rounded-full pointer-feedback:bg-gray-100 ml-2"
                 >
                     <Fa icon={faCalendarAlt}/>
                 </button

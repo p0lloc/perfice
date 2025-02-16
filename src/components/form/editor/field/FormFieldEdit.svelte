@@ -27,7 +27,7 @@
      class="block text-left border-dashed w-full transparent-border relative" class:selected={selected}
      onclick={onClick}>
     {#if selected}
-        <button class="absolute right-0 top-0 hover:text-red-600" onclick={onDelete}>
+        <button class="absolute right-0 top-0 pointer-feedback:text-red-600" onclick={onDelete}>
             <Fa icon={faTrash}/>
         </button>
     {/if}

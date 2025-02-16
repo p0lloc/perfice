@@ -39,6 +39,6 @@
     }
 
     .inactive-inverted {
-        @apply text-white hover:bg-white hover:text-black;
+        @apply text-white pointer-feedback:bg-white pointer-feedback:text-black;
     }
 </style>

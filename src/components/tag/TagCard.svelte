@@ -4,16 +4,30 @@
     import {faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import {tagValue} from "@perfice/main";
+    import type {WeekStart} from "@perfice/model/variable/time/time";
 
-    let {tag}: { tag: Tag } = $props();
-    let checked = false;
+    let {tag, date, weekStart, onClick}: {
+        tag: Tag,
+        date: Date,
+        weekStart: WeekStart,
+        onClick: (entryId: string | null) => void
+    } = $props();
+
+    let tagEntry = $derived(tagValue(tag, date, weekStart, tag.id));
 </script>
 
-<TagButtonBase {checked} onClick={() => {}}>
-    {#if checked}
-        <Fa icon={faTimes}/>
-    {:else}
-        <Fa icon={faPlus}/>
-    {/if}
-    {tag.name}
-</TagButtonBase>
+<!-- This should always be resolved since we have a default value in the variable store -->
+{#await $tagEntry then entryId}
+    <TagButtonBase checked={entryId != null} onClick={() => onClick(entryId)}>
+        {tag.name}
+        <span class="w-2">
+            {#if entryId != null}
+            <Fa icon={faTimes}/>
+        {:else}
+            <Fa icon={faPlus}/>
+        {/if}
+        </span>
+    </TagButtonBase>
+{/await}
+

@@ -7,8 +7,8 @@
 <button
         onclick={onClick}
         class="{checked
-    ? 'bg-green-500 hover:bg-green-600 text-white'
-    : 'bg-white hover:bg-gray-200 text-black border-2'} rounded-md px-3 py-2 text-xs flex gap-2 items-center"
+    ? 'bg-green-500 pointer-feedback:bg-green-600 text-white border-green-600'
+    : 'bg-white pointer-feedback:bg-gray-200 text-black'} border-2 rounded-md px-3 py-2 text-xs flex gap-2 items-center"
 >
     {@render children()}
 </button>

@@ -26,7 +26,7 @@ export class VariableFetchContext {
     }
 }
 
-export function VariableValueStore(id: string, timeContext: TimeScope, variableService: VariableService, key: string): Readable<Promise<PrimitiveValue>> {
+export function VariableValueStore(id: string, timeContext: TimeScope, variableService: VariableService, key: string, defaultValue?: PrimitiveValue): Readable<Promise<PrimitiveValue>> {
     let context = new VariableFetchContext(variableService);
     const {subscribe, set} = CachedPromiseStore<PrimitiveValue>(key, new Promise<PrimitiveValue>(async (resolve) => {
         // When the variable value is updated, update the store
@@ -37,7 +37,7 @@ export function VariableValueStore(id: string, timeContext: TimeScope, variableS
     }), () => {
         // When this store is destroyed, unregister the listener
         return () => context.unregister()
-    });
+    }, defaultValue);
 
     return {
         subscribe,

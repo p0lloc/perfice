@@ -9,7 +9,6 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {faHamburger} from "@fortawesome/free-solid-svg-icons";
-    import {dragHandle} from "svelte-dnd-action";
 
     let {trackable, date, weekStart, onEdit, onLog}: {
         trackable: Trackable,

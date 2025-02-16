@@ -14,7 +14,7 @@ import {deserializeVariableType, serializeVariableType} from "@perfice/services/
 import {EntryAction, type VariableGraph} from "@perfice/services/variable/graph";
 import type {TimeScope} from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
-import type {JournalEntry} from "@perfice/model/journal/journal";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {serializeTimeScope} from "@perfice/model/variable/time/serialization";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 
@@ -206,4 +206,11 @@ export class VariableService {
         this.observers.removeObserver(type, callback);
     }
 
+    async onTagEntryCreated(e: TagEntry) {
+        await this.graph.onTagEntryAction(e, EntryAction.CREATED);
+    }
+
+    async onTagEntryDeleted(e: TagEntry) {
+        await this.graph.onTagEntryAction(e, EntryAction.DELETED);
+    }
 }

@@ -74,6 +74,10 @@ export class DummyTagEntryCollection implements TagEntryCollection {
         this.entries = entries;
     }
 
+    async getEntryById(entryId: string): Promise<TagEntry | undefined> {
+        return this.entries.find(e => e.id == entryId);
+    }
+
     async deleteEntryById(id: string): Promise<void> {
         this.entries = this.entries.filter(e => e.id != id);
     }

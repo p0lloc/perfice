@@ -56,16 +56,8 @@ input[type="checkbox"] {
     @apply absolute top-0 right-0 z-10 border-l bg-white h-screen w-screen;
 }
 
-@media (pointer: fine) {
-    .hover-feedback:hover {
-        background-color: rgb(243, 244, 246);
-    }
-}
-
-@media (pointer: coarse) {
-    .hover-feedback:active {
-        background-color: rgb(243, 244, 246);
-    }
+.hover-feedback {
+    @apply pointer-feedback:bg-gray-200;
 }
 
 input[type="color"]::-moz-color-swatch {
