@@ -11,3 +11,10 @@ export interface JournalEntry {
     icon: string;
     answers: Record<string, PrimitiveValue>;
 }
+
+
+export interface TagEntry {
+    id: string;
+    timestamp: number;
+    tagId: string;
+}

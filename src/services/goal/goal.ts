@@ -31,6 +31,7 @@ export class GoalService {
         let goal: Goal = {
             id: crypto.randomUUID(),
             variableId: variable.id,
+            color: "#ff0000",
             name,
         };
 

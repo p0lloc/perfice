@@ -4,7 +4,8 @@ export enum PrimitiveValueType {
     BOOLEAN = "BOOLEAN",
     LIST = "LIST",
     MAP = "MAP",
-    ENTRY = "ENTRY",
+    JOURNAL_ENTRY = "JOURNAL_ENTRY",
+    TAG_ENTRY = "TAG_ENTRY",
     DISPLAY = "DISPLAY",
     COMPARISON_RESULT = "COMPARISON_RESULT",
     NULL = "NULL",
@@ -16,7 +17,8 @@ export type PrimitiveValue =
     | PV<PrimitiveValueType.BOOLEAN, boolean>
     | { type: PrimitiveValueType.MAP, value: Record<string, PrimitiveValue> } // Can't circularly reference PrimitiveValue without indirection
     | PV<PrimitiveValueType.LIST, PrimitiveValue[]>
-    | PV<PrimitiveValueType.ENTRY, EntryValue>
+    | PV<PrimitiveValueType.JOURNAL_ENTRY, JournalEntryValue>
+    | PV<PrimitiveValueType.TAG_ENTRY, TagEntryValue>
     | PV<PrimitiveValueType.DISPLAY, DisplayValue>
     | PV<PrimitiveValueType.COMPARISON_RESULT, ComparisonResultValue>
     | PV<PrimitiveValueType.NULL, null>;
@@ -27,13 +29,20 @@ export type PV<T extends PrimitiveValueType, V> = {
     value: V;
 }
 
-export interface EntryValue {
+export interface JournalEntryValue {
     // Id of the journal entry
     id: string;
     // Timestamp of the journal entry
     timestamp: number;
     // Entry values
     value: Record<string, PrimitiveValue>;
+}
+
+export interface TagEntryValue {
+    // Id of the tag entry
+    id: string;
+    // Timestamp of the tag entry
+    timestamp: number;
 }
 
 export interface ComparisonResultValue {
@@ -73,8 +82,12 @@ export function pDisplay(value: PrimitiveValue, display: PrimitiveValue | null):
     return {type: PrimitiveValueType.DISPLAY, value: {value, display}}
 }
 
-export function pEntry(id: string, timestamp: number, value: Record<string, PrimitiveValue>): PrimitiveValue {
-    return {type: PrimitiveValueType.ENTRY, value: {id, timestamp, value}}
+export function pJournalEntry(id: string, timestamp: number, value: Record<string, PrimitiveValue>): PrimitiveValue {
+    return {type: PrimitiveValueType.JOURNAL_ENTRY, value: {id, timestamp, value}}
+}
+
+export function pTagEntry(id: string, timestamp: number): PrimitiveValue {
+    return {type: PrimitiveValueType.TAG_ENTRY, value: {id, timestamp}}
 }
 
 export function pComparisonResult(source: PrimitiveValue, target: PrimitiveValue, result: boolean): PrimitiveValue {
@@ -93,8 +106,10 @@ export function getDefaultPrimitiveValue(t: PrimitiveValueType): PrimitiveValue 
             return pNumber(0.0);
         case PrimitiveValueType.BOOLEAN:
             return pBoolean(false);
-        case PrimitiveValueType.ENTRY:
-            return pEntry("", 0, {});
+        case PrimitiveValueType.JOURNAL_ENTRY:
+            return pJournalEntry("", 0, {});
+        case PrimitiveValueType.TAG_ENTRY:
+            return pTagEntry("", 0);
         case PrimitiveValueType.DISPLAY:
             return pDisplay(pNull(), pNull());
         case PrimitiveValueType.COMPARISON_RESULT:
@@ -164,9 +179,9 @@ function comparePrimitiveValues<T>(type: PrimitiveValueType, first: T, second: T
             return comparePrimitiveMaps(first as Record<string, PrimitiveValue>, second as Record<string, PrimitiveValue>);
         }
 
-        case PrimitiveValueType.ENTRY: {
-            let firstEntry = first as EntryValue;
-            let secondEntry = second as EntryValue;
+        case PrimitiveValueType.JOURNAL_ENTRY: {
+            let firstEntry = first as JournalEntryValue;
+            let secondEntry = second as JournalEntryValue;
 
             return firstEntry.id == secondEntry.id && firstEntry.timestamp == secondEntry.timestamp
                 && comparePrimitiveMaps(firstEntry.value, secondEntry.value);
@@ -193,7 +208,7 @@ export function prettyPrintPrimitive(v: PrimitiveValue): string {
         case PrimitiveValueType.DISPLAY: {
             return prettyPrintPrimitive(v.value.display ?? v.value.value);
         }
-        case PrimitiveValueType.ENTRY: {
+        case PrimitiveValueType.JOURNAL_ENTRY: {
             return JSON.stringify(Object.fromEntries(Object.entries(v.value.value)
                 .map(([k, v]) => [k, prettyPrintPrimitive(v)])));
         }
@@ -209,7 +224,7 @@ export function prettyPrintPrimitive(v: PrimitiveValue): string {
 export function primitiveAsNumber(value: PrimitiveValue): number {
     if (value.type == PrimitiveValueType.STRING) {
         let float = parseFloat(value.value);
-        if(isFinite(float)) {
+        if (isFinite(float)) {
             return float;
         }
     }
@@ -222,13 +237,13 @@ export function primitiveAsNumber(value: PrimitiveValue): number {
 
 
 export function primitiveAsType(value: PrimitiveValue, type: PrimitiveValueType): PrimitiveValue {
-    if(value.type == type) return value;
+    if (value.type == type) return value;
 
-    if(type == PrimitiveValueType.NUMBER) {
+    if (type == PrimitiveValueType.NUMBER) {
         return pNumber(primitiveAsNumber(value));
     }
 
-    if(type == PrimitiveValueType.STRING) {
+    if (type == PrimitiveValueType.STRING) {
         return pString(value.value?.toString() ?? "");
     }
 

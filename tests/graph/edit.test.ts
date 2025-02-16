@@ -2,7 +2,7 @@ import {expect, test} from "vitest";
 import {
     DummyFormService,
     DummyIndexCollection,
-    DummyJournalCollection,
+    DummyJournalCollection, DummyTagEntryCollection,
     DummyTrackableCollection,
     DummyVariableCollection
 } from "../dummy-collections";
@@ -20,7 +20,7 @@ import {Form} from "../../src/model/form/form";
 import {
     pComparisonResult,
     pDisplay,
-    pEntry,
+    pJournalEntry,
     pList,
     pMap,
     pNumber, PrimitiveValue,
@@ -41,7 +41,8 @@ test("test basic edit + entry created", async () => {
     const variables = new DummyVariableCollection();
 
     const journalService = new JournalService(journal);
-    const graph = new VariableGraph(indices, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(indices, journal, tagEntries, WeekStart.MONDAY);
 
     const variableService = new VariableService(variables, indices, graph);
     journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => {
@@ -102,7 +103,7 @@ test("test basic edit + entry created", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry(entry.id, entry.timestamp, {"test": pDisplay(pNumber(13.0), pString("13.0"))})
+        pJournalEntry(entry.id, entry.timestamp, {"test": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
 });
 
@@ -112,7 +113,8 @@ test("goal edit + entry created", async () => {
     const variables = new DummyVariableCollection();
 
     const journalService = new JournalService(journal);
-    const graph = new VariableGraph(indices, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(indices, journal, tagEntries, WeekStart.MONDAY);
 
     const variableService = new VariableService(variables, indices, graph);
     journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => {

@@ -1,0 +1,14 @@
+<script lang="ts">
+    import type {Snippet} from "svelte";
+
+    let {checked, onClick, children}: { checked: boolean, onClick: () => void, children: Snippet } = $props();
+</script>
+
+<button
+        onclick={onClick}
+        class="{checked
+    ? 'bg-green-500 hover:bg-green-600 text-white'
+    : 'bg-white hover:bg-gray-200 text-black border-2'} rounded-md px-3 py-2 text-xs flex gap-2 items-center"
+>
+    {@render children()}
+</button>

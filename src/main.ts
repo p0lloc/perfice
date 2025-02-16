@@ -34,7 +34,7 @@ import {VariableEditProvider} from "@perfice/stores/variable/edit";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
-const graph = new VariableGraph(db.indices, db.entries, WeekStart.MONDAY);
+const graph = new VariableGraph(db.indices, db.entries, db.tagEntries, WeekStart.MONDAY);
 
 const variableService = new VariableService(db.variables, db.indices, graph);
 journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => {
@@ -58,6 +58,7 @@ export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService);
 export const variables = new VariableStore(variableService);
 export const trackableDate = TrackableDate();
+export const tagDate = TrackableDate();
 export const goalDate = GoalDate();
 export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);

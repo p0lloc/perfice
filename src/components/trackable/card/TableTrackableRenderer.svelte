@@ -6,7 +6,7 @@
 
 
     function getEntryValue(d: PrimitiveValue) {
-        if(d.type != PrimitiveValueType.ENTRY) return "Invalid value";
+        if(d.type != PrimitiveValueType.JOURNAL_ENTRY) return "Invalid value";
 
         let answerMap: Record<string, PrimitiveValue> = (d.value.value);
 

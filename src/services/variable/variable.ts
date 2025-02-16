@@ -11,7 +11,7 @@ import {
     type VariableTypeDef,
 } from "@perfice/model/variable/variable";
 import {deserializeVariableType, serializeVariableType} from "@perfice/services/variable/types/serialization";
-import type {VariableGraph} from "@perfice/services/variable/graph";
+import {EntryAction, type VariableGraph} from "@perfice/services/variable/graph";
 import type {TimeScope} from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
@@ -164,15 +164,15 @@ export class VariableService {
     }
 
     async onEntryCreated(e: JournalEntry) {
-        await this.graph.onEntryCreated(e);
+        await this.graph.onJournalEntryAction(e, EntryAction.CREATED);
     }
 
     async onEntryDeleted(e: JournalEntry) {
-        await this.graph.onEntryDeleted(e);
+        await this.graph.onJournalEntryAction(e, EntryAction.DELETED);
     }
 
     async onEntryUpdated(e: JournalEntry) {
-        await this.graph.onEntryUpdated(e);
+        await this.graph.onJournalEntryAction(e, EntryAction.UPDATED);
     }
 
     async deleteVariableById(variableId: string) {

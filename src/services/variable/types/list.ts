@@ -1,7 +1,7 @@
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {
     comparePrimitivesLoosely,
-    pEntry,
+    pJournalEntry,
     pList, primitiveAsNumber,
     type PrimitiveValue,
     PrimitiveValueType,
@@ -14,10 +14,7 @@ import {
 } from "@perfice/model/variable/variable";
 import {
     VariableIndexActionType,
-    type EntryCreatedDependent,
-    type EntryDeletedDependent,
-    type VariableIndexAction,
-    type EntryUpdatedDependent,
+    type VariableIndexAction, type JournalEntryDependent, EntryAction,
 } from "@perfice/services/variable/graph";
 
 export function extractValueFromDisplay(p: PrimitiveValue): PrimitiveValue {
@@ -65,7 +62,7 @@ export interface ListVariableFilter {
     value: PrimitiveValue;
 }
 
-export class ListVariableType implements VariableType, EntryCreatedDependent, EntryDeletedDependent, EntryUpdatedDependent {
+export class ListVariableType implements VariableType, JournalEntryDependent {
 
     private readonly formId: string;
     private readonly fields: Record<string, boolean>;
@@ -75,6 +72,17 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
         this.formId = formId;
         this.fields = fields;
         this.filters = filters;
+    }
+
+    async onJournalEntryAction(entry: JournalEntry, action: EntryAction, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
+        switch (action) {
+            case EntryAction.CREATED:
+                return this.onEntryCreated(entry, indices);
+            case EntryAction.DELETED:
+                return this.onEntryDeleted(entry, indices);
+            case EntryAction.UPDATED:
+                return this.onEntryUpdated(entry, indices);
+        }
     }
 
     async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
@@ -89,12 +97,12 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
             if(this.shouldFilterEntry(entry)){
                 // Entry no longer matches filter, attempt to remove it from list
                 index.value.value = val.filter(v =>
-                    v.type == PrimitiveValueType.ENTRY && v.value.id != entry.id);
+                    v.type == PrimitiveValueType.JOURNAL_ENTRY && v.value.id != entry.id);
             } else {
                 let found = false;
                 // Entry was updated, try to find and update it in the list
                 for (let entries of val) {
-                    if (entries.type == PrimitiveValueType.ENTRY && entries.value.id == entry.id) {
+                    if (entries.type == PrimitiveValueType.JOURNAL_ENTRY && entries.value.id == entry.id) {
                         found = true;
                         entries.value.value = extractFieldsFromAnswers(entry.answers, this.fields);
                         entries.value.timestamp = entry.timestamp;
@@ -103,7 +111,7 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
 
                 // Entry went from being filtered to not filtered, add it to the list
                 if(!found) {
-                    index.value.value.push(pEntry(entry.id, entry.timestamp,
+                    index.value.value.push(pJournalEntry(entry.id, entry.timestamp,
                         extractFieldsFromAnswers(entry.answers, this.fields)));
                 }
             }
@@ -130,7 +138,7 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
 
             // Entry was created, add it to the list
             index.value.value
-                .push(pEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields)));
+                .push(pJournalEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields)));
 
             actions.push({
                 type: VariableIndexActionType.UPDATE,
@@ -151,7 +159,7 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
 
             // Entry was deleted, remove it from the list
             index.value.value = index.value.value
-                .filter(v => v.type != PrimitiveValueType.ENTRY || v.value.id != entry.id)
+                .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
 
             actions.push({
                 type: VariableIndexActionType.UPDATE,
@@ -213,7 +221,7 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
-        let entries = await evaluator.getEntriesInTimeRange(this.formId);
+        let entries = await evaluator.getJournalEntriesInTimeRange(this.formId);
         let result: PrimitiveValue[] = [];
         for (let entry of entries) {
             if (this.shouldFilterEntry(entry)) {
@@ -221,7 +229,7 @@ export class ListVariableType implements VariableType, EntryCreatedDependent, En
             }
 
             let fields = extractFieldsFromAnswers(entry.answers, this.fields);
-            result.push(pEntry(entry.id, entry.timestamp, fields));
+            result.push(pJournalEntry(entry.id, entry.timestamp, fields));
         }
 
         return pList(result);

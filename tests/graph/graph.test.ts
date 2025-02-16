@@ -1,10 +1,10 @@
-import {DummyIndexCollection, DummyJournalCollection} from "../dummy-collections";
-import {VariableGraph} from "../../src/services/variable/graph";
+import {DummyIndexCollection, DummyJournalCollection, DummyTagEntryCollection} from "../dummy-collections";
+import {EntryAction, VariableGraph} from "../../src/services/variable/graph";
 import {expect, test} from "vitest";
 import {Variable, VariableTypeName} from "../../src/model/variable/variable";
 import {FilterComparisonOperator, ListVariableType} from "../../src/services/variable/types/list";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
-import {pDisplay, pEntry, pList, pNumber, pString} from "../../src/model/primitive/primitive";
+import {pDisplay, pJournalEntry, pList, pNumber, pString} from "../../src/model/primitive/primitive";
 import {AggregateType, AggregateVariableType} from "../../src/services/variable/types/aggregate";
 import {JournalEntry} from "../../src/model/journal/journal";
 import {CalculationOperator, CalculationVariableType} from "../../src/services/variable/types/calculation";
@@ -12,7 +12,8 @@ import {CalculationOperator, CalculationVariableType} from "../../src/services/v
 test("empty list variable", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection();
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
 
     let variable: Variable = {
         name: "test",
@@ -46,7 +47,8 @@ test("simple single list variable", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -60,7 +62,7 @@ test("simple single list variable", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry("entry_one", 0, {"ok": pNumber(10.0)})
+        pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)})
     ]));
 })
 
@@ -92,7 +94,8 @@ test("simple multiple list variable", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -106,8 +109,8 @@ test("simple multiple list variable", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry("entry_one", 0, {"ok": pDisplay(pNumber(10.0), pString("10.0"))}),
-        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+        pJournalEntry("entry_one", 0, {"ok": pDisplay(pNumber(10.0), pString("10.0"))}),
+        pJournalEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
 })
 
@@ -129,7 +132,8 @@ test("simple multiple fields list variable", async () => {
             },
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -144,7 +148,7 @@ test("simple multiple fields list variable", async () => {
 
     // We are getting display value of first question, but raw value of second.
     expect(val).toEqual(pList([
-        pEntry("entry_one", 0, {"one": pDisplay(pNumber(10.0), pString("10.0")), "two": pNumber(10.0)}),
+        pJournalEntry("entry_one", 0, {"one": pDisplay(pNumber(10.0), pString("10.0")), "two": pNumber(10.0)}),
     ]));
 })
 
@@ -176,7 +180,8 @@ test("simple aggregate sum variable", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -225,7 +230,8 @@ test("simple aggregate mean variable", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -264,7 +270,8 @@ test("simple single list variable new entry", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -278,7 +285,7 @@ test("simple single list variable new entry", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry("entry_one", 0, {"ok": pNumber(10.0)})
+        pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)})
     ]));
 
     let entryTwo: JournalEntry = {
@@ -294,14 +301,14 @@ test("simple single list variable new entry", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onEntryCreated(entryTwo);
+    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val2).toEqual(pList([
-        pEntry("entry_one", 0, {"ok": pNumber(10.0)}),
-        pEntry("entry_two", 0, {"ok": pNumber(13.0)})
+        pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)}),
+        pJournalEntry("entry_two", 0, {"ok": pNumber(13.0)})
     ]));
 })
 
@@ -333,7 +340,8 @@ test("simple aggregate sum new entry", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -366,7 +374,7 @@ test("simple aggregate sum new entry", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onEntryCreated(entryTwo);
+    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(graph.getVariableById("aggregate_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -404,7 +412,8 @@ test("simple aggregate mean new entry", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -437,7 +446,7 @@ test("simple aggregate mean new entry", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onEntryCreated(entryTwo);
+    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(graph.getVariableById("aggregate_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -475,7 +484,8 @@ test("simple list variable with filter", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -491,7 +501,7 @@ test("simple list variable with filter", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+        pJournalEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
 })
 
@@ -538,7 +548,8 @@ test("simple list variable with list filter", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -554,8 +565,8 @@ test("simple list variable with list filter", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry("entry_one", 0, {"ok": pDisplay(pNumber(10.0), pString("10.0"))}),
-        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+        pJournalEntry("entry_one", 0, {"ok": pDisplay(pNumber(10.0), pString("10.0"))}),
+        pJournalEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
 })
 
@@ -600,7 +611,8 @@ test("simple list variable with multiple filters", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     let variable: Variable = {
         name: "test",
         id: "test",
@@ -617,7 +629,7 @@ test("simple list variable with multiple filters", async () => {
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pList([
-        pEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
+        pJournalEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
 })
 
@@ -649,7 +661,8 @@ test("static calculation variable", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -710,7 +723,8 @@ test("calculation variable between two dynamic variables", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "expense_list",
         type: {
@@ -770,7 +784,7 @@ test("calculation variable between two dynamic variables", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onEntryCreated(entryTwo);
+    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
 
 
     let val2 = await graph.evaluateVariable(graph.getVariableById("calculation_variable")!,

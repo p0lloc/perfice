@@ -1,8 +1,9 @@
-import type { JournalEntry } from "@perfice/model/journal/journal";
+import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {Form, FormSnapshot} from "@perfice/model/form/form";
 import type { Goal } from "@perfice/model/goal/goal";
+import type { Tag } from "@perfice/model/tag/tag";
 
 export interface TrackableCollection {
     getTrackables(): Promise<Trackable[]>;
@@ -87,6 +88,37 @@ export interface JournalCollection {
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
 export type IndexDeleteListener = (index: VariableIndex) => Promise<void>;
+
+export interface TagCollection {
+    getTags(): Promise<Tag[]>;
+
+    getTagById(id: string): Promise<Tag | undefined>;
+
+    createTag(tag: Tag): Promise<void>;
+
+    updateTag(tag: Tag): Promise<void>;
+
+    deleteTagById(id: string): Promise<void>;
+}
+
+export interface TagEntryCollection {
+    getTagEntriesByTagId(tagId: string): Promise<TagEntry[]>;
+
+    getAllEntriesByTagId(tagId: string): Promise<TagEntry[]>;
+
+    getEntriesByTagIdAndTimeRange(tagId: string, start: number, end: number): Promise<TagEntry[]>;
+
+    getEntriesByTagIdUntilTime(tagId: string, upper: number): Promise<TagEntry[]>;
+
+    getEntriesByTagIdFromTime(tagId: string, lower: number): Promise<TagEntry[]>;
+
+    deleteEntryById(id: string): Promise<void>;
+
+    deleteEntriesByTagId(tagId: string): Promise<void>;
+
+    createEntry(entry: TagEntry): Promise<void>;
+}
+
 export interface IndexCollection {
     getIndexByVariableAndTimeScope(variableId: string, timeScope: string): Promise<VariableIndex | undefined>;
 

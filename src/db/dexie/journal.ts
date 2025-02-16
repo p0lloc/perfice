@@ -19,6 +19,8 @@ export class DexieJournalCollection implements JournalCollection {
             .toArray();
     }
 
+    // TODO: should we filter by formId first and instead do time filtering in javascript?
+
     async getEntriesByFormIdFromTime(formId: string, start: number): Promise<JournalEntry[]> {
         return this.table.where("timestamp")
             .aboveOrEqual(start)

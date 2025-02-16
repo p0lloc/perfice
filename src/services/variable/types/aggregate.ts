@@ -46,7 +46,7 @@ export class AggregateVariableType implements VariableType {
     private flattenEntryList(list: PrimitiveValue[]): PrimitiveValue[] {
         let result: PrimitiveValue[] = [];
         for (let val of list) {
-            if (val.type == PrimitiveValueType.ENTRY) {
+            if (val.type == PrimitiveValueType.JOURNAL_ENTRY) {
                 let map = val.value.value;
                 // Fetch the field from the answer map
                 let fieldValue = map[this.field];
@@ -69,7 +69,7 @@ export class AggregateVariableType implements VariableType {
         if (list.length == 0)
             return pNumber(0.0);
 
-        if (list[0].type == PrimitiveValueType.ENTRY) {
+        if (list[0].type == PrimitiveValueType.JOURNAL_ENTRY) {
             list = this.flattenEntryList(list);
         }
 

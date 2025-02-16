@@ -1,6 +1,6 @@
-import type {IndexCollection, JournalCollection} from "@perfice/db/collections";
+import type {IndexCollection, JournalCollection, TagEntryCollection} from "@perfice/db/collections";
 import type {Variable, VariableEvaluator, VariableIndex} from "@perfice/model/variable/variable";
-import type {JournalEntry} from "@perfice/model/journal/journal";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {
     isTimestampInRange,
     type TimeRange,
@@ -18,19 +18,32 @@ export interface FormIdDependent {
      */
     getFormDependencies(): string[];
 }
+
+export interface TagIdDependent {
+    /**
+     * Returns ids of tags that this variable depends on.
+     */
+    getTagDependencies(): string[];
+}
+
+export enum EntryAction {
+    CREATED,
+    DELETED,
+    UPDATED,
+}
+
 /**
- * Represents a variable type that is dependent on journal entries.
+ * Represents a variable type that is dependent on changes in journal entries.
  */
-export interface EntryCreatedDependent extends FormIdDependent {
-    onEntryCreated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
+export interface JournalEntryDependent extends FormIdDependent {
+    onJournalEntryAction(entry: JournalEntry, action: EntryAction, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
 }
 
-export interface EntryDeletedDependent extends FormIdDependent {
-    onEntryDeleted(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
-}
-
-export interface EntryUpdatedDependent extends FormIdDependent {
-    onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
+/**
+ * Represents a variable type that is dependent on changes in tag entries.
+ */
+export interface TagEntryDependent extends TagIdDependent {
+    onTagEntryAction(entry: TagEntry, action: EntryAction, indices: VariableIndex[]): Promise<VariableIndexAction[]>;
 }
 
 export interface VariableIndexAction {
@@ -44,18 +57,13 @@ export enum VariableIndexActionType {
     DELETE,
 }
 
-function isEntryCreatedDependent(v: any): v is EntryCreatedDependent {
-    return (v as EntryCreatedDependent).onEntryCreated !== undefined;
+function isJournalEntryDependent(v: any): v is JournalEntryDependent {
+    return (v as JournalEntryDependent).onJournalEntryAction !== undefined;
 }
 
-function isEntryDeletedDependent(v: any): v is EntryDeletedDependent {
-    return (v as EntryDeletedDependent).onEntryDeleted !== undefined;
+function isTagEntryDependent(v: any): v is TagEntryDependent {
+    return (v as TagEntryDependent).onTagEntryAction !== undefined;
 }
-
-function isEntryUpdatedDependent(v: any): v is EntryUpdatedDependent {
-    return (v as EntryUpdatedDependent).onEntryUpdated !== undefined;
-}
-
 
 /**
  * A DAG that can be used to evaluate variables, and updates dependent variables when a variable is updated.
@@ -66,25 +74,26 @@ export class VariableGraph {
 
     private readonly indexCollection: IndexCollection;
     private readonly journalCollection: JournalCollection;
+    private readonly tagEntryCollection: TagEntryCollection;
 
     private weekStart: WeekStart;
 
-    private entryCreatedDependent: Map<string, EntryCreatedDependent> = new Map();
-    private entryDeletedDependent: Map<string, EntryDeletedDependent> = new Map();
-    private entryUpdatedDependent: Map<string, EntryUpdatedDependent> = new Map();
+    private journalEntryDependent: Map<string, JournalEntryDependent> = new Map();
+    private tagEntryDependent: Map<string, TagEntryDependent> = new Map();
 
-    constructor(indexCollection: IndexCollection, journalCollection: JournalCollection, weekStart: WeekStart) {
+    constructor(indexCollection: IndexCollection, journalCollection: JournalCollection, tagEntryCollection: TagEntryCollection, weekStart: WeekStart) {
         this.nodes = new Map<string, Variable>();
         this.dependents = new Map<string, Set<string>>();
         this.indexCollection = indexCollection;
         this.journalCollection = journalCollection;
+        this.tagEntryCollection = tagEntryCollection;
         this.weekStart = weekStart;
     }
 
     loadVariables(variables: Variable[]) {
         variables.forEach(v => {
             this.nodes.set(v.id, v);
-            this.setupJournalDependencies(v);
+            this.setupEntryDependencies(v);
         });
         this.updateDependents();
     }
@@ -138,29 +147,24 @@ export class VariableGraph {
     }
 
     private deleteJournalDependencies(variableId: string) {
-        this.entryCreatedDependent.delete(variableId);
-        this.entryDeletedDependent.delete(variableId);
-        this.entryUpdatedDependent.delete(variableId);
+        this.journalEntryDependent.delete(variableId);
+        this.tagEntryDependent.delete(variableId);
     }
 
-    private setupJournalDependencies(variable: Variable) {
-        if (isEntryCreatedDependent(variable.type.value)) {
-            this.entryCreatedDependent.set(variable.id, variable.type.value);
+    private setupEntryDependencies(variable: Variable) {
+        if (isJournalEntryDependent(variable.type.value)) {
+            this.journalEntryDependent.set(variable.id, variable.type.value);
         }
 
-        if (isEntryDeletedDependent(variable.type.value)) {
-            this.entryDeletedDependent.set(variable.id, variable.type.value);
-        }
-
-        if (isEntryUpdatedDependent(variable.type.value)) {
-            this.entryUpdatedDependent.set(variable.id, variable.type.value);
+        if(isTagEntryDependent(variable.type.value)){
+            this.tagEntryDependent.set(variable.id, variable.type.value);
         }
     }
 
     onVariableCreated(v: Variable) {
         this.nodes.set(v.id, v);
         this.updateDependentsForVariable(v);
-        this.setupJournalDependencies(v);
+        this.setupEntryDependencies(v);
     }
 
     async onVariableDeleted(id: string) {
@@ -180,7 +184,7 @@ export class VariableGraph {
 
         // Variable might have a completely different form, so we need to update any journal dependencies.
         this.deleteJournalDependencies(variable.id);
-        this.setupJournalDependencies(variable);
+        this.setupEntryDependencies(variable);
         // Do the same for internal graph dependencies
         this.removeDependenciesForVariable(variable.id);
         this.updateDependentsForVariable(variable);
@@ -240,9 +244,9 @@ export class VariableGraph {
         }
     }
 
-    private async handleEntryAction(entry: JournalEntry, variableId: string, action: (indices: VariableIndex[]) => Promise<VariableIndexAction[]>) {
+    private async handleEntryAction(timestamp: number, variableId: string, action: (indices: VariableIndex[]) => Promise<VariableIndexAction[]>) {
         let indices = await this.indexCollection.getIndicesByVariableId(variableId);
-        let filteredIndices = this.filterIndicesByTimestamp(indices, entry.timestamp);
+        let filteredIndices = this.filterIndicesByTimestamp(indices, timestamp);
 
         let variable = this.getVariableById(variableId);
         if (variable == undefined) return;
@@ -251,37 +255,33 @@ export class VariableGraph {
         await this.processIndexActions(variable, actions);
     }
 
-    async onEntryCreated(entry: JournalEntry) {
-        if (this.entryCreatedDependent.size == 0) return;
+    async onJournalEntryAction(entry: JournalEntry, action: EntryAction) {
+        if (this.journalEntryDependent.size == 0) return;
 
-        for (let [variableId, dependent] of this.filterEntryDependents(this.entryCreatedDependent, entry.formId).entries()) {
-            await this.handleEntryAction(entry, variableId,
-                (indices: VariableIndex[]) => dependent.onEntryCreated(entry, indices));
+        for (let [variableId, dependent] of this.filterEntryDependents(this.journalEntryDependent,
+                v => v.getFormDependencies().includes(entry.formId)).entries()) {
+
+            await this.handleEntryAction(entry.timestamp, variableId,
+                (indices: VariableIndex[]) => dependent.onJournalEntryAction(entry, action, indices));
         }
     }
 
-    async onEntryDeleted(entry: JournalEntry) {
-        if (this.entryDeletedDependent.size == 0) return;
 
-        for (let [variableId, dependent] of this.filterEntryDependents(this.entryDeletedDependent, entry.formId).entries()) {
-            await this.handleEntryAction(entry, variableId,
-                (indices: VariableIndex[]) => dependent.onEntryDeleted(entry, indices));
+    async onTagEntryAction(entry: TagEntry, action: EntryAction) {
+        if (this.tagEntryDependent.size == 0) return;
+
+        for (let [variableId, dependent] of this.filterEntryDependents(this.tagEntryDependent,
+            v => v.getTagDependencies().includes(entry.tagId)).entries()) {
+
+            await this.handleEntryAction(entry.timestamp, variableId,
+                (indices: VariableIndex[]) => dependent.onTagEntryAction(entry, action, indices));
         }
     }
 
-    async onEntryUpdated(entry: JournalEntry) {
-        if (this.entryUpdatedDependent.size == 0) return;
-
-        for (let [variableId, dependent] of this.filterEntryDependents(this.entryUpdatedDependent, entry.formId).entries()) {
-            await this.handleEntryAction(entry, variableId,
-                (indices: VariableIndex[]) => dependent.onEntryUpdated(entry, indices));
-        }
-    }
-
-    private filterEntryDependents<V extends FormIdDependent>(map: Map<string, V>, formId: string): Map<string, V> {
+    private filterEntryDependents<V>(map: Map<string, V>, shouldInclude: (v: V) => boolean): Map<string, V> {
         let result: Map<string, V> = new Map();
         for (let [id, dependent] of map.entries()) {
-            if (dependent.getFormDependencies().includes(formId)) {
+            if (shouldInclude(dependent)) {
                 result.set(id, dependent);
             }
         }
@@ -291,15 +291,15 @@ export class VariableGraph {
 
     async deleteVariableAndDependencies(id: string): Promise<Variable[]> {
         let variable = this.getVariableById(id);
-        if(variable == null) return [];
+        if (variable == null) return [];
 
         let variablesToDelete: Variable[] = [variable];
 
         let dependents = this.dependents.get(id);
         if (dependents != null) {
-            for(let dependent of dependents){
+            for (let dependent of dependents) {
                 let variable = this.getVariableById(dependent);
-                if(variable == null) continue;
+                if (variable == null) continue;
 
                 variablesToDelete.push(variable);
             }
@@ -342,14 +342,14 @@ export class VariableGraph {
     }
 
     private async runEvaluation(variable: Variable, timeScope: TimeScope, evaluating: string[]): Promise<PrimitiveValue> {
-        return variable.type.value.evaluate(new BaseVariableEvaluator(timeScope, evaluating, this, this.journalCollection));
+        return variable.type.value.evaluate(new BaseVariableEvaluator(timeScope, evaluating, this, this.journalCollection, this.tagEntryCollection));
     }
 
     // TODO: should we have a bidirectional relation?
     private getStoredDependenciesForVariable(variableId: string): string[] {
         let result: string[] = [];
-        for(let [dependent, dependencies] of this.dependents.entries()){
-            if(dependencies.has(variableId)){
+        for (let [dependent, dependencies] of this.dependents.entries()) {
+            if (dependencies.has(variableId)) {
                 result.push(dependent);
             }
         }
@@ -361,8 +361,8 @@ export class VariableGraph {
     /**
      * Removes all dependencies for the given variable.
      */
-    private removeDependenciesForVariable(variableId: string){
-        for(let dependencies of this.dependents.values()){
+    private removeDependenciesForVariable(variableId: string) {
+        for (let dependencies of this.dependents.values()) {
             dependencies.delete(variableId);
         }
     }
@@ -394,21 +394,45 @@ export class BaseVariableEvaluator implements VariableEvaluator {
 
     private readonly timeContext: TimeScope;
     private readonly evaluating: string[];
-    private graph: VariableGraph;
-    private journalCollection: JournalCollection;
+    private readonly graph: VariableGraph;
+    private readonly journalCollection: JournalCollection;
+    private readonly tagEntryCollection: TagEntryCollection;
 
-    constructor(timeContext: TimeScope, evaluating: string[], variableService: VariableGraph, journalCollection: JournalCollection) {
+    constructor(timeContext: TimeScope, evaluating: string[], variableService: VariableGraph,
+                journalCollection: JournalCollection, tagEntryCollection: TagEntryCollection) {
         this.timeContext = timeContext;
         this.evaluating = evaluating;
         this.graph = variableService;
         this.journalCollection = journalCollection;
+        this.tagEntryCollection = tagEntryCollection;
     }
 
     overrideTimeScope(newTimeScope: TimeScope): VariableEvaluator {
-        return new BaseVariableEvaluator(newTimeScope, this.evaluating, this.graph, this.journalCollection);
+        return new BaseVariableEvaluator(newTimeScope, this.evaluating, this.graph, this.journalCollection, this.tagEntryCollection);
     }
 
-    async getEntriesInTimeRange(formId: string): Promise<JournalEntry[]> {
+    async getTagEntriesInTimeRange(tagId: string): Promise<TagEntry[]> {
+        // TODO: interface to reuse time range logic?
+        let action: TimeRange = this.timeContext.value.convertToRange();
+        switch (action.type) {
+            case TimeRangeType.ALL: {
+                return this.tagEntryCollection.getAllEntriesByTagId(tagId);
+            }
+            case TimeRangeType.BOTH: {
+                return this.tagEntryCollection.getEntriesByTagIdAndTimeRange(tagId, action.lower, action.upper);
+            }
+            case TimeRangeType.UPPER: {
+                return this.tagEntryCollection.getEntriesByTagIdUntilTime(tagId, action.upper);
+            }
+            case TimeRangeType.LOWER: {
+                return this.tagEntryCollection.getEntriesByTagIdFromTime(tagId, action.lower);
+            }
+            default:
+                throw new Error("Not yet implemented");
+        }
+    }
+
+    async getJournalEntriesInTimeRange(formId: string): Promise<JournalEntry[]> {
         let action: TimeRange = this.timeContext.value.convertToRange();
         switch (action.type) {
             case TimeRangeType.ALL: {

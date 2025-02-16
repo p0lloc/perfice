@@ -10,10 +10,12 @@
     import GoalView from "@perfice/views/GoalView.svelte";
     import GoalEditorView from "@perfice/views/GoalEditorView.svelte";
     import {routingNavigatorState} from "@perfice/model/ui/router.svelte";
+    import TagsView from "@perfice/views/TagsView.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
         {path: "/goals/(?<goalId>.*)", component: GoalEditorView},
+        {path: "/tags", component: TagsView},
         {path: "/journal", component: JournalView},
         {path: "/goals", component: GoalView},
         {path: "/", component: TrackableView},

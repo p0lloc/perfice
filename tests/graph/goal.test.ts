@@ -1,7 +1,7 @@
 import {expect, test} from "vitest";
-import {DummyIndexCollection, DummyJournalCollection} from "../dummy-collections";
+import {DummyIndexCollection, DummyJournalCollection, DummyTagEntryCollection} from "../dummy-collections";
 import {pComparisonResult, pDisplay, pMap, pNumber, pString} from "../../src/model/primitive/primitive";
-import {VariableGraph} from "../../src/services/variable/graph";
+import {EntryAction, VariableGraph} from "../../src/services/variable/graph";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {VariableTypeName} from "../../src/model/variable/variable";
 import {ListVariableType} from "../../src/services/variable/types/list";
@@ -42,7 +42,8 @@ test("simple goal", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -118,7 +119,8 @@ test("multi-condition goal", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -209,7 +211,8 @@ test("goal with dynamic target", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -290,7 +293,8 @@ test("goal with dynamic target and new entry", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
     graph.onVariableCreated({
         id: "expense_list",
         type: {
@@ -357,7 +361,7 @@ test("goal with dynamic target and new entry", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onEntryCreated(entryTwo);
+    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
     let goal_result2 = await graph.evaluateVariable(graph.getVariableById("goal_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
@@ -394,7 +398,10 @@ test("simple goal with new entry", async () => {
             }
         ]
     );
-    const graph = new VariableGraph(index, journal, WeekStart.MONDAY);
+
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
+
     graph.onVariableCreated({
         id: "list_variable",
         type: {
@@ -452,7 +459,7 @@ test("simple goal with new entry", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onEntryCreated(entryTwo);
+    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
 
     let goal_result2 = await graph.evaluateVariable(graph.getVariableById("goal_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);

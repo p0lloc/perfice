@@ -10,6 +10,7 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/t
 import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
 import {CalculationOperator, CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {TagVariableType} from "@perfice/services/variable/types/tag";
 
 export enum VariableChangeType {
     CREATE,
@@ -83,6 +84,17 @@ export class VariableEditProvider {
                         type: {
                             type: VariableTypeName.LIST,
                             value: new ListVariableType("", {}, [])
+                        }
+                    }
+                };
+            case VariableTypeName.TAG:
+                return {
+                    variable: {
+                        id: crypto.randomUUID(),
+                        name: "Tag",
+                        type: {
+                            type: VariableTypeName.TAG,
+                            value: new TagVariableType("")
                         }
                     }
                 };

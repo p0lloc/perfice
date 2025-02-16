@@ -1,12 +1,12 @@
 import {
     IndexCollection,
     IndexUpdateListener,
-    JournalCollection, TrackableCollection,
+    JournalCollection, TagEntryCollection, TrackableCollection,
     VariableCollection
 } from "../src/db/collections";
 import {StoredVariable, VariableIndex} from "../src/model/variable/variable";
 import {updateIdentifiedInArray} from "../src/util/array";
-import {JournalEntry} from "../src/model/journal/journal";
+import {JournalEntry, TagEntry} from "../src/model/journal/journal";
 import {FormService} from "../src/services/form/form";
 import {Form, FormSnapshot} from "../src/model/form/form";
 import {JournalService} from "../src/services/journal/journal";
@@ -64,8 +64,49 @@ export class DummyJournalCollection implements JournalCollection {
         throw new Error("Method not implemented.");
     }
 
-
 }
+
+export class DummyTagEntryCollection implements TagEntryCollection {
+
+    private entries: TagEntry[];
+
+    constructor(entries: TagEntry[] = []) {
+        this.entries = entries;
+    }
+
+    async deleteEntryById(id: string): Promise<void> {
+        this.entries = this.entries.filter(e => e.id != id);
+    }
+
+    async createEntry(entry: TagEntry): Promise<void> {
+        this.entries.push(entry);
+    }
+
+    async getTagEntriesByTagId(tagId: string): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.tagId == tagId);
+    }
+
+    async getAllEntriesByTagId(tagId: string): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.tagId == tagId);
+    }
+
+    async getEntriesByTagIdAndTimeRange(tagId: string, start: number, end: number): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.tagId == tagId && e.timestamp >= start && e.timestamp <= end);
+    }
+
+    async getEntriesByTagIdFromTime(tagId: string, lower: number): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.tagId == tagId && e.timestamp >= lower);
+    }
+
+    async getEntriesByTagIdUntilTime(tagId: string, upper: number): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.tagId == tagId && e.timestamp <= upper);
+    }
+
+    async deleteEntriesByTagId(tagId: string): Promise<void> {
+        this.entries = this.entries.filter(e => e.tagId != tagId);
+    }
+}
+
 
 export class DummyIndexCollection implements IndexCollection {
 
@@ -154,6 +195,10 @@ export class DummyTrackableCollection implements TrackableCollection {
 
     constructor(trackables: Trackable[] = []) {
         this.trackables = trackables;
+    }
+
+    updateTrackables(items: Trackable[]): Promise<void> {
+        throw new Error("Method not implemented.");
     }
 
     async getTrackables(): Promise<Trackable[]> {
