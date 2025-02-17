@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {HierarchyFormQuestionSettings} from "@perfice/model/form/display/hierarchy";
+    import type {HierarchyFormDisplaySettings} from "@perfice/model/form/display/hierarchy";
     import type {FormFieldProps} from "@perfice/model/form/ui";
     import HierarchyButton from "@perfice/components/form/fields/hierarchy/HierarchyButton.svelte";
     import type {HierarchyFormQuestionDataSettings, HierarchyOption} from "@perfice/model/form/data/hierarchy";
@@ -10,7 +10,7 @@
     let {dataSettings, displaySettings, disabled, value, onChange}: FormFieldProps = $props();
 
     let data = dataSettings as HierarchyFormQuestionDataSettings;
-    let display = displaySettings as HierarchyFormQuestionSettings;
+    let display = displaySettings as HierarchyFormDisplaySettings;
 
     let [root, selected] = $derived(findRootAndSelected(value));
 

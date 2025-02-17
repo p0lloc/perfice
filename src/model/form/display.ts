@@ -1,7 +1,7 @@
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {InputFieldDefinition, type InputFormQuestionSettings} from "@perfice/model/form/display/input";
 import {SelectFieldDefinition, type SelectFormQuestionSettings} from "./display/select";
-import {HierarchyFieldDefinition, type HierarchyFormQuestionSettings} from "./display/hierarchy";
+import {HierarchyFieldDefinition, type HierarchyFormDisplaySettings} from "./display/hierarchy";
 import {RangeFieldDefinition, type RangeFormQuestionSettings} from "@perfice/model/form/display/range";
 import {SegmentedFieldDefinition, type SegmentedFormQuestionSettings} from "@perfice/model/form/display/segmented";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
@@ -11,7 +11,7 @@ export type FormQuestionDisplaySettings =
     DisplayDef<FormQuestionDisplayType.INPUT, InputFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.SELECT, SelectFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.RANGE, RangeFormQuestionSettings>
-    | DisplayDef<FormQuestionDisplayType.HIERARCHY, HierarchyFormQuestionSettings>
+    | DisplayDef<FormQuestionDisplayType.HIERARCHY, HierarchyFormDisplaySettings>
     | DisplayDef<FormQuestionDisplayType.SEGMENTED, SegmentedFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.RICH_INPUT, RichInputFormQuestionSettings>
 
@@ -19,7 +19,7 @@ export type FormQuestionDisplaySettings =
 
 
 export type FormQuestionDisplaySettingsValue = InputFormQuestionSettings | SelectFormQuestionSettings |
-    RangeFormQuestionSettings | HierarchyFormQuestionSettings | SegmentedFormQuestionSettings;
+    RangeFormQuestionSettings | HierarchyFormDisplaySettings | SegmentedFormQuestionSettings;
 
 export type DisplayDef<K extends FormQuestionDisplayType, S extends object> = {
     displayType: K,
@@ -35,7 +35,7 @@ export interface FormDisplayTypeDefinition<S> {
 
     getDefaultSettings(): S;
 
-    getDisplayValue(value: PrimitiveValue, displaySettings: S): PrimitiveValue;
+    getDisplayValue(value: PrimitiveValue, displaySettings: S, dataSettings: any): PrimitiveValue;
 
     // Allows the display settings to be changed when the data type changes
     onDataTypeChanged(s: S, dataType: string): S;

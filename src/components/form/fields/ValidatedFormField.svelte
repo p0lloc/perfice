@@ -113,7 +113,7 @@
         }
 
         errorMessage = "";
-        return pDisplay(value, displayTypeDef.getDisplayValue(value, question.displaySettings));
+        return pDisplay(value, displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings));
     }
 
     function onRendererUpdateValue(v: any) {

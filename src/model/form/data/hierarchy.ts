@@ -95,23 +95,16 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
         return PrimitiveValueType.LIST;
     }
 
-    serialize(value: PrimitiveValue) : string[] {
+    serialize(value: PrimitiveValue) : PrimitiveValue[] {
         if(value.type == PrimitiveValueType.LIST) {
-            let res = [];
-            for(let v of value.value) {
-                if(v.type == PrimitiveValueType.STRING) {
-                    res.push(v.value);
-                }
-            }
-
-            return res;
+            return value.value;
         }
 
         return [];
     }
 
-    deserialize(value: string[]): PrimitiveValue | null {
-        return pList(value.map(v => pString(v)));
+    deserialize(value: PrimitiveValue[]): PrimitiveValue | null {
+        return pList(value);
     }
 
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {

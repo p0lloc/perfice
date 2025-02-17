@@ -4,8 +4,8 @@
     import {trackableValue} from "@perfice/main";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {type Component} from "svelte";
-    import ChartTrackableRenderer from "@perfice/components/trackable/card/ChartTrackableRenderer.svelte";
-    import TableTrackableRenderer from "@perfice/components/trackable/card/TableTrackableRenderer.svelte";
+    import ChartTrackableRenderer from "@perfice/components/trackable/card/chart/ChartTrackableRenderer.svelte";
+    import TableTrackableRenderer from "@perfice/components/trackable/card/table/TableTrackableRenderer.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {faHamburger} from "@fortawesome/free-solid-svg-icons";
