@@ -64,7 +64,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         await this.updateTrackable(editState.trackable);
     }
 
-    async getEditTrackableState(trackable: Trackable): Promise<EditTrackableState | null> {
+    async getEditTrackableState(rawTrackable: Trackable): Promise<EditTrackableState | null> {
+        let trackable = structuredClone(rawTrackable);
         let form = await forms.getFormById(trackable.formId);
         if (form == null) return null;
 

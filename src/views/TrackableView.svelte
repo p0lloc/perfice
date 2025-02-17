@@ -17,7 +17,7 @@
     }
 
     async function onEditTrackable(trackable: Trackable) {
-        let state = await trackables.getEditTrackableState(trackable);
+        let state = await trackables.getEditTrackableState($state.snapshot(trackable));
         if (state == null) return;
         editTrackableModal.open(state);
     }

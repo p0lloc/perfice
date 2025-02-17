@@ -4,8 +4,13 @@
     import Fa from "svelte-fa";
     import type {EditTrackableState} from "@perfice/model/trackable/ui";
     import EditTrackableCard from "@perfice/components/trackable/modals/edit/EditTrackableCard.svelte";
+    import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
 
     let {editState = $bindable()}: { editState: EditTrackableState } = $props();
+
+    function onIconChange(icon: string) {
+        editState.trackable.icon = icon;
+    }
 </script>
 
 <div>
@@ -13,9 +18,7 @@
     <div class="row-gap w-full">
         <input id="first_name" bind:value={editState.trackable.name} placeholder="Trackable name" type="text"
                class="input flex-1">
-        <button class="min-w-10 bg-gray-50 border-gray-300 border min-h-10 flex justify-center items-center icon-button">
-            <Fa icon={faHamburger}/>
-        </button>
+        <IconPickerButton icon={editState.trackable.icon} onChange={onIconChange}/>
     </div>
     <div class="row-between mt-4">
         <div class="row-gap label">

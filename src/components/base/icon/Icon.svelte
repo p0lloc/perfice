@@ -7,6 +7,6 @@
     let {class: className, name}: { name: string, class?: string } = $props();
 </script>
 
-<span class={`${className} flex items-center justify-center`}>
+<span class={`${className} flex items-center justify-center min-w-4`}>
 	<Fa icon={ICONS[name] ?? faStar}></Fa>
 </span>
