@@ -4,7 +4,7 @@
     import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
     import type {Component} from "svelte";
     import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
-    import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/EditTrackableGeneral.svelte";
+    import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/general/EditTrackableGeneral.svelte";
     import EditTrackableIntegration from "@perfice/components/trackable/modals/edit/EditTrackableIntegration.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";

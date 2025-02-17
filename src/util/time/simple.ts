@@ -12,6 +12,15 @@ export function dateToLastSecondOfDay(now: Date) {
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
 }
 
+export function dateWithCurrentTime(date: Date){
+    const clone = new Date(date);
+    let now = new Date();
+    clone.setHours(now.getHours());
+    clone.setMinutes(now.getMinutes());
+
+    return clone;
+}
+
 /**
  * Normalizes a week day into one where 0 equals the specified week start.
  * E.g: Monday = 0 and Sunday = 6 if week starts on a monday.

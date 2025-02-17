@@ -3,7 +3,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import type {EditTrackableState} from "@perfice/model/trackable/ui";
-    import EditTrackableCard from "@perfice/components/trackable/modals/edit/EditTrackableCard.svelte";
+    import EditTrackableCard from "@perfice/components/trackable/modals/edit/general/EditTrackableCard.svelte";
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
 
     let {editState = $bindable()}: { editState: EditTrackableState } = $props();

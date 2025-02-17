@@ -16,14 +16,6 @@
     }
 </script>
 
-<button class="{BUTTON_COLOR_CLASSES[color]} font-bold {className}" onclick={onClick}>
+<button class="{BUTTON_COLOR_CLASSES[color]} font-bold {className} rounded-md px-3 leading-9 min-h-9" onclick={onClick}>
     {@render children()}
 </button>
-<style>
-    button {
-        border-radius: 5px;
-        padding: 0 12px;
-        min-height: 36px;
-        line-height: 36px;
-    }
-</style>

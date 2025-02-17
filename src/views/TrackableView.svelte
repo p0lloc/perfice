@@ -8,6 +8,7 @@
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {faBars} from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
+    import {dateWithCurrentTime} from "@perfice/util/time/simple";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
@@ -26,7 +27,7 @@
     async function onLogTrackable(trackable: Trackable) {
         let form = await forms.getFormById(trackable.formId);
         if (form == undefined) return;
-        formModal.open(form, form.questions, $trackableDate);
+        formModal.open(form, form.questions, dateWithCurrentTime($trackableDate));
     }
 
     function onDeleteTrackable(trackable: Trackable) {

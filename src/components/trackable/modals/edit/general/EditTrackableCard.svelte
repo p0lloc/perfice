@@ -6,9 +6,9 @@
     import {TrackableCardType} from "@perfice/model/trackable/trackable";
     import {AggregateType} from "@perfice/services/variable/types/aggregate";
     import type {FormQuestion} from "@perfice/model/form/form";
-    import EditTrackableChartCard from "@perfice/components/trackable/modals/edit/EditTrackableChartCard.svelte";
+    import EditTrackableChartCard from "@perfice/components/trackable/modals/edit/general/chart/EditTrackableChartCard.svelte";
     import type {Component} from "svelte";
-    import EditTrackableValueCard from "@perfice/components/trackable/modals/edit/EditTrackableValueCard.svelte";
+    import EditTrackableValueCard from "@perfice/components/trackable/modals/edit/general/value/EditTrackableValueCard.svelte";
 
     const CARD_TYPES = [
         {value: TrackableCardType.CHART, name: "Chart"},
@@ -22,12 +22,14 @@
 
     function onCardTypeChange(e: TrackableCardType) {
         switch (e) {
+            // TODO: move default settings somewhere else
             case TrackableCardType.CHART:
                 cardState = {
                     cardType: TrackableCardType.CHART,
                     cardSettings: {
                         aggregateType: AggregateType.SUM,
-                        field: availableQuestions.length > 0 ? availableQuestions[0].id : ""
+                        field: availableQuestions.length > 0 ? availableQuestions[0].id : "",
+                        color: "#ff0000"
                     }
                 };
                 break;

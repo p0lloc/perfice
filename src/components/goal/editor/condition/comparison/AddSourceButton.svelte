@@ -1,13 +1,9 @@
 <script lang="ts">
-    import Button from "@perfice/components/base/button/Button.svelte";
-    import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
-    import {ButtonColor} from "@perfice/model/ui/button";
-    import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
     import {faHashtag, faSquareRootVariable} from "@fortawesome/free-solid-svg-icons";
+    import PopupContextMenuButton from "@perfice/components/base/contextMenu/PopupContextMenuButton.svelte";
 
     let {onAdd}: { onAdd: (constant: boolean) => void } = $props();
 
-    let contextMenu = $state<ContextMenu | undefined>();
     const GOAL_SOURCE_TYPES = [
         {
             name: "Dynamic value",
@@ -23,7 +19,4 @@
     ];
 </script>
 
-<Button onClick={(e) => contextMenu?.openFromClick(e, e.currentTarget, true)} color={ButtonColor.WHITE}>Add source</Button>
-<ContextMenu bind:this={contextMenu}>
-    <ContextMenuButtons buttons={GOAL_SOURCE_TYPES}/>
-</ContextMenu>
+<PopupContextMenuButton items={GOAL_SOURCE_TYPES}>Add source</PopupContextMenuButton>
