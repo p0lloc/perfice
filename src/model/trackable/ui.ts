@@ -38,13 +38,11 @@ export const TRACKABLE_VALUE_TYPES = [
 
 export type EditTrackableValueSettings = TrackableValueSettings;
 
-export function formatEntryIntoRepresentation(entry: JournalEntryValue, representation: TextOrDynamic[]): string {
-    let answerMap: Record<string, PrimitiveValue> = entry.value;
-
+export function formatAnswersIntoRepresentation(answers: Record<string, PrimitiveValue>, representation: TextOrDynamic[]): string {
     let result: string = "";
     for (let rep of representation) {
         if (rep.dynamic) {
-            let answerValue = answerMap[rep.value];
+            let answerValue = answers[rep.value];
             if (answerValue == null) return "Missing value";
 
             let displayValue = (answerValue.value as DisplayValue);

@@ -1,6 +1,7 @@
 import type {FormQuestionDataSettings} from "@perfice/model/form/data";
 import type {FormQuestionDisplaySettings} from "@perfice/model/form/display";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
 export enum FormQuestionDataType {
     TEXT = "TEXT",
@@ -28,6 +29,7 @@ export interface Form {
     name: string;
     icon: string;
     snapshotId: string;
+    format: TextOrDynamic[];
     questions: FormQuestion[];
 }
 

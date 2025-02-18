@@ -4,7 +4,7 @@
         LatestTrackableValueSettings,
         TrackableValueSettings
     } from "@perfice/model/trackable/trackable";
-    import {formatEntryIntoRepresentation} from "@perfice/model/trackable/ui";
+    import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
     import {formatDateLongTermOrHHMM} from "@perfice/util/time/format";
 
     let {values, cardSettings, date}: {
@@ -27,7 +27,7 @@
 <div class="flex flex-col items-center">
     {#if entry != null}
         <span>
-            {formatEntryIntoRepresentation(entry, cardSettings.representation)}
+            {formatAnswersIntoRepresentation(entry.value, cardSettings.representation)}
         </span>
             <span class="text-xs">
             {formatDateLongTermOrHHMM(new Date(entry.timestamp), date)}

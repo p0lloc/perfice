@@ -25,7 +25,7 @@
                     onClick={() => onEntryClick(entry)}
             >
                 <JournalCardHeader {entry} onDelete={() => onEntryDelete(entry)}>
-                    <p class="text-ellipsis overflow-hidden">ok</p>
+                    <p class="text-ellipsis overflow-hidden">{entry.displayValue}</p>
                 </JournalCardHeader>
             </JournalCardBase>
         {/each}

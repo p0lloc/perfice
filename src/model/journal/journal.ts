@@ -9,6 +9,7 @@ export interface JournalEntry {
 
     name: string;
     icon: string;
+    displayValue: string;
     answers: Record<string, PrimitiveValue>;
 }
 

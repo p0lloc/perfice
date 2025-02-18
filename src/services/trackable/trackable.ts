@@ -46,27 +46,23 @@ export class TrackableService {
             },
             dependencies: {}
         };
+
+        let firstQuestion = crypto.randomUUID();
         let form: Form = {
             id: crypto.randomUUID(),
             name: trackable.name,
             icon: "star",
             snapshotId: "",
+            format: [
+                {
+                    dynamic: true,
+                    value: firstQuestion
+                }
+            ],
             questions: [
                 {
-                    id: "test",
+                    id: firstQuestion,
                     name: "test",
-                    unit: null,
-                    displayType: FormQuestionDisplayType.INPUT,
-                    displaySettings: {},
-                    dataType: FormQuestionDataType.NUMBER,
-                    dataSettings: {
-                        min: null,
-                        max: null,
-                    }
-                },
-                {
-                    id: "test2",
-                    name: "test2",
                     unit: null,
                     displayType: FormQuestionDisplayType.INPUT,
                     displaySettings: {},
@@ -87,7 +83,7 @@ export class TrackableService {
             type: {
                 type: VariableTypeName.LIST,
                 value: new ListVariableType(trackable.formId, {
-                    test: false,
+                    [firstQuestion]: false,
                 }, [])
             }
         }
@@ -97,7 +93,7 @@ export class TrackableService {
             name: trackable.name,
             type: {
                 type: VariableTypeName.AGGREGATE,
-                value: new AggregateVariableType(AggregateType.SUM, listVariable.id, "test")
+                value: new AggregateVariableType(AggregateType.SUM, listVariable.id, firstQuestion)
             }
         }
 

@@ -7,7 +7,7 @@
     } from "@perfice/model/primitive/primitive";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import {formatTimestampHHMM} from "@perfice/util/time/format";
-    import {formatEntryIntoRepresentation} from "@perfice/model/trackable/ui";
+    import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
 
     let {value, representation}: {
         value: PrimitiveValue,
@@ -23,7 +23,7 @@
 
 <div class="w-full border-b row-between px-2">
     <span>
-        {formatEntryIntoRepresentation(entry, representation)}
+        {formatAnswersIntoRepresentation(entry.value, representation)}
     </span>
     <span class="text-xs">
         {formatTimestampHHMM(entry.timestamp)}

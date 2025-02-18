@@ -30,7 +30,7 @@
                         class="overflow-hidden text-ellipsis w-full text-left"
                         style="text-wrap: nowrap"
                 >
-                    ok
+                    {entry.displayValue}
                 </p>
             </div>
         </div>
