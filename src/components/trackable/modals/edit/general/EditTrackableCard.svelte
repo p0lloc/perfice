@@ -1,9 +1,9 @@
 <script lang="ts">
     import type {EditTrackableCardState} from "@perfice/model/trackable/ui";
-    import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
-    import {faDiamond} from "@fortawesome/free-solid-svg-icons";
+    import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
+    import {faChartLine, faDiamond, faListNumeric} from "@fortawesome/free-solid-svg-icons";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
-    import {TrackableCardType} from "@perfice/model/trackable/trackable";
+    import {TrackableCardType, TrackableValueType} from "@perfice/model/trackable/trackable";
     import {AggregateType} from "@perfice/services/variable/types/aggregate";
     import type {FormQuestion} from "@perfice/model/form/form";
     import EditTrackableChartCard from "@perfice/components/trackable/modals/edit/general/chart/EditTrackableChartCard.svelte";
@@ -11,8 +11,8 @@
     import EditTrackableValueCard from "@perfice/components/trackable/modals/edit/general/value/EditTrackableValueCard.svelte";
 
     const CARD_TYPES = [
-        {value: TrackableCardType.CHART, name: "Chart"},
-        {value: TrackableCardType.VALUE, name: "Value"}
+        {value: TrackableCardType.CHART, name: "Chart", icon: faChartLine},
+        {value: TrackableCardType.VALUE, name: "Value", icon: faListNumeric}
     ];
 
     let {cardState = $bindable(), availableQuestions}: {
@@ -42,7 +42,9 @@
                             {dynamic: true, value: availableQuestions[0].id}
                         ] : [
                             {dynamic: false, value: ""}
-                        ]
+                        ],
+                        type: TrackableValueType.TABLE,
+                        settings: {}
                     }
                 };
                 break;
@@ -51,7 +53,8 @@
 
     function getCardSettingsRenderer(cardType: TrackableCardType): Component<{
         cardSettings: any,
-        availableQuestions: FormQuestion[]
+        availableQuestions: FormQuestion[],
+        onChange: (settings: any) => void
     }> | null {
         switch (cardType) {
             case TrackableCardType.CHART:
@@ -61,16 +64,21 @@
         }
     }
 
+    function onCardSettingsChange(settings: any) {
+        cardState.cardSettings = settings;
+    }
+
     let RendererComponent = $derived(getCardSettingsRenderer(cardState.cardType));
 </script>
 
-<IconLabel title="Card type" icon={faDiamond}>
+<IconLabelBetween title="Card type" icon={faDiamond}>
     <BindableDropdownButton value={cardState.cardType}
                             onChange={onCardTypeChange}
                             items={CARD_TYPES}/>
-</IconLabel>
+</IconLabelBetween>
 
 {#if RendererComponent != null}
     <hr class="mt-4">
-    <RendererComponent bind:cardSettings={cardState.cardSettings} availableQuestions={availableQuestions}/>
+    <RendererComponent bind:cardSettings={cardState.cardSettings}
+                       availableQuestions={availableQuestions} onChange={onCardSettingsChange}/>
 {/if}

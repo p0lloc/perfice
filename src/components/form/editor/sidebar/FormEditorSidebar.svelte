@@ -1,12 +1,14 @@
 <script lang="ts">
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faFont, faTimes} from "@fortawesome/free-solid-svg-icons";
+    import {faDumbbell, faFont, faTimes} from "@fortawesome/free-solid-svg-icons";
     import {type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import EditDisplayQuestionSettings
         from "@perfice/components/form/editor/display/EditDisplayQuestionSettings.svelte";
     import EditDataQuestionSettings from "@perfice/components/form/editor/data/EditDataQuestionSettings.svelte";
+    import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
+    import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
 
     let {currentQuestion = $bindable(), onClose}: {
         currentQuestion: FormQuestion | null,
@@ -25,11 +27,12 @@
             </button>
         </div>
         <div class="mt-4 px-4">
-            <div class="row-gap label">
-                <Fa icon={faFont} class="w-4"/>
-                <p>Name</p>
-            </div>
+            <IconLabel icon={faFont} title="Name" />
             <input type="text" class="w-full border mt-2" bind:value={currentQuestion.name}/>
+        </div>
+        <div class="mt-4 px-4">
+            <IconLabel icon={faDumbbell} title="Unit (optional)" />
+            <input type="text" class="w-full border mt-2" bind:value={currentQuestion.unit} placeholder="kg, ml, ..."/>
         </div>
 
         <EditDataQuestionSettings bind:currentQuestion/>

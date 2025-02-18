@@ -21,6 +21,12 @@ export function dateWithCurrentTime(date: Date){
     return clone;
 }
 
+export function isSameDay(first: Date, second: Date): boolean {
+    return first.getFullYear() == second.getFullYear()
+        && first.getMonth() == second.getMonth()
+        && first.getDate() == second.getDate();
+}
+
 /**
  * Normalizes a week day into one where 0 equals the specified week start.
  * E.g: Monday = 0 and Sunday = 6 if week starts on a monday.

@@ -14,7 +14,7 @@
 </script>
 
 <div>
-    <label for="first_name" class=" mb-2 label">Name & icon</label>
+    <p class="mb-2 label">Name & icon</p>
     <div class="row-gap w-full">
         <input id="first_name" bind:value={editState.trackable.name} placeholder="Trackable name" type="text"
                class="input flex-1">
@@ -23,7 +23,7 @@
     <div class="row-between mt-4">
         <div class="row-gap label">
             <Fa icon={faBoxesStacked}/>
-            <label for="first_name">Category</label>
+            <p class="label">Category</p>
         </div>
         <select class="">
             <option>Lifestyle</option>

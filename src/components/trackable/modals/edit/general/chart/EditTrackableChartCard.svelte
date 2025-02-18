@@ -1,14 +1,15 @@
 <script lang="ts">
-    import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
+    import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
     import {faBrush, faCalculator, faQuestion} from "@fortawesome/free-solid-svg-icons";
     import type {EditTrackableChartSettings} from "@perfice/model/trackable/ui";
     import type {FormQuestion} from "@perfice/model/form/form";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {AggregateType} from "@perfice/services/variable/types/aggregate";
 
-    let {cardSettings, availableQuestions}: {
+    let {cardSettings, availableQuestions, onChange}: {
         cardSettings: EditTrackableChartSettings,
         availableQuestions: FormQuestion[]
+        onChange: (settings: any) => void
     } = $props();
 
     const AGGREGATE_TYPES = [
@@ -24,19 +25,22 @@
     }));
 
     function onColorChange(e: Event & {currentTarget: HTMLInputElement}) {
-        cardSettings.color = e.currentTarget.value;
+        onChange({
+            ...cardSettings,
+            color: e.currentTarget.value
+        })
     }
 </script>
-<IconLabel title="Color" icon={faBrush}>
+<IconLabelBetween title="Color" icon={faBrush}>
     <input type="color" value={cardSettings.color} onchange={onColorChange} class="w-10 h-10 rounded-md"/>
-</IconLabel>
-<IconLabel title="Aggregation type" icon={faCalculator}>
+</IconLabelBetween>
+<IconLabelBetween title="Aggregation type" icon={faCalculator}>
     <BindableDropdownButton value={cardSettings.aggregateType}
                             onChange={(v) => cardSettings.aggregateType = v}
                             items={AGGREGATE_TYPES}/>
-</IconLabel>
-<IconLabel title="Aggregation question" icon={faQuestion}>
+</IconLabelBetween>
+<IconLabelBetween title="Aggregation question" icon={faQuestion}>
     <BindableDropdownButton value={cardSettings.field}
                             onChange={(v) => cardSettings.field = v}
                             items={questions}/>
-</IconLabel>
+</IconLabelBetween>

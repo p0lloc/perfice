@@ -69,8 +69,9 @@
         currentQuestion = q;
     }
 
-    function deleteQuestion(q: FormQuestion) {
-        currentQuestion = q;
+    function deleteQuestion(question: FormQuestion) {
+        if(form == undefined) return;
+        form.questions = form.questions.filter(q => q.id !== question.id);
     }
 
     async function save() {
@@ -108,7 +109,7 @@
         <div class="p-2 flex-1 flex">
             <div class="mx-auto w-full md:w-1/2 mt-8">
                 <h2 class="text-3xl font-bold">{form.name}</h2>
-                <label for="first_name" class=" mb-2 label">Format</label>
+                <p class="mb-2 label">Format</p>
                 <h2 class="text-2xl font-bold">Questions</h2>
                 <div class="flex flex-col gap-4">
                     {#each form.questions as question(question.id)}

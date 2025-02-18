@@ -1,17 +1,21 @@
 <script lang="ts">
-    import type {EditTrackableValueSettings} from "@perfice/model/trackable/ui";
+    import {type EditTrackableValueSettings, TRACKABLE_VALUE_TYPES} from "@perfice/model/trackable/ui";
     import type {FormQuestion} from "@perfice/model/form/form";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
+    import {faAddressCard, faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import EditTrackableValueRepresentation
         from "@perfice/components/trackable/modals/edit/general/value/EditTrackableValueRepresentation.svelte";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
+    import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
+    import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
+    import type {TrackableValueType} from "@perfice/model/trackable/trackable";
 
-    let {cardSettings, availableQuestions}: {
+    let {cardSettings, availableQuestions, onChange}: {
         cardSettings: EditTrackableValueSettings,
-        availableQuestions: FormQuestion[]
+        availableQuestions: FormQuestion[],
+        onChange: (v: EditTrackableValueSettings) => void
     } = $props();
 
     let editMultiple = $state(false);
@@ -21,7 +25,17 @@
         && cardSettings.representation[0].dynamic);
 
     function onRepresentationChange(v: TextOrDynamic[]) {
-        cardSettings.representation = v;
+        onChange({
+            ...cardSettings,
+            representation: v
+        })
+    }
+
+    function onTypeChange(v: TrackableValueType) {
+        onChange({
+            ...cardSettings,
+            type: v
+        })
     }
 
     function addMultiple() {
@@ -29,11 +43,18 @@
     }
 </script>
 
+<IconLabelBetween title="Type" icon={faAddressCard}>
+    <SegmentedControl
+            segments={TRACKABLE_VALUE_TYPES}
+            value={cardSettings.type} onChange={onTypeChange}>
+
+    </SegmentedControl>
+</IconLabelBetween>
 <div class="flex justify-between flex-wrap gap-2 items-start mt-4">
     <div class="row-gap label">
         <Fa icon={faQuestionCircle}/>
 
-        <div class="flex flex-col items-start"><label for="first_name">Display value</label>
+        <div class="flex flex-col items-start"><p class="label">Display value</p>
             {#if simpleRepresentation}
                 <button onclick={addMultiple} class="text-xs text-gray-400">Add multiple</button>
             {/if}
@@ -49,6 +70,7 @@
         })}>
         </DropdownButton>
     {:else}
-        <EditTrackableValueRepresentation onChange={(v) => onRepresentationChange(v)} representation={cardSettings.representation} {availableQuestions} />
+        <EditTrackableValueRepresentation onChange={(v) => onRepresentationChange(v)}
+                                          representation={cardSettings.representation} {availableQuestions}/>
     {/if}
 </div>

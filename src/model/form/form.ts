@@ -33,6 +33,7 @@ export interface Form {
 export type FormQuestion = {
         id: string;
         name: string;
+        unit: string | null;
     }
     & FormQuestionDataSettings
     & FormQuestionDisplaySettings;

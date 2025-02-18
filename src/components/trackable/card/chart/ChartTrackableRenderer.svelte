@@ -4,7 +4,7 @@
     import type {TrackableChartSettings} from "@perfice/model/trackable/trackable";
     import {hexToRgb, rgbaToHex} from "@perfice/util/color";
 
-    let {value, cardSettings}: { value: PrimitiveValue, cardSettings: TrackableChartSettings } = $props();
+    let {value, cardSettings}: { value: PrimitiveValue, cardSettings: TrackableChartSettings, date: Date } = $props();
     const FILL_OPACITY = 100;
     const BORDER_DARKNESS_MODIFIER = 25;
 

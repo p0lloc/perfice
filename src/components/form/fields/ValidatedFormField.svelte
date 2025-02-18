@@ -1,11 +1,6 @@
 <script lang="ts">
     import type {FormQuestion} from "@perfice/model/form/form";
-    import {
-        pDisplay,
-        pList,
-        type PrimitiveValue,
-        PrimitiveValueType
-    } from "@perfice/model/primitive/primitive";
+    import {pDisplay, pList, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import FormFieldRenderer from "@perfice/components/form/fields/FormFieldRenderer.svelte";
@@ -73,27 +68,6 @@
             return null;
         }
 
-        // TODO: Doesn't seem sensible to have "required" since it's unclear what value is "unset"
-        // TODO: It's probably just better for users to set min/minLength and other data validation rules as they see fit
-        /*
-        let valueMissing = false;
-        if (question.required) {
-            if (value.type == PrimitiveValueType.NULL) {
-                valueMissing = true;
-            } else {
-                let defaultSerializedValue = dataTypeDef.getDefaultValue(question.dataSettings);
-                let defaultDeserializedValue = dataTypeDef.deserialize(defaultSerializedValue);
-                // If value equals the default value, it's considering missing
-                valueMissing = defaultDeserializedValue != null
-                    ? comparePrimitives(value, defaultDeserializedValue) : true;
-            }
-        }
-
-        if (valueMissing) {
-            errorMessage = "Please enter a value";
-            return null;
-        }*/
-
         let dataError;
         if (displayTypeDef.hasMultiple(question.displaySettings)) {
             dataError = validateMultiple(value);
@@ -113,7 +87,14 @@
         }
 
         errorMessage = "";
-        return pDisplay(value, displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings));
+
+        let displayValue = displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings);
+        if(displayValue.type == PrimitiveValueType.STRING && question.unit != null){
+            // Append unit to the display value
+            displayValue.value += ` ${question.unit}`;
+        }
+
+        return pDisplay(value, displayValue);
     }
 
     function onRendererUpdateValue(v: any) {

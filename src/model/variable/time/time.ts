@@ -145,7 +145,7 @@ export function tSimple(type: SimpleTimeScopeType, weekStart: WeekStart, timesta
     return {type: TimeScopeType.SIMPLE, value: new SimpleTimeScope(type, weekStart, timestamp)};
 }
 
-export function tRange(start: number, end: number): TimeScope {
+export function tRange(start: number | null, end: number | null): TimeScope {
     return {type: TimeScopeType.RANGE, value: new RangeTimeScope(start, end)};
 }
 

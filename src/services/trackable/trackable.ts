@@ -7,6 +7,7 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import type { EditTrackableValueSettings } from "@perfice/model/trackable/ui";
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -175,18 +176,18 @@ export class TrackableService {
         return fields;
     }
 
-    async updateTrackableValueSettings(trackable: Trackable, representation: TextOrDynamic[]) {
+    async updateTrackableValueSettings(trackable: Trackable, cardSettings: EditTrackableValueSettings) {
         let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
         if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
 
-        let fields = this.extractFieldsFromRepresentation(representation);
+        let fields = this.extractFieldsFromRepresentation(cardSettings.representation);
         listVariable.type = {
             type: VariableTypeName.LIST,
             value: new ListVariableType(trackable.formId, fields, listVariable.type.value.getFilters())
         }
 
         await this.variableService.updateVariable(listVariable);
-        trackable.cardSettings = {representation};
+        trackable.cardSettings = cardSettings;
     }
 
     async reorderTrackables(trackables: Trackable[]) {

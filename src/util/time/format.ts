@@ -1,3 +1,4 @@
+import {isSameDay} from "@perfice/util/time/simple";
 
 export const WEEK_DAYS_SHORT = [
     "Sun",
@@ -53,4 +54,16 @@ export function formatTimestampHHMM(timestamp: number) {
 
 export function formatDateHHMM(date: Date) {
     return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
+}
+
+export function formatDateLongTerm(date: Date) {
+    return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+export function formatDateLongTermOrHHMM(date: Date, currentDate: Date) {
+    if(isSameDay(date, currentDate)) {
+        return formatTimestampHHMM(date.getTime());
+    }
+
+    return `${formatDateLongTerm(date)} ${formatDateHHMM(date)}`;
 }
