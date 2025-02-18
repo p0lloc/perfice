@@ -11,5 +11,5 @@
 </script>
 
 <button class="icon-button {className}" onclick={onClick}>
-    <Fa icon={icon}/>
+    <Fa icon={icon} class="pointer-events-none"/>
 </button>

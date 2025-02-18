@@ -13,7 +13,7 @@
         contextMenu.openFromClick(e, e.currentTarget);
     }
 </script>
-<IconButton onClick={onClick} {icon}/>
+<IconButton onClick={onClick} {icon} />
 
 <ContextMenu bind:this={contextMenu}>
     <ContextMenuButtons buttons={buttons}/>

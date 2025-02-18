@@ -7,24 +7,31 @@
     import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
-    import {journal} from "@perfice/main";
+    import {forms, journal} from "@perfice/main";
+    import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
+    import type {FormTemplate} from "@perfice/model/form/form.js";
+    import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 
     let form: Form = $state({} as Form);
     let questions: FormQuestion[] = $state([]);
     let date: Date = $state(new Date());
     let editEntry: JournalEntry | undefined;
     let answers: Record<string, PrimitiveValue> = $state({});
+    let templates: FormTemplate[] = $state([]);
+
+    let creatingTemplateName: string | null = $state(null);
 
     let modal: Modal;
     let embed: FormEmbed;
 
     export function open(logForm: Form, formQuestions: FormQuestion[], logDate: Date,
-                         existingAnswers?: Record<string, PrimitiveValue>, entry?: JournalEntry) {
+                         availableTemplates: FormTemplate[], existingAnswers?: Record<string, PrimitiveValue>, entry?: JournalEntry) {
 
         form = logForm;
         date = logDate;
         questions = formQuestions;
         editEntry = entry;
+        templates = availableTemplates;
         answers = existingAnswers ?? getDefaultAnswers(form.questions);
         modal.open();
     }
@@ -43,14 +50,15 @@
                 answers
             });
         } else {
-            /*if (false) {
-                for (let j = 0; j < 20; j++) {
-                    for (let i = 0; i < 5; i++) {
-                        journal.logEntry(form, answers, date.getTime() - (j * 1000 * 60 * 60 * 24));
-                    }
-                }*/
-
             journal.logEntry(form, answers, date.getTime());
+        }
+
+        if(creatingTemplateName != null) {
+            let extractedValues = Object.fromEntries(
+                Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
+
+            forms.createFormTemplate(form.id, creatingTemplateName, extractedValues);
+            creatingTemplateName = null;
         }
 
         close();
@@ -77,8 +85,26 @@
 
         return answers;
     }
+
+    function onNewTemplate() {
+        creatingTemplateName = "";
+    }
+
+    function onTemplateSelected(template: FormTemplate) {
+        creatingTemplateName = null
+        answers = template.answers;
+        embed.invalidateValues();
+    }
 </script>
 
 <Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm}>
+    {#if creatingTemplateName != null}
+        <input type="text" class="w-full border mt-2" bind:value={creatingTemplateName} placeholder="Template name"/>
+        <p class="text-xs mt-2">A new template will be created with the provided answers.</p>
+        <hr class="my-4" />
+    {/if}
     <FormEmbed bind:this={embed} questions={questions} answers={answers}/>
+    {#snippet actions()}
+        <FormTemplateButton {templates} onNew={onNewTemplate} onTemplateSelected={onTemplateSelected}/>
+    {/snippet}
 </Modal>

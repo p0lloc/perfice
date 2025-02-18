@@ -7,6 +7,7 @@
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {faBars} from "@fortawesome/free-solid-svg-icons";
+    // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
 
@@ -26,8 +27,10 @@
 
     async function onLogTrackable(trackable: Trackable) {
         let form = await forms.getFormById(trackable.formId);
+        let templates = await forms.getTemplatesByFormId(trackable.formId);
         if (form == undefined) return;
-        formModal.open(form, form.questions, dateWithCurrentTime($trackableDate));
+
+        formModal.open(form, form.questions, dateWithCurrentTime($trackableDate), templates);
     }
 
     function onDeleteTrackable(trackable: Trackable) {

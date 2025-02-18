@@ -1,16 +1,20 @@
 import {AsyncStore} from "@perfice/stores/store";
 import type {FormService} from "@perfice/services/form/form";
-import type {Form, FormSnapshot} from "@perfice/model/form/form";
+import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import { EntityObserverType } from "@perfice/services/observer";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
+import type {FormTemplateService} from "@perfice/services/form/template";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export class FormStore extends AsyncStore<Form[]> {
 
     private formService: FormService;
+    private formTemplateService: FormTemplateService;
 
-    constructor(formService: FormService) {
+    constructor(formService: FormService, formTemplateService: FormTemplateService) {
         super(formService.getForms());
         this.formService = formService;
+        this.formTemplateService = formTemplateService;
         this.formService.addObserver(EntityObserverType.CREATED, async (form) => await this.onFormCreated(form));
         this.formService.addObserver(EntityObserverType.UPDATED, async (form) => await this.onFormUpdated(form));
         this.formService.addObserver(EntityObserverType.DELETED, async (form) => await this.onFormDeleted(form));
@@ -39,5 +43,13 @@ export class FormStore extends AsyncStore<Form[]> {
 
     async updateForm(form: Form) {
         await this.formService.updateForm(form);
+    }
+
+    async getTemplatesByFormId(formId: string): Promise<FormTemplate[]> {
+        return this.formTemplateService.getTemplatesByFormId(formId);
+    }
+
+    async createFormTemplate(formId: string, templateName: string, answers: Record<string, PrimitiveValue>) {
+        await this.formTemplateService.createTemplate(formId, templateName, answers);
     }
 }

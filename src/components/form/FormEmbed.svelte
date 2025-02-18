@@ -23,6 +23,14 @@
 
         return result;
     }
+
+    /**
+     * Invalidates all fields to use the value passed in "answers".
+     */
+    export function invalidateValues(){
+        Object.values(fields)
+            .forEach(f => f.invalidateValue());
+    }
 </script>
 
 {#each questions as question(question.id)}

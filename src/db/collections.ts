@@ -1,7 +1,7 @@
 import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
-import type {Form, FormSnapshot} from "@perfice/model/form/form";
+import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import type { Goal } from "@perfice/model/goal/goal";
 import type { Tag } from "@perfice/model/tag/tag";
 
@@ -29,6 +29,11 @@ export interface VariableCollection {
 
     deleteVariableById(variableId: string): Promise<void>;
     updateVariable(variable: StoredVariable): Promise<void>;
+}
+
+export interface FormTemplateCollection {
+    createFormTemplate(template: FormTemplate): Promise<void>;
+    getTemplatesByFormId(formId: string): Promise<FormTemplate[]>;
 }
 
 export interface FormCollection {

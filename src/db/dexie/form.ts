@@ -1,6 +1,6 @@
 import type {EntityTable} from "dexie";
-import type {Form, FormSnapshot} from "@perfice/model/form/form";
-import type {FormCollection, FormSnapshotCollection} from "@perfice/db/collections";
+import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
+import type {FormCollection, FormSnapshotCollection, FormTemplateCollection} from "@perfice/db/collections";
 
 export class DexieFormCollection implements FormCollection {
 
@@ -58,6 +58,24 @@ export class DexieFormSnapshotCollection implements FormSnapshotCollection {
 
     async updateFormSnapshot(snapshot: FormSnapshot): Promise<void> {
         await this.table.put(snapshot);
+    }
+
+}
+
+export class DexieFormTemplateCollection implements FormTemplateCollection {
+
+    private table: EntityTable<FormTemplate, "id">;
+
+    constructor(table: EntityTable<FormTemplate, "id">) {
+        this.table = table;
+    }
+
+    async createFormTemplate(template: FormTemplate): Promise<void> {
+        await this.table.add(template);
+    }
+
+    async getTemplatesByFormId(formId: string): Promise<FormTemplate[]> {
+        return this.table.where("formId").equals(formId).toArray();
     }
 
 }

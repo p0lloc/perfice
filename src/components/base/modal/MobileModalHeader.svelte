@@ -9,12 +9,14 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import type {Snippet} from "svelte";
 
     let {
         title, type,
+        extraActions,
 
         onDelete, onConfirm, onClose
-    }: { title: string, type: ModalType } & ModalActions = $props();
+    }: { title: string, type: ModalType, extraActions?: Snippet } & ModalActions = $props();
 </script>
 
 <MobileTopBar {title}>
@@ -24,6 +26,7 @@
         </button>
     {/snippet}
     {#snippet actions()}
+        {@render extraActions?.()}
         {#if shouldModalRenderConfirm(type)}
             <button class="icon-button" onclick={onConfirm}>
                 <Fa icon={faCheck}/>

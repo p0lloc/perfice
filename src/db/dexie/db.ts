@@ -2,10 +2,10 @@ import Dexie, {type EntityTable} from "dexie";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
-import type {Form, FormSnapshot} from "@perfice/model/form/form";
+import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import type {
     FormCollection,
-    FormSnapshotCollection, GoalCollection,
+    FormSnapshotCollection, FormTemplateCollection, GoalCollection,
     IndexCollection,
     JournalCollection,
     TagCollection, TagEntryCollection,
@@ -15,7 +15,7 @@ import {DexieTrackableCollection} from "@perfice/db/dexie/trackable";
 import {DexieVariableCollection} from "@perfice/db/dexie/variable";
 import {DexieJournalCollection} from "@perfice/db/dexie/journal";
 import {DexieTrackableCategoryCollection} from "@perfice/db/dexie/category";
-import {DexieFormCollection, DexieFormSnapshotCollection} from "@perfice/db/dexie/form";
+import {DexieFormCollection, DexieFormSnapshotCollection, DexieFormTemplateCollection} from "@perfice/db/dexie/form";
 import {DexieIndexCollection} from "@perfice/db/dexie/index";
 import type {Goal} from "@perfice/model/goal/goal";
 import { DexieGoalCollection } from "./goal";
@@ -34,11 +34,12 @@ type DexieDB = Dexie & {
     goals: EntityTable<Goal, 'id'>;
     tags: EntityTable<Tag, 'id'>;
     tagEntries: EntityTable<TagEntry, 'id'>;
+    formTemplates: EntityTable<FormTemplate, 'id'>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(8).stores({
+    db.version(9).stores({
         "trackables": "id",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, [formId+timestamp]",
@@ -48,7 +49,8 @@ function loadDb(): DexieDB {
         "formSnapshots": "id, formId",
         "goals": "id, variableId",
         "tags": "id",
-        "tagEntries": "id, tagId, [tagId+timestamp]"
+        "tagEntries": "id, tagId, [tagId+timestamp]",
+        "formTemplates": "id, formId"
     });
 
     return db;
@@ -65,6 +67,7 @@ export interface Collections {
     goals: GoalCollection;
     tags: TagCollection;
     tagEntries: TagEntryCollection;
+    formTemplates: FormTemplateCollection;
 }
 
 export function setupDb(): Collections {
@@ -82,6 +85,8 @@ export function setupDb(): Collections {
     const tagCollection = new DexieTagCollection(db.tags);
     const tagEntryCollection = new DexieTagEntryCollection(db.tagEntries);
 
+    const formTemplateCollection = new DexieFormTemplateCollection(db.formTemplates);
+
     return {
         entries: journalCollection,
         formSnapshots: formSnapshotCollection,
@@ -92,6 +97,7 @@ export function setupDb(): Collections {
         variables: variableCollection,
         goals: goalCollection,
         tags: tagCollection,
-        tagEntries: tagEntryCollection
+        tagEntries: tagEntryCollection,
+        formTemplates: formTemplateCollection
     };
 }

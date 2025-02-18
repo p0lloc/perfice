@@ -16,6 +16,7 @@
         closeWithBackground = true,
 
         header,
+        actions,
         confirmText = "Save",
         cancelText = "Cancel",
         deleteText = "Delete",
@@ -27,6 +28,7 @@
         zIndex?: number,
         size?: ModalSize,
         header?: Snippet,
+        actions?: Snippet,
         closeWithBackground?: boolean
     } & ModalFooterProps & ModalActions = $props();
 
@@ -76,9 +78,11 @@
                 class="w-screen h-screen md:h-auto {SIZE_CLASSES[
         size
       ]} md:rounded-lg bg-white overflow-y-auto overflow-x-hidden md:max-h-[90%] text-black flex flex-col md:justify-between">
-            <MobileModalHeader {title} {type} {onDelete} {onConfirm} onClose={close}/>
-            <div class="py-4 px-6 border-b-gray-300 border-b hidden md:block"><h2
-                    class="text-2xl font-semibold">{title}</h2></div>
+            <MobileModalHeader {title} {type} {onDelete} {onConfirm} onClose={close} extraActions={actions}/>
+            <div class="py-4 px-6 border-b-gray-300 border-b hidden md:flex justify-between">
+                <h2 class="text-2xl font-semibold">{title}</h2>
+                {@render actions?.()}
+            </div>
             {@render header?.()}
             <div class="p-4 md:p-6">
                 {@render children?.()}

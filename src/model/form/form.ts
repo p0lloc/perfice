@@ -1,5 +1,6 @@
 import type {FormQuestionDataSettings} from "@perfice/model/form/data";
 import type {FormQuestionDisplaySettings} from "@perfice/model/form/display";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export enum FormQuestionDataType {
     TEXT = "TEXT",
@@ -28,6 +29,13 @@ export interface Form {
     icon: string;
     snapshotId: string;
     questions: FormQuestion[];
+}
+
+export interface FormTemplate {
+    id: string;
+    formId: string;
+    name: string;
+    answers: Record<string, PrimitiveValue>;
 }
 
 export type FormQuestion = {

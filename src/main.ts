@@ -37,6 +37,7 @@ import { TagService } from './services/tag/tag';
 import {TagDate, TagStore} from "@perfice/stores/tag/tag";
 import {TagEntryService} from "@perfice/services/tag/entry";
 import {EntityObserverType} from "@perfice/services/observer";
+import { FormTemplateService } from './services/form/template';
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -57,9 +58,10 @@ const trackableService = new TrackableService(db.trackables, variableService, fo
 const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);
 const goalService = new GoalService(db.goals, variableService);
 const tagService = new TagService(db.tags, variableService, tagEntryService);
+const formTemplateService = new FormTemplateService(db.formTemplates);
 
 export const trackables = new TrackableStore(trackableService);
-export const forms = new FormStore(formService);
+export const forms = new FormStore(formService, formTemplateService);
 export const variables = new VariableStore(variableService);
 export const trackableDate = TrackableDate();
 export const tagDate = TagDate();

@@ -16,7 +16,7 @@
     let dataTypeDef = questionDataTypeRegistry.getDefinition(question.dataType)!;
 
     function serializeValue(value: PrimitiveValue) {
-        if(value.type == PrimitiveValueType.NULL){
+        if (value.type == PrimitiveValueType.NULL) {
             return dataTypeDef.getDefaultValue(question.dataSettings);
         }
 
@@ -89,12 +89,20 @@
         errorMessage = "";
 
         let displayValue = displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings);
-        if(displayValue.type == PrimitiveValueType.STRING && question.unit != null){
+        if (displayValue.type == PrimitiveValueType.STRING && question.unit != null) {
             // Append unit to the display value
             displayValue.value += ` ${question.unit}`;
         }
 
         return pDisplay(value, displayValue);
+    }
+
+    /**
+     * Uses the value passed as a prop.
+     * Necessary since the component keeps its own state, we need to re-serialize the value when it changes
+     */
+    export function invalidateValue() {
+        serializedValue = serializeValue(value);
     }
 
     function onRendererUpdateValue(v: any) {

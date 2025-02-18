@@ -28,6 +28,7 @@
 
     async function onEntryClick(entry: JournalEntry) {
         let form = await forms.getFormById(entry.formId);
+        let templates = await forms.getTemplatesByFormId(entry.formId);
         let snapshot = await forms.getFormSnapshotById(entry.snapshotId);
 
         if (form == null || snapshot == null) return;
@@ -38,7 +39,7 @@
         }
 
         formModal.open(form, snapshot.questions, new Date(entry.timestamp),
-            answers, entry);
+            templates, answers, entry);
     }
 
     function onEntryDelete(entry: JournalEntry) {
