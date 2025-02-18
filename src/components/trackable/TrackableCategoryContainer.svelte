@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {CategoryList} from "@perfice/util/category";
-    import {type Trackable, TrackableCardType, type TrackableCategory} from "@perfice/model/trackable/trackable";
+    import {type Trackable, type TrackableCategory} from "@perfice/model/trackable/trackable";
     import TrackableCard from "@perfice/components/trackable/card/TrackableCard.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
@@ -20,21 +20,7 @@
     } = $props();
 
     async function createTrackable() {
-        let trackableId = crypto.randomUUID();
-        // TODO: move logic to trackable service
-        await trackables.createTrackable({
-            id: trackableId,
-            name: "testing",
-            icon: "",
-            order: (await trackables.get()).length,
-            formId: trackableId,
-            categoryId: category.category?.id ?? null,
-            cardType: TrackableCardType.CHART,
-            cardSettings: {
-                color: "#ff0000",
-            },
-            dependencies: {}
-        })
+        await trackables.createTrackable(prompt("Name?") ?? "", category.category?.id ?? null);
     }
 
     function onFinalize(items: Trackable[]) {
@@ -51,7 +37,7 @@
     </h1>
     <hr>
     <DragAndDropContainer items={category.items} onFinalize={onFinalize}
-                          class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                          class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 min-h-12">
         {#snippet item(trackable)}
             <TrackableCard {trackable} {date} {weekStart} onEdit={() => onEdit(trackable)}
                            onLog={() => onLog(trackable)}/>

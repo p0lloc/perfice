@@ -9,7 +9,7 @@
     const BORDER_DARKNESS_MODIFIER = 25;
 
     let dataPoints = $derived.by(() => {
-        if (value.type == PrimitiveValueType.LIST) {
+        if (value.type == PrimitiveValueType.LIST && value.value != null) {
             return value.value
                 .map(v => v.value)
                 .toReversed();

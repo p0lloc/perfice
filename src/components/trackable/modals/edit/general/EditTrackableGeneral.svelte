@@ -1,15 +1,17 @@
 <script lang="ts">
-    import {faBoxesStacked, faHamburger} from "@fortawesome/free-solid-svg-icons";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
     import type {EditTrackableState} from "@perfice/model/trackable/ui";
     import EditTrackableCard from "@perfice/components/trackable/modals/edit/general/EditTrackableCard.svelte";
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
+    import EditTrackableCategory from "@perfice/components/trackable/modals/edit/general/EditTrackableCategory.svelte";
 
     let {editState = $bindable()}: { editState: EditTrackableState } = $props();
 
     function onIconChange(icon: string) {
         editState.trackable.icon = icon;
+    }
+
+    function onCategoryChange(categoryId: string | null) {
+        editState.trackable.categoryId = categoryId;
     }
 </script>
 
@@ -20,15 +22,9 @@
                class="input flex-1">
         <IconPickerButton icon={editState.trackable.icon} onChange={onIconChange}/>
     </div>
-    <div class="row-between mt-4">
-        <div class="row-gap label">
-            <Fa icon={faBoxesStacked}/>
-            <p class="label">Category</p>
-        </div>
-        <select class="">
-            <option>Lifestyle</option>
-        </select>
-    </div>
+
+    <EditTrackableCategory categories={editState.categories} categoryId={editState.trackable.categoryId}
+                           onChange={onCategoryChange}/>
 
     <EditTrackableCard bind:cardState={editState.cardState} availableQuestions={editState.form.questions}/>
 </div>

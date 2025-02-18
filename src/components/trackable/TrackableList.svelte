@@ -1,11 +1,12 @@
 <script lang="ts">
-    import {categorizedTrackables, trackables} from "@perfice/main";
+    import {categorizedTrackables, trackableCategories, trackables} from "@perfice/main";
     import TrackableCategoryContainer from "@perfice/components/trackable/TrackableCategoryContainer.svelte";
     import type {WeekStart} from "@perfice/model/variable/time/time";
-    import type {Trackable} from "@perfice/model/trackable/trackable";
-    import type {TrackableCategory} from "@perfice/model/trackable/trackable.js";
+    import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
     import {onDestroy} from "svelte";
     import {disposeCachedStoreKey} from "@perfice/stores/cached";
+    import LineButton from "@perfice/components/base/button/LineButton.svelte";
+    import type {CategoryList} from "@perfice/util/category";
 
     let {date, weekStart, onEdit, onLog}: {
         date: Date,
@@ -14,8 +15,8 @@
         onLog: (t: Trackable) => void
     } = $props();
 
-    function onReorder(items: Trackable[]) {
-        trackables.reorderTrackables(items);
+    function onReorder(category: CategoryList<TrackableCategory, Trackable>, items: Trackable[]) {
+        trackables.reorderTrackables(category.category, items);
     }
 
     async function disposeTrackableKeys() {
@@ -30,17 +31,25 @@
         }
     }
 
+    function addCategory() {
+        trackableCategories.createCategory(prompt("Name") ?? "");
+    }
+
     onDestroy(disposeTrackableKeys);
 </script>
 
 {#await $categorizedTrackables}
     Loading...
 {:then categories}
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-8">
         {#each categories as category (category.category?.id)}
-            <TrackableCategoryContainer {date} category={category} {weekStart}
-                                        {onEdit} {onLog}
-                                        onReorder={(items) => onReorder(items)}/>
+            {#if category.items.length > 0}
+                <TrackableCategoryContainer {date} category={category} {weekStart}
+                                            {onEdit} {onLog}
+                                            onReorder={(items) => onReorder(category, items)}/>
+            {/if}
         {/each}
+        <LineButton onClick={addCategory}/>
     </div>
 {/await}
+

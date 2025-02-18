@@ -14,6 +14,10 @@ export class DexieTrackableCategoryCollection implements TrackableCategoryCollec
         return this.table.toArray();
     }
 
+    async getCategoryById(categoryId: string): Promise<TrackableCategory | undefined> {
+        return this.table.get(categoryId);
+    }
+
     async createCategory(category: TrackableCategory): Promise<void> {
         await this.table.add(category);
     }

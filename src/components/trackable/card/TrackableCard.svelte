@@ -18,12 +18,16 @@
 
     let res = $derived(trackableValue(trackable, date, weekStart, trackable.id));
 
-    let CARD_TYPE_RENDERERS: Record<TrackableCardType, Component<{ value: PrimitiveValue, cardSettings: any, date: Date }>> = {
+    let CARD_TYPE_RENDERERS: Record<TrackableCardType, Component<{
+        value: PrimitiveValue,
+        cardSettings: any,
+        date: Date
+    }>> = {
         [TrackableCardType.CHART]: ChartTrackableRenderer,
         [TrackableCardType.VALUE]: ValueTrackableRenderer,
     }
 
-    function onEditClick(){
+    function onEditClick() {
         onEdit();
     }
 
@@ -41,8 +45,10 @@
     {#await $res}
         Loading...
     {:then value}
-        <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onLog}>
-            <RendererComponent value={value} cardSettings={trackable.cardSettings} date={date}/>
-        </button>
+        {#if value != null}
+            <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onLog}>
+                <RendererComponent value={value} cardSettings={trackable.cardSettings} date={date}/>
+            </button>
+        {/if}
     {/await}
 </div>

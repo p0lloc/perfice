@@ -32,4 +32,6 @@
     const RendererComponent = $derived(RENDERERS[cardSettings.type]);
 </script>
 
-<RendererComponent values={values} cardSettings={cardSettings} valueSettings={cardSettings.settings} date={date}/>
+{#if values != null}
+    <RendererComponent values={values} cardSettings={cardSettings} valueSettings={cardSettings.settings} date={date}/>
+{/if}

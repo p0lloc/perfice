@@ -2,7 +2,7 @@ import type {Form} from "../form/form";
 import {
     type CS,
     type Trackable,
-    TrackableCardType, type TrackableValueSettings, TrackableValueType,
+    TrackableCardType, type TrackableCategory, type TrackableValueSettings, TrackableValueType,
 } from "./trackable";
 import type {AggregateType} from "@perfice/services/variable/types/aggregate";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
@@ -15,6 +15,7 @@ export enum TrackableEditViewType {
 
 export interface EditTrackableState {
     trackable: Trackable;
+    categories: TrackableCategory[];
     form: Form;
     cardState: EditTrackableCardState;
 }

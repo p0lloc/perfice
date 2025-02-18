@@ -1,11 +1,11 @@
 import {AsyncStore} from "@perfice/stores/store";
-import {type Trackable, TrackableCardType} from "@perfice/model/trackable/trackable";
+import {type Trackable, TrackableCardType, type TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight} from "@perfice/util/time/simple";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import type {EditTrackableCardState, EditTrackableState} from "@perfice/model/trackable/ui";
-import {forms, variables} from "@perfice/main";
+import {forms, trackableCategories, variables} from "@perfice/main";
 import {EntityObserverType} from "@perfice/services/observer";
 import {VariableTypeName} from "@perfice/model/variable/variable";
 
@@ -28,8 +28,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             async (trackable) => await this.onTrackableDeleted(trackable));
     }
 
-    async createTrackable(trackable: Trackable): Promise<void> {
-        await this.trackableService.createTrackable(trackable);
+    async createTrackable(name: string, categoryId: string | null = null): Promise<void> {
+        await this.trackableService.createTrackable(name, categoryId);
     }
 
     async updateTrackable(trackable: Trackable): Promise<void> {
@@ -69,6 +69,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         let form = await forms.getFormById(trackable.formId);
         if (form == null) return null;
 
+        let categories = await trackableCategories.get();
+
         let cardState: EditTrackableCardState;
         switch (trackable.cardType) {
             case TrackableCardType.CHART:
@@ -102,6 +104,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
 
         return {
             trackable,
+            categories,
             form,
             cardState
         }
@@ -111,8 +114,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         await this.trackableService.deleteTrackable(trackable);
     }
 
-    async reorderTrackables(items: Trackable[]) {
-        await this.trackableService.reorderTrackables(items);
+    async reorderTrackables(category: TrackableCategory | null, items: Trackable[]) {
+        await this.trackableService.reorderTrackables(category, items);
 
         let current = await this.get();
         items.forEach((t) => current = updateIdentifiedInArray(current, t));

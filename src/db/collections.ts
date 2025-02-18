@@ -15,6 +15,7 @@ export interface TrackableCollection {
 }
 
 export interface TrackableCategoryCollection {
+    getCategoryById(categoryId: string): Promise<TrackableCategory | undefined>;
     getCategories(): Promise<TrackableCategory[]>;
     createCategory(category: TrackableCategory): Promise<void>;
     updateCategory(category: TrackableCategory): Promise<void>;

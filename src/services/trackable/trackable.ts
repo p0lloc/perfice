@@ -1,6 +1,6 @@
 import type {TrackableCollection} from "@perfice/db/collections";
 import {type VariableService} from "@perfice/services/variable/variable";
-import type {Trackable} from "@perfice/model/trackable/trackable";
+import {type Trackable, TrackableCardType, type TrackableCategory} from "@perfice/model/trackable/trackable";
 import {type TextOrDynamic, type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
@@ -8,6 +8,7 @@ import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type { EditTrackableValueSettings } from "@perfice/model/trackable/ui";
+import {trackables} from "@perfice/main";
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -31,7 +32,20 @@ export class TrackableService {
         return this.collection.getTrackables();
     }
 
-    async createTrackable(trackable: Trackable): Promise<void> {
+    async createTrackable(name: string, categoryId: string | null = null): Promise<void> {
+        let trackable: Trackable = {
+            id: crypto.randomUUID(),
+            name,
+            icon: "",
+            order: (await trackables.get()).length,
+            formId: "",
+            categoryId: categoryId,
+            cardType: TrackableCardType.CHART,
+            cardSettings: {
+                color: "#ff0000",
+            },
+            dependencies: {}
+        };
         let form: Form = {
             id: crypto.randomUUID(),
             name: trackable.name,
@@ -41,6 +55,7 @@ export class TrackableService {
                 {
                     id: "test",
                     name: "test",
+                    unit: null,
                     displayType: FormQuestionDisplayType.INPUT,
                     displaySettings: {},
                     dataType: FormQuestionDataType.NUMBER,
@@ -52,6 +67,7 @@ export class TrackableService {
                 {
                     id: "test2",
                     name: "test2",
+                    unit: null,
                     displayType: FormQuestionDisplayType.INPUT,
                     displaySettings: {},
                     dataType: FormQuestionDataType.NUMBER,
@@ -190,9 +206,12 @@ export class TrackableService {
         trackable.cardSettings = cardSettings;
     }
 
-    async reorderTrackables(trackables: Trackable[]) {
+    async reorderTrackables(category: TrackableCategory | null, trackables: Trackable[]) {
         for (let i = 0; i < trackables.length; i++) {
             trackables[i].order = i;
+
+            // Category might have changed, update it
+            trackables[i].categoryId = category?.id ?? null;
         }
 
         await this.collection.updateTrackables(trackables);

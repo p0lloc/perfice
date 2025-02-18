@@ -1,7 +1,8 @@
-import type { TrackableCategory } from "@perfice/model/trackable/trackable";
+import type {TrackableCategory} from "@perfice/model/trackable/trackable";
 import { AsyncStore } from "../store";
 import type { TrackableCategoryService } from "@perfice/model/trackable/category";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
+import { EntityObserverType } from "@perfice/services/observer";
 
 export class TrackableCategoryStore extends AsyncStore<TrackableCategory[]> {
 
@@ -10,20 +11,36 @@ export class TrackableCategoryStore extends AsyncStore<TrackableCategory[]> {
     constructor(trackableCategoryService: TrackableCategoryService) {
         super(trackableCategoryService.getCategories());
         this.trackableCategoryService = trackableCategoryService;
+        this.trackableCategoryService.addObserver(EntityObserverType.CREATED,
+            async (trackable) => await this.onTrackableCategoryCreated(trackable));
+        this.trackableCategoryService.addObserver(EntityObserverType.UPDATED,
+            async (trackable) => await this.onTrackableCategoryUpdated(trackable));
+        this.trackableCategoryService.addObserver(EntityObserverType.DELETED,
+            async (trackable) => await this.onTrackableCategoryDeleted(trackable));
     }
 
-    async createCategory(category: TrackableCategory): Promise<void> {
-        await this.trackableCategoryService.createCategory(category);
-        this.updateResolved(v => [...v, category]);
+    async createCategory(name: string): Promise<void> {
+        await this.trackableCategoryService.createCategory(name);
     }
 
     async updateCategory(category: TrackableCategory): Promise<void> {
         await this.trackableCategoryService.updateCategory(category);
-        this.updateResolved(v => updateIdentifiedInArray(v, category));
     }
 
     async deleteCategoryById(categoryId: string): Promise<void> {
         await this.trackableCategoryService.deleteCategoryById(categoryId);
-        this.updateResolved(v => deleteIdentifiedInArray(v, categoryId));
     }
+
+    private async onTrackableCategoryCreated(trackable: TrackableCategory) {
+        this.updateResolved(v => [...v, trackable]);
+    }
+
+    private async onTrackableCategoryDeleted(trackable: TrackableCategory) {
+        this.updateResolved(v => deleteIdentifiedInArray(v, trackable.id));
+    }
+
+    private async onTrackableCategoryUpdated(trackable: TrackableCategory) {
+        this.updateResolved(v => updateIdentifiedInArray(v, trackable));
+    }
+
 }
