@@ -52,7 +52,7 @@
     let atEnd = $derived(endDate.getTime() == todayDate.getTime());
 </script>
 
-<div class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border px-4 md:px-0 w-full rounded-xl md:w-auto md:h-12 h-10">
+<div class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border px-4 md:px-0 w-full rounded-xl md:w-auto md:h-12 h-10 overflow-hidden">
     <button onclick={left} class="mr-3">
         <Fa icon={faChevronLeft}/>
     </button>

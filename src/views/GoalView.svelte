@@ -4,6 +4,10 @@
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import GoalNewCard from "@perfice/components/goal/GoalNewCard.svelte";
     import {onMount} from "svelte";
+    import {faBars} from "@fortawesome/free-solid-svg-icons";
+    import Fa from "svelte-fa";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     function onDateChange(e: Date) {
         $goalDate = e;
     }
@@ -13,7 +17,15 @@
     })
 </script>
 
-<div class="md:w-1/2 mx-auto mt-8 md:p-0 p-2">
+
+<MobileTopBar title="Goals">
+    {#snippet leading()}
+        <button class="icon-button" onclick={() => console.log("TODO")}>
+            <Fa icon={faBars}/>
+        </button>
+    {/snippet}
+</MobileTopBar>
+<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
     <TitleAndCalendar date={$goalDate} onDateChange={onDateChange} title="Goals"/>
     {#await $goals}
         Loading...

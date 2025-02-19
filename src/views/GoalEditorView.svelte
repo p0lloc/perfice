@@ -131,7 +131,7 @@
 </script>
 
 <svelte:body onclick={closeSidebar}/>
-<div class="md:w-1/2 mx-auto md:mt-8 pb-8">
+<div class="md:w-1/2 mx-auto md:mt-8 pb-10">
     <MobileTopBar title={creating ? "New goal" : "Edit goal"}>
         {#snippet leading()}
             <button class="icon-button" onclick={discard}>
@@ -146,30 +146,32 @@
     </MobileTopBar>
     <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
     {#if goal != null && goalData != null}
-        <div class="md:w-1/2 md:p-0 p-4">
-            <p class="block mb-2 label mt-4">Name & color</p>
-            <div class="row-gap">
-                <input bind:value={goal.name} placeholder="Goal name" type="text" class="input">
-                <ColorPickerButton bind:value={goal.color}/>
-            </div>
+        <div class="pb-32 main-content scrollbar-hide">
+            <div class="md:w-1/2 md:p-0 p-4">
+                <p class="block mb-2 label mt-4">Name & color</p>
+                <div class="row-gap">
+                    <input bind:value={goal.name} placeholder="Goal name" type="text" class="input">
+                    <ColorPickerButton bind:value={goal.color}/>
+                </div>
 
-            <p class="block mb-2 label mt-4">Conditions</p>
-            <div class="flex flex-col gap-2 mt-2">
-                {#each goalData.getConditions() as condition(condition.id)}
-                    <GoalConditionCard {condition}
-                                       onOpenSidebar={openSidebar}
-                                       onUpdate={(condition) => onConditionUpdate(condition)}
-                                       onDelete={() => onConditionDelete(condition)}
-                    />
-                {/each}
-                <button class="horizontal-add-button rounded-xl" onclick={addCondition}>
-                    <Fa icon={faPlusCircle} class="pointer-events-none"/>
-                </button>
+                <p class="block mb-2 label mt-4">Conditions</p>
+                <div class="flex flex-col gap-2 mt-2 h-full">
+                    {#each goalData.getConditions() as condition(condition.id)}
+                        <GoalConditionCard {condition}
+                                           onOpenSidebar={openSidebar}
+                                           onUpdate={(condition) => onConditionUpdate(condition)}
+                                           onDelete={() => onConditionDelete(condition)}
+                        />
+                    {/each}
+                    <button class="horizontal-add-button rounded-xl" onclick={addCondition}>
+                        <Fa icon={faPlusCircle} class="pointer-events-none"/>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="inline-block">
-            <p class="block mb-2 label mt-4">Time scope</p>
-            <TimeScopePicker value={goalData.getTimeScope()} onChange={updateTimeScope}/>
+            <div class="inline-block px-4 md:px-0 w-full md:w-auto">
+                <p class="block mb-2 label mt-4">Time scope</p>
+                <TimeScopePicker value={goalData.getTimeScope()} onChange={updateTimeScope}/>
+            </div>
         </div>
     {:else}
         <p>Goal not found</p>

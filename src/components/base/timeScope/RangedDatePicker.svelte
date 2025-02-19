@@ -28,11 +28,11 @@
 </script>
 
 {#if value != null}
-    <div class="row-gap bg-gray-100 rounded-md pr-2">
-        <input type="date" class="input" value={formatDateYYYYMMDD(new Date(value))}
+    <div class="row-gap bg-gray-100 rounded-md pr-2 w-full md:w-auto">
+        <input type="date" class="input flex-1" value={formatDateYYYYMMDD(new Date(value))}
                                     onchange={onDateChange}/>
         <IconButton icon={faTimes} onClick={remove}/>
     </div>
 {:else}
-    <Button onClick={add}>Add {name}</Button>
+    <Button class="w-full md:w-auto" onClick={add}>Add {name}</Button>
 {/if}

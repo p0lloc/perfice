@@ -43,7 +43,7 @@
 {:then categories}
     <div class="flex flex-col gap-8">
         {#each categories as category (category.category?.id)}
-            {#if category.items.length > 0}
+            {#if category.items.length > 0 || (categories.length > 0 && categories[0].items.length === 0)}
                 <TrackableCategoryContainer {date} category={category} {weekStart}
                                             {onEdit} {onLog}
                                             onReorder={(items) => onReorder(category, items)}/>

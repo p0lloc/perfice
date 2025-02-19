@@ -107,11 +107,11 @@
     </MobileTopBar>
     <div class="flex justify-between">
         <div class="p-2 flex-1 flex">
-            <div class="mx-auto w-full md:w-1/2 mt-8">
+            <div class="mx-auto w-full md:w-1/2 md:mt-8 main-content">
                 <h2 class="text-3xl font-bold">{form.name}</h2>
                 <p class="mb-2 label">Format</p>
                 <h2 class="text-2xl font-bold">Questions</h2>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4 pb-20">
                     {#each form.questions as question(question.id)}
                         <FormFieldEdit {question} selected={currentQuestion?.id === question.id}
                                        onClick={() => editQuestion(question)}

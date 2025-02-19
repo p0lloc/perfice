@@ -1,7 +1,7 @@
 <script lang="ts">
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faDumbbell, faFont, faTimes} from "@fortawesome/free-solid-svg-icons";
+    import {faCheck, faDumbbell, faFont, faTimes} from "@fortawesome/free-solid-svg-icons";
     import {type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import EditDisplayQuestionSettings
@@ -23,19 +23,22 @@
         <div class="row-between text-2xl p-4 font-bold border-b">
             Edit question
             <button class="icon-button" onclick={onClose}>
-                <Fa icon={faTimes}/>
+                <Fa icon={faCheck}/>
             </button>
         </div>
-        <div class="mt-4 px-4">
-            <IconLabel icon={faFont} title="Name" />
-            <input type="text" class="w-full border mt-2" bind:value={currentQuestion.name}/>
-        </div>
-        <div class="mt-4 px-4">
-            <IconLabel icon={faDumbbell} title="Unit (optional)" />
-            <input type="text" class="w-full border mt-2" bind:value={currentQuestion.unit} placeholder="kg, ml, ..."/>
-        </div>
+        <div class="overflow-y-scroll h-full pb-20">
+            <div class="mt-4 px-4">
+                <IconLabel icon={faFont} title="Name"/>
+                <input type="text" class="w-full border mt-2" bind:value={currentQuestion.name}/>
+            </div>
+            <div class="mt-4 px-4">
+                <IconLabel icon={faDumbbell} title="Unit (optional)"/>
+                <input type="text" class="w-full border mt-2" bind:value={currentQuestion.unit}
+                       placeholder="kg, ml, ..."/>
+            </div>
 
-        <EditDataQuestionSettings bind:currentQuestion/>
-        <EditDisplayQuestionSettings bind:currentQuestion {dataTypeDef}/>
+            <EditDataQuestionSettings bind:currentQuestion/>
+            <EditDisplayQuestionSettings bind:currentQuestion {dataTypeDef}/>
+        </div>
     {/if}
 </div>

@@ -17,7 +17,7 @@
     }
 </script>
 
-<div class="row-gap">
+<div class="row-gap flex-wrap w-full">
     <RangedDatePicker name="from" value={start} onChange={onFromChange}/>
     <RangedDatePicker name="to" value={end} onChange={onToChange}/>
 </div>

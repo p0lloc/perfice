@@ -3,13 +3,14 @@
     import LineChart from "@perfice/components/chart/LineChart.svelte";
     import type {TrackableChartSettings} from "@perfice/model/trackable/trackable";
     import {hexToRgb, rgbaToHex} from "@perfice/util/color";
+    import {isArray} from "chart.js/helpers";
 
     let {value, cardSettings}: { value: PrimitiveValue, cardSettings: TrackableChartSettings, date: Date } = $props();
     const FILL_OPACITY = 100;
     const BORDER_DARKNESS_MODIFIER = 25;
 
     let dataPoints = $derived.by(() => {
-        if (value.type == PrimitiveValueType.LIST && value.value != null) {
+        if (value.type == PrimitiveValueType.LIST && value.value != null && isArray(value.value)) {
             return value.value
                 .map(v => v.value)
                 .toReversed();

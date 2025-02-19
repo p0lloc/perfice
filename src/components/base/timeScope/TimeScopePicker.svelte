@@ -42,9 +42,9 @@
     }
 </script>
 
-<div class="row-gap mt-2">
+<div class="row-gap mt-2 flex-wrap md:flex-nowrap">
     <DropdownButton
-            class="flex-1"
+            class="flex-1 min-w-28"
             value={value.type}
             onChange={onTypeChanged}
             items={TIME_SCOPE_TYPES}/>
