@@ -13,7 +13,7 @@ import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {JournalEntry, TagEntry} from './model/journal/journal';
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {writable} from "svelte/store";
-import {TrackableCategoryService} from "@perfice/model/trackable/category";
+import {TrackableCategoryService} from "@perfice/services/trackable/category";
 import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
 import { CategorizedTrackables } from './stores/trackable/categorized';
 import type {Trackable} from "@perfice/model/trackable/trackable";
@@ -38,6 +38,9 @@ import {TagDate, TagStore} from "@perfice/stores/tag/tag";
 import {TagEntryService} from "@perfice/services/tag/entry";
 import {EntityObserverType} from "@perfice/services/observer";
 import { FormTemplateService } from './services/form/template';
+import {TagCategoryStore} from "@perfice/stores/tag/category";
+import { TagCategoryService } from './services/tag/category';
+import {CategorizedTags} from "@perfice/stores/tag/categorized";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -60,6 +63,8 @@ const goalService = new GoalService(db.goals, variableService);
 const tagService = new TagService(db.tags, variableService, tagEntryService);
 const formTemplateService = new FormTemplateService(db.formTemplates);
 
+const tagCategoryService = new TagCategoryService(db.tagCategories);
+
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);
 export const variables = new VariableStore(variableService);
@@ -68,11 +73,13 @@ export const tagDate = TagDate();
 export const goalDate = GoalDate();
 export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);
+export const tagCategories = new TagCategoryStore(tagCategoryService);
 export const journal = new JournalEntryStore(journalService);
 export const categorizedTrackables = CategorizedTrackables();
 export const groupedJournal = GroupedJournal();
 export const goals = new GoalStore(goalService);
 export const tags = new TagStore(tagService);
+export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
 
 export const appReady = writable(false);

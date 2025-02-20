@@ -48,8 +48,8 @@ export class TagStore extends AsyncStore<Tag[]> {
         this.updateResolved(v => deleteIdentifiedInArray(v, goal.id));
     }
 
-    async createTag(name: string) {
-        await this.tagService.createTag(name);
+    async createTag(name: string, categoryId: string | null) {
+        await this.tagService.createTag(name, categoryId);
     }
 
 }

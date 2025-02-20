@@ -1,6 +1,6 @@
 import type {TrackableCategory} from "@perfice/model/trackable/trackable";
 import { AsyncStore } from "../store";
-import type { TrackableCategoryService } from "@perfice/model/trackable/category";
+import type { TrackableCategoryService } from "@perfice/services/trackable/category";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import { EntityObserverType } from "@perfice/services/observer";
 

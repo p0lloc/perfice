@@ -1,6 +1,6 @@
-import type {TrackableCollection} from "@perfice/db/collections";
+import type {TrackableCategoryCollection, TrackableCollection} from "@perfice/db/collections";
 import {type EntityTable} from "dexie";
-import type {Trackable} from "@perfice/model/trackable/trackable";
+import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 
 export class DexieTrackableCollection implements TrackableCollection {
 
@@ -31,6 +31,36 @@ export class DexieTrackableCollection implements TrackableCollection {
 
     async updateTrackables(trackables: Trackable[]): Promise<void> {
         await this.table.bulkPut(trackables);
+    }
+
+}
+
+export class DexieTrackableCategoryCollection implements TrackableCategoryCollection {
+
+    private table: EntityTable<TrackableCategory, "id">;
+
+    constructor(table: EntityTable<TrackableCategory, "id">) {
+        this.table = table;
+    }
+
+    async getCategories(): Promise<TrackableCategory[]> {
+        return this.table.toArray();
+    }
+
+    async getCategoryById(categoryId: string): Promise<TrackableCategory | undefined> {
+        return this.table.get(categoryId);
+    }
+
+    async createCategory(category: TrackableCategory): Promise<void> {
+        await this.table.add(category);
+    }
+
+    async updateCategory(category: TrackableCategory): Promise<void> {
+        await this.table.put(category);
+    }
+
+    async deleteCategoryById(categoryId: string): Promise<void> {
+        await this.table.where("id").equals(categoryId).delete();
     }
 
 }

@@ -3,7 +3,7 @@ import type {Trackable, TrackableCategory} from "@perfice/model/trackable/tracka
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import type { Goal } from "@perfice/model/goal/goal";
-import type { Tag } from "@perfice/model/tag/tag";
+import type { Tag, TagCategory } from "@perfice/model/tag/tag";
 
 export interface TrackableCollection {
     getTrackables(): Promise<Trackable[]>;
@@ -19,6 +19,15 @@ export interface TrackableCategoryCollection {
     getCategories(): Promise<TrackableCategory[]>;
     createCategory(category: TrackableCategory): Promise<void>;
     updateCategory(category: TrackableCategory): Promise<void>;
+    deleteCategoryById(categoryId: string): Promise<void>;
+}
+
+
+export interface TagCategoryCollection {
+    getCategoryById(categoryId: string): Promise<TagCategory | undefined>;
+    getCategories(): Promise<TagCategory[]>;
+    createCategory(category: TagCategory): Promise<void>;
+    updateCategory(category: TagCategory): Promise<void>;
     deleteCategoryById(categoryId: string): Promise<void>;
 }
 

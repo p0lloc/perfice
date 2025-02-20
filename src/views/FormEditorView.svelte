@@ -58,6 +58,7 @@
         let question: FormQuestion = {
             id: crypto.randomUUID(),
             name: "",
+            unit: null,
             ...dataSettings,
             ...displaySettings,
         };

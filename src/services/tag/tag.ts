@@ -33,7 +33,7 @@ export class TagService {
         return await this.tagCollection.getTagById(id);
     }
 
-    async createTag(name: string): Promise<void> {
+    async createTag(name: string, categoryId: string | null): Promise<void> {
         let tagId = crypto.randomUUID();
         let variable: Variable = {
             id: crypto.randomUUID(),
@@ -47,6 +47,7 @@ export class TagService {
         let tag: Tag = {
             id: tagId,
             name,
+            categoryId,
             variableId: variable.id,
         };
 
