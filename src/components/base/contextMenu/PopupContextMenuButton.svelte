@@ -13,9 +13,13 @@
     } = $props();
 
     let contextMenu = $state<ContextMenu | undefined>();
+
+    function onClick(e: MouseEvent & { currentTarget: HTMLButtonElement }) {
+        contextMenu?.openFromClick(e.target as HTMLElement, e.currentTarget, true);
+    }
 </script>
 
-<Button class={className} onClick={(e) => contextMenu?.openFromClick(e, e.currentTarget, true)} color={ButtonColor.WHITE}>
+<Button class={className} onClick={(e) => onClick(e)} color={ButtonColor.WHITE}>
     {@render children()}
 </Button>
 <ContextMenu bind:this={contextMenu}>

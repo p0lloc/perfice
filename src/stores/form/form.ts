@@ -52,4 +52,8 @@ export class FormStore extends AsyncStore<Form[]> {
     async createFormTemplate(formId: string, templateName: string, answers: Record<string, PrimitiveValue>) {
         await this.formTemplateService.createTemplate(formId, templateName, answers);
     }
+
+    async updateFormTemplate(template: FormTemplate, templateName: string, answers: Record<string, PrimitiveValue>) {
+        await this.formTemplateService.updateTemplate(template, templateName, answers);
+    }
 }

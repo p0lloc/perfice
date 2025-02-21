@@ -10,7 +10,7 @@
     let {icon = faEllipsisV, buttons}: { icon?: IconDefinition, buttons: ContextMenuButton[] } = $props();
 
     function onClick(e: MouseEvent & { currentTarget: HTMLButtonElement }) {
-        contextMenu.openFromClick(e, e.currentTarget);
+        contextMenu.openFromClick(e.target as HTMLElement, e.currentTarget);
     }
 </script>
 <IconButton onClick={onClick} {icon} />

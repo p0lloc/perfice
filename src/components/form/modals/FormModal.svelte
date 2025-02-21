@@ -22,7 +22,8 @@
 
     let format: TextOrDynamic[] = $state([]);
 
-    let creatingTemplateName: string | null = $state(null);
+    let currentTemplateName: string | null = $state(null);
+    let editingTemplate: FormTemplate | null = $state(null);
 
     let modal: Modal;
     let embed: FormEmbed;
@@ -37,11 +38,23 @@
         editEntry = entry;
         templates = availableTemplates;
         answers = existingAnswers ?? getDefaultAnswers(form.questions);
+        currentTemplateName = null;
         modal.open();
     }
 
     function close() {
         modal.close();
+    }
+
+    function createOrUpdateTemplate(name: string, answers: Record<string, PrimitiveValue>){
+        let extractedValues = Object.fromEntries(
+            Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
+
+        if(editingTemplate != null) {
+            forms.updateFormTemplate($state.snapshot(editingTemplate), name, extractedValues);
+        } else {
+            forms.createFormTemplate(form.id, name, extractedValues);
+        }
     }
 
     function confirm() {
@@ -57,12 +70,8 @@
             journal.logEntry(form, answers, format, date.getTime());
         }
 
-        if(creatingTemplateName != null) {
-            let extractedValues = Object.fromEntries(
-                Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
-
-            forms.createFormTemplate(form.id, creatingTemplateName, extractedValues);
-            creatingTemplateName = null;
+        if (currentTemplateName != null) {
+            createOrUpdateTemplate($state.snapshot(currentTemplateName), answers);
         }
 
         close();
@@ -91,24 +100,35 @@
     }
 
     function onNewTemplate() {
-        creatingTemplateName = "";
+        currentTemplateName = "";
     }
 
     function onTemplateSelected(template: FormTemplate) {
-        creatingTemplateName = null
+        currentTemplateName = null
+        answers = template.answers;
+        console.log(answers);
+        embed.invalidateValues();
+    }
+
+    function onEditTemplate(template: FormTemplate) {
+        currentTemplateName = template.name;
+        editingTemplate = template;
         answers = template.answers;
         embed.invalidateValues();
     }
 </script>
 
 <Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm}>
-    {#if creatingTemplateName != null}
-        <input type="text" class="w-full border mt-2" bind:value={creatingTemplateName} placeholder="Template name"/>
-        <p class="text-xs mt-2">A new template will be created with the provided answers.</p>
-        <hr class="my-4" />
+    {#if currentTemplateName != null}
+        <input type="text" class="w-full border mt-2" bind:value={currentTemplateName} placeholder="Template name"/>
+        {#if editingTemplate == null}
+            <p class="text-xs mt-2">A new template will be created with the provided answers.</p>
+        {/if}
+        <hr class="my-4"/>
     {/if}
     <FormEmbed bind:this={embed} questions={questions} answers={answers}/>
     {#snippet actions()}
-        <FormTemplateButton {templates} onNew={onNewTemplate} onTemplateSelected={onTemplateSelected}/>
+        <FormTemplateButton {templates} onNew={onNewTemplate}
+                            onTemplateSelected={onTemplateSelected} onEditTemplate={onEditTemplate}/>
     {/snippet}
 </Modal>

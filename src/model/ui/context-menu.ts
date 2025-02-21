@@ -27,5 +27,6 @@ export function closeContextMenus(initiator: HTMLElement) {
 export interface ContextMenuButton {
     name: string;
     icon: IconDefinition | null;
+    separated?: boolean;
     action: () => void;
 }

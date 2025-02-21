@@ -34,6 +34,8 @@
     let currentQuestion = $state<FormQuestion | null>(null);
     let contextMenu = $state<ContextMenu | undefined>();
 
+    let questionContainer: DragAndDropContainer;
+
     $effect(() => {
         loadForm();
     });
@@ -76,6 +78,7 @@
     function deleteQuestion(question: FormQuestion) {
         if (form == undefined) return;
         form.questions = form.questions.filter(q => q.id !== question.id);
+        questionContainer.invalidateItems();
     }
 
     async function save() {
@@ -98,6 +101,10 @@
         if (formId == undefined) return;
 
         form = await forms.getFormById(formId);
+    }
+
+    function startAddingQuestion(e: MouseEvent & {currentTarget: HTMLButtonElement}) {
+        contextMenu?.openFromClick(e.currentTarget, e.currentTarget)
     }
 
     function onReorderQuestions(items: FormQuestion[]) {
@@ -128,7 +135,7 @@
                     <Fa icon={faQuestionCircle}/>
                     <h2>Questions</h2>
                 </div>
-                <DragAndDropContainer onFinalize={onReorderQuestions} items={form.questions}
+                <DragAndDropContainer bind:this={questionContainer} onFinalize={onReorderQuestions} items={form.questions}
                                       class="flex flex-col gap-4">
 
                     {#snippet item(question)}
@@ -137,8 +144,9 @@
                                        onDelete={() => deleteQuestion(question)}/>
                     {/snippet}
                 </DragAndDropContainer>
+
                 <button class="horizontal-add-button mt-4"
-                        onclick={(e) => contextMenu?.openFromClick(e, e.currentTarget)}>
+                        onclick={(e) => startAddingQuestion(e)}>
                     <Fa icon={faPlusCircle} class="pointer-events-none"/>
                 </button>
 

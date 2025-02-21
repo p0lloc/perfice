@@ -24,7 +24,7 @@
 
     function open(e: MouseEvent) {
         if(disabled) return;
-        contextMenu.openFromClick(e, button, true, getSelectedItemPosition());
+        contextMenu.openFromClick(e.target as HTMLElement, button, true, getSelectedItemPosition());
     }
 
     function onAction(e: DropdownMenuItem<T>) {

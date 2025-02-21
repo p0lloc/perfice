@@ -19,6 +19,15 @@ export class FormTemplateService {
         });
     }
 
+
+    async updateTemplate(template: FormTemplate, templateName: string, answers: Record<string, PrimitiveValue>) {
+        await this.collection.updateFormTemplate({
+            ...template,
+            name: templateName,
+            answers
+        });
+    }
+
     async getTemplatesByFormId(formId: string): Promise<FormTemplate[]> {
         return this.collection.getTemplatesByFormId(formId);
     }

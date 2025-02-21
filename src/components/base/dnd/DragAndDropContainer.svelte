@@ -38,6 +38,13 @@
     function onLongPress() {
         dragDisabled = false;
     }
+
+    /**
+     * Invalidates the current items and uses the passed in items instead.
+     */
+    export function invalidateItems(){
+        currentItems = items;
+    }
 </script>
 
 <div

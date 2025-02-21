@@ -78,4 +78,8 @@ export class DexieFormTemplateCollection implements FormTemplateCollection {
         return this.table.where("formId").equals(formId).toArray();
     }
 
+    async updateFormTemplate(template: FormTemplate): Promise<void> {
+        await this.table.put(template);
+    }
+
 }

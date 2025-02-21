@@ -12,13 +12,12 @@
 
     let container: HTMLDivElement | undefined = $state();
 
-    export function openFromClick(e: MouseEvent, initiator: HTMLElement, useParentWidth: boolean = false, scrollTop: number = 0) {
-        let target = e.target as HTMLElement;
+    export function openFromClick(target: HTMLElement, initiator: HTMLElement, useParentWidth: boolean = false, scrollTop: number = 0) {
         let rect = target.getBoundingClientRect();
         if (useParentWidth)
             minWidth = `${rect.width}px`;
 
-        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height + window.scrollY, initiator, rect.x, rect.y, scrollTop));
+        setTimeout(() => openAtPosition(rect.x + rect.width, rect.y + rect.height, initiator, rect.x, rect.y, scrollTop));
     }
 
     export function openAtPosition(x: number, y: number, initiator: HTMLElement, relativeX: number, _relativeY: number, scrollOffset: number) {

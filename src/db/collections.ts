@@ -43,6 +43,7 @@ export interface VariableCollection {
 export interface FormTemplateCollection {
     createFormTemplate(template: FormTemplate): Promise<void>;
     getTemplatesByFormId(formId: string): Promise<FormTemplate[]>;
+    updateFormTemplate(template: FormTemplate): Promise<void>;
 }
 
 export interface FormCollection {
