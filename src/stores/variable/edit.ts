@@ -7,7 +7,9 @@ import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {type ConstantOrVariable, GoalVariableType} from "@perfice/services/variable/types/goal";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
+
 import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
+
 import {CalculationOperator, CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {TagVariableType} from "@perfice/services/variable/types/tag";

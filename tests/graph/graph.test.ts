@@ -8,6 +8,7 @@ import {pDisplay, pJournalEntry, pList, pNumber, pString} from "../../src/model/
 import {AggregateType, AggregateVariableType} from "../../src/services/variable/types/aggregate";
 import {JournalEntry} from "../../src/model/journal/journal";
 import {CalculationOperator, CalculationVariableType} from "../../src/services/variable/types/calculation";
+import {mockEntry} from "../common";
 
 test("empty list variable", async () => {
     const index = new DummyIndexCollection();
@@ -34,17 +35,7 @@ test("simple single list variable", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            }
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -77,6 +68,7 @@ test("simple multiple list variable", async () => {
                 name: "",
                 icon: "",
                 snapshotId: "",
+                displayValue: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
                 }
@@ -86,6 +78,7 @@ test("simple multiple list variable", async () => {
                 formId: "ok",
                 timestamp: 0,
                 name: "",
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 answers: {
@@ -123,6 +116,7 @@ test("simple multiple fields list variable", async () => {
                 formId: "ok",
                 timestamp: 0,
                 name: "",
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 answers: {
@@ -161,6 +155,7 @@ test("simple aggregate sum variable", async () => {
                 formId: "ok",
                 timestamp: 0,
                 name: "",
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 answers: {
@@ -170,6 +165,7 @@ test("simple aggregate sum variable", async () => {
             {
                 id: "entry_two",
                 formId: "ok",
+                displayValue: "",
                 name: "",
                 icon: "",
                 snapshotId: "",
@@ -210,6 +206,7 @@ test("simple aggregate mean variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 name: "",
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 timestamp: 0,
@@ -220,6 +217,7 @@ test("simple aggregate mean variable", async () => {
             {
                 name: "",
                 icon: "",
+                displayValue: "",
                 snapshotId: "",
                 id: "entry_two",
                 formId: "ok",
@@ -262,6 +260,7 @@ test("simple single list variable new entry", async () => {
                 formId: "ok",
                 timestamp: 0,
                 name: "",
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 answers: {
@@ -288,17 +287,7 @@ test("simple single list variable new entry", async () => {
         pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)})
     ]));
 
-    let entryTwo: JournalEntry = {
-        id: "entry_two",
-        formId: "ok",
-        timestamp: 0,
-        name: "",
-        icon: "",
-        snapshotId: "",
-        answers: {
-            "ok": pDisplay(pNumber(13.0), pString("13.0"))
-        }
-    };
+    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(13.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
@@ -312,32 +301,12 @@ test("simple single list variable new entry", async () => {
     ]));
 })
 
-test("simple aggregate sum new entry", async () => {
+function basicListAndAggregate(): { graph: VariableGraph, journal: DummyJournalCollection } {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}),
+            mockEntry("entry_two", "ok", {"ok": pNumber(13.0)}),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -356,22 +325,18 @@ test("simple aggregate sum new entry", async () => {
             value: new AggregateVariableType(AggregateType.SUM, "list_variable", "ok"),
         }
     });
+
+    return {graph, journal};
+}
+
+test("simple aggregate sum new entry", async () => {
+    let {graph, journal} = basicListAndAggregate();
     let val = await graph.evaluateVariable(graph.getVariableById("aggregate_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val).toEqual(pNumber(23.0));
 
-    let entryTwo: JournalEntry = {
-        id: "entry_two",
-        formId: "ok",
-        timestamp: 0,
-        name: "",
-        icon: "",
-        snapshotId: "",
-        answers: {
-            "ok": pDisplay(pNumber(13.0), pString("13.0"))
-        }
-    };
+    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(13.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
@@ -388,28 +353,8 @@ test("simple aggregate mean new entry", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            {
-                id: "entry_one",
-                formId: "ok",
-                timestamp: 0,
-                name: "",
-                icon: "",
-                snapshotId: "",
-                answers: {
-                    "ok": pDisplay(pNumber(30.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                timestamp: 0,
-                name: "",
-                icon: "",
-                snapshotId: "",
-                answers: {
-                    "ok": pDisplay(pNumber(20.0), pString("13.0"))
-                }
-            }
+            mockEntry("entry_one", "ok", {"ok": pNumber(30.0)}),
+            mockEntry("entry_two", "ok", {"ok": pNumber(20.0)}),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -433,17 +378,7 @@ test("simple aggregate mean new entry", async () => {
 
     expect(val).toEqual(pNumber(25.0));
 
-    let entryTwo: JournalEntry = {
-        id: "entry_two",
-        formId: "ok",
-        timestamp: 0,
-        name: "",
-        icon: "",
-        snapshotId: "",
-        answers: {
-            "ok": pDisplay(pNumber(43.0), pString("13.0"))
-        }
-    };
+    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(43.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
@@ -466,6 +401,7 @@ test("simple list variable with filter", async () => {
                 timestamp: 0,
                 name: "",
                 icon: "",
+                displayValue: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -478,6 +414,7 @@ test("simple list variable with filter", async () => {
                 name: "",
                 icon: "",
                 snapshotId: "",
+                displayValue: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
                 }
@@ -516,6 +453,7 @@ test("simple list variable with list filter", async () => {
                 timestamp: 0,
                 name: "",
                 icon: "",
+                displayValue: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0")),
@@ -526,6 +464,7 @@ test("simple list variable with list filter", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
+                displayValue: "",
                 name: "",
                 icon: "",
                 snapshotId: "",
@@ -538,6 +477,7 @@ test("simple list variable with list filter", async () => {
                 id: "entry_three",
                 formId: "ok",
                 timestamp: 0,
+                displayValue: "",
                 name: "",
                 icon: "",
                 snapshotId: "",
@@ -581,6 +521,7 @@ test("simple list variable with multiple filters", async () => {
                 timestamp: 0,
                 name: "",
                 icon: "",
+                displayValue: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -590,6 +531,7 @@ test("simple list variable with multiple filters", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
+                displayValue: "",
                 name: "",
                 icon: "",
                 snapshotId: "",
@@ -603,6 +545,8 @@ test("simple list variable with multiple filters", async () => {
                 formId: "ok",
                 timestamp: 0,
                 name: "",
+
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 answers: {
@@ -634,49 +578,7 @@ test("simple list variable with multiple filters", async () => {
 })
 
 test("static calculation variable", async () => {
-    const index = new DummyIndexCollection();
-    const journal = new DummyJournalCollection(
-        [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
-        ]
-    );
-    const tagEntries = new DummyTagEntryCollection();
-    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
-    graph.onVariableCreated({
-        id: "list_variable",
-        type: {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true}, [])
-        }
-    });
-    graph.onVariableCreated({
-        id: "aggregate_variable",
-        type: {
-            type: VariableTypeName.AGGREGATE,
-            value: new AggregateVariableType(AggregateType.SUM, "list_variable", "ok"),
-        }
-    });
+    const {graph} = basicListAndAggregate();
     graph.onVariableCreated({
         id: "calculation_variable",
         type: {
@@ -703,6 +605,7 @@ test("calculation variable between two dynamic variables", async () => {
                 id: "entry_one",
                 formId: "income",
                 name: "",
+                displayValue: "",
                 icon: "",
                 snapshotId: "",
                 timestamp: 0,
@@ -715,6 +618,7 @@ test("calculation variable between two dynamic variables", async () => {
                 formId: "expense",
                 name: "",
                 icon: "",
+                displayValue: "",
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -776,6 +680,7 @@ test("calculation variable between two dynamic variables", async () => {
         formId: "income",
         timestamp: 0,
         name: "",
+        displayValue: "",
         icon: "",
         snapshotId: "",
         answers: {

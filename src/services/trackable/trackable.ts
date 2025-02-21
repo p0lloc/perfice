@@ -8,7 +8,6 @@ import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {EditTrackableTallySettings, EditTrackableValueSettings } from "@perfice/model/trackable/ui";
-import {trackables} from "@perfice/main";
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -33,11 +32,12 @@ export class TrackableService {
     }
 
     async createTrackable(name: string, categoryId: string | null = null): Promise<void> {
+        let trackableCount = await this.collection.count();
         let trackable: Trackable = {
             id: crypto.randomUUID(),
             name,
             icon: "",
-            order: (await trackables.get()).length,
+            order: trackableCount, // Place the trackable at the end of the list
             formId: "",
             categoryId: categoryId,
             cardType: TrackableCardType.CHART,

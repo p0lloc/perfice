@@ -1,6 +1,6 @@
 import {expect, test} from "vitest";
 import {DummyIndexCollection, DummyJournalCollection, DummyTagEntryCollection} from "../dummy-collections";
-import {pComparisonResult, pDisplay, pMap, pNumber, pString} from "../../src/model/primitive/primitive";
+import {pComparisonResult, pMap, pNumber, pString} from "../../src/model/primitive/primitive";
 import {EntryAction, VariableGraph} from "../../src/services/variable/graph";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {VariableTypeName} from "../../src/model/variable/variable";
@@ -13,51 +13,10 @@ import {
     GoalVariableType
 } from "../../src/services/variable/types/goal";
 import {JournalEntry} from "../../src/model/journal/journal";
+import {mockEntry} from "../common";
 
 test("simple goal", async () => {
-    const index = new DummyIndexCollection();
-    const journal = new DummyJournalCollection(
-        [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
-        ]
-    );
-    const tagEntries = new DummyTagEntryCollection();
-    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
-    graph.onVariableCreated({
-        id: "list_variable",
-        type: {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true}, [])
-        }
-    });
-    graph.onVariableCreated({
-        id: "aggregate_variable",
-        type: {
-            type: VariableTypeName.AGGREGATE,
-            value: new AggregateVariableType(AggregateType.SUM, "list_variable", "ok"),
-        }
-    });
+    let {graph} = basicListAndAggregate();
     let val = await graph.evaluateVariable(graph.getVariableById("aggregate_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
@@ -91,32 +50,12 @@ test("simple goal", async () => {
 })
 
 
-test("multi-condition goal", async () => {
+function basicListAndAggregate(): { graph: VariableGraph } {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}),
+            mockEntry("entry_two", "ok", {"ok": pNumber(13.0)}),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -135,6 +74,13 @@ test("multi-condition goal", async () => {
             value: new AggregateVariableType(AggregateType.SUM, "list_variable", "ok"),
         }
     });
+
+    return {graph};
+}
+
+
+test("multi-condition goal", async () => {
+    let {graph} = basicListAndAggregate();
     graph.onVariableCreated({
         id: "mean_variable",
         type: {
@@ -184,49 +130,7 @@ test("multi-condition goal", async () => {
 
 
 test("goal with dynamic target", async () => {
-    const index = new DummyIndexCollection();
-    const journal = new DummyJournalCollection(
-        [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
-        ]
-    );
-    const tagEntries = new DummyTagEntryCollection();
-    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
-    graph.onVariableCreated({
-        id: "list_variable",
-        type: {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType("ok", {ok: true}, [])
-        }
-    });
-    graph.onVariableCreated({
-        id: "aggregate_variable",
-        type: {
-            type: VariableTypeName.AGGREGATE,
-            value: new AggregateVariableType(AggregateType.SUM, "list_variable", "ok"),
-        }
-    });
+    let {graph} = basicListAndAggregate();
     graph.onVariableCreated({
         id: "mean_variable",
         type: {
@@ -269,28 +173,8 @@ test("goal with dynamic target and new entry", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            {
-                id: "entry_one",
-                formId: "income",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "expense",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
+            mockEntry("entry_one", "income", {"ok": pNumber(10.0)}),
+            mockEntry("entry_two", "expense", {"ok": pNumber(13.0)}),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -348,17 +232,7 @@ test("goal with dynamic target and new entry", async () => {
         "income_greater_than_expense": pComparisonResult(pNumber(10.0), pNumber(13.0), false),
     }));
 
-    let entryTwo: JournalEntry = {
-        id: "entry_two",
-        formId: "income",
-        timestamp: 0,
-        name: "",
-        icon: "",
-        snapshotId: "",
-        answers: {
-            "ok": pDisplay(pNumber(10.0), pString("10.0"))
-        }
-    };
+    let entryTwo = mockEntry("entry_two", "income", {"ok": pNumber(10.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
@@ -374,28 +248,8 @@ test("simple goal with new entry", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            {
-                id: "entry_one",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(10.0), pString("10.0"))
-                }
-            },
-            {
-                id: "entry_two",
-                formId: "ok",
-                name: "",
-                icon: "",
-                snapshotId: "",
-                timestamp: 0,
-                answers: {
-                    "ok": pDisplay(pNumber(13.0), pString("13.0"))
-                }
-            }
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}),
+            mockEntry("entry_two", "ok", {"ok": pNumber(13.0)}),
         ]
     );
 
@@ -446,17 +300,7 @@ test("simple goal with new entry", async () => {
         "condition1": pComparisonResult(pNumber(23.0), pNumber(30.0), false)
     }));
 
-    let entryTwo: JournalEntry = {
-        id: "entry_two",
-        formId: "ok",
-        timestamp: 0,
-        name: "",
-        icon: "",
-        snapshotId: "",
-        answers: {
-            "ok": pDisplay(pNumber(7.0), pString("7.0"))
-        }
-    };
+    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(7.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);

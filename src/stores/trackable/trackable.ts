@@ -174,7 +174,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             let value = pNumber(increment ? 1 : -1);
             await journal.logEntry(form, {
                 [questionId]: pDisplay(value, value)
-            }, timestamp);
+            }, form.format, timestamp);
         } else {
             let entry = await journal.getEntryById(entryValue.id);
             if(entry == null) return;

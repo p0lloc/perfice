@@ -23,8 +23,7 @@ import {
     pJournalEntry,
     pList,
     pMap,
-    pNumber, PrimitiveValue,
-    PrimitiveValueType,
+    pNumber,
     pString
 } from "../../src/model/primitive/primitive";
 import {AggregateVariableType} from "../../src/services/variable/types/aggregate";
@@ -93,12 +92,13 @@ test("test basic edit + entry created", async () => {
         id: "testForm",
         name: "",
         icon: "",
+        format: [],
         snapshotId: "",
         questions: [],
     };
 
     let entry = await journalService.logEntry(form,
-        {"test": pDisplay(pNumber(13.0), pString("13.0"))}, 0);
+        {"test": pDisplay(pNumber(13.0), pString("13.0"))}, form.format, 0);
     let val = await graph.evaluateVariable(graph.getVariableById(editState.listVariable.id),
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
@@ -126,7 +126,6 @@ test("goal edit + entry created", async () => {
     journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry) => {
         await variableService.onEntryUpdated(e);
     });
-
 
     const editProvider = new VariableEditProvider(variableService, new DummyFormService(),
         new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService()));
@@ -183,14 +182,15 @@ test("goal edit + entry created", async () => {
         id: "testForm",
         name: "",
         icon: "",
+        format: [],
         snapshotId: "",
         questions: [],
     };
 
-    let entry = await journalService.logEntry(form,
-        {"test": pDisplay(pNumber(20.0), pString("13.0"))}, 0);
-    let entry2 = await journalService.logEntry(form,
-        {"test": pDisplay(pNumber(15.0), pString("17.0"))}, 0);
+    await journalService.logEntry(form,
+        {"test": pDisplay(pNumber(20.0), pString("13.0"))}, form.format, 0);
+    await journalService.logEntry(form,
+        {"test": pDisplay(pNumber(15.0), pString("17.0"))}, form.format, 0);
 
     let val = await graph.evaluateVariable(graph.getVariableById(goal.id),
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);

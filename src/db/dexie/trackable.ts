@@ -33,6 +33,10 @@ export class DexieTrackableCollection implements TrackableCollection {
         await this.table.bulkPut(trackables);
     }
 
+    async count(): Promise<number> {
+        return this.table.count();
+    }
+
 }
 
 export class DexieTrackableCategoryCollection implements TrackableCategoryCollection {

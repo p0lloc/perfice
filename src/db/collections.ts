@@ -6,6 +6,7 @@ import type { Goal } from "@perfice/model/goal/goal";
 import type { Tag, TagCategory } from "@perfice/model/tag/tag";
 
 export interface TrackableCollection {
+    count(): Promise<number>;
     getTrackables(): Promise<Trackable[]>;
     getTrackableById(id: string): Promise<Trackable | undefined>;
     createTrackable(trackable: Trackable): Promise<void>;
