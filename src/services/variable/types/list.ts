@@ -213,7 +213,8 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
     private shouldFilterEntry(entry: JournalEntry): boolean {
         for (let filter of this.filters) {
             let answer = entry.answers[filter.field];
-            if (answer == undefined) return false;
+            // If answer is not present at all, filter it out
+            if (answer == undefined) return true;
 
             if (!this.isFilterMet(extractValueFromDisplay(answer), filter)) return true;
         }
