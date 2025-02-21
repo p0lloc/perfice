@@ -35,7 +35,8 @@
 
 
 {#if display.grid != null}
-    <div class="grid gap-2" style:width="{Math.min(display.grid.itemsPerRow / 4, 1) * 100}%"
+    <div class="grid gap-2 select-grid"
+         style:--width="{Math.min(display.grid.itemsPerRow / 4, 1) * 75}%"
          class:select-grid-border={display.grid.border}
          style:grid-template-columns="repeat({display.grid.itemsPerRow}, minmax(0, 1fr))">
         {@render list(display)}
@@ -55,5 +56,15 @@
 <style>
     .select-grid-border {
         @apply border p-4 rounded-xl;
+    }
+
+    .select-grid {
+        width: 100%;
+    }
+
+    @media (min-width: 768px) {
+        .select-grid {
+            width: var(--width);
+        }
     }
 </style>

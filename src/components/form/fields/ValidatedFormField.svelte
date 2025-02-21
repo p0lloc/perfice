@@ -110,7 +110,7 @@
     }
 </script>
 
-<p class="label">{question.name}</p>
+<p class="label mb-2">{question.name}</p>
 <FormFieldRenderer dataSettings={question} value={serializedValue} {disabled}
                    onChange={onRendererUpdateValue}
                    displayType={question.displayType}

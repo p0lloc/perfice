@@ -31,7 +31,7 @@
             <Fa icon={faTrash}/>
         </button>
     {/if}
-    <p class="text-xl font-bold">{question.name}</p>
+    <p class="text-xl font-bold mb-2">{question.name}</p>
     <FormFieldRenderer dataSettings={question} value={defaultValue} disabled={true}
                        onChange={() => {}}
                        displayType={question.displayType}

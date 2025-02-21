@@ -68,6 +68,10 @@
         sameDisplayText = false;
     }
 
+    function onIconChange(icon: string) {
+        option.icon = icon;
+    }
+
     function onConfirm() {
         let value = dataDef.deserialize($state.snapshot(valueStr));
         if (value == null) return;
@@ -103,7 +107,7 @@
                 <Button onClick={addIcon}>Add icon</Button>
             {:else}
                 <div class="row-gap">
-                    <IconPickerButton/>
+                    <IconPickerButton icon={option.icon} onChange={onIconChange}/>
                     <IconButton icon={faTimes} onClick={removeIcon}/>
                 </div>
             {/if}

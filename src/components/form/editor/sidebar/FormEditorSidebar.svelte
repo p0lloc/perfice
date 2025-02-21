@@ -7,7 +7,6 @@
     import EditDisplayQuestionSettings
         from "@perfice/components/form/editor/display/EditDisplayQuestionSettings.svelte";
     import EditDataQuestionSettings from "@perfice/components/form/editor/data/EditDataQuestionSettings.svelte";
-    import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
     import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
 
     let {currentQuestion = $bindable(), onClose}: {

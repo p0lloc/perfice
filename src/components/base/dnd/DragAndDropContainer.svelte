@@ -3,10 +3,11 @@
     import {longPress} from "@perfice/util/long-press";
     import type {Snippet} from "svelte";
 
-    let {items, item, class: className = '', onFinalize}: {
+    let {items, item, class: className = '', disabled = false, onFinalize}: {
         items: any[],
         item: Snippet<[any]>,
         class?: string,
+        disabled?: boolean,
 
         onFinalize: (items: any[]) => void
     } = $props();
@@ -25,6 +26,7 @@
     }
 
     function onFinalized(e: CustomEvent<DndEvent>) {
+        currentItems = e.detail.items;
         onFinalize($state.snapshot(e.detail.items));
 
         if (e.detail.info.source === SOURCES.POINTER) {
@@ -39,7 +41,7 @@
 </script>
 
 <div
-        use:dndzone="{{items: currentItems, dragDisabled, dropTargetStyle: {}}}" onconsider={onConsider}
+        use:dndzone="{{items: currentItems, dragDisabled: dragDisabled || disabled, dropTargetStyle: {}}}" onconsider={onConsider}
         onfinalize={onFinalized}
         class="{className}">
     {#each currentItems as trackable (trackable.id)}

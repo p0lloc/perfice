@@ -26,6 +26,7 @@
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
+    import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -73,7 +74,7 @@
     }
 
     function deleteQuestion(question: FormQuestion) {
-        if(form == undefined) return;
+        if (form == undefined) return;
         form.questions = form.questions.filter(q => q.id !== question.id);
     }
 
@@ -84,7 +85,7 @@
     }
 
     function onFormatChange(v: TextOrDynamic[]) {
-        if(form == undefined) return;
+        if (form == undefined) return;
         form.format = v;
     }
 
@@ -97,6 +98,11 @@
         if (formId == undefined) return;
 
         form = await forms.getFormById(formId);
+    }
+
+    function onReorderQuestions(items: FormQuestion[]) {
+        if (form == undefined) return;
+        form.questions = items;
     }
 </script>
 
@@ -122,17 +128,19 @@
                     <Fa icon={faQuestionCircle}/>
                     <h2>Questions</h2>
                 </div>
-                <div class="flex flex-col gap-4">
-                    {#each form.questions as question(question.id)}
+                <DragAndDropContainer onFinalize={onReorderQuestions} items={form.questions}
+                                      class="flex flex-col gap-4">
+
+                    {#snippet item(question)}
                         <FormFieldEdit {question} selected={currentQuestion?.id === question.id}
                                        onClick={() => editQuestion(question)}
                                        onDelete={() => deleteQuestion(question)}/>
-                    {/each}
-                    <button class="horizontal-add-button"
-                            onclick={(e) => contextMenu?.openFromClick(e, e.currentTarget)}>
-                        <Fa icon={faPlusCircle} class="pointer-events-none"/>
-                    </button>
-                </div>
+                    {/snippet}
+                </DragAndDropContainer>
+                <button class="horizontal-add-button mt-4"
+                        onclick={(e) => contextMenu?.openFromClick(e, e.currentTarget)}>
+                    <Fa icon={faPlusCircle} class="pointer-events-none"/>
+                </button>
 
                 <hr class="my-8">
 
@@ -140,6 +148,7 @@
                     <Fa icon={faHeading}/>
                     <h2>Display format</h2>
                 </div>
+
                 <EditTextOrDynamic value={form.format} availableDynamic={form.questions}
                                    onChange={onFormatChange}
                                    getDynamicId={(v) => v.id}

@@ -59,7 +59,7 @@
     ];
 </script>
 
-<div class="max-w-72 md:w-72">
+<div class="mdmd::max-w-72 md:w-72 w-full">
     <div class="flex flex-col gap-2 w-full">
         {#each value as value, i}
             <div class="flex-1 row-gap">
