@@ -13,7 +13,7 @@
     import FormFieldEdit from "@perfice/components/form/editor/field/FormFieldEdit.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faArrowLeft, faCheck, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+    import {faArrowLeft, faCheck, faHeading, faPlusCircle, faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
     import {QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
     import FormEditorSidebar from "@perfice/components/form/editor/sidebar/FormEditorSidebar.svelte";
     import {
@@ -24,6 +24,8 @@
     import {type FormQuestionDisplaySettings, questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {goto} from "@mateothegreat/svelte5-router";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
+    import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -81,6 +83,11 @@
         back();
     }
 
+    function onFormatChange(v: TextOrDynamic[]) {
+        if(form == undefined) return;
+        form.format = v;
+    }
+
     function back() {
         goto("/");
     }
@@ -110,9 +117,12 @@
         <div class="p-2 flex-1 flex">
             <div class="mx-auto w-full md:w-1/2 md:mt-8 main-content">
                 <h2 class="text-3xl font-bold">{form.name}</h2>
-                <p class="mb-2 label">Format</p>
-                <h2 class="text-2xl font-bold">Questions</h2>
-                <div class="flex flex-col gap-4 pb-20">
+
+                <div class="row-gap items-center text-2xl text-gray-500 mt-8 mb-4">
+                    <Fa icon={faQuestionCircle}/>
+                    <h2>Questions</h2>
+                </div>
+                <div class="flex flex-col gap-4">
                     {#each form.questions as question(question.id)}
                         <FormFieldEdit {question} selected={currentQuestion?.id === question.id}
                                        onClick={() => editQuestion(question)}
@@ -124,7 +134,18 @@
                     </button>
                 </div>
 
-                <div class="hidden md:block mt-4">
+                <hr class="my-8">
+
+                <div class="row-gap items-center text-2xl text-gray-500 mb-4">
+                    <Fa icon={faHeading}/>
+                    <h2>Display format</h2>
+                </div>
+                <EditTextOrDynamic value={form.format} availableDynamic={form.questions}
+                                   onChange={onFormatChange}
+                                   getDynamicId={(v) => v.id}
+                                   getDynamicText={(v) => v.name}/>
+
+                <div class="hidden md:block mt-10">
                     <Button onClick={save}>
                         Save
                     </Button>

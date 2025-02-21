@@ -6,6 +6,7 @@
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
     import {faBars} from "@fortawesome/free-solid-svg-icons";
+    // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
 
@@ -38,7 +39,7 @@
             answers[id] = extractValueFromDisplay(value);
         }
 
-        formModal.open(form, snapshot.questions, new Date(entry.timestamp),
+        formModal.open(form, snapshot.questions, snapshot.format, new Date(entry.timestamp),
             templates, answers, entry);
     }
 

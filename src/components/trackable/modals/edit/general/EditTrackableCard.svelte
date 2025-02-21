@@ -1,18 +1,20 @@
 <script lang="ts">
-    import type {EditTrackableCardState} from "@perfice/model/trackable/ui";
+    import {type EditTrackableCardState, getDefaultTrackableCardState} from "@perfice/model/trackable/ui";
     import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
-    import {faChartLine, faDiamond, faListNumeric} from "@fortawesome/free-solid-svg-icons";
+    import {faChartLine, faDiamond, faListNumeric, faPlusMinus} from "@fortawesome/free-solid-svg-icons";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
-    import {TrackableCardType, TrackableValueType} from "@perfice/model/trackable/trackable";
-    import {AggregateType} from "@perfice/services/variable/types/aggregate";
+    import {TrackableCardType} from "@perfice/model/trackable/trackable";
     import type {FormQuestion} from "@perfice/model/form/form";
     import EditTrackableChartCard from "@perfice/components/trackable/modals/edit/general/chart/EditTrackableChartCard.svelte";
     import type {Component} from "svelte";
     import EditTrackableValueCard from "@perfice/components/trackable/modals/edit/general/value/EditTrackableValueCard.svelte";
+    import EditTrackableTallyCard
+        from "@perfice/components/trackable/modals/edit/general/tally/EditTrackableTallyCard.svelte";
 
     const CARD_TYPES = [
         {value: TrackableCardType.CHART, name: "Chart", icon: faChartLine},
-        {value: TrackableCardType.VALUE, name: "Value", icon: faListNumeric}
+        {value: TrackableCardType.VALUE, name: "Value", icon: faListNumeric},
+        {value: TrackableCardType.TALLY, name: "Tally", icon: faPlusMinus}
     ];
 
     let {cardState = $bindable(), availableQuestions}: {
@@ -21,34 +23,7 @@
     } = $props();
 
     function onCardTypeChange(e: TrackableCardType) {
-        switch (e) {
-            // TODO: move default settings somewhere else
-            case TrackableCardType.CHART:
-                cardState = {
-                    cardType: TrackableCardType.CHART,
-                    cardSettings: {
-                        aggregateType: AggregateType.SUM,
-                        field: availableQuestions.length > 0 ? availableQuestions[0].id : "",
-                        color: "#ff0000"
-                    }
-                };
-                break;
-            case TrackableCardType.VALUE:
-                cardState = {
-                    cardType: TrackableCardType.VALUE,
-                    cardSettings: {
-                        // If there are no questions, we need to create a dummy representation
-                        representation: availableQuestions.length > 0 ? [
-                            {dynamic: true, value: availableQuestions[0].id}
-                        ] : [
-                            {dynamic: false, value: ""}
-                        ],
-                        type: TrackableValueType.TABLE,
-                        settings: {}
-                    }
-                };
-                break;
-        }
+        cardState = getDefaultTrackableCardState(e, availableQuestions);
     }
 
     function getCardSettingsRenderer(cardType: TrackableCardType): Component<{
@@ -61,6 +36,8 @@
                 return EditTrackableChartCard;
             case TrackableCardType.VALUE:
                 return EditTrackableValueCard;
+            case TrackableCardType.TALLY:
+                return EditTrackableTallyCard;
         }
     }
 

@@ -24,13 +24,12 @@
         editTrackableModal.open(state);
     }
 
-
     async function onLogTrackable(trackable: Trackable) {
         let form = await forms.getFormById(trackable.formId);
         let templates = await forms.getTemplatesByFormId(trackable.formId);
         if (form == undefined) return;
 
-        formModal.open(form, form.questions, dateWithCurrentTime($trackableDate), templates);
+        formModal.open(form, form.questions, form.format, dateWithCurrentTime($trackableDate), templates);
     }
 
     function onDeleteTrackable(trackable: Trackable) {
@@ -51,5 +50,6 @@
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar date={$trackableDate} onDateChange={onDateChange} title="Trackables"/>
 
-    <TrackableList date={$trackableDate} weekStart={$weekStart} onEdit={onEditTrackable} onLog={onLogTrackable}/>
+    <TrackableList date={$trackableDate} weekStart={$weekStart}
+                   onEdit={onEditTrackable} onLog={onLogTrackable}/>
 </div>

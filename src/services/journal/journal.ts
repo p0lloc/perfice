@@ -3,6 +3,7 @@ import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
+import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
 export enum JournalEntryObserverType {
     CREATED,
@@ -31,7 +32,11 @@ export class JournalService {
         return this.collection.getEntriesByOffsetAndLimit(offset, limit);
     }
 
-    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, timestamp: number): Promise<JournalEntry> {
+    getEntryById(id: string) {
+        return this.collection.getEntryById(id);
+    }
+
+    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry> {
         let entry: JournalEntry = {
             id: crypto.randomUUID(),
             formId: form.id,
@@ -40,17 +45,17 @@ export class JournalService {
             timestamp,
             name: form.name,
             icon: form.icon,
-            displayValue: formatAnswersIntoRepresentation(answers, form.format)
+            displayValue: formatAnswersIntoRepresentation(answers, format)
         }
-
-        console.log(entry)
 
         await this.collection.createEntry(entry);
         await this.notifyObservers(JournalEntryObserverType.CREATED, entry);
         return entry;
     }
 
-    async updateEntry(entry: JournalEntry) {
+    async updateEntry(entry: JournalEntry, format: TextOrDynamic[]) {
+        entry.displayValue = formatAnswersIntoRepresentation(entry.answers, format);
+
         await this.collection.updateEntry(entry);
         await this.notifyObservers(JournalEntryObserverType.UPDATED, entry);
     }

@@ -1,12 +1,15 @@
-import type {Form} from "../form/form";
+import type {Form, FormQuestion} from "../form/form";
 import {
     type CS,
     type Trackable,
-    TrackableCardType, type TrackableCategory, type TrackableValueSettings, TrackableValueType,
+    TrackableCardType,
+    type TrackableCategory,
+    type TrackableValueSettings,
+    TrackableValueType,
 } from "./trackable";
-import type {AggregateType} from "@perfice/services/variable/types/aggregate";
+import {AggregateType} from "@perfice/services/variable/types/aggregate";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
-import type {DisplayValue, JournalEntryValue, PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {type DisplayValue, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 
 export enum TrackableEditViewType {
     GENERAL = "GENERAL",
@@ -22,7 +25,8 @@ export interface EditTrackableState {
 
 export type EditTrackableCardState =
     CS<TrackableCardType.CHART, EditTrackableChartSettings>
-    | CS<TrackableCardType.VALUE, EditTrackableValueSettings>;
+    | CS<TrackableCardType.VALUE, EditTrackableValueSettings>
+    | CS<TrackableCardType.TALLY, EditTrackableTallySettings>;
 
 export interface EditTrackableChartSettings {
     aggregateType: AggregateType;
@@ -33,10 +37,47 @@ export interface EditTrackableChartSettings {
 export const TRACKABLE_VALUE_TYPES = [
     {value: TrackableValueType.TABLE, name: "Table"},
     {value: TrackableValueType.LATEST, name: "Latest"},
-    {value: TrackableValueType.TALLY, name: "Tally"},
 ];
 
+export function getDefaultTrackableCardState(cardType: TrackableCardType, availableQuestions: FormQuestion[]): EditTrackableCardState {
+    switch (cardType) {
+        case TrackableCardType.CHART:
+            return {
+                cardType: TrackableCardType.CHART,
+                cardSettings: {
+                    aggregateType: AggregateType.SUM,
+                    field: availableQuestions.length > 0 ? availableQuestions[0].id : "",
+                    color: "#ff0000"
+                }
+            };
+        case TrackableCardType.VALUE:
+            return {
+                cardType: TrackableCardType.VALUE,
+                cardSettings: {
+                    // If there are no questions, we need to create a dummy representation
+                    representation: availableQuestions.length > 0 ? [
+                        {dynamic: true, value: availableQuestions[0].id}
+                    ] : [
+                        {dynamic: false, value: ""}
+                    ],
+                    type: TrackableValueType.TABLE,
+                    settings: {}
+                }
+            }
+        case TrackableCardType.TALLY:
+            return {
+                cardType: TrackableCardType.TALLY,
+                cardSettings: {
+                    questionId: availableQuestions.length > 0 ? availableQuestions[0].id : ""
+                }
+            };
+    }
+}
+
 export type EditTrackableValueSettings = TrackableValueSettings;
+export type EditTrackableTallySettings = {
+    questionId: string;
+};
 
 export function formatAnswersIntoRepresentation(answers: Record<string, PrimitiveValue>, representation: TextOrDynamic[]): string {
     let result: string = "";
@@ -45,8 +86,14 @@ export function formatAnswersIntoRepresentation(answers: Record<string, Primitiv
             let answerValue = answers[rep.value];
             if (answerValue == null) return "Missing value";
 
-            let displayValue = (answerValue.value as DisplayValue);
-            let display = displayValue.display?.value ?? displayValue.value;
+            let display;
+            if(answerValue.type == PrimitiveValueType.DISPLAY) {
+                let displayValue = answerValue.value;
+                display = displayValue.display?.value ?? displayValue.value;
+            } else {
+                display = answerValue;
+            }
+
             result += display.toString();
         } else {
             result += rep.value;

@@ -3,9 +3,8 @@
     import JournalCardBase from "@perfice/components/journal/day/JournalCardBase.svelte";
     import type {JournalDayGroup} from "@perfice/stores/journal/grouped";
     // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
-    import {faStar} from "@fortawesome/free-solid-svg-icons";
     import type {JournalEntry} from "@perfice/model/journal/journal";
+    import Icon from "@perfice/components/base/icon/Icon.svelte";
 
     let {group, onEntryClick, onEntryDelete}: {
         group: JournalDayGroup,
@@ -18,7 +17,7 @@
     <JournalCardBase onClick={() =>  onEntryClick(entry)}>
         <div class="flex items-center gap-4">
             <p class="text-2xl">
-                <Fa icon={faStar} class="text-green-500"/>
+                <Icon name={group.icon} class="text-green-500"/>
             </p>
             <div class="flex-1 w-[60%]">
                 <JournalCardHeader {entry} onDelete={() => onEntryDelete(entry)}>

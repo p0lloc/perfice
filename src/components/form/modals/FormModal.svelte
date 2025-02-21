@@ -11,6 +11,7 @@
     import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
     import type {FormTemplate} from "@perfice/model/form/form.js";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
+    import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
     let form: Form = $state({} as Form);
     let questions: FormQuestion[] = $state([]);
@@ -19,16 +20,19 @@
     let answers: Record<string, PrimitiveValue> = $state({});
     let templates: FormTemplate[] = $state([]);
 
+    let format: TextOrDynamic[] = $state([]);
+
     let creatingTemplateName: string | null = $state(null);
 
     let modal: Modal;
     let embed: FormEmbed;
 
-    export function open(logForm: Form, formQuestions: FormQuestion[], logDate: Date,
+    export function open(logForm: Form, formQuestions: FormQuestion[], displayFormat: TextOrDynamic[], logDate: Date,
                          availableTemplates: FormTemplate[], existingAnswers?: Record<string, PrimitiveValue>, entry?: JournalEntry) {
 
         form = logForm;
         date = logDate;
+        format = displayFormat;
         questions = formQuestions;
         editEntry = entry;
         templates = availableTemplates;
@@ -48,9 +52,9 @@
             journal.updateEntry({
                 ...editEntry,
                 answers
-            });
+            }, format);
         } else {
-            journal.logEntry(form, answers, date.getTime());
+            journal.logEntry(form, answers, format, date.getTime());
         }
 
         if(creatingTemplateName != null) {

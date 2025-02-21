@@ -8,7 +8,6 @@
     import TableTrackableRenderer from "@perfice/components/trackable/card/value/table/TableTrackableRenderer.svelte";
     import LatestTrackableRenderer
         from "@perfice/components/trackable/card/value/latest/LatestTrackableRenderer.svelte";
-    import TallyTrackableRenderer from "@perfice/components/trackable/card/value/tally/TallyTrackableRenderer.svelte";
 
     let {value, cardSettings, date}: {
         value: PrimitiveValue,
@@ -26,7 +25,6 @@
     }>> = {
         [TrackableValueType.TABLE]: TableTrackableRenderer,
         [TrackableValueType.LATEST]: LatestTrackableRenderer,
-        [TrackableValueType.TALLY]: TallyTrackableRenderer,
     }
 
     const RendererComponent = $derived(RENDERERS[cardSettings.type]);

@@ -5,6 +5,7 @@ import {resolvedPromise} from "@perfice/util/promise";
 import {updateIdentifiedInArray} from "@perfice/util/array";
 import type {Form} from "@perfice/model/form/form";
 import type { PrimitiveValue } from "@perfice/model/primitive/primitive";
+import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
 const PAGE_SIZE = 30;
 
@@ -32,9 +33,13 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
         this.page++;
     }
 
-    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, timestamp: number): Promise<void> {
-        let entry = await this.journalService.logEntry(form, answers, timestamp);
+    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<void> {
+        let entry = await this.journalService.logEntry(form, answers, format, timestamp);
         this.updateResolved(v => [...v, entry]);
+    }
+
+    async getEntryById(id: string): Promise<JournalEntry | undefined> {
+        return this.journalService.getEntryById(id);
     }
 
     async deleteEntryById(id: string) {
@@ -42,10 +47,9 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
         this.updateResolved(v => v.filter(e => e.id != id));
     }
 
-    async updateEntry(entry: JournalEntry) {
-        await this.journalService.updateEntry(entry);
+    async updateEntry(entry: JournalEntry, format: TextOrDynamic[]) {
+        await this.journalService.updateEntry(entry, format);
         this.updateResolved(v => updateIdentifiedInArray(v, entry));
     }
-
 
 }

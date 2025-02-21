@@ -52,4 +52,5 @@ export interface FormSnapshot {
     id: string;
     formId: string;
     questions: FormQuestion[];
+    format: TextOrDynamic[];
 }

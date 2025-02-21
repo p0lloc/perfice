@@ -3,6 +3,7 @@ import type {TextOrDynamic} from "@perfice/model/variable/variable";
 export enum TrackableCardType {
     CHART = "CHART",
     VALUE = "VALUE",
+    TALLY = "TALLY",
 }
 
 export type Trackable = {
@@ -18,7 +19,13 @@ export type Trackable = {
 
 export type TrackableCardSettings =
     CS<TrackableCardType.CHART, TrackableChartSettings>
-    | CS<TrackableCardType.VALUE, TrackableValueSettings>;
+    | CS<TrackableCardType.VALUE, TrackableValueSettings>
+    | CS<TrackableCardType.TALLY, TrackableTallySettings>;
+
+
+export interface TrackableTallySettings {
+    // Question id is determined from the variable
+}
 
 export interface TrackableChartSettings {
     color: string;
@@ -26,8 +33,7 @@ export interface TrackableChartSettings {
 
 export enum TrackableValueType {
     TABLE = "TABLE",
-    LATEST = "LATEST",
-    TALLY = "TALLY",
+    LATEST = "LATEST"
 }
 
 export type TrackableValueSettings = {
@@ -35,14 +41,11 @@ export type TrackableValueSettings = {
 } & TrackableValueSettingValues;
 
 export type TrackableValueSettingValues = TV<TrackableValueType.LATEST, LatestTrackableValueSettings>
-    | TV<TrackableValueType.TABLE, TableTrackableValueSettings>
-    | TV<TrackableValueType.TALLY, TallyTrackableValueSettings>;
+    | TV<TrackableValueType.TABLE, TableTrackableValueSettings>;
 
 export interface LatestTrackableValueSettings {}
 
 export interface TableTrackableValueSettings {}
-
-export interface TallyTrackableValueSettings {}
 
 export interface TV<K extends TrackableValueType, V> {
     type: K;

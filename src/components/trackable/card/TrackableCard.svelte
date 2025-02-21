@@ -7,6 +7,7 @@
     import ChartTrackableRenderer from "@perfice/components/trackable/card/chart/ChartTrackableRenderer.svelte";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import ValueTrackableRenderer from "@perfice/components/trackable/card/value/ValueTrackableRenderer.svelte";
+    import TallyTrackableRenderer from "@perfice/components/trackable/card/tally/TallyTrackableRenderer.svelte";
 
     let {trackable, date, weekStart, onEdit, onLog}: {
         trackable: Trackable,
@@ -21,14 +22,23 @@
     let CARD_TYPE_RENDERERS: Record<TrackableCardType, Component<{
         value: PrimitiveValue,
         cardSettings: any,
+        trackable: Trackable,
         date: Date
     }>> = {
         [TrackableCardType.CHART]: ChartTrackableRenderer,
         [TrackableCardType.VALUE]: ValueTrackableRenderer,
+        [TrackableCardType.TALLY]: TallyTrackableRenderer,
     }
 
     function onEditClick() {
         onEdit();
+    }
+
+    function onInnerClick(){
+        // Tally has custom logging logic
+        if(trackable.cardType == TrackableCardType.TALLY) return;
+
+        onLog();
     }
 
     const RendererComponent = $derived(CARD_TYPE_RENDERERS[trackable.cardType]);
@@ -46,8 +56,8 @@
         Loading...
     {:then value}
         {#if value != null}
-            <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onLog}>
-                <RendererComponent value={value} cardSettings={trackable.cardSettings} date={date}/>
+            <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onInnerClick}>
+                <RendererComponent value={value} cardSettings={trackable.cardSettings} date={date} {trackable}/>
             </button>
         {/if}
     {/await}

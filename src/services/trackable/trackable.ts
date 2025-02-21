@@ -7,7 +7,7 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
-import type { EditTrackableValueSettings } from "@perfice/model/trackable/ui";
+import type {EditTrackableTallySettings, EditTrackableValueSettings } from "@perfice/model/trackable/ui";
 import {trackables} from "@perfice/main";
 
 export class TrackableService {
@@ -211,5 +211,21 @@ export class TrackableService {
         }
 
         await this.collection.updateTrackables(trackables);
+    }
+
+    async updateTrackableTallySettings(trackable: Trackable, cardSettings: EditTrackableTallySettings) {
+        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
+        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
+
+        // Update list variable to fetch answer for the specified question id
+        listVariable.type = {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType(trackable.formId, {
+                [cardSettings.questionId]: false
+            }, [])
+        }
+
+        await this.variableService.updateVariable(listVariable);
+        trackable.cardSettings = cardSettings;
     }
 }

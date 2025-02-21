@@ -69,7 +69,8 @@ export class BaseFormService implements FormService {
             let snapshot: FormSnapshot = {
                 id: crypto.randomUUID(),
                 formId: form.id,
-                questions: form.questions
+                questions: form.questions,
+                format: form.format,
             };
 
             form.snapshotId = snapshot.id;
@@ -81,6 +82,7 @@ export class BaseFormService implements FormService {
             if (snapshot == null) return;
 
             snapshot.questions = form.questions;
+            snapshot.format = form.format;
             await this.snapshotCollection.updateFormSnapshot(snapshot);
         }
     }
