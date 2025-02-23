@@ -46,4 +46,13 @@ export class DateFormQuestionDataType implements FormQuestionDataTypeDefinition<
         return [FormQuestionDisplayType.INPUT];
     }
 
+
+    import(value: any): PrimitiveValue | null {
+        return null;
+    }
+
+    export(value: PrimitiveValue): any {
+        return null;
+    }
+
 }

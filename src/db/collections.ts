@@ -101,6 +101,14 @@ export interface JournalCollection {
     getEntryById(id: string): Promise<JournalEntry | undefined>;
 
     getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]>;
+
+    clear(): Promise<void>;
+
+    createEntries(entries: JournalEntry[]): Promise<void>;
+
+    getAllEntries(): Promise<JournalEntry[]>;
+
+    getEntriesByFormId(formId: string): Promise<JournalEntry[]>;
 }
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;

@@ -41,6 +41,10 @@ import { FormTemplateService } from './services/form/template';
 import {TagCategoryStore} from "@perfice/stores/tag/category";
 import { TagCategoryService } from './services/tag/category';
 import {CategorizedTags} from "@perfice/stores/tag/categorized";
+import {EntryImportStore} from "@perfice/stores/import/import";
+import { EntryImportService } from './services/import/import';
+import { EntryExportService } from './services/export/export';
+import {EntryExportStore} from "@perfice/stores/export/export";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -64,6 +68,8 @@ const tagService = new TagService(db.tags, variableService, tagEntryService);
 const formTemplateService = new FormTemplateService(db.formTemplates);
 
 const tagCategoryService = new TagCategoryService(db.tagCategories);
+const importService = new EntryImportService(journalService);
+const exportService = new EntryExportService(journalService, formService);
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);
@@ -81,6 +87,9 @@ export const goals = new GoalStore(goalService);
 export const tags = new TagStore(tagService);
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
+
+export const imports = new EntryImportStore(importService);
+export const exports = new EntryExportStore(exportService);
 
 export const appReady = writable(false);
 

@@ -1,6 +1,7 @@
 import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pList, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
+import {type ExportedPrimitive, exportPrimitive, importPrimitive} from "@perfice/services/export/export";
 
 export interface HierarchyOption {
     id: string;
@@ -109,6 +110,17 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
 
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {
         return [FormQuestionDisplayType.HIERARCHY];
+    }
+
+    export(value: PrimitiveValue): ExportedPrimitive | null {
+        if(value.type != PrimitiveValueType.LIST) return null;
+        return value.value.map(v => exportPrimitive(v));
+    }
+
+    import(value: ExportedPrimitive): PrimitiveValue | null {
+        if(!Array.isArray(value)) return pList([]);
+
+        return pList(value.map(v => importPrimitive(v)));
     }
 
 }

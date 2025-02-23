@@ -5,7 +5,7 @@
     import type {Component} from "svelte";
     import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
     import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/general/EditTrackableGeneral.svelte";
-    import EditTrackableIntegration from "@perfice/components/trackable/modals/edit/EditTrackableIntegration.svelte";
+    import EditTrackableImportExport from "@perfice/components/trackable/modals/edit/EditTrackableImportExport.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
     import {trackables} from "@perfice/main";
@@ -44,15 +44,16 @@
     const SEGMENTS: SegmentedItem<string>[] = [
         {name: "General", value: TrackableEditViewType.GENERAL},
         {name: "Form", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
-        {name: "Integration", value: TrackableEditViewType.INTEGRATION}
+        {name: "Analytics", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
+        {name: "Import/Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 
-    function getViewComponent(e: TrackableEditViewType): Component<{ editState: EditTrackableState }> {
+    function getViewComponent(e: TrackableEditViewType): Component<{ editState: EditTrackableState, close: () => void }> {
         switch (e) {
             case TrackableEditViewType.GENERAL:
                 return EditTrackableGeneral;
-            case TrackableEditViewType.INTEGRATION:
-                return EditTrackableIntegration;
+            case TrackableEditViewType.IMPORT_EXPORT:
+                return EditTrackableImportExport;
             default:
                 throw new Error("Invalid view!")
         }
@@ -68,5 +69,5 @@
                                   segments={SEGMENTS}/>
     {/snippet}
 
-    <RendererComponent bind:editState={editState}/>
+    <RendererComponent bind:editState={editState} {close}/>
 </Modal>

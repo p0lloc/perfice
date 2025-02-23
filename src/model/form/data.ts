@@ -9,6 +9,7 @@ import {type DateTimeFormQuestionDataSettings, DateTimeFormQuestionDataType} fro
 import {type TimeElapsedFormQuestionDataSettings, TimeElapsedFormQuestionDataType} from "./data/time-elapsed";
 import {type TimeOfDayFormQuestionDataSettings, TimeOfDayFormQuestionDataType} from "./data/time-of-day";
 import {type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
+import type {ExportedPrimitive} from "@perfice/services/export/export";
 
 export type FormQuestionDataSettings =
     DataDef<FormQuestionDataType.TEXT, TextFormQuestionDataSettings>
@@ -57,6 +58,10 @@ export interface FormQuestionDataTypeDefinition<V, S> {
 
     // Returns a list of display types that can be used to display this data
     getSupportedDisplayTypes(): FormQuestionDisplayType[];
+
+    export(value: PrimitiveValue): ExportedPrimitive | null;
+
+    import(value: ExportedPrimitive): PrimitiveValue | null;
 }
 
 

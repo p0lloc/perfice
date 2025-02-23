@@ -46,4 +46,14 @@ export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<
     getPrimitiveType(): PrimitiveValueType {
         return PrimitiveValueType.STRING;
     }
+
+
+    import(value: any): PrimitiveValue | null {
+        return null;
+    }
+
+    export(value: PrimitiveValue): any {
+        return null;
+    }
+
 }

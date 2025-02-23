@@ -106,7 +106,6 @@
     function onTemplateSelected(template: FormTemplate) {
         currentTemplateName = null
         answers = template.answers;
-        console.log(answers);
         embed.invalidateValues();
     }
 

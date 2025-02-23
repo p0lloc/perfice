@@ -19,8 +19,8 @@
     }
 </script>
 
-<div class="bg-green-700 inline-flex min-w-0 p-2 md:p-2.5 gap-1">
-    {#each segments as segment (segment.value)}
+<div class="bg-green-700 flex min-w-0 p-2 gap-1 w-full overflow-x-auto min-h-10">
+    {#each segments as segment}
         <InvertedSegment active={value === segment.value}
                          onClick={() => onSegmentClick(segment)}>
 

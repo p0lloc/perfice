@@ -13,6 +13,7 @@ export enum JournalEntryObserverType {
 }
 
 export type JournalEntryObserverCallback = (e: JournalEntry) => Promise<void>;
+
 export interface JournalEntryObserver {
     type: JournalEntryObserverType;
     callback: JournalEntryObserverCallback;
@@ -67,7 +68,7 @@ export class JournalService {
 
     async deleteEntryById(id: string) {
         let entry = await this.collection.getEntryById(id);
-        if(entry == undefined) return;
+        if (entry == undefined) return;
 
         await this.deleteEntry(entry);
     }
@@ -90,4 +91,19 @@ export class JournalService {
         this.observers.push({type, callback});
     }
 
+    async import(entries: JournalEntry[], overwrite: boolean) {
+        if (overwrite) {
+            await this.collection.clear();
+        }
+
+        await this.collection.createEntries(entries);
+    }
+
+    async getAllEntries(): Promise<JournalEntry[]> {
+        return this.collection.getAllEntries();
+    }
+
+    async getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
+        return this.collection.getEntriesByFormId(formId);
+    }
 }

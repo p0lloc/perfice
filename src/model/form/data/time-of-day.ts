@@ -43,4 +43,13 @@ export class TimeOfDayFormQuestionDataType implements FormQuestionDataTypeDefini
         return [FormQuestionDisplayType.INPUT];
     }
 
+
+    import(value: any): PrimitiveValue | null {
+        return null;
+    }
+
+    export(value: PrimitiveValue): any {
+        return null;
+    }
+
 }

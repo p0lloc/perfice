@@ -13,7 +13,7 @@ import {type DisplayValue, type PrimitiveValue, PrimitiveValueType} from "@perfi
 
 export enum TrackableEditViewType {
     GENERAL = "GENERAL",
-    INTEGRATION = "INTEGRATION",
+    IMPORT_EXPORT = "IMPORT_EXPORT",
 }
 
 export interface EditTrackableState {

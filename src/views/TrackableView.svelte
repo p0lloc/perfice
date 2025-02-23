@@ -10,9 +10,13 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
+    import {entryImportEvents} from "@perfice/stores/import/import";
+    import {subscribeToEventStore} from "@perfice/util/event.js";
+    import EntryImportResultModal from "@perfice/components/import/EntryImportResultModal.svelte";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
+    let importResultModal: EntryImportResultModal;
 
     function onDateChange(e: Date) {
         $trackableDate = e;
@@ -35,6 +39,9 @@
     function onDeleteTrackable(trackable: Trackable) {
         trackables.deleteTrackable(trackable);
     }
+
+    $effect(() => subscribeToEventStore($entryImportEvents,
+        entryImportEvents, e => importResultModal.open(e)));
 </script>
 
 <MobileTopBar title="Trackables">
@@ -44,8 +51,10 @@
         </button>
     {/snippet}
 </MobileTopBar>
+
 <FormModal bind:this={formModal}/>
 <EditTrackableModal onStartDelete={onDeleteTrackable} bind:this={editTrackableModal}/>
+<EntryImportResultModal bind:this={importResultModal}/>
 
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar date={$trackableDate} onDateChange={onDateChange} title="Trackables"/>

@@ -7,6 +7,7 @@
     let {
         segments,
         value,
+        class: className,
         onChange,
         inverted = false,
         disabled = false,
@@ -14,6 +15,7 @@
     }: {
         segments: SegmentedItem<T>[],
         value: T,
+        class?: string,
         onChange?: (value: T) => void,
         inverted?: boolean,
         disabled?: boolean,
@@ -30,7 +32,7 @@
     }
 </script>
 
-<div class:segmented-normal="{!inverted}" class:segmented-inverted="{inverted}" class="inline-flex min-w-0">
+<div class:segmented-normal="{!inverted}" class:segmented-inverted="{inverted}" class="inline-flex min-w-0 {className}">
     {#each segments as segment (segment.value)}
         <Segment active={comparisonFunction(value, segment.value)} {inverted}
                  onClick={() => onSegmentClick(segment)}>

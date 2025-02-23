@@ -73,4 +73,20 @@ export class DexieJournalCollection implements JournalCollection {
         return entries.slice(offset, offset + pageSize);
     }
 
+    async clear(): Promise<void> {
+        await this.table.clear();
+    }
+
+    async createEntries(entries: JournalEntry[]): Promise<void> {
+        await this.table.bulkAdd(entries);
+    }
+
+    async getAllEntries(): Promise<JournalEntry[]> {
+        return this.table.toArray();
+    }
+
+    async getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
+        return this.table.where("formId").equals(formId).toArray();
+    }
+
 }
