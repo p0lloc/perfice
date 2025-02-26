@@ -1,50 +1,50 @@
-import {mount} from 'svelte'
+import { mount } from 'svelte'
 import './app.css'
 import App from './App.svelte'
-import {App as CapacitorApp} from '@capacitor/app';
-import {TrackableService} from "@perfice/services/trackable/trackable";
-import {VariableService} from "@perfice/services/variable/variable";
-import {setupDb} from "@perfice/db/dexie/db";
-import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
-import {type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
-import {VariableGraph} from "@perfice/services/variable/graph";
-import {JournalEntryObserverType, JournalService} from "@perfice/services/journal/journal";
-import {JournalEntryStore} from "@perfice/stores/journal/entry";
-import type {JournalEntry, TagEntry} from './model/journal/journal';
-import {VariableValueStore} from "@perfice/stores/variable/value";
-import {writable} from "svelte/store";
-import {TrackableCategoryService} from "@perfice/services/trackable/category";
-import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
+import { App as CapacitorApp } from '@capacitor/app';
+import { TrackableService } from "@perfice/services/trackable/trackable";
+import { VariableService } from "@perfice/services/variable/variable";
+import { setupDb } from "@perfice/db/dexie/db";
+import { TrackableDate, TrackableStore } from "@perfice/stores/trackable/trackable";
+import { type TimeScope, WeekStart } from "@perfice/model/variable/time/time";
+import { VariableGraph } from "@perfice/services/variable/graph";
+import { JournalEntryObserverType, JournalService } from "@perfice/services/journal/journal";
+import { JournalEntryStore } from "@perfice/stores/journal/entry";
+import type { JournalEntry, TagEntry } from './model/journal/journal';
+import { VariableValueStore } from "@perfice/stores/variable/value";
+import { writable } from "svelte/store";
+import { TrackableCategoryService } from "@perfice/services/trackable/category";
+import { TrackableCategoryStore } from "@perfice/stores/trackable/category";
 import { CategorizedTrackables } from './stores/trackable/categorized';
-import type {Trackable} from "@perfice/model/trackable/trackable";
-import {TrackableValueStore} from "@perfice/stores/trackable/value";
-import {BaseFormService} from "@perfice/services/form/form";
-import {FormStore} from "@perfice/stores/form/form";
-import {VariableStore} from "@perfice/stores/variable/variable";
-import {GroupedJournal} from "@perfice/stores/journal/grouped";
-import {GoalService} from "@perfice/services/goal/goal";
-import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
-import type {Goal} from "@perfice/model/goal/goal";
-import {GoalValueStore} from "@perfice/stores/goal/value";
-import { modalNavigatorState } from './model/ui/modal';
+import type { Trackable } from "@perfice/model/trackable/trackable";
+import { TrackableValueStore } from "@perfice/stores/trackable/value";
+import { BaseFormService } from "@perfice/services/form/form";
+import { FormStore } from "@perfice/stores/form/form";
+import { VariableStore } from "@perfice/stores/variable/variable";
+import { GroupedJournal } from "@perfice/stores/journal/grouped";
+import { GoalService } from "@perfice/services/goal/goal";
+import { GoalDate, GoalStore } from "@perfice/stores/goal/goal";
+import type { Goal } from "@perfice/model/goal/goal";
+import { GoalValueStore } from "@perfice/stores/goal/value";
 import { routingNavigatorState } from './model/ui/router.svelte';
 import { goto } from '@mateothegreat/svelte5-router';
 import { Capacitor } from '@capacitor/core';
-import {VariableEditProvider} from "@perfice/stores/variable/edit";
-import {TagValueStore} from "@perfice/stores/tag/value";
+import { VariableEditProvider } from "@perfice/stores/variable/edit";
+import { TagValueStore } from "@perfice/stores/tag/value";
 import type { Tag } from './model/tag/tag';
 import { TagService } from './services/tag/tag';
-import {TagDate, TagStore} from "@perfice/stores/tag/tag";
-import {TagEntryService} from "@perfice/services/tag/entry";
-import {EntityObserverType} from "@perfice/services/observer";
+import { TagDate, TagStore } from "@perfice/stores/tag/tag";
+import { TagEntryService } from "@perfice/services/tag/entry";
+import { EntityObserverType } from "@perfice/services/observer";
 import { FormTemplateService } from './services/form/template';
-import {TagCategoryStore} from "@perfice/stores/tag/category";
+import { TagCategoryStore } from "@perfice/stores/tag/category";
 import { TagCategoryService } from './services/tag/category';
-import {CategorizedTags} from "@perfice/stores/tag/categorized";
-import {EntryImportStore} from "@perfice/stores/import/import";
+import { CategorizedTags } from "@perfice/stores/tag/categorized";
+import { EntryImportStore } from "@perfice/stores/import/import";
 import { EntryImportService } from './services/import/import';
 import { EntryExportService } from './services/export/export';
-import {EntryExportStore} from "@perfice/stores/export/export";
+import { EntryExportStore } from "@perfice/stores/export/export";
+import { closableState } from './model/ui/modal';
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -124,9 +124,9 @@ const app = mount(App, {
  * Exits the app on mobile if there are no more routes in history.
  */
 export async function back() {
-    let modalRoute = modalNavigatorState.pop();
-    if (modalRoute != undefined) {
-        modalRoute.close();
+    let closableClose = closableState.pop();
+    if (closableClose != undefined) {
+        closableClose();
         return true;
     }
 

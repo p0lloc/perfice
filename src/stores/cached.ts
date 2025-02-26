@@ -1,10 +1,10 @@
-import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
-import {writable, type Writable} from "svelte/store";
+import { emptyPromise, resolvedPromise } from "@perfice/util/promise";
+import { writable, type Writable } from "svelte/store";
 
 const cache = new Map<string, any>();
 
 export function CachedPromiseStore<T>(key: string, valuePromise: Promise<T>, onDestroy: () => void, defaultValue?: T): Writable<Promise<T>> {
-    const {subscribe, set, update} = writable<Promise<T>>(emptyPromise(), onDestroy);
+    const { subscribe, set, update } = writable<Promise<T>>(emptyPromise(), onDestroy);
 
     let promise = new Promise<T>(async (resolve) => {
         let cachedValue = cache.get(key);

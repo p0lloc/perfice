@@ -7,10 +7,21 @@ export enum ModalType {
     NONE
 }
 
+export type CloseCallback = () => void;
+
 /**
- * List of active modal components currently open
+ * List of active fullscreen layouts currently open (modals, sidebars etc)
  */
-export const modalNavigatorState: Modal[] = [];
+export let closableState: CloseCallback[] = [];
+
+export function clearClosables() {
+    closableState = [];
+}
+
+export function onClosableClosed(closable: CloseCallback) {
+    closableState = closableState.filter(c => c != closable);
+}
+
 
 /**
  * Returns true if the modal should render the confirm button

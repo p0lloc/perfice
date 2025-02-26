@@ -22,10 +22,12 @@
     async function onExport() {
         switch (fileType) {
             case ExportFileType.CSV:
-                downloadTextFile("import.csv", ExportFileType.CSV, await exports.exportCsv(editState.trackable.formId));
+                downloadTextFile("import.csv", ExportFileType.CSV,
+                    await exports.exportCsv(editState.trackable.formId));
                 break;
             case ExportFileType.JSON:
-                downloadTextFile("import.json", ExportFileType.JSON, await exports.exportJson(editState.trackable.formId));
+                downloadTextFile("import.json", ExportFileType.JSON,
+                    await exports.exportJson(editState.trackable.formId));
                 break;
         }
     }

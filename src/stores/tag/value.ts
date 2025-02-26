@@ -8,10 +8,10 @@ import type {Tag} from "@perfice/model/tag/tag";
 /**
  * Returns the id of the first tag entry that is logged for the given tag on the given date.
  */
-export function TagValueStore(trackable: Tag,
+export function TagValueStore(tag: Tag,
                               date: Date, weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<string | null>> {
 
-    let store: Readable<Promise<PrimitiveValue>> = VariableValueStore(trackable.variableId,
+    let store: Readable<Promise<PrimitiveValue>> = VariableValueStore(tag.variableId,
         tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, pList([]));
 
     return derived(store, (values, set) => {
