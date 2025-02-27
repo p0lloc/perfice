@@ -6,15 +6,18 @@
     import type {JournalEntry} from "@perfice/model/journal/journal";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
 
-    let {group, onEntryClick, onEntryDelete}: {
+    let {group, onEntryClick, onEntryDelete, selectedEntries}: {
         group: JournalDayGroup,
         onEntryClick: (entry: JournalEntry) => void,
-        onEntryDelete: (entry: JournalEntry) => void
+        onEntryDelete: (entry: JournalEntry) => void,
+        selectedEntries: JournalEntry[]
     } = $props();
 </script>
 
 {#each group.entries as entry}
-    <JournalCardBase onClick={() =>  onEntryClick(entry)}>
+    <JournalCardBase
+            selected={selectedEntries.some(e => e.id === entry.id)}
+            onClick={() =>  onEntryClick(entry)}>
         <div class="flex items-center gap-4">
             <p class="text-2xl">
                 <Icon name={group.icon} class="text-green-500"/>

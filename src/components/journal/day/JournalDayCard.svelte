@@ -6,9 +6,10 @@
     import JournalDayDate from "@perfice/components/journal/day/JournalDayDate.svelte";
     import type {JournalEntry} from "@perfice/model/journal/journal";
 
-    let {day, onEntryClick, onEntryDelete}: {
+    let {day, onEntryClick, onEntryDelete, selectedEntries}: {
         day: JournalDay, onEntryClick: (entry: JournalEntry) => void,
-        onEntryDelete: (entry: JournalEntry) => void
+        onEntryDelete: (entry: JournalEntry) => void,
+        selectedEntries: JournalEntry[]
     } = $props();
 
     let date = $derived(new Date(day.timestamp));
@@ -27,7 +28,7 @@
 
             <div class="journal-grid">
                 {#each day.multiEntries as group (group.id)}
-                    <JournalMultiGroup {group} {onEntryClick} {onEntryDelete}/>
+                    <JournalMultiGroup {selectedEntries} {group} {onEntryClick} {onEntryDelete}/>
                 {/each}
             </div>
 
@@ -35,7 +36,7 @@
                  class:mt-4={day.multiEntries.length > 0}
             >
                 {#each day.singleEntries as group (group.id)}
-                    <JournalSingleGroup {group} {onEntryClick} {onEntryDelete}/>
+                    <JournalSingleGroup {selectedEntries} {group} {onEntryClick} {onEntryDelete}/>
                 {/each}
             </div>
         </div>
