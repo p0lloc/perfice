@@ -13,10 +13,12 @@
     import {entryImportEvents} from "@perfice/stores/import/import";
     import {subscribeToEventStore} from "@perfice/util/event.js";
     import EntryImportResultModal from "@perfice/components/import/EntryImportResultModal.svelte";
+    import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
     let importResultModal: EntryImportResultModal;
+    let deleteTrackableModal: GenericDeleteModal<Trackable>;
 
     function onDateChange(e: Date) {
         $trackableDate = e;
@@ -36,6 +38,10 @@
         formModal.open(form, form.questions, form.format, dateWithCurrentTime($trackableDate), templates);
     }
 
+    function onStartDeleteTrackable(trackable: Trackable) {
+        deleteTrackableModal.open(trackable);
+    }
+
     function onDeleteTrackable(trackable: Trackable) {
         trackables.deleteTrackable(trackable);
     }
@@ -53,7 +59,8 @@
 </MobileTopBar>
 
 <FormModal bind:this={formModal}/>
-<EditTrackableModal onStartDelete={onDeleteTrackable} bind:this={editTrackableModal}/>
+<EditTrackableModal onStartDelete={onStartDeleteTrackable} bind:this={editTrackableModal}/>
+<GenericDeleteModal subject="this trackable" onDelete={onDeleteTrackable} bind:this={deleteTrackableModal}/>
 <EntryImportResultModal bind:this={importResultModal}/>
 
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { appReady, back } from "./main";
+    import { appReady } from "./main";
     import type { Route } from "@mateothegreat/svelte5-router";
     import { Router } from "@mateothegreat/svelte5-router";
     import TrackableView from "@perfice/views/TrackableView.svelte";
@@ -34,7 +34,6 @@
 </script>
 
 <svelte:body onclick={onBodyClick} />
-<button onclick={back} class="z-[5000] absolute">back</button>
 {#if $appReady}
     <div class="flex">
         <NavigationSidebar />

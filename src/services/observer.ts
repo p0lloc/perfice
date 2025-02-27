@@ -16,7 +16,7 @@ export class EntityObservers<T> {
     private observers: EntityObserver<T>[] = [];
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<T>) {
-        this.observers.push({type, callback});
+        this.observers.push({ type, callback });
     }
 
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<T>) {
