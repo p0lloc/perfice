@@ -1,34 +1,31 @@
 <script lang="ts">
-    import {AggregateVariableType} from "@perfice/services/variable/types/aggregate";
     import {VariableTypeName} from "@perfice/model/variable/variable";
     import {variableEditProvider} from "@perfice/main.js";
     import type {Variable} from "@perfice/model/variable/variable.js";
-    import type {EditAggregationVariableState} from "@perfice/stores/variable/editState";
+    import type {EditLatestVariableState} from "@perfice/stores/variable/editState";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
-    import {AGGREGATE_TYPES} from "@perfice/model/variable/ui";
     import EditListFilters from "@perfice/components/variable/edit/aggregation/EditListFilters.svelte";
     import type {JournalEntryFilter} from "@perfice/services/variable/filtering";
+    import {LatestVariableType} from "@perfice/services/variable/types/latest";
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
-    import {ListVariableType} from "@perfice/services/variable/types/list";
 
     let {variable, value, editState}: {
         variable: Variable,
-        value: AggregateVariableType,
-        editState: EditAggregationVariableState,
+        value: LatestVariableType,
+        editState: EditLatestVariableState,
         onEdit: (v: EditConstantOrVariableState) => void
     } = $props();
 
-    let aggregateType = $state<string>(value.getAggregateType());
-    let field = $state<string>(value.getField());
-    let filters = $state<JournalEntryFilter[]>(editState.listVariableValue.getFilters());
+    // TODO: we need a latest value variable
+    let field = $state<string>(Object.keys(value.getFields())[0]);
+    let filters = $state<JournalEntryFilter[]>(value.getFilters());
 
     function onEntityChange(formId: string) {
         entityFormId = formId;
-        editState.listVariableValue = new ListVariableType(formId, editState.listVariableValue.getFields(), editState.listVariableValue.getFilters());
         variableEditProvider.updateVariable({
-            ...editState.listVariable, type: {
-                type: VariableTypeName.LIST,
-                value: editState.listVariableValue
+            ...variable, type: {
+                type: VariableTypeName.LATEST,
+                value: new LatestVariableType(formId, value.getFields(), value.getFilters())
             }
         });
     }
@@ -36,15 +33,9 @@
     function onFieldChange(newField: string) {
         field = newField;
         variableEditProvider.updateVariable({
-            ...editState.listVariable, type: {
-                type: VariableTypeName.LIST,
-                value: new ListVariableType(editState.listVariableValue.getFormId(), {[newField]: false}, editState.listVariableValue.getFilters())
-            }
-        });
-        variableEditProvider.updateVariable({
             ...variable, type: {
-                type: VariableTypeName.AGGREGATE,
-                value: new AggregateVariableType(value.getAggregateType(), editState.listVariable.id, newField)
+                type: VariableTypeName.LATEST,
+                value: new LatestVariableType(value.getFormId(), {[newField]: false}, value.getFilters())
             }
         });
     }
@@ -52,15 +43,15 @@
     function onFilterChange(newFilters: JournalEntryFilter[]) {
         filters = newFilters;
         variableEditProvider.updateVariable({
-            ...editState.listVariable, type: {
-                type: VariableTypeName.LIST,
-                value: new ListVariableType(editState.listVariableValue.getFormId(),
-                    editState.listVariableValue.getFields(), $state.snapshot(newFilters))
+            ...variable, type: {
+                type: VariableTypeName.LATEST,
+                value: new LatestVariableType(value.getFormId(),
+                    value.getFields(), $state.snapshot(newFilters))
             }
         });
     }
 
-    let entityFormId = $derived(editState.listVariableValue.getFormId());
+    let entityFormId = $derived(value.getFormId());
     let questions = $derived(editState.forms.find(f => f.id == entityFormId)?.questions);
 
     let entities = $derived(editState.entities.map(v => {
@@ -80,10 +71,6 @@
 </script>
 
 <div class="flex flex-col gap-2">
-    <div class="row-between">
-        Type
-        <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={(v) => aggregateType = v}/>
-    </div>
     <div class="row-between">
         Entity
         <DropdownButton items={entities} value={entityFormId} onChange={onEntityChange}/>

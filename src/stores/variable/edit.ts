@@ -13,6 +13,7 @@ import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
 import {CalculationOperator, CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
+import {LatestVariableType} from "@perfice/services/variable/types/latest";
 
 export enum VariableChangeType {
     CREATE,
@@ -97,6 +98,17 @@ export class VariableEditProvider {
                         type: {
                             type: VariableTypeName.TAG,
                             value: new TagVariableType("")
+                        }
+                    }
+                };
+            case VariableTypeName.LATEST:
+                return {
+                    variable: {
+                        id: crypto.randomUUID(),
+                        name: "Tag",
+                        type: {
+                            type: VariableTypeName.LATEST,
+                            value: new LatestVariableType("", {}, [])
                         }
                     }
                 };

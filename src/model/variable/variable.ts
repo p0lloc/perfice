@@ -6,6 +6,7 @@ import type {TimeScope} from "@perfice/model/variable/time/time";
 import {type GoalVariableType} from "@perfice/services/variable/types/goal";
 import type {CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import type { TagVariableType } from "@perfice/services/variable/types/tag";
+import type {LatestVariableType} from "@perfice/services/variable/types/latest";
 
 export interface StoredVariable {
     id: string;
@@ -32,7 +33,8 @@ export enum VariableTypeName {
     AGGREGATE = "AGGREGATE",
     GOAL = "GOAL",
     CALCULATION = "CALCULATION",
-    TAG = "TAG"
+    TAG = "TAG",
+    LATEST = "LATEST"
 }
 
 export interface VT<T extends VariableTypeName, V extends VariableType> {
@@ -66,6 +68,7 @@ export type VariableTypeDef =
     | VT<VariableTypeName.GOAL, GoalVariableType>
     | VT<VariableTypeName.CALCULATION, CalculationVariableType>
     | VT<VariableTypeName.TAG, TagVariableType>
+    | VT<VariableTypeName.LATEST, LatestVariableType>
     ;
 
 

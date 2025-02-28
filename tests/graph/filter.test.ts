@@ -2,11 +2,12 @@ import {DummyIndexCollection, DummyJournalCollection, DummyTagEntryCollection} f
 import {EntryAction, VariableGraph} from "../../src/services/variable/graph";
 import {expect, test} from "vitest";
 import {Variable, VariableTypeName} from "../../src/model/variable/variable";
-import {FilterComparisonOperator, ListVariableType} from "../../src/services/variable/types/list";
+import {ListVariableType} from "../../src/services/variable/types/list";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {pDisplay, pJournalEntry, pList, pNumber, pString} from "../../src/model/primitive/primitive";
 import {mockEntry} from "../common";
 import {JournalEntry} from "../../src/model/journal/journal";
+import {FilterComparisonOperator} from "../../src/services/variable/filtering";
 
 // Returns all entries with field > 10
 test("simple list variable with filter", async () => {

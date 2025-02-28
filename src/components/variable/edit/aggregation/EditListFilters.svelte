@@ -1,14 +1,14 @@
 <script lang="ts">
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
-    import {FilterComparisonOperator, type ListVariableFilter} from "@perfice/services/variable/types/list";
     import {pString} from "@perfice/model/primitive/primitive";
     import EditListFilter from "@perfice/components/variable/edit/aggregation/EditListFilter.svelte";
     import {updateIdentifiedInArray} from "@perfice/util/array";
+    import {FilterComparisonOperator, type JournalEntryFilter} from "@perfice/services/variable/filtering";
 
     let {filters, onChange, fields}: {
-        filters: ListVariableFilter[],
-        onChange: (v: ListVariableFilter[]) => void,
+        filters: JournalEntryFilter[],
+        onChange: (v: JournalEntryFilter[]) => void,
         fields: ({ value: string, name: string }[]) | undefined
     } = $props();
 
@@ -21,11 +21,11 @@
         }]);
     }
 
-    function onFilterChange(filter: ListVariableFilter) {
+    function onFilterChange(filter: JournalEntryFilter) {
         onChange(updateIdentifiedInArray(filters, filter));
     }
 
-    function onRemoveFilter(filter: ListVariableFilter) {
+    function onRemoveFilter(filter: JournalEntryFilter) {
         onChange(filters.filter(f => f.id != filter.id));
     }
 </script>

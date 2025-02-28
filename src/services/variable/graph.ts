@@ -11,7 +11,6 @@ import {
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
 
-
 export interface FormIdDependent {
     /**
      * Returns ids of forms that this variable depends on.
@@ -357,7 +356,6 @@ export class VariableGraph {
         return result;
     }
 
-
     /**
      * Removes all dependencies for the given variable.
      */
@@ -464,4 +462,5 @@ export class BaseVariableEvaluator implements VariableEvaluator {
     getTimeScope(): TimeScope {
         return this.timeContext;
     }
+
 }

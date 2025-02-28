@@ -11,6 +11,7 @@ import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/
 import {WeekStart} from "@perfice/model/variable/time/time";
 import {CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
+import {LatestVariableType} from "@perfice/services/variable/types/latest";
 
 export const GOAL_CONDITION_DESERIALIZERS:
     Record<string, (value: any) => GoalConditionValue> = {
@@ -88,6 +89,11 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<VariableTypeName, (value: any) 
         value.entries,
     ),
     [VariableTypeName.TAG]: (value: any) => new TagVariableType(value.tagId),
+    [VariableTypeName.LATEST]: (value: any) => new LatestVariableType(
+        value.formId,
+        value.fields,
+        value.filters
+    ),
 };
 
 export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: VariableType) => object> = {
@@ -124,6 +130,14 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
         let tagType = value as TagVariableType;
         return {
             tagId: tagType.getTagId()
+        }
+    },
+    [VariableTypeName.LATEST]: (value: VariableType) => {
+        let listType = value as LatestVariableType;
+        return {
+            formId: listType.getFormId(),
+            fields: listType.getFields(),
+            filters: listType.getFilters(),
         }
     },
 }

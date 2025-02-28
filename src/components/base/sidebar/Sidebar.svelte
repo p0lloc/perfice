@@ -36,7 +36,7 @@
 </script>
 
 {#if visible}
-    <div class="right-sidebar {className}">
+    <div class="right-sidebar md:w-96 {className}">
         <div class="row-between text-2xl p-4 font-bold border-b">
             {#if title != null}
                 <h2 class="text-3xl font-bold">{title}</h2>

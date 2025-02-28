@@ -1,5 +1,4 @@
 <script lang="ts">
-    import {FilterComparisonOperator, type ListVariableFilter} from "@perfice/services/variable/types/list";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {FILTER_COMPARISON_OPERATORS} from "@perfice/model/variable/ui";
     import {
@@ -12,9 +11,10 @@
     import {faTrash} from "@fortawesome/free-solid-svg-icons";
     import EditListOperatorValue from "@perfice/components/variable/edit/aggregation/EditListOperatorValue.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
+    import {FilterComparisonOperator, type JournalEntryFilter} from "@perfice/services/variable/filtering";
 
     let {filter, onChange, fields, onRemove}: {
-        filter: ListVariableFilter, onChange: (v: ListVariableFilter) => void,
+        filter: JournalEntryFilter, onChange: (v: JournalEntryFilter) => void,
 
         fields: ({ value: string, name: string }[]) | undefined,
         onRemove: () => void,

@@ -20,6 +20,20 @@ export class DummyJournalCollection implements JournalCollection {
         this.entries = entries;
     }
 
+    clear(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    createEntries(entries: JournalEntry[]): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    getAllEntries(): Promise<JournalEntry[]> {
+        throw new Error("Method not implemented.");
+    }
+    getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
+        throw new Error("Method not implemented.");
+    }
+
     async getEntriesByFormIdUntilTime(formId: string, upper: number): Promise<JournalEntry[]> {
         return this.entries.filter(e => e.formId == formId && e.timestamp <= upper);
     }
@@ -199,6 +213,10 @@ export class DummyTrackableCollection implements TrackableCollection {
 
     constructor(trackables: Trackable[] = []) {
         this.trackables = trackables;
+    }
+
+    count(): Promise<number> {
+        throw new Error("Method not implemented.");
     }
 
     updateTrackables(items: Trackable[]): Promise<void> {

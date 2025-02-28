@@ -7,6 +7,7 @@
     import type {ConstantOrVariable} from "@perfice/services/variable/types/goal";
     import EditVariableName from "@perfice/components/variable/edit/EditVariableName.svelte";
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
+    import EditLatestVariable from "@perfice/components/variable/edit/latest/EditLatestVariable.svelte";
 
     let {variableId, onEdit}: {
         variableId: string,
@@ -24,6 +25,7 @@
     }>>> = {
         [VariableTypeName.AGGREGATE]: EditAggregationVariable,
         [VariableTypeName.CALCULATION]: EditCalculationVariable,
+        [VariableTypeName.LATEST]: EditLatestVariable,
     };
 
     async function loadVariable(variableId: string) {

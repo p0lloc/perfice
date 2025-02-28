@@ -3,12 +3,19 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
-    let {icon, title, description, onClick}: { icon?: IconDefinition, title: string, description: string, onClick: () => void } = $props();
+    let {icon, title, description, onClick}: {
+        icon?: IconDefinition,
+        title: string,
+        description: string,
+        onClick: () => void
+    } = $props();
 </script>
 <button class="border px-4 flex items-center gap-4 w-full rounded-xl hover-feedback h-24" onclick={onClick}>
+<span class="w-8">
     {#if icon != null}
         <Fa icon={icon} size="2.0x"/>
     {/if}
+</span>
     <div class="text-left">
         <h2 class="text-xl font-bold">{title}</h2>
         <p>{description}</p>

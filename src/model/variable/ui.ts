@@ -10,9 +10,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {TimeScopeType, type TimeScope, SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {formatDateYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format";
-import {ComparisonOperator} from "@perfice/services/variable/types/goal";
-import {FilterComparisonOperator} from "@perfice/services/variable/types/list";
 import {CalculationOperator} from "@perfice/services/variable/types/calculation";
+import { FilterComparisonOperator } from "@perfice/services/variable/filtering";
 
 export const AGGREGATE_TYPES = [
     {

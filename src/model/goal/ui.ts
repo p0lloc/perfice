@@ -2,6 +2,7 @@ import {PrimitiveValueType, type PrimitiveValue, primitiveAsNumber} from "../pri
 import {VariableTypeName} from "@perfice/model/variable/variable";
 import {ComparisonOperator, type ConstantOrVariable, type GoalCondition, GoalConditionType} from "@perfice/services/variable/types/goal";
 import {
+    faAsterisk,
     faBullseye, faDivide,
     faEquals,
     faGreaterThan,
@@ -88,6 +89,12 @@ export const COMPARISON_SOURCE_TYPES = [
         name: "Calculation",
         description: "Calculation between variables",
         icon: faPlusMinus,
+    },
+    {
+        type: VariableTypeName.LATEST,
+        name: "Latest",
+        description: "Use the latest available value",
+        icon: faAsterisk,
     },
 ];
 
