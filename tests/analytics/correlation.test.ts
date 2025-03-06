@@ -1,0 +1,393 @@
+import {expect, test} from "vitest";
+import {DummyFormService, DummyJournalCollection} from "../dummy-collections";
+import {mockEntry, mockForm} from "./raw.test";
+import {pNumber, pString} from "../../src/model/primitive/primitive";
+import {AnalyticsService} from "../../src/services/analytics/analytics";
+import {FormQuestionDataType} from "../../src/model/form/form";
+import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+
+
+test("flatten quantitative values", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24)
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+
+    expect(flattened).toEqual(new Map([
+        ["test_form:test", new Map([
+            [0, 15],
+            [1000 * 60 * 60 * 24, 17]
+        ])],
+    ]));
+});
+
+
+test("filter matching timestamps", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, 10),
+
+        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24), // This should not be included since it's not in the first dataset
+
+        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form2", {"test": pNumber(10.0)}, 1000 * 60 * 60 * 24 * 3 - 20000),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.NUMBER
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
+        false,
+        false,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7
+    );
+
+    expect(matching).toEqual({
+        first: [15, 45],
+        second: [17, 10],
+        timestamps: [0, 1000 * 60 * 60 * 24 * 3]
+    });
+});
+
+test("filter matching timestamps with categorical non-empty", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form2", {"test": pString("category1")}, 10),
+
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24), // This should not be included since it's not in the first dataset
+
+        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 20000),
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 30000),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.TEXT
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!,
+        flattened.get("cat_test_form2:test:category1")!,
+        false,
+        false,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7
+    );
+
+    expect(matching).toEqual({
+        first: [15, 45],
+        second: [1, 2],
+        timestamps: [0, 1000 * 60 * 60 * 24 * 3]
+    });
+});
+
+
+test("filter matching timestamps with categorical empty", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        // Test_form2 is missing data for timestamp 0 but we allow empty
+
+        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 20000),
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 30000),
+
+        // First still doesn't allow empty so this shouldn't be included
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 4),
+
+        mockEntry("test_form", {"test": pNumber(69.0)}, 1000 * 60 * 60 * 24 * 5),
+        // Test_form2 is missing data for day 5 but we allow empty
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.TEXT
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!,
+        flattened.get("cat_test_form2:test:category1")!,
+        false,
+        true,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7
+    );
+
+    expect(matching).toEqual({
+        first: [15, 45, 69],
+        second: [0, 2, 0],
+        timestamps: [0, 1000 * 60 * 60 * 24 * 3, 1000 * 60 * 60 * 24 * 5]
+    });
+});
+
+test("filter matching timestamps with categorical empty, order switched", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        // Test_form2 is missing data for timestamp 0 but we allow empty
+
+        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 20000),
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 30000),
+
+        // First still doesn't allow empty so this shouldn't be included
+        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 4),
+
+        mockEntry("test_form", {"test": pNumber(69.0)}, 1000 * 60 * 60 * 24 * 5),
+        // Test_form2 is missing data for day 5 but we allow empty
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.TEXT
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("cat_test_form2:test:category1")!,
+        flattened.get("test_form:test")!,
+        true,
+        false,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7
+    );
+
+    expect(matching).toEqual({
+        first: [0, 2, 0],
+        second: [15, 45, 69],
+        timestamps: [0, 1000 * 60 * 60 * 24 * 3, 1000 * 60 * 60 * 24 * 5]
+    });
+});
+
+
+test("filter matching timestamps with both empty", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+
+        mockEntry("test_form", {"test": pNumber(45.0)}, -1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form2", {"test": pString("category1")}, -1000 * 60 * 60 * 24 * 3 - 20000),
+        mockEntry("test_form2", {"test": pString("category1")}, -1000 * 60 * 60 * 24 * 3 - 30000),
+
+        mockEntry("test_form2", {"test": pString("category1")}, -1000 * 60 * 60 * 24 * 4),
+
+        mockEntry("test_form", {"test": pNumber(69.0)}, -1000 * 60 * 60 * 24 * 5),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.TEXT
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!,
+        flattened.get("cat_test_form2:test:category1")!,
+        true,
+        true,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7
+    );
+
+    expect(matching).toEqual({
+        first: [0, 69, 0, 45, 0, 0, 15],
+        second: [0, 0, 1, 2, 0, 0, 0],
+        timestamps: [
+            -1000 * 60 * 60 * 24 * 6,
+            -1000 * 60 * 60 * 24 * 5,
+            -1000 * 60 * 60 * 24 * 4,
+            -1000 * 60 * 60 * 24 * 3,
+            -1000 * 60 * 60 * 24 * 2,
+            -1000 * 60 * 60 * 24 * 1,
+            0
+        ]
+    });
+});
+
+test("flatten categorical values", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pString("category1")}, 0),
+        mockEntry("test_form", {"test": pString("category1")}, 0),
+        mockEntry("test_form", {"test": pString("category2")}, 1000 * 60 * 60 * 24),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.TEXT
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+
+    expect(flattened).toEqual(new Map([
+        ["cat_test_form:test:category1", new Map([
+            [0, 2],
+        ])],
+        ["cat_test_form:test:category2", new Map([
+            [1000 * 60 * 60 * 24, 1]
+        ])]
+    ]));
+});
+
+test("week day dataset is_monday", async () => {
+    const journal = new DummyJournalCollection([]);
+    const analytics = new AnalyticsService(new DummyFormService(), journal);
+
+    let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0),7, 1);
+    expect(dataset).toEqual(new Map([
+        [-1000 * 60 * 60 * 24 * 6, 0],
+        [-1000 * 60 * 60 * 24 * 5, 0],
+        [-1000 * 60 * 60 * 24 * 4, 0],
+        [-1000 * 60 * 60 * 24 * 3, 1], // This should be monday
+        [-1000 * 60 * 60 * 24 * 2, 0],
+        [-1000 * 60 * 60 * 24 * 1, 0],
+        [-1000 * 60 * 60 * 24 * 0, 0], // Thursday
+    ]));
+});
+
+test("week day dataset is_tuesday", async () => {
+    const journal = new DummyJournalCollection([]);
+    const analytics = new AnalyticsService(new DummyFormService(), journal);
+
+    let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 2);
+    expect(dataset).toEqual(new Map([
+        [-1000 * 60 * 60 * 24 * 6, 0],
+        [-1000 * 60 * 60 * 24 * 5, 0],
+        [-1000 * 60 * 60 * 24 * 4, 0],
+        [-1000 * 60 * 60 * 24 * 3, 0],
+        [-1000 * 60 * 60 * 24 * 2, 1], // This should be tuesday
+        [-1000 * 60 * 60 * 24 * 1, 0],
+        [-1000 * 60 * 60 * 24 * 0, 0], // Thursday
+    ]));
+});
+
+
+test("filter matching timestamps with week day dataset", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(45.0)}, -1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form", {"test": pNumber(69.0)}, -1000 * 60 * 60 * 24 * 5),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let mondayDataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 1);
+    flattened.set("is_monday", mondayDataset);
+
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!,
+        flattened.get("is_monday")!,
+        true,
+        true,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7
+    );
+
+    expect(matching).toEqual({
+        first: [0, 69, 0, 45, 0, 0, 15],
+        second: [0, 0, 0, 1, 0, 0, 0],
+        timestamps: [
+            -1000 * 60 * 60 * 24 * 6,
+            -1000 * 60 * 60 * 24 * 5,
+            -1000 * 60 * 60 * 24 * 4,
+            -1000 * 60 * 60 * 24 * 3,
+            -1000 * 60 * 60 * 24 * 2,
+            -1000 * 60 * 60 * 24 * 1,
+            0
+        ]
+    });
+});
+
+test("basic correlation", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(45.0)}, -1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form", {"test": pNumber(69.0)}, -1000 * 60 * 60 * 24 * 5),
+        mockEntry("test_form2", {"test": pNumber(69.0)}, -1000 * 60 * 60 * 24 * 5),
+        mockEntry("test_form3", {"test": pString("cat1")}, -1000 * 60 * 60 * 24 * 5),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form3", {
+                "test": FormQuestionDataType.TEXT,
+            }),
+        ],
+    ), journal);
+
+    await analytics.runBasicCorrelations(new Date(0), 7, 3);
+
+});

@@ -21,6 +21,7 @@ import { DexieGoalCollection } from "./goal";
 import {DexieTagCategoryCollection, DexieTagCollection } from "./tag";
 import {DexieTagEntryCollection} from "@perfice/db/dexie/tag";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
+import type {AnalyticsSettings} from "@perfice/services/analytics/analytics";
 
 type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -35,11 +36,12 @@ type DexieDB = Dexie & {
     tagEntries: EntityTable<TagEntry, 'id'>;
     formTemplates: EntityTable<FormTemplate, 'id'>;
     tagCategories: EntityTable<TagCategory, 'id'>;
+    analyticsSettings: EntityTable<AnalyticsSettings, 'formId'>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(10).stores({
+    db.version(11).stores({
         "trackables": "id",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, [formId+timestamp]",
@@ -51,7 +53,8 @@ function loadDb(): DexieDB {
         "goals": "id, variableId",
         "tags": "id",
         "tagEntries": "id, tagId, [tagId+timestamp]",
-        "formTemplates": "id, formId"
+        "formTemplates": "id, formId",
+        "analyticsSettings": "formId"
     });
 
     return db;

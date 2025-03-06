@@ -25,6 +25,14 @@ export function extractValueFromDisplay(p: PrimitiveValue): PrimitiveValue {
     return p;
 }
 
+export function extractDisplayFromDisplay(p: PrimitiveValue): PrimitiveValue {
+    if (p.type == PrimitiveValueType.DISPLAY && p.value.display != null) {
+        return p.value.display;
+    }
+
+    return p;
+}
+
 export function extractFieldsFromAnswers(answers: Record<string, PrimitiveValue>, template: Record<string, boolean>): Record<string, PrimitiveValue> {
     let result: Record<string, PrimitiveValue> = {};
     for (let [key, display] of Object.entries(template)) {

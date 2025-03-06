@@ -92,8 +92,9 @@ export class JournalService {
     }
 
     async import(entries: JournalEntry[], overwrite: boolean) {
+        if(entries.length == 0) return;
         if (overwrite) {
-            await this.collection.clear();
+            await this.collection.deleteEntriesByFormId(entries[0].formId);
         }
 
         await this.collection.createEntries(entries);
@@ -106,4 +107,13 @@ export class JournalService {
     async getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
         return this.collection.getEntriesByFormId(formId);
     }
+
+    getEntriesFromTime(lower: number): Promise<JournalEntry[]> {
+        return this.collection.getEntriesFromTime(lower);
+    }
+
+    getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]> {
+        return this.collection.getEntriesByFormIdFromTime(formId, lower);
+    }
+
 }

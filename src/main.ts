@@ -45,6 +45,8 @@ import { EntryImportService } from './services/import/import';
 import { EntryExportService } from './services/export/export';
 import { EntryExportStore } from "@perfice/stores/export/export";
 import { closableState } from './model/ui/modal';
+import { AnalyticsService } from './services/analytics/analytics';
+import {AnalyticsStore} from "@perfice/stores/analytics/analytics";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -71,6 +73,8 @@ const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
+const analyticsService = new AnalyticsService(formService, db.entries);
+
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);
 export const variables = new VariableStore(variableService);
@@ -90,6 +94,8 @@ export const variableEditProvider = new VariableEditProvider(variableService, fo
 
 export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);
+
+export const analytics = new AnalyticsStore(analyticsService, forms);
 
 export const appReady = writable(false);
 

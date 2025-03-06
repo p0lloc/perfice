@@ -236,6 +236,15 @@ export function primitiveAsNumber(value: PrimitiveValue): number {
 }
 
 
+export function primitiveAsString(value: PrimitiveValue): string {
+    if(value.type == PrimitiveValueType.STRING){
+        return value.value;
+    }
+
+    return value.value?.toString() ?? "";
+}
+
+
 export function primitiveAsType(value: PrimitiveValue, type: PrimitiveValueType): PrimitiveValue {
     if (value.type == type) return value;
 
@@ -244,7 +253,7 @@ export function primitiveAsType(value: PrimitiveValue, type: PrimitiveValueType)
     }
 
     if (type == PrimitiveValueType.STRING) {
-        return pString(value.value?.toString() ?? "");
+        return pString(primitiveAsString(value));
     }
 
     return getDefaultPrimitiveValue(type);

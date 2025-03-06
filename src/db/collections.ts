@@ -1,57 +1,81 @@
-import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
-import type { Goal } from "@perfice/model/goal/goal";
-import type { Tag, TagCategory } from "@perfice/model/tag/tag";
+import type {Goal} from "@perfice/model/goal/goal";
+import type {Tag, TagCategory} from "@perfice/model/tag/tag";
+import type {AnalyticsSettings} from "@perfice/services/analytics/analytics";
 
 export interface TrackableCollection {
     count(): Promise<number>;
+
     getTrackables(): Promise<Trackable[]>;
+
     getTrackableById(id: string): Promise<Trackable | undefined>;
+
     createTrackable(trackable: Trackable): Promise<void>;
+
     updateTrackable(trackable: Trackable): Promise<void>;
+
     deleteTrackableById(trackableId: string): Promise<void>;
+
     updateTrackables(items: Trackable[]): Promise<void>;
 }
 
 export interface TrackableCategoryCollection {
     getCategoryById(categoryId: string): Promise<TrackableCategory | undefined>;
+
     getCategories(): Promise<TrackableCategory[]>;
+
     createCategory(category: TrackableCategory): Promise<void>;
+
     updateCategory(category: TrackableCategory): Promise<void>;
+
     deleteCategoryById(categoryId: string): Promise<void>;
 }
 
 
 export interface TagCategoryCollection {
     getCategoryById(categoryId: string): Promise<TagCategory | undefined>;
+
     getCategories(): Promise<TagCategory[]>;
+
     createCategory(category: TagCategory): Promise<void>;
+
     updateCategory(category: TagCategory): Promise<void>;
+
     deleteCategoryById(categoryId: string): Promise<void>;
 }
 
 export interface VariableCollection {
     getVariables(): Promise<StoredVariable[]>;
+
     getVariableById(id: string): Promise<StoredVariable | undefined>;
+
     createVariable(stored: StoredVariable): Promise<void>;
 
     deleteVariableById(variableId: string): Promise<void>;
+
     updateVariable(variable: StoredVariable): Promise<void>;
 }
 
 export interface FormTemplateCollection {
     createFormTemplate(template: FormTemplate): Promise<void>;
+
     getTemplatesByFormId(formId: string): Promise<FormTemplate[]>;
+
     updateFormTemplate(template: FormTemplate): Promise<void>;
 }
 
 export interface FormCollection {
     getForms(): Promise<Form[]>;
+
     getFormById(id: string): Promise<Form | undefined>;
+
     createForm(form: Form): Promise<void>;
+
     updateForm(form: Form): Promise<void>;
+
     deleteFormById(id: string): Promise<void>;
 }
 
@@ -79,6 +103,12 @@ export interface GoalCollection {
     deleteGoalById(id: string): Promise<void>;
 }
 
+export interface AnalyticsSettingsCollection {
+    getAllSettings(): Promise<AnalyticsSettings[]>;
+
+    getSettingsByFormId(formId: string): Promise<AnalyticsSettings | undefined>;
+}
+
 export interface JournalCollection {
     getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<JournalEntry[]>;
 
@@ -89,6 +119,8 @@ export interface JournalCollection {
     getEntriesByFormIdUntilTime(formId: string, upper: number): Promise<JournalEntry[]>;
 
     getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]>;
+
+    getEntriesFromTime(lower: number): Promise<JournalEntry[]>;
 
     createEntry(entry: JournalEntry): Promise<void>;
 

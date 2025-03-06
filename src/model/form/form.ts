@@ -15,6 +15,10 @@ export enum FormQuestionDataType {
     BOOLEAN = "BOOLEAN",
 }
 
+export function isFormQuestionNumberRepresentable(dataType: FormQuestionDataType) {
+    return dataType === FormQuestionDataType.NUMBER || dataType == FormQuestionDataType.TIME_ELAPSED;
+}
+
 export enum FormQuestionDisplayType {
     INPUT = "INPUT",
     SELECT = "SELECT",

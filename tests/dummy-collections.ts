@@ -12,6 +12,7 @@ import {Form, FormSnapshot} from "../src/model/form/form";
 import {JournalService} from "../src/services/journal/journal";
 import {EntityObserverCallback, EntityObserverType} from "../src/services/observer";
 import {Trackable} from "../src/model/trackable/trackable";
+import Dexie from "dexie";
 
 export class DummyJournalCollection implements JournalCollection {
     private entries: JournalEntry[];
@@ -22,6 +23,10 @@ export class DummyJournalCollection implements JournalCollection {
 
     clear(): Promise<void> {
         throw new Error("Method not implemented.");
+    }
+
+    async getEntriesFromTime(lower: number): Promise<JournalEntry[]> {
+        return this.entries.filter(e => e.timestamp >= lower);
     }
 
     createEntries(entries: JournalEntry[]): Promise<void> {

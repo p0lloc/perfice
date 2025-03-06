@@ -10,6 +10,15 @@ export const WEEK_DAYS_SHORT = [
     "Sat",
 ];
 
+export const WEEK_DAY_TO_NAME = new Map([
+    [0, "Sunday"],
+    [1, "Monday"],
+    [2, "Tuesday"],
+    [3, "Wednesday"],
+    [4, "Thursday"],
+    [5, "Friday"],
+    [6, "Saturday"],
+])
 
 export const MONTHS_SHORT = [
     "Jan",
@@ -61,7 +70,7 @@ export function formatDateLongTerm(date: Date) {
 }
 
 export function formatDateLongTermOrHHMM(date: Date, currentDate: Date) {
-    if(isSameDay(date, currentDate)) {
+    if (isSameDay(date, currentDate)) {
         return formatTimestampHHMM(date.getTime());
     }
 

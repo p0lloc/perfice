@@ -28,6 +28,12 @@ export class DexieJournalCollection implements JournalCollection {
             .toArray();
     }
 
+    async getEntriesFromTime(start: number): Promise<JournalEntry[]> {
+        return this.table.where("timestamp")
+            .aboveOrEqual(start)
+            .toArray();
+    }
+
     async getEntriesByFormIdUntilTime(formId: string, start: number): Promise<JournalEntry[]> {
         return this.table.where("timestamp")
             .belowOrEqual(start)
