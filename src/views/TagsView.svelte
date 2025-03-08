@@ -7,6 +7,7 @@
     import {weekStart, categorizedTags} from "@perfice/main";
     import TagCategoryContainer from "@perfice/components/tag/TagCategoryContainer.svelte";
     import LineButton from "@perfice/components/base/button/LineButton.svelte";
+    import {faTags} from "@fortawesome/free-solid-svg-icons";
 
     function onDateChange(e: Date) {
         $tagDate = e;
@@ -29,7 +30,7 @@
     })
 </script>
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
-    <TitleAndCalendar date={$tagDate} onDateChange={onDateChange} title="Tags"/>
+    <TitleAndCalendar date={$tagDate} onDateChange={onDateChange} title="Tags" icon={faTags}/>
 
     <div class="flex flex-col gap-8">
         {#await $categorizedTags}

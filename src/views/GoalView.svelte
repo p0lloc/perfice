@@ -4,7 +4,7 @@
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import GoalNewCard from "@perfice/components/goal/GoalNewCard.svelte";
     import {onMount} from "svelte";
-    import {faBars} from "@fortawesome/free-solid-svg-icons";
+    import {faBars, faBullseye} from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
@@ -26,7 +26,7 @@
     {/snippet}
 </MobileTopBar>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
-    <TitleAndCalendar date={$goalDate} onDateChange={onDateChange} title="Goals"/>
+    <TitleAndCalendar date={$goalDate} onDateChange={onDateChange} title="Goals" icon={faBullseye}/>
     {#await $goals}
         Loading...
     {:then value}

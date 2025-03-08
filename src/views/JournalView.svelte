@@ -5,13 +5,14 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBars, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faBars, faBook, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import {deleteIdentifiedInArray} from "@perfice/util/array";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
+    import Title from "@perfice/components/base/title/Title.svelte";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntry>;
@@ -98,7 +99,7 @@
         Loading...
     {:then days}
         <div class="row-between items-center mb-8 md:flex hidden">
-            <h1 class="text-4xl font-bold">Journal</h1>
+            <Title title="Journal" icon={faBook}/>
             <div class="row-gap">
                 {#if selectMode}
                     {selectedEntries.length} selected

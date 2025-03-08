@@ -6,7 +6,7 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import {faBars} from "@fortawesome/free-solid-svg-icons";
+    import {faBars, faRuler} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
@@ -64,7 +64,7 @@
 <EntryImportResultModal bind:this={importResultModal}/>
 
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
-    <TitleAndCalendar date={$trackableDate} onDateChange={onDateChange} title="Trackables"/>
+    <TitleAndCalendar date={$trackableDate} onDateChange={onDateChange} title="Trackables" icon={faRuler} />
 
     <TrackableList date={$trackableDate} weekStart={$weekStart}
                    onEdit={onEditTrackable} onLog={onLogTrackable}/>
