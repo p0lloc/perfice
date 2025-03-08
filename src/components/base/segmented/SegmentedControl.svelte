@@ -11,7 +11,8 @@
         onChange,
         inverted = false,
         disabled = false,
-        comparisonFunction = (first, second) => first === second
+        comparisonFunction = (first, second) => first === second,
+        segmentClass
     }: {
         segments: SegmentedItem<T>[],
         value: T,
@@ -20,6 +21,7 @@
         inverted?: boolean,
         disabled?: boolean,
         comparisonFunction?: (first: T | undefined, second: T | undefined) => boolean
+        segmentClass?: string
     } = $props();
 
     function onSegmentClick(value: SegmentedItem<T>) {
@@ -34,7 +36,7 @@
 
 <div class:segmented-normal="{!inverted}" class:segmented-inverted="{inverted}" class="inline-flex min-w-0 {className}">
     {#each segments as segment (segment.value)}
-        <Segment active={comparisonFunction(value, segment.value)} {inverted}
+        <Segment class={segmentClass} active={comparisonFunction(value, segment.value)} {inverted}
                  onClick={() => onSegmentClick(segment)}>
 
             {#if segment.prefix != null}
