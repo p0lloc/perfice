@@ -73,6 +73,99 @@ test("filter matching timestamps", async () => {
     });
 });
 
+
+test("filter matching timestamps with lag", async () => {
+    const journal = new DummyJournalCollection([
+
+        // Timestamp for 0 should be matched with the next day since it's lagged
+        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+
+        mockEntry("test_form2", {"test": pNumber(55.0)}, 1000 * 60 * 60 * 24),
+
+        // This should also be matched with the next day
+        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 2),
+
+        mockEntry("test_form2", {"test": pNumber(30.0)}, 1000 * 60 * 60 * 24 * 3 - 20000),
+        mockEntry("test_form2", {"test": pNumber(70.0)}, 1000 * 60 * 60 * 24 * 3 - 30000),
+
+        // This should not be included at all
+        mockEntry("test_form", {"test": pNumber(50.0)}, 1000 * 60 * 60 * 24 * 3),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.NUMBER
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
+        false,
+        false,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7,
+        true
+    );
+
+    expect(matching).toEqual({
+        first: [15, 45],
+        second: [55, 50],
+        timestamps: [0, 1000 * 60 * 60 * 24 * 2]
+    });
+});
+
+test("filter matching timestamps with lag, whole range", async () => {
+    const journal = new DummyJournalCollection([
+        mockEntry("test_form", {"test": pNumber(99.0)}, -1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pNumber(33.0)}, -1000 * 60 * 60 * 24 * 3),
+    ]);
+    const analytics = new AnalyticsService(new DummyFormService(
+        [
+            mockForm("test_form", {
+                "test": FormQuestionDataType.NUMBER
+            }),
+            mockForm("test_form2", {
+                "test": FormQuestionDataType.NUMBER
+            })
+        ],
+    ), journal);
+
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let flattened = analytics.flattenRawValues(values);
+    let matching = analytics.filterMatchingTimestamps(
+        flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
+        true,
+        true,
+        new Date(0),
+        SimpleTimeScopeType.DAILY,
+        7,
+        true
+    );
+
+    expect(matching).toEqual({
+        // Note: The timestamp will still be 4 days ago, since that is when the first value "caused" the second value on the next day
+        // High steps (99) on day 4 caused high mood (33) on the next day
+        first: [0, 0, 99, 0, 0, 0],
+        second: [0, 0, 33, 0, 0, 0],
+        timestamps: [
+            -1000 * 60 * 60 * 24 * 6,
+            -1000 * 60 * 60 * 24 * 5,
+            -1000 * 60 * 60 * 24 * 4,
+            -1000 * 60 * 60 * 24 * 3,
+            -1000 * 60 * 60 * 24 * 2,
+            -1000 * 60 * 60 * 24 * 1,
+        ]
+    });
+})
+
 test("filter matching timestamps with categorical non-empty", async () => {
     const journal = new DummyJournalCollection([
         mockEntry("test_form", {"test": pNumber(13.0)}, 0),

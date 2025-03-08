@@ -8,13 +8,16 @@
     let forms = $state<Form[]>([]);
 
 
-    function convertSingleKey(key: string){
+    function convertSingleKey(key: string): string {
         if(key.startsWith("cat_")){
             key = key.substring(4);
         }
 
         if(key.startsWith("wd_")){
             return key.substring(3);
+        }
+        if(key.startsWith("lag_")){
+            return "lagged " + convertSingleKey(key.substring(4));
         }
 
         let parts = key.split(":");
@@ -38,6 +41,10 @@
         let first = parts[0];
         let second = parts[1];
 
+        if(first.startsWith("lag_")){
+            return convertSingleKey(second) + " after days with " + convertSingleKey(first.substring(4));
+        }
+
         return `${convertSingleKey(first)} | ${convertSingleKey(second)}`;
     }
 
@@ -56,41 +63,13 @@
 
 <div class="mx-auto w-1/2">
     {#each res.entries() as [key, value]}
-        {#if value.coefficient >= 0.2}
+        {#if Math.abs(value.coefficient) >= 0.6 && Math.min(value.firstSize, value.secondSize) >= 5 && !key.includes("wd_")}
             <div >
                 <p class="font-bold">{convertResultKey(key)}: {value.coefficient}</p>
                 <p>[{value.first.join(", ")}]</p>
                 <p>[{value.second.join(", ")}]</p>
+                <p>[{value.timestamps.join(", ")}]</p>
             </div>
         {/if}
     {/each}
-    <!--
-        {#each forms as form}
-            <div class="mt-4">
-                <h2 class="text-2xl">
-                    {form.name}
-                </h2>
-                {#each form.questions as question}
-                    <div>
-                        <span class="text-xl">{question.name}</span>
-                        {#each res.get(form.id)?.get(question.id)?.values ?? [] as [k, v]}
-                            <div>
-                                {#if typeof k == "number"}
-                                    {formatDateYYYYMMDD(new Date(k))}
-                                    {v.value} / {v.count}
-                                {:else}
-                                    {k}
-                                    {#each v.entries() as [timestamp, freq]}
-                                        <p>                                    {formatDateYYYYMMDD(new Date(timestamp))}
-                                            : {freq}
-                                        </p>
-                                    {/each}
-                                {/if}
-                            </div>
-                        {/each}
-                    </div>
-                {/each}
-            </div>
-        {/each}
-    -->
 </div>

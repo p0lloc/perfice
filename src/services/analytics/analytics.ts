@@ -13,6 +13,28 @@ import {WEEK_DAY_TO_NAME} from "@perfice/util/time/format";
 
 const WEEK_DAY_KEY_PREFIX = "wd_";
 const CATEGORICAL_KEY_PREFIX = "cat_";
+const LAG_KEY_PREFIX = "lag_";
+
+export enum DatasetKeyType {
+    QUANTITATIVE,
+    WEEK_DAY,
+    CATEGORICAL,
+    LAGGED
+}
+
+export function getDatasetKeyType(key: string): [DatasetKeyType, boolean] {
+    let lagged = false;
+    if (key.startsWith(LAG_KEY_PREFIX)){
+        lagged = true;
+    }
+
+    key = lagged ? key.substring(LAG_KEY_PREFIX.length) : key;
+
+    if (key.startsWith(WEEK_DAY_KEY_PREFIX)) return [DatasetKeyType.WEEK_DAY, lagged];
+    if (key.startsWith(CATEGORICAL_KEY_PREFIX)) return [DatasetKeyType.CATEGORICAL, lagged];
+
+    return [DatasetKeyType.QUANTITATIVE, lagged];
+}
 
 export interface Value {
     value: number;
@@ -173,7 +195,8 @@ export class AnalyticsService {
 
     filterMatchingTimestamps(first: FlattenedDataSet, second: FlattenedDataSet,
                              firstIncludeEmpty: boolean, secondIncludeEmpty: boolean,
-                             date: Date, scope: SimpleTimeScopeType, totalRange: number): CorrelationDataSet {
+                             date: Date, scope: SimpleTimeScopeType, totalRange: number,
+                             lag: boolean = false): CorrelationDataSet {
 
         let firstSize = firstIncludeEmpty ? totalRange : first.size;
         let secondSize = secondIncludeEmpty ? totalRange : second.size;
@@ -197,12 +220,24 @@ export class AnalyticsService {
             swapped = true;
         }
 
+        function getLaggedTimestamp(timestamp: number){
+            // First is lagged back one day, so get second value for next day
+            // If it's swapped we need to do the reverse
+            return offsetDateByTimeScope(new Date(timestamp), scope, swapped ? -1 : 1).getTime();
+        }
+
         if (secondIncludeEmpty && firstIncludeEmpty) {
             // If both include empty, we need to loop over the whole range
-            for (let i = totalRange - 1; i >= 0; i--) {
+
+            // If data is lagged we can't include the most recent value
+            // since the second value would be in the future
+            let rangeEnd = lag ? 1 : 0;
+
+            for (let i = totalRange - 1; i >= rangeEnd; i--) {
                 let timestamp = dateToMidnight(offsetDateByTimeScope(date, scope, -i)).getTime();
+                let fetchTimestamp = lag ? getLaggedTimestamp(timestamp) : timestamp;
                 let firstValue = first.get(timestamp) ?? 0;
-                let secondValue = second.get(timestamp) ?? 0;
+                let secondValue = second.get(fetchTimestamp) ?? 0;
 
                 firstValues.push(firstValue);
                 secondValues.push(secondValue);
@@ -210,14 +245,20 @@ export class AnalyticsService {
             }
         } else {
             for (let [timestamp, value] of first.entries()) {
-                let secondValue = second.get(timestamp);
+                let fetchTimestamp = timestamp;
+                if(lag){
+                    fetchTimestamp = getLaggedTimestamp(timestamp);
+                }
+
+                let secondValue = second.get(fetchTimestamp);
                 if (secondValue == null) {
                     if (!secondIncludeEmpty) continue;
 
                     secondValue = 0;
                 }
 
-                timestamps.push(timestamp);
+                // If it's swapped second == first, and fetchTimestamp provides the correct timestamp
+                timestamps.push(swapped ? fetchTimestamp : timestamp);
                 firstValues.push(value);
                 secondValues.push(secondValue);
             }
@@ -409,29 +450,33 @@ export class AnalyticsService {
         return `${firstKey}|${secondKey}`;
     }
 
-    private isWeekDayKey(key: string) {
-        return key.startsWith(WEEK_DAY_KEY_PREFIX);
+    private stripLag(key: string) {
+        return key.startsWith(LAG_KEY_PREFIX) ? key.substring(LAG_KEY_PREFIX.length) : key;
     }
 
-    private isCategoricalKey(key: string) {
-        return key.startsWith(CATEGORICAL_KEY_PREFIX);
-    }
-
-    private extractFormFromQuantitativeKey(key: string){
+    private extractFormFromQuantitativeKey(key: string) {
+        key = this.stripLag(key);
         return key.substring(0, key.indexOf(":"));
     }
 
-    private isQuantitativeKey(key: string) {
-        return !(this.isWeekDayKey(key) || this.isCategoricalKey(key));
+    private includeEmptyForKey(keyType: DatasetKeyType) {
+        return keyType == DatasetKeyType.WEEK_DAY || keyType == DatasetKeyType.CATEGORICAL;
     }
 
-    private includeEmptyForKey(key: string) {
-        return this.isWeekDayKey(key) || this.isCategoricalKey(key);
+    private generateLagDataSet(data: Map<string, FlattenedDataSet>): Map<string, FlattenedDataSet> {
+        let res: Map<string, FlattenedDataSet> = new Map();
+        for (let [key, value] of data.entries()) {
+            res.set(`${LAG_KEY_PREFIX}${key}`, value);
+        }
+
+        return res;
     }
 
     async runBasicCorrelations(date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
         let [values] = await this.fetchRawValues(SimpleTimeScopeType.DAILY, range);
         let flattened = this.flattenRawValues(values);
+        let lagged = this.generateLagDataSet(flattened);
+        lagged.forEach((value, key) => flattened.set(key, value));
 
         // Add week day datasets
         let datasets = this.generateWeekDayDataSets(date, SimpleTimeScopeType.DAILY, range);
@@ -443,17 +488,30 @@ export class AnalyticsService {
                 // Skip if same key
                 if (firstKey == secondKey) continue;
 
+                let [firstType, firstLag] = getDatasetKeyType(firstKey);
+                let [secondType, secondLag] = getDatasetKeyType(secondKey);
+
+                if(secondLag) continue;
+
+                // Skip if actually same key but first is just lagged
+                if(firstLag && this.stripLag(firstKey) == secondKey) continue;
+
                 // Skip if same key but reverse order
                 let existingKey = this.constructResultKey(secondKey, firstKey);
                 if (results.has(existingKey)) continue;
 
-                // Skip if both are week day datasets
-                if (this.isWeekDayKey(firstKey) && this.isWeekDayKey(secondKey)) {
+                if(secondType == DatasetKeyType.WEEK_DAY && firstLag){
+                    // Week day and lag are not correlated
                     continue;
                 }
 
-                if(this.isQuantitativeKey(firstKey) && this.isQuantitativeKey(secondKey)){
-                    if(this.extractFormFromQuantitativeKey(firstKey) == this.extractFormFromQuantitativeKey(secondKey)){
+                // Skip if both are week day datasets
+                if (firstType == DatasetKeyType.WEEK_DAY && secondType == DatasetKeyType.WEEK_DAY) {
+                    continue;
+                }
+
+                if (firstType == DatasetKeyType.QUANTITATIVE && secondType == DatasetKeyType.QUANTITATIVE) {
+                    if (this.extractFormFromQuantitativeKey(firstKey) == this.extractFormFromQuantitativeKey(secondKey)) {
                         // Don't correlate quantitative values from the same form
                         continue;
                     }
@@ -461,11 +519,11 @@ export class AnalyticsService {
 
                 // Ignore samples that are not large enough
                 let sampleSize = Math.min(firstDataset.size, secondDataset.size);
-                if(sampleSize < minimumSampleSize)
+                if (sampleSize < minimumSampleSize)
                     continue;
 
-                let firstIncludeEmpty = this.isWeekDayKey(secondKey) || this.includeEmptyForKey(firstKey);
-                let secondIncludeEmpty = this.isWeekDayKey(firstKey) || this.includeEmptyForKey(secondKey);
+                let firstIncludeEmpty = secondType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(firstType);
+                let secondIncludeEmpty = firstType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(secondType);
 
                 let matching = this.filterMatchingTimestamps(
                     firstDataset,
@@ -474,7 +532,8 @@ export class AnalyticsService {
                     secondIncludeEmpty,
                     date,
                     SimpleTimeScopeType.DAILY,
-                    range
+                    range,
+                    firstLag
                 );
 
                 let coefficient = this.pearsonCorrelation(matching.first, matching.second);
@@ -493,7 +552,7 @@ export class AnalyticsService {
     }
 
     pearsonCorrelation(x: number[], y: number[]): number {
-        if(x.length == 0)
+        if (x.length == 0)
             return 0;
 
         if (x.length !== y.length || x.length === 0) {
