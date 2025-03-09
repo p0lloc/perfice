@@ -10,6 +10,7 @@ import {EntityObserverType} from "@perfice/services/observer";
 import {VariableTypeName} from "@perfice/model/variable/variable";
 import {type JournalEntryValue, pDisplay, pNumber, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
+import {emptyPromise} from "@perfice/util/promise";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -20,7 +21,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
     private trackableService: TrackableService;
 
     constructor(trackableService: TrackableService) {
-        super(trackableService.getTrackables());
+        super(emptyPromise())
         this.trackableService = trackableService;
         this.trackableService.addObserver(EntityObserverType.CREATED,
             async (trackable) => await this.onTrackableCreated(trackable));
@@ -28,6 +29,10 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             async (trackable) => await this.onTrackableUpdated(trackable));
         this.trackableService.addObserver(EntityObserverType.DELETED,
             async (trackable) => await this.onTrackableDeleted(trackable));
+    }
+
+    load(){
+        this.set(this.trackableService.getTrackables());
     }
 
     async createTrackable(name: string, categoryId: string | null = null): Promise<void> {

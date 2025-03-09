@@ -4,6 +4,7 @@ import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variab
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import type {
+    AnalyticsSettingsCollection,
     FormCollection,
     FormSnapshotCollection, FormTemplateCollection, GoalCollection,
     IndexCollection,
@@ -21,7 +22,9 @@ import { DexieGoalCollection } from "./goal";
 import {DexieTagCategoryCollection, DexieTagCollection } from "./tag";
 import {DexieTagEntryCollection} from "@perfice/db/dexie/tag";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
-import type {AnalyticsSettings} from "@perfice/services/analytics/analytics";
+
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+import {DexieAnalyticsSettingsCollection} from "@perfice/db/dexie/analytics";
 
 type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -73,6 +76,7 @@ export interface Collections {
     tagEntries: TagEntryCollection;
     formTemplates: FormTemplateCollection;
     tagCategories: TagCategoryCollection;
+    analyticsSettings: AnalyticsSettingsCollection;
 }
 
 export function setupDb(): Collections {
@@ -92,6 +96,8 @@ export function setupDb(): Collections {
 
     const formTemplateCollection = new DexieFormTemplateCollection(db.formTemplates);
     const tagCategoryCollection = new DexieTagCategoryCollection(db.tagCategories);
+    const analyticsSettingsCollection = new DexieAnalyticsSettingsCollection(db.analyticsSettings);
+
 
     return {
         entries: journalCollection,
@@ -105,6 +111,7 @@ export function setupDb(): Collections {
         tags: tagCollection,
         tagEntries: tagEntryCollection,
         formTemplates: formTemplateCollection,
-        tagCategories: tagCategoryCollection
+        tagCategories: tagCategoryCollection,
+        analyticsSettings: analyticsSettingsCollection
     };
 }

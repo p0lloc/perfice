@@ -5,27 +5,27 @@
 
     const {
         dataPoints,
-        labels,
         hideLabels = false,
         hideGrid = false,
-        minimal = true,
         fillColor = "#9BD0F5",
         borderColor = "#36A2EB",
         ...rest
     } = $props();
 
+    const randomHexColorCode = () => {
+        let n = (Math.random() * 0xfffff * 1000000).toString(16);
+        return '#' + n.slice(0, 6);
+    };
+
     const data = $derived({
-        labels: labels,
+        labels: Object.keys(dataPoints),
         datasets: [
             {
-                data: dataPoints,
+                data: Object.values(dataPoints) as number[],
                 fill: true,
-                borderColor: borderColor,
-                backgroundColor: fillColor,
+                backgroundColor: Object.keys(dataPoints).map((_: any) => randomHexColorCode()),
                 tension: 0.5,
                 borderWidth: 2,
-                pointRadius: minimal ? 0 : undefined,
-                pointHoverRadius: minimal ? 10 : undefined
             }
         ]
     });
@@ -34,7 +34,7 @@
 
     onMount(() => {
         chart = new Chart(canvasElem, {
-            type: 'line',
+            type: 'pie',
             data,
             options: {
                 animation: false,

@@ -2,14 +2,11 @@ import type {FormService} from "@perfice/services/form/form";
 import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
 import {type Form, FormQuestionDataType, isFormQuestionNumberRepresentable} from "@perfice/model/form/form";
 import {extractDisplayFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
-import {
-    primitiveAsNumber,
-    primitiveAsString,
-    PrimitiveValueType
-} from "@perfice/model/primitive/primitive";
+import {primitiveAsNumber, primitiveAsString, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {dateToMidnight, dateToStartOfTimeScope, offsetDateByTimeScope} from "@perfice/util/time/simple";
 import type {JournalCollection} from "@perfice/db/collections";
 import {WEEK_DAY_TO_NAME} from "@perfice/util/time/format";
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 
 const WEEK_DAY_KEY_PREFIX = "wd_";
 const CATEGORICAL_KEY_PREFIX = "cat_";
@@ -20,6 +17,17 @@ export enum DatasetKeyType {
     WEEK_DAY,
     CATEGORICAL,
     LAGGED
+}
+
+export function convertValue(value: Value, useMean: boolean): Value {
+    if (!useMean) return value;
+
+    if (value.count == 0) return value;
+
+    return {
+        value: value.value / value.count,
+        count: value.count,
+    }
 }
 
 export function getDatasetKeyType(key: string): [DatasetKeyType, boolean] {
@@ -117,11 +125,6 @@ export interface CategoricalBasicAnalytics {
     leastCommon: CategoricalFrequency;
 }
 
-export interface AnalyticsSettings {
-    formId: string;
-    useMeanValue: Record<string, boolean>; // Question id -> boolean
-}
-
 export interface QuantitativeWeekDayAnalytics {
     values: Map<number, Value>; // Week day -> avg value
     // Week day when highest value occurred
@@ -160,7 +163,7 @@ export class AnalyticsService {
                     let useMean = true;
                     let timestamps = new Map(bag.values
                         .entries()
-                        .map(([timestamp, value]) => [timestamp, this.convertValue(value, useMean).value]));
+                        .map(([timestamp, value]) => [timestamp, convertValue(value, useMean).value]));
 
                     res.set(`${formId}:${questionId}`, timestamps);
                 } else {
@@ -278,7 +281,7 @@ export class AnalyticsService {
 
         let useMean = settings.useMeanValue[questionId] ?? false;
         for (let [timestamp, value] of values.entries()) {
-            let converted = this.convertValue(value, useMean);
+            let converted = convertValue(value, useMean);
 
             average += converted.value;
 
@@ -381,7 +384,7 @@ export class AnalyticsService {
             let existing = weekDays.get(weekDay);
             if (existing == null) continue;
 
-            existing.value += this.convertValue(value, useMeanValue).value;
+            existing.value += convertValue(value, useMeanValue).value;
             existing.count += 1;
         }
 
@@ -435,16 +438,6 @@ export class AnalyticsService {
         }
     }
 
-    private convertValue(value: Value, useMean: boolean): Value {
-        if (!useMean) return value;
-
-        if (value.count == 0) return value;
-
-        return {
-            value: value.value / value.count,
-            count: value.count,
-        }
-    }
 
     private constructResultKey(firstKey: string, secondKey: string) {
         return `${firstKey}|${secondKey}`;
@@ -472,8 +465,7 @@ export class AnalyticsService {
         return res;
     }
 
-    async runBasicCorrelations(date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
-        let [values] = await this.fetchRawValues(SimpleTimeScopeType.DAILY, range);
+    async runBasicCorrelations(values: RawAnalyticsValues, date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
         let flattened = this.flattenRawValues(values);
         let lagged = this.generateLagDataSet(flattened);
         lagged.forEach((value, key) => flattened.set(key, value));

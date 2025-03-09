@@ -4,7 +4,8 @@ import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variab
 import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import type {Goal} from "@perfice/model/goal/goal";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
-import type {AnalyticsSettings} from "@perfice/services/analytics/analytics";
+
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 
 export interface TrackableCollection {
     count(): Promise<number>;
@@ -104,6 +105,8 @@ export interface GoalCollection {
 }
 
 export interface AnalyticsSettingsCollection {
+    insertSettings(settings: AnalyticsSettings): Promise<void>;
+
     getAllSettings(): Promise<AnalyticsSettings[]>;
 
     getSettingsByFormId(formId: string): Promise<AnalyticsSettings | undefined>;

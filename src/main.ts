@@ -46,7 +46,10 @@ import { EntryExportService } from './services/export/export';
 import { EntryExportStore } from "@perfice/stores/export/export";
 import { closableState } from './model/ui/modal';
 import { AnalyticsService } from './services/analytics/analytics';
-import {AnalyticsStore} from "@perfice/stores/analytics/analytics";
+import {type AnalyticsResult, AnalyticsStore} from "@perfice/stores/analytics/analytics";
+import { AnalyticsSettingsStore } from './stores/analytics/settings';
+import { AnalyticsSettingsService } from './services/analytics/settings';
+import {TrackableAnalytics} from "@perfice/stores/analytics/trackable";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -74,6 +77,7 @@ const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
 const analyticsService = new AnalyticsService(formService, db.entries);
+const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);
@@ -95,6 +99,7 @@ export const variableEditProvider = new VariableEditProvider(variableService, fo
 export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);
 
+export const analyticsSettings = new AnalyticsSettingsStore(analyticsSettingsService);
 export const analytics = new AnalyticsStore(analyticsService, forms);
 
 export const appReady = writable(false);
@@ -114,6 +119,10 @@ export function tagValue(tag: Tag, date: Date, weekStart: WeekStart, key: string
 
 export function goalValue(goal: Goal, date: Date, weekStart: WeekStart, key: string) {
     return GoalValueStore(goal, date, weekStart, key, variableService);
+}
+
+export function trackableAnalytics(result: AnalyticsResult){
+    return TrackableAnalytics(result);
 }
 
 (async () => {

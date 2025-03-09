@@ -1,6 +1,6 @@
 import type {AnalyticsSettingsCollection} from "@perfice/db/collections";
-import type {AnalyticsSettings} from "@perfice/services/analytics/analytics";
 import type {EntityTable} from "dexie";
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 
 export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollection {
 
@@ -8,6 +8,10 @@ export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollec
 
     constructor(table: EntityTable<AnalyticsSettings, "formId">) {
         this.table = table;
+    }
+
+    async insertSettings(settings: AnalyticsSettings): Promise<void> {
+        await this.table.add(settings);
     }
 
     async getAllSettings(): Promise<AnalyticsSettings[]> {
