@@ -2,22 +2,24 @@
     import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import TitledCard from "@perfice/components/base/card/TitledCard.svelte";
+    import type {Snippet} from "svelte";
 
-    let {icon, title, description, onClick}: {
+    let {icon, title, description, onClick, cardSuffix, class: className = ''}: {
         icon?: IconDefinition,
         title: string,
         description: string,
-        onClick: () => void
+        onClick: () => void,
+        class?: string,
+        cardSuffix?: Snippet
     } = $props();
 </script>
-<button class="border px-4 flex items-center gap-4 w-full rounded-xl hover-feedback h-24" onclick={onClick}>
-<span class="w-8">
-    {#if icon != null}
-        <Fa icon={icon} size="2.0x"/>
-    {/if}
-</span>
-    <div class="text-left">
-        <h2 class="text-xl font-bold">{title}</h2>
-        <p>{description}</p>
-    </div>
+
+
+<button onclick={onClick} class="hover-feedback {className}">
+    <TitledCard icon={icon} title={title} description={description}>
+        {#snippet suffix()}
+            {@render cardSuffix?.()}
+        {/snippet}
+    </TitledCard>
 </button>

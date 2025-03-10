@@ -15,6 +15,7 @@ export function componentToHex(c: number) {
 export function rgbToHex(r: number, g: number, b: number) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
+
 export function rgbaToHex(r: number, g: number, b: number, a: number) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b) + componentToHex(a);
 }
@@ -22,4 +23,22 @@ export function rgbaToHex(r: number, g: number, b: number, a: number) {
 export function sanitizeColor(color: string) {
     let {r, g, b} = hexToRgb(color);
     return rgbToHex(r, g, b);
+}
+
+export function categoryToCssRgb(str: string) {
+    // Create a hash from the string
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // Generate RGB values
+    let r = (hash >> 16) & 255; // Extract red
+    let g = (hash >> 8) & 255;  // Extract green
+    let b = hash & 255;         // Extract blue
+
+    // Adjust brightness to keep colors from being too dark
+    let adjust = (val: number) => Math.floor(50 + (val % 206)); // Keep in range [100, 255]
+
+    return `rgb(${adjust(r)}, ${adjust(g)}, ${adjust(b)})`;
 }

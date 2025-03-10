@@ -16,6 +16,9 @@
     @apply p-2 rounded-full active:bg-gray-100;
 }
 
+.card {
+    @apply rounded-xl border bg-white p-2;
+}
 
 select {
     @apply p-2.5 bg-gray-50 rounded-xl border-gray-300 border;

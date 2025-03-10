@@ -2,6 +2,7 @@
     import {Chart} from 'chart.js';
     import 'chart.js/auto';
     import {onMount} from "svelte";
+    import {categoryToCssRgb} from "@perfice/util/color";
 
     const {
         dataPoints,
@@ -23,7 +24,7 @@
             {
                 data: Object.values(dataPoints) as number[],
                 fill: true,
-                backgroundColor: Object.keys(dataPoints).map((_: any) => randomHexColorCode()),
+                backgroundColor: Object.keys(dataPoints).map((v: string) => categoryToCssRgb(v)),
                 tension: 0.5,
                 borderWidth: 2,
             }
@@ -47,7 +48,6 @@
                     }
                 },
                 scales: {
-
                     y: {
                         beginAtZero: true,
                         ticks: {
@@ -79,16 +79,19 @@
                             display: false
                         }
                     }
+                },
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
                 }
-            }
+            },
         });
 
         return () => {
             chart.destroy();
         };
     });
-
-    Chart.defaults.set('plugins.legend', {display: false});
 </script>
 
 <canvas class="rounded-b-xl" bind:this={canvasElem} {...rest}></canvas>

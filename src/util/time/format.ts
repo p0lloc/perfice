@@ -44,6 +44,10 @@ export function formatDateYYYYMMDD(date: Date) {
 }
 
 
+export function formatTimestampYYYYMMDD(timestamp: number) {
+    return formatDateYYYYMMDD(new Date(timestamp));
+}
+
 export function formatDateYYYYMMDDHHMMSS(date: Date) {
     let hour = date.getHours().toString().padStart(2, "0");
     let minutes = date.getMinutes().toString().padStart(2, "0");
