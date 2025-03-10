@@ -49,9 +49,9 @@
     }
 
     onMount(async () => {
-        let [f, v] = await analytics.runBasicCorrelations(new Date(), 30, 1);
-        forms = f;
-        res = v;
+        let ra = await analytics.fetchAnalytics(new Date(), 30, 1);
+        forms = ra.forms;
+        res = ra.correlations;
 
         /*
         let [vals, formList] = await analytics.fetchAnalytics(SimpleTimeScopeType.DAILY, 7);
@@ -63,7 +63,7 @@
 
 <div class="mx-auto w-1/2">
     {#each res.entries() as [key, value]}
-        {#if Math.abs(value.coefficient) >= 0.6 && Math.min(value.firstSize, value.secondSize) >= 5 && !key.includes("wd_")}
+        {#if Math.abs(value.coefficient) >= 0.6 && Math.min(value.firstSize, value.secondSize) >= 4}
             <div >
                 <p class="font-bold">{convertResultKey(key)}: {value.coefficient}</p>
                 <p>[{value.first.join(", ")}]</p>

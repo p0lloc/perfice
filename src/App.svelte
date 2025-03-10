@@ -1,29 +1,31 @@
 <script lang="ts">
-    import { appReady } from "./main";
-    import type { Route } from "@mateothegreat/svelte5-router";
-    import { Router } from "@mateothegreat/svelte5-router";
+    import {appReady} from "./main";
+    import type {Route} from "@mateothegreat/svelte5-router";
+    import {Router} from "@mateothegreat/svelte5-router";
     import TrackableView from "@perfice/views/TrackableView.svelte";
     import FormEditorView from "@perfice/views/FormEditorView.svelte";
-    import { closeContextMenus } from "@perfice/model/ui/context-menu";
+    import {closeContextMenus} from "@perfice/model/ui/context-menu";
     import JournalView from "@perfice/views/JournalView.svelte";
     import NavigationSidebar from "@perfice/components/sidebar/NavigationSidebar.svelte";
     import GoalView from "@perfice/views/GoalView.svelte";
     import GoalEditorView from "@perfice/views/GoalEditorView.svelte";
-    import { routingNavigatorState } from "@perfice/model/ui/router.svelte";
+    import {routingNavigatorState} from "@perfice/model/ui/router.svelte";
     import TagsView from "@perfice/views/TagsView.svelte";
-    import { clearClosables } from "./model/ui/modal";
+    import {clearClosables} from "./model/ui/modal";
     import AnalyticsDebugView from "@perfice/views/AnalyticsDebugView.svelte";
     import AnalyticsView from "@perfice/views/AnalyticsView.svelte";
+    import AnalyticsDetailView from "@perfice/views/AnalyticsDetailView.svelte";
 
     const routes: Route[] = [
-        { path: "/forms/(?<formId>.*)", component: FormEditorView },
-        { path: "/goals/(?<goalId>.*)", component: GoalEditorView },
-        { path: "/tags", component: TagsView },
-        { path: "/journal", component: JournalView },
-        { path: "/analytics", component: AnalyticsView },
-        { path: "/analytics-debug", component: AnalyticsDebugView },
-        { path: "/goals", component: GoalView },
-        { path: "/", component: TrackableView },
+        {path: "/forms/(?<formId>.*)", component: FormEditorView},
+        {path: "/goals/(?<goalId>.*)", component: GoalEditorView},
+        {path: "/tags", component: TagsView},
+        {path: "/journal", component: JournalView},
+        {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
+        {path: "/analytics", component: AnalyticsView},
+        {path: "/analytics-debug", component: AnalyticsDebugView},
+        {path: "/goals", component: GoalView},
+        {path: "/", component: TrackableView},
     ];
 
     function onBodyClick(e: MouseEvent) {
@@ -37,12 +39,12 @@
     }
 </script>
 
-<svelte:body onclick={onBodyClick} />
+<svelte:body onclick={onBodyClick}/>
 {#if $appReady}
     <div class="flex">
-        <NavigationSidebar />
+        <NavigationSidebar/>
         <div class="flex-1">
-            <Router post={onRouterRoute} {routes} />
+            <Router post={onRouterRoute} {routes}/>
         </div>
     </div>
 {/if}

@@ -1,6 +1,6 @@
-import type {AnalyticsSettingsCollection} from "@perfice/db/collections";
-import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
-import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import type { AnalyticsSettingsCollection } from "@perfice/db/collections";
+import type { AnalyticsSettings } from "@perfice/model/analytics/analytics";
+import { type EntityObserverCallback, EntityObservers, EntityObserverType } from "@perfice/services/observer";
 
 export class AnalyticsSettingsService {
     private readonly analyticsSettingsCollection: AnalyticsSettingsCollection;
@@ -21,6 +21,10 @@ export class AnalyticsSettingsService {
 
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<AnalyticsSettings>) {
         this.observers.removeObserver(type, callback);
+    }
+
+    async getSettingsByForm(formId: string): Promise<AnalyticsSettings | undefined> {
+        return this.analyticsSettingsCollection.getSettingsByFormId(formId);
     }
 
 }

@@ -32,7 +32,7 @@ export function convertValue(value: Value, useMean: boolean): Value {
 
 export function getDatasetKeyType(key: string): [DatasetKeyType, boolean] {
     let lagged = false;
-    if (key.startsWith(LAG_KEY_PREFIX)){
+    if (key.startsWith(LAG_KEY_PREFIX)) {
         lagged = true;
     }
 
@@ -223,7 +223,7 @@ export class AnalyticsService {
             swapped = true;
         }
 
-        function getLaggedTimestamp(timestamp: number){
+        function getLaggedTimestamp(timestamp: number) {
             // First is lagged back one day, so get second value for next day
             // If it's swapped we need to do the reverse
             return offsetDateByTimeScope(new Date(timestamp), scope, swapped ? -1 : 1).getTime();
@@ -249,7 +249,7 @@ export class AnalyticsService {
         } else {
             for (let [timestamp, value] of first.entries()) {
                 let fetchTimestamp = timestamp;
-                if(lag){
+                if (lag) {
                     fetchTimestamp = getLaggedTimestamp(timestamp);
                 }
 
@@ -483,16 +483,16 @@ export class AnalyticsService {
                 let [firstType, firstLag] = getDatasetKeyType(firstKey);
                 let [secondType, secondLag] = getDatasetKeyType(secondKey);
 
-                if(secondLag) continue;
+                if (secondLag) continue;
 
                 // Skip if actually same key but first is just lagged
-                if(firstLag && this.stripLag(firstKey) == secondKey) continue;
+                if (firstLag && this.stripLag(firstKey) == secondKey) continue;
 
                 // Skip if same key but reverse order
                 let existingKey = this.constructResultKey(secondKey, firstKey);
                 if (results.has(existingKey)) continue;
 
-                if(secondType == DatasetKeyType.WEEK_DAY && firstLag){
+                if (secondType == DatasetKeyType.WEEK_DAY && firstLag) {
                     // Week day and lag are not correlated
                     continue;
                 }
@@ -509,10 +509,6 @@ export class AnalyticsService {
                     }
                 }
 
-                // Ignore samples that are not large enough
-                let sampleSize = Math.min(firstDataset.size, secondDataset.size);
-                if (sampleSize < minimumSampleSize)
-                    continue;
 
                 let firstIncludeEmpty = secondType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(firstType);
                 let secondIncludeEmpty = firstType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(secondType);
@@ -527,6 +523,16 @@ export class AnalyticsService {
                     range,
                     firstLag
                 );
+
+                // If including empty we might expand the dataset, but we want the absolute MINIMAL size
+                let sampleSize = Math.min(
+                    Math.min(matching.first.length, firstDataset.size),
+                    Math.min(matching.second.length, secondDataset.size)
+                );
+
+                // Ignore samples that are not large enough
+                if (sampleSize < minimumSampleSize)
+                    continue;
 
                 let coefficient = this.pearsonCorrelation(matching.first, matching.second);
                 results.set(this.constructResultKey(firstKey, secondKey), {
