@@ -88,6 +88,13 @@
         };
     });
 
+    $effect(() => {
+        if (chart) {
+            chart.data = data;
+            chart.update();
+        }
+    });
+
     Chart.defaults.set('plugins.legend', {display: false});
 </script>
 

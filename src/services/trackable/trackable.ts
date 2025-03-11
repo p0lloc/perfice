@@ -7,7 +7,8 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import type {FormService} from "@perfice/services/form/form";
 import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
-import type {EditTrackableTallySettings, EditTrackableValueSettings } from "@perfice/model/trackable/ui";
+import type {EditTrackableTallySettings, EditTrackableValueSettings} from "@perfice/model/trackable/ui";
+import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 
 export class TrackableService {
     private collection: TrackableCollection;
@@ -15,12 +16,15 @@ export class TrackableService {
     private formService: FormService;
 
     private observers: EntityObservers<Trackable>;
+    private analyticsSettingsService: AnalyticsSettingsService;
 
-    constructor(collection: TrackableCollection, variableService: VariableService, formService: FormService) {
+    constructor(collection: TrackableCollection, variableService: VariableService,
+                formService: FormService, analyticsSettingsService: AnalyticsSettingsService) {
         this.collection = collection;
         this.variableService = variableService;
         this.formService = formService;
         this.observers = new EntityObservers();
+        this.analyticsSettingsService = analyticsSettingsService;
     }
 
     getTrackableById(id: string): Promise<Trackable | undefined> {
@@ -46,6 +50,7 @@ export class TrackableService {
             },
             dependencies: {}
         };
+
 
         let firstQuestion = crypto.randomUUID();
         let form: Form = {
@@ -74,6 +79,8 @@ export class TrackableService {
                 }
             ]
         }
+
+        await this.analyticsSettingsService.createAnalyticsSettingsFromForm(form.id, form.questions);
 
         await this.formService.createForm(form);
         trackable.formId = form.id;

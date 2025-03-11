@@ -1,55 +1,55 @@
-import { mount } from 'svelte'
+import {mount} from 'svelte'
 import './app.css'
 import App from './App.svelte'
-import { App as CapacitorApp } from '@capacitor/app';
-import { TrackableService } from "@perfice/services/trackable/trackable";
-import { VariableService } from "@perfice/services/variable/variable";
-import { setupDb } from "@perfice/db/dexie/db";
-import { TrackableDate, TrackableStore } from "@perfice/stores/trackable/trackable";
-import { type TimeScope, WeekStart } from "@perfice/model/variable/time/time";
-import { VariableGraph } from "@perfice/services/variable/graph";
-import { JournalEntryObserverType, JournalService } from "@perfice/services/journal/journal";
-import { JournalEntryStore } from "@perfice/stores/journal/entry";
-import type { JournalEntry, TagEntry } from './model/journal/journal';
-import { VariableValueStore } from "@perfice/stores/variable/value";
-import { writable } from "svelte/store";
-import { TrackableCategoryService } from "@perfice/services/trackable/category";
-import { TrackableCategoryStore } from "@perfice/stores/trackable/category";
-import { CategorizedTrackables } from './stores/trackable/categorized';
-import type { Trackable } from "@perfice/model/trackable/trackable";
-import { TrackableValueStore } from "@perfice/stores/trackable/value";
-import { BaseFormService } from "@perfice/services/form/form";
-import { FormStore } from "@perfice/stores/form/form";
-import { VariableStore } from "@perfice/stores/variable/variable";
-import { GroupedJournal } from "@perfice/stores/journal/grouped";
-import { GoalService } from "@perfice/services/goal/goal";
-import { GoalDate, GoalStore } from "@perfice/stores/goal/goal";
-import type { Goal } from "@perfice/model/goal/goal";
-import { GoalValueStore } from "@perfice/stores/goal/value";
-import { routingNavigatorState } from './model/ui/router.svelte';
-import { goto } from '@mateothegreat/svelte5-router';
-import { Capacitor } from '@capacitor/core';
-import { VariableEditProvider } from "@perfice/stores/variable/edit";
-import { TagValueStore } from "@perfice/stores/tag/value";
-import type { Tag } from './model/tag/tag';
-import { TagService } from './services/tag/tag';
-import { TagDate, TagStore } from "@perfice/stores/tag/tag";
-import { TagEntryService } from "@perfice/services/tag/entry";
-import { EntityObserverType } from "@perfice/services/observer";
-import { FormTemplateService } from './services/form/template';
-import { TagCategoryStore } from "@perfice/stores/tag/category";
-import { TagCategoryService } from './services/tag/category';
-import { CategorizedTags } from "@perfice/stores/tag/categorized";
-import { EntryImportStore } from "@perfice/stores/import/import";
-import { EntryImportService } from './services/import/import';
-import { EntryExportService } from './services/export/export';
-import { EntryExportStore } from "@perfice/stores/export/export";
-import { closableState } from './model/ui/modal';
-import { AnalyticsService } from './services/analytics/analytics';
-import { type AnalyticsResult, AnalyticsStore } from "@perfice/stores/analytics/analytics";
-import { AnalyticsSettingsStore } from './stores/analytics/settings';
-import { AnalyticsSettingsService } from './services/analytics/settings';
-import { TrackableAnalytics, TrackableDetailedAnalytics } from "@perfice/stores/analytics/trackable";
+import {App as CapacitorApp} from '@capacitor/app';
+import {TrackableService} from "@perfice/services/trackable/trackable";
+import {VariableService} from "@perfice/services/variable/variable";
+import {setupDb} from "@perfice/db/dexie/db";
+import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
+import {SimpleTimeScopeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
+import {VariableGraph} from "@perfice/services/variable/graph";
+import {JournalEntryObserverType, JournalService} from "@perfice/services/journal/journal";
+import {JournalEntryStore} from "@perfice/stores/journal/entry";
+import type {JournalEntry, TagEntry} from './model/journal/journal';
+import {VariableValueStore} from "@perfice/stores/variable/value";
+import {writable} from "svelte/store";
+import {TrackableCategoryService} from "@perfice/services/trackable/category";
+import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
+import {CategorizedTrackables} from './stores/trackable/categorized';
+import type {Trackable} from "@perfice/model/trackable/trackable";
+import {TrackableValueStore} from "@perfice/stores/trackable/value";
+import {BaseFormService} from "@perfice/services/form/form";
+import {FormStore} from "@perfice/stores/form/form";
+import {VariableStore} from "@perfice/stores/variable/variable";
+import {GroupedJournal} from "@perfice/stores/journal/grouped";
+import {GoalService} from "@perfice/services/goal/goal";
+import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
+import type {Goal} from "@perfice/model/goal/goal";
+import {GoalValueStore} from "@perfice/stores/goal/value";
+import {routingNavigatorState} from './model/ui/router.svelte';
+import {goto} from '@mateothegreat/svelte5-router';
+import {Capacitor} from '@capacitor/core';
+import {VariableEditProvider} from "@perfice/stores/variable/edit";
+import {TagValueStore} from "@perfice/stores/tag/value";
+import type {Tag} from './model/tag/tag';
+import {TagService} from './services/tag/tag';
+import {TagDate, TagStore} from "@perfice/stores/tag/tag";
+import {TagEntryService} from "@perfice/services/tag/entry";
+import {EntityObserverType} from "@perfice/services/observer";
+import {FormTemplateService} from './services/form/template';
+import {TagCategoryStore} from "@perfice/stores/tag/category";
+import {TagCategoryService} from './services/tag/category';
+import {CategorizedTags} from "@perfice/stores/tag/categorized";
+import {EntryImportStore} from "@perfice/stores/import/import";
+import {EntryImportService} from './services/import/import';
+import {EntryExportService} from './services/export/export';
+import {EntryExportStore} from "@perfice/stores/export/export";
+import {closableState} from './model/ui/modal';
+import {AnalyticsService} from './services/analytics/analytics';
+import {type AnalyticsResult, AnalyticsStore} from "@perfice/stores/analytics/analytics";
+import {AnalyticsSettingsStore} from './stores/analytics/settings';
+import {AnalyticsSettingsService} from './services/analytics/settings';
+import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/analytics/trackable";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -66,7 +66,9 @@ journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: Jour
 const formService = new BaseFormService(db.forms, db.formSnapshots);
 formService.initLazyDependencies(journalService);
 
-const trackableService = new TrackableService(db.trackables, variableService, formService);
+const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
+
+const trackableService = new TrackableService(db.trackables, variableService, formService, analyticsSettingsService);
 const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);
 const goalService = new GoalService(db.goals, variableService);
 const tagService = new TagService(db.tags, variableService, tagEntryService);
@@ -77,7 +79,6 @@ const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
 const analyticsService = new AnalyticsService(formService, db.entries);
-const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);
@@ -125,8 +126,8 @@ export function trackableAnalytics() {
     return TrackableAnalytics();
 }
 
-export function trackableDetailedAnalytics(id: string, questionId: string | null) {
-    return TrackableDetailedAnalytics(id, questionId, trackableService, formService, analyticsSettingsService, analyticsService);
+export function trackableDetailedAnalytics(id: string, questionId: string | null, timeScope: SimpleTimeScopeType) {
+    return TrackableDetailedAnalytics(id, questionId, timeScope, trackableService, formService, analyticsSettingsService, analyticsService);
 }
 
 (async () => {

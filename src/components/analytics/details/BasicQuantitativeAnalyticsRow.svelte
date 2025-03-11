@@ -3,9 +3,11 @@
     import {faArrowDown, faArrowUp} from "@fortawesome/free-solid-svg-icons";
     import TitledCard from "@perfice/components/base/card/TitledCard.svelte";
     import CardButton from "@perfice/components/base/button/CardButton.svelte";
-    import {formatTimestampYYYYMMDD} from "@perfice/util/time/format.js";
+    import {formatTimestampYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format.js";
+    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {formatSimpleTimestamp} from "@perfice/model/variable/ui";
 
-    let {analytics}: { analytics: QuantitativeBasicAnalytics } = $props();
+    let {analytics, timeScope}: { analytics: QuantitativeBasicAnalytics, timeScope: SimpleTimeScopeType } = $props();
 
     // TODO: link to journal with filtered entries
     function showMax() {
@@ -13,10 +15,11 @@
 
     function showMin() {
     }
+
 </script>
 
 <TitledCard
-        class="flex-1"
+        class=""
         title="Avg"
         icon={faArrowDown}
         description={analytics.average.toString()}
@@ -25,12 +28,12 @@
 
 {#snippet suffix(timestamp = 0)}
         <span class="text-xs text-gray-400">
-            {formatTimestampYYYYMMDD(timestamp)}
+            {formatSimpleTimestamp(timestamp, timeScope)}
         </span>
 {/snippet}
 
 <CardButton
-        class="flex-1 rounded-xl"
+        class="rounded-xl"
         title="Max"
         onClick={showMax}
         icon={faArrowUp}
@@ -41,7 +44,7 @@
     {/snippet}
 </CardButton>
 <CardButton
-        class="flex-1 rounded-xl"
+        class="rounded-xl"
         title="Min"
         onClick={showMin}
         icon={faArrowDown}
@@ -51,3 +54,4 @@
         {@render suffix(analytics.min.timestamp)}
     {/snippet}
 </CardButton>
+

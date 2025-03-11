@@ -1,52 +1,69 @@
 <script lang="ts">
-    import {faArrowDown, faArrowUp} from "@fortawesome/free-solid-svg-icons";
-    import CardButton from "@perfice/components/base/button/CardButton.svelte";
     import LineChart from "@perfice/components/chart/LineChart.svelte";
     import PieChart from "@perfice/components/chart/PieChart.svelte";
-    import BarChart from "@perfice/components/chart/BarChart.svelte";
-    import CorrelationBar from "@perfice/components/analytics/details/CorrelationBar.svelte";
     import {trackableDetailedAnalytics} from "@perfice/main";
-    import {
-        AnalyticsChartType,
-        type TrackableDetailedAnalyticsResult,
-    } from "@perfice/stores/analytics/trackable";
+    import {AnalyticsChartType, type TrackableDetailedAnalyticsResult,} from "@perfice/stores/analytics/trackable";
     import type {Readable} from "svelte/store";
-    import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
-    import TitledCard from "@perfice/components/base/card/TitledCard.svelte";
     import BasicQuantitativeAnalyticsRow
         from "@perfice/components/analytics/details/BasicQuantitativeAnalyticsRow.svelte";
     import BasicCategoricalAnalyticsRow
         from "@perfice/components/analytics/details/BasicCategoricalAnalyticsRow.svelte";
+    import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
+    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
+    import WeekDayAnalytics from "@perfice/components/analytics/details/WeekDayAnalytics.svelte";
+    import CorrelationAnalytics from "@perfice/components/analytics/details/CorrelationAnalytics.svelte";
+    import type {FormQuestion} from "@perfice/model/form/form";
+    import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
 
     let {id}: { id: string } = $props();
     let res = $state<Readable<Promise<TrackableDetailedAnalyticsResult>>>(
-        trackableDetailedAnalytics(id, null),
+        trackableDetailedAnalytics(id, null, SimpleTimeScopeType.DAILY),
     );
 
-    function onQuestionIdChange(questionId: string) {
-        res = trackableDetailedAnalytics(id, questionId);
+    function onQuestionIdChange(questionId: string, timeScope: SimpleTimeScopeType) {
+        res = trackableDetailedAnalytics(id, questionId, timeScope);
+    }
+
+    function onTimeScopeChange(questionId: string, timeScope: SimpleTimeScopeType) {
+        res = trackableDetailedAnalytics(id, questionId, timeScope);
+    }
+
+    function questionDropdownItems(questions: FormQuestion[]): DropdownMenuItem<string>[] {
+        return questions.map((q) => {
+            return {
+                value: q.id,
+                name: q.name,
+            };
+        })
     }
 </script>
 
 {#await $res}
     Loading
 {:then val}
-    <div class="mt-8 flex justify-end">
+    <div class="mt-8 flex justify-between gap-2 flex-wrap">
+        <SegmentedControl
+                class="w-full md:w-auto"
+                value={val.timeScope}
+                onChange={(v) => onTimeScopeChange(val.questionId, v)}
+                segments={SIMPLE_TIME_SCOPE_TYPES.filter(v => v.value !== SimpleTimeScopeType.YEARLY)}
+        />
         <BindableDropdownButton
+                class="w-full md:w-auto"
                 value={val.questionId}
-                onChange={onQuestionIdChange}
-                items={val.questions.map((q) => {
-                return {
-                    value: q.id,
-                    name: q.name,
-                };
-            })}
+                onChange={(v) => onQuestionIdChange(v, val.timeScope)}
+                items={questionDropdownItems(val.questions)}
         />
     </div>
-    <div class="flex gap-4 items-center mt-4">
+    <div class="grid grid-cols-1 gap-4 items-center mt-4 flex-wrap"
+         class:md:grid-cols-3={val.basicAnalytics.quantitative}
+         class:md:grid-cols-2={!val.basicAnalytics.quantitative}
+
+    >
         {#if val.basicAnalytics.quantitative}
-            <BasicQuantitativeAnalyticsRow analytics={val.basicAnalytics.value}/>
+            <BasicQuantitativeAnalyticsRow timeScope={val.timeScope} analytics={val.basicAnalytics.value}/>
         {:else}
             <BasicCategoricalAnalyticsRow analytics={val.basicAnalytics.value}/>
         {/if}
@@ -54,7 +71,7 @@
 
     <div class="bg-white rounded-xl p-2 border mt-4">
         {#if val.chart.type === AnalyticsChartType.LINE}
-            {#if val.chart.values.length < 3}
+            {#if val.chart.values.length < 2}
                 <p>Not enough data to show chart</p>
             {:else}
                 <div class="h-48">
@@ -79,53 +96,10 @@
             </div>
         {/if}
     </div>
-    <div class="grid-cols-2 grid mt-8 gap-6">
-        <div>
-            <h3 class="text-3xl font-bold">Correlations</h3>
-            <div class="flex-col gap-2 flex mt-4">
-                {#each val.correlations as correlation (correlation.key)}
-                    <div class="bg-white rounded border p-2">
-                        <p class="mb-2">{correlation.name}</p>
-                        <CorrelationBar
-                                coefficient={correlation.value.coefficient}
-                        />
-                        <div class="flex justify-end text-gray-400 font-bold">
-                            {Math.round(correlation.value.coefficient * 100)}%
-                        </div>
-                    </div>
-                {:else}
-                    <p>There are not any confident correlations.</p>
-                {/each}
-            </div>
-        </div>
-        <div>
-            <h3 class="text-3xl font-bold">Week days</h3>
-            {#if val.weekDayAnalytics.quantitative}
-                <p>
-                    Highest on {WEEK_DAYS_SHORT[
-                    val.weekDayAnalytics.value.max
-                    ]}, lowest on {WEEK_DAYS_SHORT[
-                    val.weekDayAnalytics.value.min
-                    ]}
-                </p>
-                <div class="h-56 mt-2">
-                    <BarChart
-                            hideLabels={true}
-                            hideGrid={true}
-                            minimal={false}
-                            dataPoints={val.weekDayAnalytics.value.values}
-                    />
-                </div>
-            {:else}
-                {#each val.weekDayAnalytics.value.values.entries() as [weekDay, category]}
-                    {#if category != null}
-                        <p>
-                            {category.category} is the most common ({category.frequency})
-                            on {WEEK_DAYS_SHORT[weekDay]}
-                        </p>
-                    {/if}
-                {/each}
-            {/if}
-        </div>
+    <div class="md:grid-cols-{val.weekDayAnalytics != null ? 2 : 1} grid mt-8 gap-6">
+        <CorrelationAnalytics correlations={val.correlations}/>
+        {#if val.weekDayAnalytics != null}
+            <WeekDayAnalytics analytics={val.weekDayAnalytics}/>
+        {/if}
     </div>
 {/await}

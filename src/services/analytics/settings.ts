@@ -1,6 +1,7 @@
-import type { AnalyticsSettingsCollection } from "@perfice/db/collections";
-import type { AnalyticsSettings } from "@perfice/model/analytics/analytics";
-import { type EntityObserverCallback, EntityObservers, EntityObserverType } from "@perfice/services/observer";
+import type {AnalyticsSettingsCollection} from "@perfice/db/collections";
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import type {FormQuestion} from "@perfice/model/form/form";
 
 export class AnalyticsSettingsService {
     private readonly analyticsSettingsCollection: AnalyticsSettingsCollection;
@@ -27,4 +28,11 @@ export class AnalyticsSettingsService {
         return this.analyticsSettingsCollection.getSettingsByFormId(formId);
     }
 
+    async createAnalyticsSettingsFromForm(formId: string, questions: FormQuestion[]) {
+        await this.analyticsSettingsCollection.insertSettings({
+            formId,
+            questionId: questions.length > 0 ? questions[0].id : "",
+            useMeanValue: Object.fromEntries(questions.map(q => [q.id, true]))
+        });
+    }
 }

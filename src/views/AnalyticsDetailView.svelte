@@ -27,7 +27,7 @@
     const RendererComponent = $derived(VIEWS[entityType]);
 </script>
 
-<div class="main-content mx-auto w-1/2">
+<div class="main-content mx-auto md:w-1/2 p-4 md:p-0">
     {#if RendererComponent != null}
         <RendererComponent id={entityId}/>
     {/if}

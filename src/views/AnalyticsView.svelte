@@ -29,7 +29,7 @@
     let RendererComponent = $derived(VIEWS[viewType]);
 </script>
 
-<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
+<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2">
     <Title title="Analytics" icon={faChartLine}/>
     <SegmentedControl
             class="w-full mt-4"

@@ -4,6 +4,7 @@
     import {AnalyticsChartType} from "@perfice/stores/analytics/trackable";
     import PieChart from "@perfice/components/chart/PieChart.svelte";
     import type {Trackable} from "@perfice/model/trackable/trackable";
+    import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
 
     let res = $derived(trackableAnalytics());
 
@@ -14,14 +15,17 @@
     }
 </script>
 
-<div class="grid-cols-4 grid gap-4 mt-4">
+<div class="md:grid-cols-4 grid gap-4 mt-4">
     {#await $res}
         Loading...
     {:then values}
         {#each values as value(value.trackable.id)}
             <div class="bg-white rounded p-4 border">
-                <a href={generateLink(value.trackable)}
-                   class="text-xl font-bold text-gray-500">{value.trackable.name}</a>
+                <div class="flex justify-between items-center mb-2">
+                    <p><a href={generateLink(value.trackable)}
+                          class="text-xl font-bold text-green-600">{value.trackable.name}</a></p>
+                    <PopupIconButton buttons={[]}/>
+                </div>
                 {#if value.chart.type === AnalyticsChartType.LINE}
                     {#if value.chart.values.length < 3}
                         <p>Not enough data to show chart</p>

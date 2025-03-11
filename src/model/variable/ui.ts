@@ -9,9 +9,9 @@ import {
     faPlus, faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import {TimeScopeType, type TimeScope, SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-import {formatDateYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format";
+import {formatDateYYYYMMDD, formatTimestampYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format";
 import {CalculationOperator} from "@perfice/services/variable/types/calculation";
-import { FilterComparisonOperator } from "@perfice/services/variable/filtering";
+import {FilterComparisonOperator} from "@perfice/services/variable/filtering";
 
 export const AGGREGATE_TYPES = [
     {
@@ -47,6 +47,20 @@ export const SIMPLE_TIME_SCOPE_TYPES = [
     {name: "Monthly", value: SimpleTimeScopeType.MONTHLY},
     {name: "Yearly", value: SimpleTimeScopeType.YEARLY},
 ];
+
+
+export function formatSimpleTimestamp(timestamp: number, timeScope: SimpleTimeScopeType): string {
+    switch (timeScope) {
+        case SimpleTimeScopeType.DAILY:
+            return formatTimestampYYYYMMDD(timestamp);
+        case SimpleTimeScopeType.WEEKLY:
+            return `${formatTimestampYYYYMMDD(timestamp)}-${formatTimestampYYYYMMDD(timestamp + 1000 * 60 * 60 * 24 * 7)}`;
+        case SimpleTimeScopeType.MONTHLY:
+            return MONTHS_SHORT[new Date(timestamp).getMonth()];
+        default:
+            return "";
+    }
+}
 
 export function formatCapitalized(str: string) {
     let lowerCase = str.toLowerCase();
