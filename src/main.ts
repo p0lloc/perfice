@@ -46,7 +46,7 @@ import {EntryExportService} from './services/export/export';
 import {EntryExportStore} from "@perfice/stores/export/export";
 import {closableState} from './model/ui/modal';
 import {AnalyticsService} from './services/analytics/analytics';
-import {type AnalyticsResult, AnalyticsStore} from "@perfice/stores/analytics/analytics";
+import {AnalyticsStore} from "@perfice/stores/analytics/analytics";
 import {AnalyticsSettingsStore} from './stores/analytics/settings';
 import {AnalyticsSettingsService} from './services/analytics/settings';
 import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/analytics/trackable";
@@ -78,7 +78,7 @@ const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
-const analyticsService = new AnalyticsService(formService, db.entries);
+const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);

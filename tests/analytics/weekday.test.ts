@@ -1,5 +1,10 @@
 import {expect, test} from "vitest";
-import {DummyFormService, DummyJournalCollection} from "../dummy-collections";
+import {
+    DummyFormService,
+    DummyJournalCollection,
+    DummyTagCollection,
+    DummyTagEntryCollection
+} from "../dummy-collections";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {aCategoricalFrequency, AnalyticsService, aValue, type Value} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
@@ -12,15 +17,17 @@ test("basic quantitative weekdays", async () => {
         mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 7), // Weekday 4
         mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24) // Weekday 5
     ]);
+    const tagEntries = new DummyTagEntryCollection([]);
+    const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(
         [
             mockForm("test_form", {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal);
+    ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
     let weekDayValues = await analytics.calculateWeekDayAnalytics("test",
         values.get("test_form")!.get("test"), {
             formId: "test_form",
@@ -56,15 +63,16 @@ test("basic categorical weekdays", async () => {
         mockEntry("test_form", {"test": pString("category1")}, 0), // Weekday 4
         mockEntry("test_form", {"test": pString("category2")}, 1000 * 60 * 60 * 24), // Weekday 5
     ]);
+    const tagEntries = new DummyTagEntryCollection([]);
+    const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(
         [
             mockForm("test_form", {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal);
-
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    ), journal, tags, tagEntries);
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
     let weekDayValues = await analytics.calculateWeekDayAnalytics("test",
         values.get("test_form")!.get("test"), {
             formId: "test_form",
@@ -101,15 +109,17 @@ test("basic categorical weekdays with multiple", async () => {
         mockEntry("test_form", {"test": pString("category3")}, 1000 * 60 * 60 * 24 * 7), // Weekday 4, one week later
         mockEntry("test_form", {"test": pString("category2")}, 1000 * 60 * 60 * 24), // Weekday 5
     ]);
+    const tagEntries = new DummyTagEntryCollection([]);
+    const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(
         [
             mockForm("test_form", {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal);
+    ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
     let weekDayValues = await analytics.calculateWeekDayAnalytics("test",
         values.get("test_form")!.get("test"), {
             formId: "test_form",

@@ -144,6 +144,8 @@ export interface JournalCollection {
     getAllEntries(): Promise<JournalEntry[]>;
 
     getEntriesByFormId(formId: string): Promise<JournalEntry[]>;
+
+    getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]>;
 }
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
@@ -179,6 +181,8 @@ export interface TagEntryCollection {
     deleteEntriesByTagId(tagId: string): Promise<void>;
 
     createEntry(entry: TagEntry): Promise<void>;
+
+    getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]>;
 }
 
 export interface IndexCollection {

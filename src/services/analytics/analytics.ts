@@ -3,8 +3,13 @@ import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time"
 import {type Form, FormQuestionDataType, isFormQuestionNumberRepresentable} from "@perfice/model/form/form";
 import {extractDisplayFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {primitiveAsNumber, primitiveAsString, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-import {dateToMidnight, dateToStartOfTimeScope, offsetDateByTimeScope} from "@perfice/util/time/simple";
-import type {JournalCollection} from "@perfice/db/collections";
+import {
+    dateToMidnight,
+    dateToStartOfTimeScope,
+    offsetDateByTimeScope,
+    timestampToMidnight
+} from "@perfice/util/time/simple";
+import type {JournalCollection, TagCollection, TagEntryCollection} from "@perfice/db/collections";
 import {WEEK_DAY_TO_NAME} from "@perfice/util/time/format";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 
@@ -16,7 +21,6 @@ export enum DatasetKeyType {
     QUANTITATIVE,
     WEEK_DAY,
     CATEGORICAL,
-    LAGGED
 }
 
 export function convertValue(value: Value, useMean: boolean): Value {
@@ -72,6 +76,7 @@ export type ValueBag = {
 
 export type QuestionIdToValues = Map<string, ValueBag>;
 export type RawAnalyticsValues = Map<string, QuestionIdToValues>;
+export type TagAnalyticsValues = Map<string, Map<number, number>>; // Tag id -> timestamp -> tagged
 
 export interface TimestampedValue<T> {
     value: T;
@@ -149,9 +154,15 @@ export class AnalyticsService {
     private readonly formService: FormService;
     private readonly journalCollection: JournalCollection;
 
-    constructor(formService: FormService, journalService: JournalCollection) {
+    private readonly tagCollection: TagCollection;
+    private readonly tagEntryCollection: TagEntryCollection;
+
+    constructor(formService: FormService, journalService: JournalCollection,
+                tagCollection: TagCollection, tagEntryCollection: TagEntryCollection) {
         this.formService = formService;
         this.journalCollection = journalService;
+        this.tagCollection = tagCollection;
+        this.tagEntryCollection = tagEntryCollection;
     }
 
     flattenRawValues(raw: RawAnalyticsValues): Map<string, FlattenedDataSet> {
@@ -304,7 +315,7 @@ export class AnalyticsService {
         }
     }
 
-    private async calculateBasicCategoricalAnalytics(values: CategoricalValues, settings: AnalyticsSettings): Promise<CategoricalBasicAnalytics> {
+    private async calculateBasicCategoricalAnalytics(values: CategoricalValues): Promise<CategoricalBasicAnalytics> {
         let mostCommon: CategoricalFrequency | null = null;
         let leastCommon: CategoricalFrequency | null = null;
 
@@ -337,7 +348,7 @@ export class AnalyticsService {
         } else {
             return {
                 quantitative: false,
-                value: await this.calculateBasicCategoricalAnalytics(values.values, settings)
+                value: await this.calculateBasicCategoricalAnalytics(values.values)
             }
         }
     }
@@ -465,18 +476,21 @@ export class AnalyticsService {
         return res;
     }
 
-    async runBasicCorrelations(values: RawAnalyticsValues, date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
-        let flattened = this.flattenRawValues(values);
-        let lagged = this.generateLagDataSet(flattened);
-        lagged.forEach((value, key) => flattened.set(key, value));
+    async runBasicCorrelations(values: RawAnalyticsValues, tagValues: TagAnalyticsValues,
+                               date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
+
+        let flattenedFormValues = this.flattenRawValues(values);
+        let lagged = this.generateLagDataSet(flattenedFormValues);
+        lagged.forEach((value, key) => flattenedFormValues.set(key, value));
+        tagValues.forEach((value, key) => flattenedFormValues.set(key, value));
 
         // Add week day datasets
         let datasets = this.generateWeekDayDataSets(date, SimpleTimeScopeType.DAILY, range);
-        datasets.forEach((value, key) => flattened.set(key, value));
+        datasets.forEach((value, key) => flattenedFormValues.set(key, value));
 
         let results: Map<string, CorrelationResult> = new Map();
-        for (let [firstKey, firstDataset] of flattened.entries()) {
-            for (let [secondKey, secondDataset] of flattened.entries()) {
+        for (let [firstKey, firstDataset] of flattenedFormValues.entries()) {
+            for (let [secondKey, secondDataset] of flattenedFormValues.entries()) {
                 // Skip if same key
                 if (firstKey == secondKey) continue;
 
@@ -534,6 +548,7 @@ export class AnalyticsService {
                 if (sampleSize < minimumSampleSize)
                     continue;
 
+
                 let coefficient = this.pearsonCorrelation(matching.first, matching.second);
                 results.set(this.constructResultKey(firstKey, secondKey), {
                     coefficient,
@@ -577,9 +592,60 @@ export class AnalyticsService {
         return denominator === 0 ? 0 : numerator / denominator;
     }
 
-    async fetchRawValues(timeScope: SimpleTimeScopeType, range: number): Promise<[RawAnalyticsValues, Form[]]> {
+    private getTimeRange(endDate: Date, timeScope: SimpleTimeScopeType, range: number): [number, number] {
+        let start = offsetDateByTimeScope(endDate, timeScope, -range);
+        return [start.getTime(), endDate.getTime()];
+    }
+
+    flattenTagValues(tagValues: TagAnalyticsValues, timeScope: SimpleTimeScopeType, date: Date, range: number): Map<string, number[]> {
+        let result: Map<string, number[]> = new Map();
+
+        for (let [tagId, values] of tagValues.entries()) {
+            let res = new Array(range);
+            for (let i = range - 1; i >= 0; i--) {
+                let timestamp = offsetDateByTimeScope(date, timeScope, -i).getTime();
+                let logged = values.get(timestamp) ?? false;
+                res[range - i - 1] = logged ? 1 : 0;
+            }
+
+            result.set(tagId, res);
+        }
+
+        return result;
+    }
+
+    async fetchTagValues(timeScope: SimpleTimeScopeType, date: Date, range: number): Promise<TagAnalyticsValues> {
+        let [start, end] = this.getTimeRange(date, timeScope, range);
+        let tags = await this.tagCollection.getTags();
+        let tagEntries = await this.tagEntryCollection.getEntriesByTimeRange(start, end);
+
+        const serialize =
+            (tagId: string, timestamp: number) => `${tagId}:${timestampToMidnight(timestamp).toString()}`;
+
+        let loggedDates: Set<string> = new Set();
+        for (let entry of tagEntries) {
+            loggedDates.add(serialize(entry.tagId, timestampToMidnight(entry.timestamp)));
+        }
+
+        let result: Map<string, Map<number, number>> = new Map();
+        for (let tag of tags) {
+            let logged: Map<number, number> = new Map();
+            for (let i = 0; i < range; i++) {
+                let timestamp = dateToMidnight(offsetDateByTimeScope(date, timeScope, -i)).getTime();
+                logged.set(timestamp, loggedDates.has(serialize(tag.id, timestamp)) ? 1 : 0);
+            }
+
+            result.set(tag.id, logged);
+        }
+
+        return result;
+    }
+
+    async fetchRawValues(timeScope: SimpleTimeScopeType, date: Date, range: number): Promise<[RawAnalyticsValues, Form[]]> {
         let forms = await this.formService.getForms();
-        let entries = await this.journalCollection.getEntriesFromTime(offsetDateByTimeScope(new Date(0), timeScope, -30).getTime());
+        let [start, end] = this.getTimeRange(date, timeScope, range);
+        let entries = await this.journalCollection
+            .getEntriesByTimeRange(start, end);
 
         // Form id -> question id -> values
         let res: RawAnalyticsValues = new Map();

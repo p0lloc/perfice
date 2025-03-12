@@ -1,7 +1,7 @@
 import {
     IndexCollection,
     IndexUpdateListener,
-    JournalCollection, TagEntryCollection, TrackableCollection,
+    JournalCollection, TagCollection, TagEntryCollection, TrackableCollection,
     VariableCollection
 } from "../src/db/collections";
 import {StoredVariable, VariableIndex} from "../src/model/variable/variable";
@@ -13,12 +13,17 @@ import {JournalService} from "../src/services/journal/journal";
 import {EntityObserverCallback, EntityObserverType} from "../src/services/observer";
 import {Trackable} from "../src/model/trackable/trackable";
 import Dexie from "dexie";
+import {Tag} from "../src/model/tag/tag";
 
 export class DummyJournalCollection implements JournalCollection {
     private entries: JournalEntry[];
 
     constructor(entries: JournalEntry[] = []) {
         this.entries = entries;
+    }
+
+    async getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]> {
+        return this.entries.filter(e => e.timestamp >= start && e.timestamp <= end);
     }
 
     clear(): Promise<void> {
@@ -32,9 +37,11 @@ export class DummyJournalCollection implements JournalCollection {
     createEntries(entries: JournalEntry[]): Promise<void> {
         throw new Error("Method not implemented.");
     }
+
     getAllEntries(): Promise<JournalEntry[]> {
         throw new Error("Method not implemented.");
     }
+
     getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
         throw new Error("Method not implemented.");
     }
@@ -85,6 +92,34 @@ export class DummyJournalCollection implements JournalCollection {
 
 }
 
+export class DummyTagCollection implements TagCollection {
+    private tags: Tag[] = [];
+
+    constructor(tags: Tag[] = []) {
+        this.tags = tags;
+    }
+
+    async getTags(): Promise<Tag[]> {
+        return this.tags;
+    }
+
+    async getTagById(id: string): Promise<Tag | undefined> {
+        return this.tags.find(t => t.id == id);
+    }
+
+    async createTag(tag: Tag): Promise<void> {
+        this.tags.push(tag);
+    }
+
+    async updateTag(tag: Tag): Promise<void> {
+        this.tags = updateIdentifiedInArray(this.tags, tag);
+    }
+
+    async deleteTagById(id: string): Promise<void> {
+        this.tags = this.tags.filter(t => t.id != id);
+    }
+}
+
 export class DummyTagEntryCollection implements TagEntryCollection {
 
     private entries: TagEntry[];
@@ -128,6 +163,11 @@ export class DummyTagEntryCollection implements TagEntryCollection {
     async deleteEntriesByTagId(tagId: string): Promise<void> {
         this.entries = this.entries.filter(e => e.tagId != tagId);
     }
+
+    async getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.timestamp >= start && e.timestamp <= end);
+    }
+
 }
 
 
@@ -148,7 +188,7 @@ export class DummyIndexCollection implements IndexCollection {
     }
 
 
-    private async notifyDeletion(indices: VariableIndex[]){
+    private async notifyDeletion(indices: VariableIndex[]) {
         for (let index of indices) {
             for (const callback of this.deleteListeners) {
                 await callback(index);

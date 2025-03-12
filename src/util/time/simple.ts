@@ -12,7 +12,7 @@ export function dateToLastSecondOfDay(now: Date) {
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
 }
 
-export function dateWithCurrentTime(date: Date){
+export function dateWithCurrentTime(date: Date) {
     const clone = new Date(date);
     let now = new Date();
     clone.setHours(now.getHours());
@@ -58,7 +58,8 @@ export function dateToWeekStart(date: Date, weekStart: WeekStart): Date {
     clone.setUTCDate(
         date.getDate() - normalizeWeekDayToWeekStart(date.getDay(), weekStart),
     );
-    return clone;
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() - normalizeWeekDayToWeekStart(date.getDay(), weekStart),
+        date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
 }
 
 export function dateToMonthEnd(date: Date): Date {

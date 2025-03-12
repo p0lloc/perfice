@@ -1,6 +1,6 @@
 import type {JournalCollection} from "@perfice/db/collections";
 import type {EntityTable} from "dexie";
-import type {JournalEntry} from "@perfice/model/journal/journal";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 
 export class DexieJournalCollection implements JournalCollection {
 
@@ -93,6 +93,12 @@ export class DexieJournalCollection implements JournalCollection {
 
     async getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
         return this.table.where("formId").equals(formId).toArray();
+    }
+
+    async getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]> {
+        return this.table
+            .where("timestamp").between(start, end, true, true)
+            .toArray();
     }
 
 }

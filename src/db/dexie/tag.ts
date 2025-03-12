@@ -1,13 +1,11 @@
-import type { TagEntry } from "@perfice/model/journal/journal";
+import type {TagEntry} from "@perfice/model/journal/journal";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 import type {EntityTable} from "dexie";
 import type {
     TagCategoryCollection,
     TagCollection,
     TagEntryCollection,
-    TrackableCategoryCollection
 } from "@perfice/db/collections";
-import type {TrackableCategory} from "@perfice/model/trackable/trackable";
 
 export class DexieTagEntryCollection implements TagEntryCollection {
 
@@ -58,6 +56,12 @@ export class DexieTagEntryCollection implements TagEntryCollection {
 
     async deleteEntryById(id: string): Promise<void> {
         await this.table.delete(id);
+    }
+
+    async getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]> {
+        return this.table
+            .where("timestamp").between(start, end, true, true)
+            .toArray();
     }
 
 }

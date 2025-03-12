@@ -1,5 +1,10 @@
 import {expect, test} from "vitest";
-import {DummyFormService, DummyJournalCollection} from "../dummy-collections";
+import {
+    DummyFormService,
+    DummyJournalCollection,
+    DummyTagCollection,
+    DummyTagEntryCollection
+} from "../dummy-collections";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
@@ -12,15 +17,17 @@ test("basic quantitative values", async () => {
         mockEntry("test_form", {"test": pNumber(13.0)}, 0),
         mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2)
     ]);
+    const tagEntries = new DummyTagEntryCollection([]);
+    const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(
         [
             mockForm("test_form", {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal);
+    ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
     let basic = await analytics.calculateBasicAnalytics("test", values.get("test_form")!.get("test")!, {
         formId: "test_form",
         useMeanValue: {
@@ -45,21 +52,24 @@ test("basic quantitative values", async () => {
 })
 
 
-test("basic categorical values", async() => {
+test("basic categorical values", async () => {
     const journal = new DummyJournalCollection([
         mockEntry("test_form", {"test": pString("category1")}, 0),
         mockEntry("test_form", {"test": pString("category1")}, 0),
         mockEntry("test_form", {"test": pString("category2")}, 1000 * 60 * 60 * 24),
     ]);
+
+    const tagEntries = new DummyTagEntryCollection([]);
+    const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(
         [
             mockForm("test_form", {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal);
+    ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, 7);
+    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
     let categorical = await analytics.calculateBasicAnalytics("test", values.get("test_form")!.get("test")!, {
         formId: "test_form",
         useMeanValue: {
