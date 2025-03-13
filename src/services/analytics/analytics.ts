@@ -12,15 +12,18 @@ import {
 import type {JournalCollection, TagCollection, TagEntryCollection} from "@perfice/db/collections";
 import {WEEK_DAY_TO_NAME} from "@perfice/util/time/format";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+import type {Tag} from "@perfice/model/tag/tag";
 
 const WEEK_DAY_KEY_PREFIX = "wd_";
 const CATEGORICAL_KEY_PREFIX = "cat_";
 const LAG_KEY_PREFIX = "lag_";
+export const TAG_KEY_PREFIX = "tag_";
 
 export enum DatasetKeyType {
     QUANTITATIVE,
     WEEK_DAY,
     CATEGORICAL,
+    TAG,
 }
 
 export function convertValue(value: Value, useMean: boolean): Value {
@@ -99,7 +102,7 @@ export type BasicAnalytics = {
     quantitative: false,
     value: CategoricalBasicAnalytics
 }
-export type WeekDayAnalytics = {
+export type FormWeekDayAnalytics = {
     quantitative: true,
     value: QuantitativeWeekDayAnalytics
 } | {
@@ -132,6 +135,14 @@ export interface CategoricalBasicAnalytics {
 
 export interface QuantitativeWeekDayAnalytics {
     values: Map<number, Value>; // Week day -> avg value
+    // Week day when highest value occurred
+    min: number;
+    // Week day when lowest value occurred
+    max: number;
+}
+
+export interface TagWeekDayAnalytics {
+    values: Map<number, number>; // Week day -> frequency
     // Week day when highest value occurred
     min: number;
     // Week day when lowest value occurred
@@ -435,7 +446,49 @@ export class AnalyticsService {
         }
     }
 
-    async calculateWeekDayAnalytics(questionId: string, values: ValueBag, settings: AnalyticsSettings): Promise<WeekDayAnalytics> {
+    async calculateTagWeekDayAnalytics(values: Map<number, number>): Promise<TagWeekDayAnalytics> {
+        let weekDays = new Map<number, number>();
+        for (let i = 0; i < 7; i++) {
+            weekDays.set(i, 0);
+        }
+
+        for (let [timestamp, value] of values.entries()) {
+            let date = new Date(timestamp);
+            let weekDay = date.getDay();
+
+            let existing = weekDays.get(weekDay);
+            if (existing == null) continue;
+
+            weekDays.set(weekDay, existing + value); // Value is 1 when tag is logged
+        }
+
+        let minWeekday = 0;
+        let maxWeekday = 0;
+        let min: number | null = null;
+        let max: number | null = 0;
+        for (let i = 0; i < 7; i++) {
+            let existing = weekDays.get(i);
+            if (existing == null) continue;
+
+            if (min == null || existing < min) {
+                min = existing;
+                minWeekday = i;
+            }
+
+            if (max == null || existing > max) {
+                max = existing;
+                maxWeekday = i;
+            }
+        }
+
+        return {
+            values: weekDays,
+            min: minWeekday,
+            max: maxWeekday,
+        }
+    }
+
+    async calculateFormWeekDayAnalytics(questionId: string, values: ValueBag, settings: AnalyticsSettings): Promise<FormWeekDayAnalytics> {
         if (values.quantitative) {
             return {
                 quantitative: true,
@@ -548,7 +601,6 @@ export class AnalyticsService {
                 if (sampleSize < minimumSampleSize)
                     continue;
 
-
                 let coefficient = this.pearsonCorrelation(matching.first, matching.second);
                 results.set(this.constructResultKey(firstKey, secondKey), {
                     coefficient,
@@ -597,24 +649,7 @@ export class AnalyticsService {
         return [start.getTime(), endDate.getTime()];
     }
 
-    flattenTagValues(tagValues: TagAnalyticsValues, timeScope: SimpleTimeScopeType, date: Date, range: number): Map<string, number[]> {
-        let result: Map<string, number[]> = new Map();
-
-        for (let [tagId, values] of tagValues.entries()) {
-            let res = new Array(range);
-            for (let i = range - 1; i >= 0; i--) {
-                let timestamp = offsetDateByTimeScope(date, timeScope, -i).getTime();
-                let logged = values.get(timestamp) ?? false;
-                res[range - i - 1] = logged ? 1 : 0;
-            }
-
-            result.set(tagId, res);
-        }
-
-        return result;
-    }
-
-    async fetchTagValues(timeScope: SimpleTimeScopeType, date: Date, range: number): Promise<TagAnalyticsValues> {
+    async fetchTagValues(timeScope: SimpleTimeScopeType, date: Date, range: number): Promise<[TagAnalyticsValues, Tag[]]> {
         let [start, end] = this.getTimeRange(date, timeScope, range);
         let tags = await this.tagCollection.getTags();
         let tagEntries = await this.tagEntryCollection.getEntriesByTimeRange(start, end);
@@ -635,10 +670,10 @@ export class AnalyticsService {
                 logged.set(timestamp, loggedDates.has(serialize(tag.id, timestamp)) ? 1 : 0);
             }
 
-            result.set(tag.id, logged);
+            result.set(`${TAG_KEY_PREFIX}${tag.id}`, logged);
         }
 
-        return result;
+        return [result, tags];
     }
 
     async fetchRawValues(timeScope: SimpleTimeScopeType, date: Date, range: number): Promise<[RawAnalyticsValues, Form[]]> {

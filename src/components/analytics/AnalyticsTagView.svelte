@@ -1,15 +1,21 @@
 <script lang="ts">
     import Heatmap from "@perfice/components/analytics/Heatmap.svelte";
+    import {tagAnalytics} from "@perfice/main";
+    import {getAnalyticsDetailsLink} from "@perfice/model/analytics/ui";
+
+    let res = $derived(tagAnalytics());
 </script>
 
 <div class="grid-cols-5 grid gap-4 mt-4">
-    <div class="bg-white rounded p-4 border">
-        <Heatmap/>
-    </div>
-    <div class="bg-white rounded p-4 border">
-        sdjfisdjf
-    </div>
-    <div class="bg-white rounded p-4 border">
-        sdjfisdjf
-    </div>
+    {#await $res}
+        Loading...
+    {:then values}
+        {#each values as value(value.tag.id)}
+            <div class="bg-white rounded p-4 border">
+                <p><a href={getAnalyticsDetailsLink("tag", value.tag.id)}
+                      class="text-xl font-bold text-green-600">{value.tag.name}</a></p>
+                <Heatmap/>
+            </div>
+        {/each}
+    {/await}
 </div>

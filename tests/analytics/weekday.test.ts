@@ -28,7 +28,7 @@ test("basic quantitative weekdays", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let weekDayValues = await analytics.calculateWeekDayAnalytics("test",
+    let weekDayValues = await analytics.calculateFormWeekDayAnalytics("test",
         values.get("test_form")!.get("test"), {
             formId: "test_form",
             useMeanValue: {
@@ -73,7 +73,7 @@ test("basic categorical weekdays", async () => {
         ],
     ), journal, tags, tagEntries);
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let weekDayValues = await analytics.calculateWeekDayAnalytics("test",
+    let weekDayValues = await analytics.calculateFormWeekDayAnalytics("test",
         values.get("test_form")!.get("test"), {
             formId: "test_form",
             useMeanValue: {
@@ -120,7 +120,7 @@ test("basic categorical weekdays with multiple", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let weekDayValues = await analytics.calculateWeekDayAnalytics("test",
+    let weekDayValues = await analytics.calculateFormWeekDayAnalytics("test",
         values.get("test_form")!.get("test"), {
             formId: "test_form",
             useMeanValue: {

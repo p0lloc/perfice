@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type {WeekDayAnalyticsTransformed} from "@perfice/stores/analytics/trackable";
+    import type {TrackableWeekDayAnalyticsTransformed} from "@perfice/stores/analytics/trackable";
     import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
     import BarChart from "@perfice/components/chart/BarChart.svelte";
 
-    let {analytics}: { analytics: WeekDayAnalyticsTransformed } = $props();
+    let {analytics}: { analytics: TrackableWeekDayAnalyticsTransformed } = $props();
 </script>
 
 <div>

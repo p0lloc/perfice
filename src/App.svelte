@@ -12,7 +12,6 @@
     import {routingNavigatorState} from "@perfice/model/ui/router.svelte";
     import TagsView from "@perfice/views/TagsView.svelte";
     import {clearClosables} from "./model/ui/modal";
-    import AnalyticsDebugView from "@perfice/views/AnalyticsDebugView.svelte";
     import AnalyticsView from "@perfice/views/AnalyticsView.svelte";
     import AnalyticsDetailView from "@perfice/views/AnalyticsDetailView.svelte";
 
@@ -23,7 +22,6 @@
         {path: "/journal", component: JournalView},
         {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
         {path: "/analytics", component: AnalyticsView},
-        {path: "/analytics-debug", component: AnalyticsDebugView},
         {path: "/goals", component: GoalView},
         {path: "/", component: TrackableView},
     ];

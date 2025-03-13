@@ -6,13 +6,14 @@
     import type {Readable} from "svelte/store";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import BasicQuantitativeAnalyticsRow
-        from "@perfice/components/analytics/details/BasicQuantitativeAnalyticsRow.svelte";
+        from "@perfice/components/analytics/details/trackable/BasicQuantitativeAnalyticsRow.svelte";
     import BasicCategoricalAnalyticsRow
-        from "@perfice/components/analytics/details/BasicCategoricalAnalyticsRow.svelte";
+        from "@perfice/components/analytics/details/trackable/BasicCategoricalAnalyticsRow.svelte";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
     import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
-    import WeekDayAnalytics from "@perfice/components/analytics/details/WeekDayAnalytics.svelte";
+    import TrackableWeekDayAnalytics
+        from "@perfice/components/analytics/details/trackable/TrackableWeekDayAnalytics.svelte";
     import CorrelationAnalytics from "@perfice/components/analytics/details/CorrelationAnalytics.svelte";
     import type {FormQuestion} from "@perfice/model/form/form";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
@@ -99,7 +100,7 @@
     <div class="md:grid-cols-{val.weekDayAnalytics != null ? 2 : 1} grid mt-8 gap-6">
         <CorrelationAnalytics correlations={val.correlations}/>
         {#if val.weekDayAnalytics != null}
-            <WeekDayAnalytics analytics={val.weekDayAnalytics}/>
+            <TrackableWeekDayAnalytics analytics={val.weekDayAnalytics}/>
         {/if}
     </div>
 {/await}

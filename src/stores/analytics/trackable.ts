@@ -1,12 +1,15 @@
 import {derived, readable, type Readable} from "svelte/store";
 import type {Trackable} from "@perfice/model/trackable/trackable";
-import type {AnalyticsResult} from "@perfice/stores/analytics/analytics";
+import {
+    type AnalyticsResult,
+    createDetailedCorrelations,
+    type DetailCorrelation
+} from "@perfice/stores/analytics/analytics";
 import {
     AnalyticsService,
     type BasicAnalytics,
     type CategoricalWeekDayAnalytics,
     convertValue,
-    type CorrelationResult,
     type QuantitativeWeekDayAnalytics,
     type ValueBag
 } from "@perfice/services/analytics/analytics";
@@ -17,7 +20,6 @@ import type {TrackableService} from "@perfice/services/trackable/trackable";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 import type {FormService} from "@perfice/services/form/form";
 import type {FormQuestion} from "@perfice/model/form/form";
-import {convertResultKey} from "@perfice/services/analytics/display";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {formatSimpleTimestamp} from "@perfice/model/variable/ui";
 
@@ -42,7 +44,7 @@ export interface TrackableAnalyticsResult {
 }
 
 
-export type WeekDayAnalyticsTransformed = {
+export type TrackableWeekDayAnalyticsTransformed = {
     quantitative: true,
     value: Omit<QuantitativeWeekDayAnalytics, 'values'> & {
         values: Record<string, number>;
@@ -52,18 +54,12 @@ export type WeekDayAnalyticsTransformed = {
     value: CategoricalWeekDayAnalytics
 }
 
-export interface TrackableDetailCorrelation {
-    key: string;
-    name: string;
-    value: CorrelationResult;
-}
-
 export interface TrackableDetailedAnalyticsResult {
     trackable: Trackable;
     basicAnalytics: BasicAnalytics;
-    weekDayAnalytics: WeekDayAnalyticsTransformed | null;
+    weekDayAnalytics: TrackableWeekDayAnalyticsTransformed | null;
     chart: AnalyticsChartData;
-    correlations: TrackableDetailCorrelation[];
+    correlations: DetailCorrelation[];
     questions: FormQuestion[];
     questionId: string;
     timeScope: SimpleTimeScopeType;
@@ -129,9 +125,9 @@ function createPromise(id: string, rawQuestionId: string | null,
             let useMeanValue = settings.useMeanValue[questionId] ?? false;
 
             let basic = await analyticsService.calculateBasicAnalytics(questionId, bag, settings);
-            let transformedWeekDay: WeekDayAnalyticsTransformed | null;
+            let transformedWeekDay: TrackableWeekDayAnalyticsTransformed | null;
             if (timeScope == SimpleTimeScopeType.DAILY) {
-                let weekDay = await analyticsService.calculateWeekDayAnalytics(questionId, bag, settings);
+                let weekDay = await analyticsService.calculateFormWeekDayAnalytics(questionId, bag, settings);
 
                 if (weekDay.quantitative) {
                     transformedWeekDay = {
@@ -147,27 +143,12 @@ function createPromise(id: string, rawQuestionId: string | null,
                 transformedWeekDay = null;
             }
 
-            let correlations: TrackableDetailCorrelation[] = result.correlations.entries()
-                .filter(([k, v]) => k.includes(questionId) && Math.abs(v.coefficient) > 0.2)
-                .map(([key, value]) => {
-                    return {key, name: convertResultKey(key, result.forms), value};
-                })
-                .toArray().sort((a, b) => {
-                    if (b.value.coefficient > 0 && a.value.coefficient < 0) {
-                        return 1;
-                    } else if (b.value.coefficient < 0 && a.value.coefficient > 0) {
-                        return -1;
-                    } else {
-                        return Math.abs(b.value.coefficient) - Math.abs(a.value.coefficient);
-                    }
-                });
-
             resolve({
                 trackable,
                 weekDayAnalytics: transformedWeekDay,
                 basicAnalytics: basic,
                 questions: form.questions,
-                correlations,
+                correlations: createDetailedCorrelations(result, questionId),
                 chart: constructChartFromValues(bag, useMeanValue, timeScope),
                 questionId,
                 timeScope

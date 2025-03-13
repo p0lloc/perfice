@@ -1,8 +1,8 @@
 <script lang="ts">
     import CorrelationBar from "@perfice/components/analytics/details/CorrelationBar.svelte";
-    import type {TrackableDetailCorrelation} from "@perfice/stores/analytics/trackable";
+    import type {DetailCorrelation} from "@perfice/stores/analytics/analytics";
 
-    let {correlations}: { correlations: TrackableDetailCorrelation[] } = $props();
+    let {correlations}: { correlations: DetailCorrelation[] } = $props();
 </script>
 <div>
     <h3 class="text-3xl font-bold">Correlations</h3>

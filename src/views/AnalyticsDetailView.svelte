@@ -1,8 +1,8 @@
 <script lang="ts">
-
     import {type Component, onMount} from "svelte";
     import AnalyticsTrackableDetailsView
-        from "@perfice/components/analytics/details/AnalyticsTrackableDetailsView.svelte";
+        from "@perfice/components/analytics/details/trackable/AnalyticsTrackableDetailsView.svelte";
+    import AnalyticsTagDetailsView from "@perfice/components/analytics/details/tag/AnalyticsTagDetailsView.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -21,7 +21,8 @@
     });
 
     const VIEWS: Record<string, Component<{ id: string }>> = {
-        "trackable": AnalyticsTrackableDetailsView
+        "trackable": AnalyticsTrackableDetailsView,
+        "tag": AnalyticsTagDetailsView
     }
 
     const RendererComponent = $derived(VIEWS[entityType]);

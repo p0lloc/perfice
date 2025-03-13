@@ -513,6 +513,6 @@ test("basic correlation", async () => {
     ), journal, tags, tagEntries);
 
     let [rawValues] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7)
-    let tagValues = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [tagValues] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
     await analytics.runBasicCorrelations(rawValues, tagValues, new Date(1000 * 60 * 60 * 24 * 7), 7, 3);
 });
