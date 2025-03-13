@@ -14,9 +14,9 @@ import {WEEK_DAY_TO_NAME} from "@perfice/util/time/format";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import type {Tag} from "@perfice/model/tag/tag";
 
-const WEEK_DAY_KEY_PREFIX = "wd_";
-const CATEGORICAL_KEY_PREFIX = "cat_";
-const LAG_KEY_PREFIX = "lag_";
+export const WEEK_DAY_KEY_PREFIX = "wd_";
+export const CATEGORICAL_KEY_PREFIX = "cat_";
+export const LAG_KEY_PREFIX = "lag_";
 export const TAG_KEY_PREFIX = "tag_";
 
 export enum DatasetKeyType {
@@ -58,6 +58,7 @@ export function getDatasetKeyType(key: string): [DatasetKeyType, boolean] {
 
     if (key.startsWith(WEEK_DAY_KEY_PREFIX)) return [DatasetKeyType.WEEK_DAY, lagged];
     if (key.startsWith(CATEGORICAL_KEY_PREFIX)) return [DatasetKeyType.CATEGORICAL, lagged];
+    if (key.startsWith(TAG_KEY_PREFIX)) return [DatasetKeyType.TAG, lagged];
 
     return [DatasetKeyType.QUANTITATIVE, lagged];
 }
@@ -98,6 +99,8 @@ export interface TimestampedValue<T> {
 }
 
 export interface CorrelationResult {
+    firstKeyType: DatasetKeyType;
+    secondKeyType: DatasetKeyType;
     coefficient: number;
     lagged: boolean;
     first: number[];
@@ -545,9 +548,10 @@ export class AnalyticsService {
                                date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
 
         let flattenedFormValues = this.flattenRawValues(values);
+        tagValues.forEach((value, key) => flattenedFormValues.set(key, value));
+
         let lagged = this.generateLagDataSet(flattenedFormValues);
         lagged.forEach((value, key) => flattenedFormValues.set(key, value));
-        tagValues.forEach((value, key) => flattenedFormValues.set(key, value));
 
         // Add week day datasets
         let datasets = this.generateWeekDayDataSets(date, SimpleTimeScopeType.DAILY, range);
@@ -615,6 +619,8 @@ export class AnalyticsService {
 
                 let coefficient = this.pearsonCorrelation(matching.first, matching.second);
                 results.set(this.constructResultKey(firstKey, secondKey), {
+                    firstKeyType: firstType,
+                    secondKeyType: secondType,
                     coefficient,
                     first: matching.first,
                     second: matching.second,

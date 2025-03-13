@@ -47,7 +47,11 @@ export function createDetailedCorrelations(result: AnalyticsResult, search: stri
     return result.correlations.entries()
         .filter(([k, v]) => k.includes(search) && Math.abs(v.coefficient) > 0.2)
         .map(([key, value]) => {
-            return {key, display: convertResultKey(key, result.forms, result.tags), value};
+            return {
+                key,
+                display: convertResultKey(key, value, result.forms, result.tags),
+                value
+            };
         })
         .toArray().sort((a, b) => {
             if (b.value.coefficient > 0 && a.value.coefficient < 0) {

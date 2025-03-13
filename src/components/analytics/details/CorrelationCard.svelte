@@ -7,6 +7,7 @@
     import {formatTimestampYYYYMMDD} from "@perfice/util/time/format";
     import {normalizeNumberArray} from "@perfice/services/analytics/analytics.js";
     import {ellipsis} from "@perfice/services/analytics/display.js";
+    import CorrelationMessage from "@perfice/components/analytics/details/CorrelationMessage.svelte";
 
     const LEGEND_LABEL_MAX_LENGTH = 8;
 
@@ -31,15 +32,16 @@
         correlation.value.second, correlation.value.lagged));
 </script>
 <div class="bg-white rounded border p-2">
-    <div class="row-between"><p class="mb-2">{correlation.display.result}</p>
+    <div class="row-between">
+        <CorrelationMessage positive={correlation.value.coefficient > 0} display={correlation.display}/>
         <IconButton onClick={showChart} icon={faLineChart} class="text-gray-400"/>
     </div>
     {#if chartVisible}
         <div class="h-36">
             <DualLineChart {first}
                            {second}
-                           firstLabel={ellipsis(correlation.display.first, LEGEND_LABEL_MAX_LENGTH)}
-                           secondLabel={ellipsis(correlation.display.second, LEGEND_LABEL_MAX_LENGTH)}
+                           firstLabel={ellipsis(correlation.display.first.entityName, LEGEND_LABEL_MAX_LENGTH)}
+                           secondLabel={ellipsis(correlation.display.second.entityName, LEGEND_LABEL_MAX_LENGTH)}
                            firstFillColor="#9BD0F533"
                            firstBorderColor="#36A2EB"
                            secondFillColor="#f59b9b33"
