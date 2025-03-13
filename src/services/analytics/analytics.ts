@@ -37,6 +37,17 @@ export function convertValue(value: Value, useMean: boolean): Value {
     }
 }
 
+export function normalizeNumberArray(arr: number[]) {
+    let min = Infinity, max = -Infinity;
+
+    for (let num of arr) {
+        if (num < min) min = num;
+        if (num > max) max = num;
+    }
+
+    return arr.map(num => (num - min) / (max - min));
+}
+
 export function getDatasetKeyType(key: string): [DatasetKeyType, boolean] {
     let lagged = false;
     if (key.startsWith(LAG_KEY_PREFIX)) {
@@ -88,6 +99,7 @@ export interface TimestampedValue<T> {
 
 export interface CorrelationResult {
     coefficient: number;
+    lagged: boolean;
     first: number[];
     second: number[];
     timestamps: number[];
@@ -606,6 +618,7 @@ export class AnalyticsService {
                     coefficient,
                     first: matching.first,
                     second: matching.second,
+                    lagged: firstLag,
                     firstSize: firstDataset.size,
                     secondSize: secondDataset.size,
                     timestamps: matching.timestamps

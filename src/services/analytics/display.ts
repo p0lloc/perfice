@@ -36,14 +36,44 @@ export function convertSingleKey(key: string, forms: Form[], tags: Tag[]): strin
     return base;
 }
 
-export function convertResultKey(key: string, forms: Form[], tags: Tag[]) {
+export interface CorrelationDisplay {
+    first: string;
+    second: string;
+    result: string;
+}
+
+const ELLIPSIS = "...";
+
+export function ellipsis(text: string, maxLength: number) {
+    if (text.length <= maxLength) return text;
+
+    return text.substring(0, maxLength - ELLIPSIS.length) + ELLIPSIS;
+}
+
+export function convertResultKey(key: string, forms: Form[], tags: Tag[]): CorrelationDisplay {
     let parts = key.split("|");
     let first = parts[0];
     let second = parts[1];
 
     if (first.startsWith("lag_")) {
-        return convertSingleKey(second, forms, tags) + " after days with " + convertSingleKey(first.substring(4), forms, tags);
+        let secondConverted = convertSingleKey(second, forms, tags);
+        let firstConverted = convertSingleKey(first.substring(4), forms, tags);
+        let result = secondConverted + " after days with " + firstConverted;
+
+        return {
+            first: firstConverted,
+            second: secondConverted,
+            result: result
+        }
     }
 
-    return `${convertSingleKey(first, forms, tags)} | ${convertSingleKey(second, forms, tags)}`;
+    let firstConverted = convertSingleKey(first, forms, tags);
+    let secondConverted = convertSingleKey(second, forms, tags);
+    let result = `${firstConverted} | ${secondConverted}`;
+
+    return {
+        first: firstConverted,
+        second: secondConverted,
+        result: result
+    }
 }

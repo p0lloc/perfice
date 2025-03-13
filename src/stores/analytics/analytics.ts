@@ -8,7 +8,7 @@ import type {
 import type {Form} from "@perfice/model/form/form";
 import {AsyncStore} from "@perfice/stores/store";
 import type {Tag} from "@perfice/model/tag/tag";
-import {convertResultKey} from "@perfice/services/analytics/display";
+import {convertResultKey, type CorrelationDisplay} from "@perfice/services/analytics/display";
 
 export interface AnalyticsResult {
     correlations: Map<string, CorrelationResult>;
@@ -39,7 +39,7 @@ async function fetchAnalytics(analyticsService: AnalyticsService, date: Date, ti
 
 export interface DetailCorrelation {
     key: string;
-    name: string;
+    display: CorrelationDisplay;
     value: CorrelationResult;
 }
 
@@ -47,7 +47,7 @@ export function createDetailedCorrelations(result: AnalyticsResult, search: stri
     return result.correlations.entries()
         .filter(([k, v]) => k.includes(search) && Math.abs(v.coefficient) > 0.2)
         .map(([key, value]) => {
-            return {key, name: convertResultKey(key, result.forms, result.tags), value};
+            return {key, display: convertResultKey(key, result.forms, result.tags), value};
         })
         .toArray().sort((a, b) => {
             if (b.value.coefficient > 0 && a.value.coefficient < 0) {

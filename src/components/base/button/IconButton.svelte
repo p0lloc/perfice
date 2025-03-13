@@ -10,6 +10,6 @@
     } = $props();
 </script>
 
-<button class="icon-button {className}" onclick={onClick}>
+<button class="icon-button hover-feedback {className}" onclick={onClick}>
     <Fa icon={icon} class="pointer-events-none"/>
 </button>
