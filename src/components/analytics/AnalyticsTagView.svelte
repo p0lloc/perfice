@@ -6,7 +6,7 @@
     let res = $derived(tagAnalytics());
 </script>
 
-<div class="grid-cols-5 grid gap-4 mt-4">
+<div class="grid-cols-1 md:grid-cols-5 grid gap-4 mt-4">
     {#await $res}
         Loading...
     {:then values}

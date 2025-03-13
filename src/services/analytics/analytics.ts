@@ -105,9 +105,8 @@ export interface CorrelationResult {
     lagged: boolean;
     first: number[];
     second: number[];
+    sampleSize: number;
     timestamps: number[];
-    firstSize: number;
-    secondSize: number;
 }
 
 export type BasicAnalytics = {
@@ -625,8 +624,7 @@ export class AnalyticsService {
                     first: matching.first,
                     second: matching.second,
                     lagged: firstLag,
-                    firstSize: firstDataset.size,
-                    secondSize: secondDataset.size,
+                    sampleSize,
                     timestamps: matching.timestamps
                 });
             }
