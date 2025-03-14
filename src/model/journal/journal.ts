@@ -16,3 +16,30 @@ export interface TagEntry {
     timestamp: number;
     tagId: string;
 }
+
+export enum JournalEntityType {
+    FORM_ENTRY,
+    TAG_ENTRY
+}
+
+export type JournalEntity = {
+    type: JournalEntityType.FORM_ENTRY,
+    entry: JournalEntry
+} | {
+    type: JournalEntityType.TAG_ENTRY,
+    entry: TagEntry
+}
+
+export function jeForm(entry: JournalEntry): JournalEntity {
+    return {
+        type: JournalEntityType.FORM_ENTRY,
+        entry
+    }
+}
+
+export function jeTag(entry: TagEntry): JournalEntity {
+    return {
+        type: JournalEntityType.TAG_ENTRY,
+        entry
+    }
+}

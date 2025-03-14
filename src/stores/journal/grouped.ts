@@ -77,7 +77,6 @@ export function GroupedJournal(): IGroupedJournal {
                     let forms = await $forms;
                     let tags = await $tags;
 
-                    let grouped: JournalDay[] = [];
                     let mapping: Map<number, JournalDayData> = new Map();
 
                     for (let rawEntry of journalEntries) {
@@ -109,7 +108,9 @@ export function GroupedJournal(): IGroupedJournal {
                         let day = mapping.get(timestamp);
 
                         let tag = tags.find(t => t.id == rawEntry.tagId);
-                        if (tag == undefined) continue;
+                        if (tag == undefined) {
+                            continue;
+                        }
 
                         let entry: TransformedTagEntry = {
                             ...rawEntry,
@@ -123,6 +124,7 @@ export function GroupedJournal(): IGroupedJournal {
                         }
                     }
 
+                    let grouped: JournalDay[] = [];
                     for (let [timestamp, dayData] of mapping.entries()) {
                         let singleEntries: JournalDayGroup[] = [];
                         let multiEntries: JournalDayGroup[] = [];
@@ -143,7 +145,7 @@ export function GroupedJournal(): IGroupedJournal {
                         });
                     }
 
-                    resolve(grouped);
+                    resolve(grouped.sort((a, b) => b.timestamp - a.timestamp));
                 }
             ));
         });

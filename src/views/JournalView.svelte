@@ -1,7 +1,13 @@
 <script lang="ts">
-    import {forms, groupedJournal, journal} from "@perfice/main";
+    import {forms, groupedJournal, journal, tagEntries} from "@perfice/main";
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
-    import type {JournalEntry} from "@perfice/model/journal/journal";
+    import {
+        jeForm,
+        jeTag,
+        type JournalEntity,
+        JournalEntityType,
+        type JournalEntry
+    } from "@perfice/model/journal/journal";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
@@ -10,16 +16,16 @@
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
-    import {deleteIdentifiedInArray} from "@perfice/util/array";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
+    import {onMount} from "svelte";
 
     let formModal: FormModal;
-    let deleteModal: GenericDeleteModal<JournalEntry>;
-    let deleteMultiModal: GenericDeleteModal<JournalEntry[]>;
+    let deleteModal: GenericDeleteModal<JournalEntity>;
+    let deleteMultiModal: GenericDeleteModal<JournalEntity[]>;
 
     let selectMode = $state(false);
-    let selectedEntries = $state<JournalEntry[]>([]);
+    let selectedEntities = $state<JournalEntity[]>([]);
 
     async function load() {
         await groupedJournal.load();
@@ -32,21 +38,29 @@
         }
     }
 
-    $effect(() => {
+    onMount(() => {
         load();
     });
 
-    async function onEntryClick(entry: JournalEntry) {
+    async function onEntityClick(entity: JournalEntity) {
         if (selectMode) {
-            if (selectedEntries.some(e => e.id === entry.id)) {
-                selectedEntries = deleteIdentifiedInArray(selectedEntries, entry.id);
+            if (selectedEntities.some(e => e.entry.id === entity.entry.id)) {
+                selectedEntities = selectedEntities.filter(v => v.entry.id != entity.entry.id);
             } else {
-                selectedEntries.push(entry);
+                selectedEntities.push(entity);
             }
 
             return;
         }
 
+        if (entity.type == JournalEntityType.FORM_ENTRY) {
+            await onEntryClick(entity.entry);
+        } else {
+            onEntityStartDelete(entity);
+        }
+    }
+
+    async function onEntryClick(entry: JournalEntry) {
         let form = await forms.getFormById(entry.formId);
         let templates = await forms.getTemplatesByFormId(entry.formId);
         let snapshot = await forms.getFormSnapshotById(entry.snapshotId);
@@ -62,29 +76,34 @@
             templates, answers, entry);
     }
 
-    function onEntryDelete(entry: JournalEntry) {
-        journal.deleteEntryById(entry.id);
+    function deleteEntity(entity: JournalEntity) {
+        if (entity.type == JournalEntityType.FORM_ENTRY) {
+            journal.deleteEntryById(entity.entry.id);
+        } else {
+            tagEntries.deleteEntryById(entity.entry.id);
+        }
     }
 
     function onMultiEntryStartDelete() {
-        deleteMultiModal.open(selectedEntries);
+        deleteMultiModal.open(selectedEntities);
     }
 
-    function onMultiEntryDelete(entries: JournalEntry[]) {
-        selectedEntries = [];
+    function onMultiEntryDelete(entries: JournalEntity[]) {
+        selectedEntities = [];
         // TODO: delete all entries at once
-        entries.forEach(e => journal.deleteEntryById(e.id));
+        entries.forEach(e => deleteEntity(e));
     }
 
-    function onEntryStartDelete(entry: JournalEntry) {
-        deleteModal.open(entry);
+    function onEntityStartDelete(entity: JournalEntity) {
+        deleteModal.open(entity);
     }
 </script>
 
 <svelte:window onwheel={onScroll}/>
 
-<GenericDeleteModal subject="this entry" onDelete={onEntryDelete} bind:this={deleteModal}/>
-<GenericDeleteModal subject="{selectedEntries.length} entries" onDelete={onMultiEntryDelete} bind:this={deleteMultiModal}/>
+<GenericDeleteModal subject="this entry" onDelete={deleteEntity} bind:this={deleteModal}/>
+<GenericDeleteModal subject="{selectedEntities.length} entries" onDelete={onMultiEntryDelete}
+                    bind:this={deleteMultiModal}/>
 
 <MobileTopBar title="Journal">
     {#snippet leading()}
@@ -102,19 +121,22 @@
             <Title title="Journal" icon={faBook}/>
             <div class="row-gap">
                 {#if selectMode}
-                    {selectedEntries.length} selected
+                    {selectedEntities.length} selected
                 {:else}
                     Select
                 {/if}
                 <input type="checkbox" bind:checked={selectMode}/>
-                {#if selectedEntries.length > 0}
+                {#if selectedEntities.length > 0}
                     <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
                 {/if}
             </div>
         </div>
         <div class="flex flex-col gap-4" id="mainContainer">
             {#each days as day}
-                <JournalDayCard {selectedEntries} onEntryClick={onEntryClick} onEntryDelete={onEntryStartDelete} {day}/>
+                <JournalDayCard {selectedEntities}
+                                onEntryClick={(e) => onEntityClick(jeForm(e))}
+                                onTagEntryClick={(e) => onEntityClick(jeTag(e))}
+                                onFormEntryDelete={(e) => onEntityStartDelete(jeForm(e))} {day}/>
             {/each}
         </div>
     {/await}

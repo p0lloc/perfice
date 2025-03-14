@@ -3,20 +3,20 @@
     import JournalCardBase from "@perfice/components/journal/day/JournalCardBase.svelte";
     import type {JournalDayGroup} from "@perfice/stores/journal/grouped";
     // noinspection ES6UnusedImports
-    import type {JournalEntry} from "@perfice/model/journal/journal";
+    import type {JournalEntity, JournalEntry} from "@perfice/model/journal/journal";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
 
-    let {group, onEntryClick, onEntryDelete, selectedEntries}: {
+    let {group, onEntryClick, onEntryDelete, selectedEntities}: {
         group: JournalDayGroup,
         onEntryClick: (entry: JournalEntry) => void,
         onEntryDelete: (entry: JournalEntry) => void,
-        selectedEntries: JournalEntry[]
+        selectedEntities: JournalEntity[]
     } = $props();
 </script>
 
 {#each group.entries as entry}
     <JournalCardBase
-            selected={selectedEntries.some(e => e.id === entry.id)}
+            selected={selectedEntities.some(e => e.entry.id === entry.id)}
             onClick={() =>  onEntryClick(entry)}>
         <div class="flex items-center gap-4">
             <p class="text-2xl">

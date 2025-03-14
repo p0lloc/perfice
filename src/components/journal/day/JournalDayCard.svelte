@@ -4,13 +4,14 @@
     import JournalMultiGroup from "@perfice/components/journal/day/JournalMultiGroup.svelte";
     import JournalSingleGroup from "@perfice/components/journal/day/JournalSingleGroup.svelte";
     import JournalDayDate from "@perfice/components/journal/day/JournalDayDate.svelte";
-    import type {JournalEntry} from "@perfice/model/journal/journal";
+    import type {JournalEntity, JournalEntry, TagEntry} from "@perfice/model/journal/journal";
     import JournalTagEntries from "@perfice/components/journal/day/JournalTagEntries.svelte";
 
-    let {day, onEntryClick, onEntryDelete, selectedEntries}: {
+    let {day, onEntryClick, onFormEntryDelete, onTagEntryClick, selectedEntities}: {
         day: JournalDay, onEntryClick: (entry: JournalEntry) => void,
-        onEntryDelete: (entry: JournalEntry) => void,
-        selectedEntries: JournalEntry[]
+        onFormEntryDelete: (entry: JournalEntry) => void,
+        onTagEntryClick: (entry: TagEntry) => void,
+        selectedEntities: JournalEntity[]
     } = $props();
 
     let date = $derived(new Date(day.timestamp));
@@ -27,12 +28,13 @@
                 <p class="text-gray-400 text-xl">{weekDay} {dayOfMonth}</p>
             </div>
 
-            <JournalTagEntries tagEntries={day.tagEntries}/>
+            <JournalTagEntries selectedEntities={selectedEntities} tagEntries={day.tagEntries}
+                               onClick={onTagEntryClick}/>
 
             {#if day.multiEntries.length > 0}
                 <div class="journal-grid">
                     {#each day.multiEntries as group (group.id)}
-                        <JournalMultiGroup {selectedEntries} {group} {onEntryClick} {onEntryDelete}/>
+                        <JournalMultiGroup {selectedEntities} {group} {onEntryClick} onEntryDelete={onFormEntryDelete}/>
                     {/each}
                 </div>
             {/if}
@@ -41,7 +43,7 @@
                  class:mt-4={day.multiEntries.length > 0}
             >
                 {#each day.singleEntries as group (group.id)}
-                    <JournalSingleGroup {selectedEntries} {group} {onEntryClick} {onEntryDelete}/>
+                    <JournalSingleGroup {selectedEntities} {group} {onEntryClick} onEntryDelete={onFormEntryDelete}/>
                 {/each}
             </div>
         </div>

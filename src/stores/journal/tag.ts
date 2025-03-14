@@ -29,4 +29,8 @@ export class TagEntryStore extends AsyncStore<TagEntry[]> {
         this.page++;
     }
 
+    async deleteEntryById(id: string) {
+        await this.tagEntryService.deleteEntryById(id);
+        this.updateResolved(v => v.filter(e => e.id != id));
+    }
 }
