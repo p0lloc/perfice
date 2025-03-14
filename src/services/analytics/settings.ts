@@ -16,6 +16,11 @@ export class AnalyticsSettingsService {
         return this.analyticsSettingsCollection.getAllSettings();
     }
 
+    async updateSettings(settings: AnalyticsSettings) {
+        await this.analyticsSettingsCollection.updateSettings(settings);
+        await this.observers.notifyObservers(EntityObserverType.UPDATED, settings);
+    }
+
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<AnalyticsSettings>) {
         this.observers.addObserver(type, callback);
     }

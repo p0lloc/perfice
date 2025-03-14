@@ -105,6 +105,8 @@ export interface GoalCollection {
 }
 
 export interface AnalyticsSettingsCollection {
+    updateSettings(settings: AnalyticsSettings): Promise<void>;
+
     insertSettings(settings: AnalyticsSettings): Promise<void>;
 
     getAllSettings(): Promise<AnalyticsSettings[]>;

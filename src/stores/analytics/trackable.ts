@@ -29,12 +29,14 @@ export enum AnalyticsChartType {
     PIE
 }
 
-export type AnalyticsChartData = {
+export interface LineAnalyticsChartData {
     type: AnalyticsChartType.LINE,
     values: number[],
     labels: string[],
     labelFormatter: (v: number) => string
-} | {
+}
+
+export type AnalyticsChartData = LineAnalyticsChartData | {
     type: AnalyticsChartType.PIE,
     values: Record<string, number>
 }
@@ -43,8 +45,8 @@ export interface TrackableAnalyticsResult {
     trackable: Trackable;
     chart: AnalyticsChartData;
     settings: AnalyticsSettings;
+    questions: FormQuestion[];
 }
-
 
 export type TrackableWeekDayAnalyticsTransformed = {
     quantitative: true,
@@ -214,7 +216,8 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
                     res.push({
                         trackable,
                         chart: constructChartFromValues(mainValues, useMeanValue, SimpleTimeScopeType.DAILY, formQuestion.dataType),
-                        settings: settings
+                        settings: settings,
+                        questions: form.questions
                     });
                 }
 

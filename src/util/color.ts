@@ -40,5 +40,21 @@ export function categoryToCssRgb(str: string) {
     // Adjust brightness to keep colors from being too dark
     let adjust = (val: number) => Math.floor(50 + (val % 206)); // Keep in range [100, 255]
 
-    return `rgb(${adjust(r)}, ${adjust(g)}, ${adjust(b)})`;
+    // HEX
+    return `#${componentToHex(adjust(r))}${componentToHex(adjust(g))}${componentToHex(adjust(b))}`;
+}
+
+const FILL_OPACITY = 50;
+const BORDER_DARKNESS_MODIFIER = 25;
+
+export function getChartColors(color: string): { fillColor: string, borderColor: string } {
+    let {r, g, b} = hexToRgb(color);
+    return {
+        fillColor: rgbaToHex(r, g, b, FILL_OPACITY),
+        borderColor: rgbaToHex(
+            r - BORDER_DARKNESS_MODIFIER,
+            g - BORDER_DARKNESS_MODIFIER,
+            b - BORDER_DARKNESS_MODIFIER,
+            255),
+    }
 }

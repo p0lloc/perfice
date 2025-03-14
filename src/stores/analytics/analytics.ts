@@ -9,6 +9,7 @@ import type {Form} from "@perfice/model/form/form";
 import {AsyncStore} from "@perfice/stores/store";
 import type {Tag} from "@perfice/model/tag/tag";
 import {convertResultKey, type CorrelationDisplay} from "@perfice/services/analytics/display";
+import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 
 export interface AnalyticsResult {
     correlations: Map<string, CorrelationResult>;
@@ -22,11 +23,14 @@ export interface AnalyticsResult {
     date: Date;
 }
 
-async function fetchAnalytics(analyticsService: AnalyticsService, date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+async function fetchAnalytics(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
+                              date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+
+    let allSettings = await settingsService.getAllSettings();
     let [rawValues, forms] = await analyticsService.fetchRawValues(timeScope, date, range);
     let [tagValues, tags] = await analyticsService.fetchTagValues(timeScope, date, 7 * 14);
     // TODO: limit tag values to same range for correlations
-    let correlations = await analyticsService.runBasicCorrelations(rawValues, tagValues, date, range, minimumSampleSize);
+    let correlations = await analyticsService.runBasicCorrelations(rawValues, tagValues, allSettings, date, range, minimumSampleSize);
 
     return {
         correlations,
@@ -70,9 +74,11 @@ export function createDetailedCorrelations(result: AnalyticsResult, search: stri
 export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
 
     private readonly analyticsService: AnalyticsService;
+    private readonly settingsService: AnalyticsSettingsService;
 
-    constructor(analyticsService: AnalyticsService, date: Date, range: number, minimumSampleSize: number) {
-        super(fetchAnalytics(analyticsService, date, SimpleTimeScopeType.DAILY, range, minimumSampleSize));
+    constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService, date: Date, range: number, minimumSampleSize: number) {
+        super(fetchAnalytics(analyticsService, settingsService, date, SimpleTimeScopeType.DAILY, range, minimumSampleSize));
+        this.settingsService = settingsService;
         this.analyticsService = analyticsService;
     }
 
@@ -82,7 +88,7 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
             return analytics;
         }
 
-        return fetchAnalytics(this.analyticsService, date, timeScope, range, minimumSampleSize);
+        return fetchAnalytics(this.analyticsService, this.settingsService, date, timeScope, range, minimumSampleSize);
     }
 
 }

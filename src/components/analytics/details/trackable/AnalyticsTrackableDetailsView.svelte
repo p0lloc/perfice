@@ -20,6 +20,8 @@
     import {faRuler} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import AnalyticsTrackableLineChart
+        from "@perfice/components/analytics/trackable/AnalyticsTrackableLineChart.svelte";
 
     let {id}: { id: string } = $props();
     let res = $state<Readable<Promise<TrackableDetailedAnalyticsResult>>>(
@@ -83,14 +85,7 @@
                 <p>Not enough data to show chart</p>
             {:else}
                 <div class="h-48">
-                    <LineChart
-                            hideLabels={true}
-                            hideGrid={true}
-                            minimal={false}
-                            dataPoints={val.chart.values}
-                            labelFormatter={val.chart.labelFormatter}
-                            labels={val.chart.labels}
-                    />
+                    <AnalyticsTrackableLineChart name={val.trackable.name} data={val.chart}/>
                 </div>
             {/if}
         {/if}

@@ -14,6 +14,10 @@ export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollec
         await this.table.add(settings);
     }
 
+    async updateSettings(settings: AnalyticsSettings): Promise<void> {
+        await this.table.put(settings);
+    }
+
     async getAllSettings(): Promise<AnalyticsSettings[]> {
         return this.table.toArray();
     }

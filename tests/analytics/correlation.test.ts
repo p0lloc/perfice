@@ -10,6 +10,7 @@ import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
 import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {AnalyticsSettings} from "../../src/model/analytics/analytics";
 
 
 test("flatten quantitative values", async () => {
@@ -29,7 +30,7 @@ test("flatten quantitative values", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings());
 
     expect(flattened).toEqual(new Map([
         ["test_form:test", new Map([
@@ -65,7 +66,7 @@ test("filter matching timestamps", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
         false,
@@ -115,7 +116,7 @@ test("filter matching timestamps with lag", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
         false,
@@ -152,7 +153,7 @@ test("filter matching timestamps with lag, whole range", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(0), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
         true,
@@ -205,7 +206,7 @@ test("filter matching timestamps with categorical non-empty", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!,
         flattened.get("cat_test_form2:test:category1")!,
@@ -254,7 +255,7 @@ test("filter matching timestamps with categorical empty", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!,
         flattened.get("cat_test_form2:test:category1")!,
@@ -302,7 +303,7 @@ test("filter matching timestamps with categorical empty, order switched", async 
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("cat_test_form2:test:category1")!,
         flattened.get("test_form:test")!,
@@ -348,7 +349,7 @@ test("filter matching timestamps with both empty", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(0), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!,
         flattened.get("cat_test_form2:test:category1")!,
@@ -391,7 +392,7 @@ test("flatten categorical values", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings());
 
     expect(flattened).toEqual(new Map([
         ["cat_test_form:test:category1", new Map([
@@ -439,6 +440,28 @@ test("week day dataset is_tuesday", async () => {
     ]));
 });
 
+function mockAnalyticsSettings(): AnalyticsSettings[] {
+    return [{
+        formId: "test_form",
+        questionId: "test",
+        useMeanValue: {"test": true}
+    }]
+}
+
+
+function mockAnalyticsSettings2(): AnalyticsSettings[] {
+    return [{
+        formId: "test_form",
+        questionId: "test",
+        useMeanValue: {"test": true}
+    },
+        {
+            formId: "test_form2",
+            questionId: "test",
+            useMeanValue: {"test": true}
+        }
+    ]
+}
 
 test("filter matching timestamps with week day dataset", async () => {
     const journal = new DummyJournalCollection([
@@ -458,7 +481,7 @@ test("filter matching timestamps with week day dataset", async () => {
     ), journal, tags, tagEntries);
 
     let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(0), 7);
-    let flattened = analytics.flattenRawValues(values);
+    let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings());
     let mondayDataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 1);
     flattened.set("is_monday", mondayDataset);
 
@@ -514,5 +537,5 @@ test("basic correlation", async () => {
 
     let [rawValues] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7)
     let [tagValues] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
-    await analytics.runBasicCorrelations(rawValues, tagValues, new Date(1000 * 60 * 60 * 24 * 7), 7, 3);
+    await analytics.runBasicCorrelations(rawValues, tagValues, mockAnalyticsSettings(), new Date(1000 * 60 * 60 * 24 * 7), 7, 3);
 });

@@ -190,13 +190,16 @@ export class AnalyticsService {
         this.tagEntryCollection = tagEntryCollection;
     }
 
-    flattenRawValues(raw: RawAnalyticsValues): Map<string, FlattenedDataSet> {
+    flattenRawValues(raw: RawAnalyticsValues, allSettings: AnalyticsSettings[]): Map<string, FlattenedDataSet> {
         let res: Map<string, FlattenedDataSet> = new Map();
 
         for (let [formId, questionIds] of raw.entries()) {
+            let settings = allSettings.find(s => s.formId == formId);
+            if (settings == null) continue;
+
             for (let [questionId, bag] of questionIds.entries()) {
                 if (bag.quantitative) {
-                    let useMean = true;
+                    let useMean = settings.useMeanValue[questionId] ?? false;
                     let timestamps = new Map(bag.values
                         .entries()
                         .map(([timestamp, value]) => [timestamp, convertValue(value, useMean).value]));
@@ -544,9 +547,10 @@ export class AnalyticsService {
     }
 
     async runBasicCorrelations(values: RawAnalyticsValues, tagValues: TagAnalyticsValues,
+                               allSettings: AnalyticsSettings[],
                                date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
 
-        let flattenedFormValues = this.flattenRawValues(values);
+        let flattenedFormValues = this.flattenRawValues(values, allSettings);
         tagValues.forEach((value, key) => flattenedFormValues.set(key, value));
 
         let lagged = this.generateLagDataSet(flattenedFormValues);

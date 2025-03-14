@@ -2,11 +2,9 @@
     import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
     import LineChart from "@perfice/components/chart/LineChart.svelte";
     import type {TrackableChartSettings} from "@perfice/model/trackable/trackable";
-    import {hexToRgb, rgbaToHex} from "@perfice/util/color";
+    import {getChartColors, hexToRgb, rgbaToHex} from "@perfice/util/color";
 
     let {value, cardSettings}: { value: PrimitiveValue, cardSettings: TrackableChartSettings, date: Date } = $props();
-    const FILL_OPACITY = 100;
-    const BORDER_DARKNESS_MODIFIER = 25;
 
     let dataPoints = $derived.by(() => {
         if (value.type == PrimitiveValueType.LIST) {
@@ -18,19 +16,8 @@
         return [];
     });
 
-    function getColors(color: string): { fillColor: string, borderColor: string } {
-        let {r, g, b} = hexToRgb(color);
-        return {
-            fillColor: rgbaToHex(r, g, b, FILL_OPACITY),
-            borderColor: rgbaToHex(
-                r - BORDER_DARKNESS_MODIFIER,
-                g - BORDER_DARKNESS_MODIFIER,
-                b - BORDER_DARKNESS_MODIFIER,
-                255),
-        }
-    }
 
-    let {fillColor, borderColor} = $derived(getColors(cardSettings.color));
+    let {fillColor, borderColor} = $derived(getChartColors(cardSettings.color));
 </script>
 
 
