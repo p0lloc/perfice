@@ -115,3 +115,4 @@ export function setupDb(): Collections {
         analyticsSettings: analyticsSettingsCollection
     };
 }
+

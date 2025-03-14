@@ -18,8 +18,6 @@ test("simple list variable with filter", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -30,8 +28,6 @@ test("simple list variable with filter", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 snapshotId: "",
                 displayValue: "",
                 answers: {
@@ -76,8 +72,6 @@ test("simple list variable with list filter", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -90,8 +84,6 @@ test("simple list variable with list filter", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
-                name: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0")),
@@ -103,8 +95,6 @@ test("simple list variable with list filter", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
-                name: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0")),
@@ -149,8 +139,6 @@ test("filtered list variable new entry", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -163,8 +151,6 @@ test("filtered list variable new entry", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
-                name: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0")),
@@ -176,8 +162,6 @@ test("filtered list variable new entry", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
-                name: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0")),
@@ -253,8 +237,6 @@ test("simple list variable with multiple filters", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -266,8 +248,6 @@ test("simple list variable with multiple filters", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
-                name: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -278,10 +258,7 @@ test("simple list variable with multiple filters", async () => {
                 id: "entry_three",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(20.0), pString("20.0"))
@@ -330,8 +307,6 @@ test("filtered list - update entry to be matching", async () => {
             id: "entry_one",
             formId: "ok",
             timestamp: 0,
-            name: "",
-            icon: "",
             displayValue: "",
             snapshotId: "",
             answers: {
@@ -345,8 +320,6 @@ test("filtered list - update entry to be matching", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 snapshotId: "",
                 displayValue: "",
                 answers: {
@@ -403,8 +376,6 @@ test("filtered list - update entry to be matching", async () => {
             id: "entry_one",
             formId: "ok",
             timestamp: 0,
-            name: "",
-            icon: "",
             displayValue: "",
             snapshotId: "",
             answers: {
@@ -418,8 +389,6 @@ test("filtered list - update entry to be matching", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 snapshotId: "",
                 displayValue: "",
                 answers: {

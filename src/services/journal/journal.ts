@@ -44,8 +44,6 @@ export class JournalService {
             snapshotId: form.snapshotId,
             answers,
             timestamp,
-            name: form.name,
-            icon: form.icon,
             displayValue: formatAnswersIntoRepresentation(answers, format)
         }
 
@@ -92,7 +90,7 @@ export class JournalService {
     }
 
     async import(entries: JournalEntry[], overwrite: boolean) {
-        if(entries.length == 0) return;
+        if (entries.length == 0) return;
         if (overwrite) {
             await this.collection.deleteEntriesByFormId(entries[0].formId);
         }

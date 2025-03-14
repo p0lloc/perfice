@@ -5,6 +5,7 @@
     import JournalSingleGroup from "@perfice/components/journal/day/JournalSingleGroup.svelte";
     import JournalDayDate from "@perfice/components/journal/day/JournalDayDate.svelte";
     import type {JournalEntry} from "@perfice/model/journal/journal";
+    import JournalTagEntries from "@perfice/components/journal/day/JournalTagEntries.svelte";
 
     let {day, onEntryClick, onEntryDelete, selectedEntries}: {
         day: JournalDay, onEntryClick: (entry: JournalEntry) => void,
@@ -26,11 +27,15 @@
                 <p class="text-gray-400 text-xl">{weekDay} {dayOfMonth}</p>
             </div>
 
-            <div class="journal-grid">
-                {#each day.multiEntries as group (group.id)}
-                    <JournalMultiGroup {selectedEntries} {group} {onEntryClick} {onEntryDelete}/>
-                {/each}
-            </div>
+            <JournalTagEntries tagEntries={day.tagEntries}/>
+
+            {#if day.multiEntries.length > 0}
+                <div class="journal-grid">
+                    {#each day.multiEntries as group (group.id)}
+                        <JournalMultiGroup {selectedEntries} {group} {onEntryClick} {onEntryDelete}/>
+                    {/each}
+                </div>
+            {/if}
 
             <div class="journal-grid"
                  class:mt-4={day.multiEntries.length > 0}

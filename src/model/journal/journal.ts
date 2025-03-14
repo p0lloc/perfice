@@ -7,12 +7,9 @@ export interface JournalEntry {
     formId: string;
     snapshotId: string;
 
-    name: string;
-    icon: string;
     displayValue: string;
     answers: Record<string, PrimitiveValue>;
 }
-
 
 export interface TagEntry {
     id: string;

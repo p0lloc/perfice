@@ -45,10 +45,10 @@ export class EntryImportService {
 
     private async importCsv(text: string, form: Form): Promise<JournalEntry[]> {
         let result = Papa.parse<string[]>(text);
-        let data: string[][]  = result.data;
+        let data: string[][] = result.data;
 
         let entries: JournalEntry[] = [];
-        for(let data of result.data) {
+        for (let data of result.data) {
             if (data.length < 2) return [];
 
             let timestamp = parseInt(data[0]);
@@ -122,8 +122,6 @@ export class EntryImportService {
             snapshotId: form.snapshotId,
             answers: answers,
             timestamp,
-            name: form.name,
-            icon: form.icon,
             displayValue: formatAnswersIntoRepresentation(answers, form.format)
         };
     }

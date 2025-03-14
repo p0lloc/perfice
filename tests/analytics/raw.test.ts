@@ -18,8 +18,6 @@ export function mockEntry(formId: string, answers: Record<string, any>, timestam
         answers: answers,
         timestamp: timestamp,
         snapshotId: "",
-        name: "",
-        icon: "",
         displayValue: ""
     }
 }

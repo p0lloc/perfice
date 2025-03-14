@@ -51,6 +51,7 @@ import {AnalyticsSettingsStore} from './stores/analytics/settings';
 import {AnalyticsSettingsService} from './services/analytics/settings';
 import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/analytics/trackable";
 import {TagAnalytics, TagDetailedAnalytics} from "@perfice/stores/analytics/tags";
+import {TagEntryStore} from './stores/journal/tag';
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -91,10 +92,11 @@ export const weekStart = writable(WeekStart.MONDAY);
 export const trackableCategories = new TrackableCategoryStore(trackableCategoryService);
 export const tagCategories = new TagCategoryStore(tagCategoryService);
 export const journal = new JournalEntryStore(journalService);
+export const tagEntries = new TagEntryStore(tagEntryService);
 export const categorizedTrackables = CategorizedTrackables();
-export const groupedJournal = GroupedJournal();
 export const goals = new GoalStore(goalService);
 export const tags = new TagStore(tagService);
+export const groupedJournal = GroupedJournal();
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
 

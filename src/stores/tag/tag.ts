@@ -3,8 +3,8 @@ import {dateToMidnight} from "@perfice/util/time/simple";
 import {AsyncStore} from "@perfice/stores/store";
 import {resolvedPromise} from "@perfice/util/promise";
 import {EntityObserverType} from "@perfice/services/observer";
-import type { TagService } from "@perfice/services/tag/tag";
-import type { Tag } from "@perfice/model/tag/tag";
+import type {TagService} from "@perfice/services/tag/tag";
+import type {Tag} from "@perfice/model/tag/tag";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
 export function TagDate(): Writable<Date> {
@@ -24,8 +24,8 @@ export class TagStore extends AsyncStore<Tag[]> {
         this.tagService.addObserver(EntityObserverType.DELETED, async (tag) => await this.onTagDeleted(tag));
     }
 
-    load() {
-        this.set(this.tagService.getTags());
+    async load() {
+        this.set(resolvedPromise(await this.tagService.getTags()));
     }
 
     async logTag(tag: Tag, date: Date) {

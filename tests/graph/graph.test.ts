@@ -65,8 +65,6 @@ test("simple multiple list variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
-                icon: "",
                 snapshotId: "",
                 displayValue: "",
                 answers: {
@@ -77,9 +75,7 @@ test("simple multiple list variable", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -115,9 +111,7 @@ test("simple multiple fields list variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "one": pDisplay(pNumber(10.0), pString("10.0")),
@@ -154,9 +148,7 @@ test("simple aggregate sum variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -166,8 +158,6 @@ test("simple aggregate sum variable", async () => {
                 id: "entry_two",
                 formId: "ok",
                 displayValue: "",
-                name: "",
-                icon: "",
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -205,9 +195,7 @@ test("simple aggregate mean variable", async () => {
             {
                 id: "entry_one",
                 formId: "ok",
-                name: "",
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -215,8 +203,6 @@ test("simple aggregate mean variable", async () => {
                 }
             },
             {
-                name: "",
-                icon: "",
                 displayValue: "",
                 snapshotId: "",
                 id: "entry_two",
@@ -259,9 +245,7 @@ test("simple single list variable new entry", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
-                name: "",
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -416,9 +400,7 @@ test("calculation variable between two dynamic variables", async () => {
             {
                 id: "entry_one",
                 formId: "income",
-                name: "",
                 displayValue: "",
-                icon: "",
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -428,8 +410,6 @@ test("calculation variable between two dynamic variables", async () => {
             {
                 id: "entry_two",
                 formId: "expense",
-                name: "",
-                icon: "",
                 displayValue: "",
                 snapshotId: "",
                 timestamp: 0,
@@ -491,9 +471,7 @@ test("calculation variable between two dynamic variables", async () => {
         id: "entry_two",
         formId: "income",
         timestamp: 0,
-        name: "",
         displayValue: "",
-        icon: "",
         snapshotId: "",
         answers: {
             "ok": pDisplay(pNumber(500.0), pString("13.0"))

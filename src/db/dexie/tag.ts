@@ -6,10 +6,11 @@ import type {
     TagCollection,
     TagEntryCollection,
 } from "@perfice/db/collections";
+import {getEntitiesByOffsetAndLimit} from "@perfice/db/dexie/common";
 
 export class DexieTagEntryCollection implements TagEntryCollection {
 
-    private table: EntityTable<TagEntry, "id">;
+    private readonly table: EntityTable<TagEntry, "id">;
 
     constructor(table: EntityTable<TagEntry, "id">) {
         this.table = table;
@@ -62,6 +63,10 @@ export class DexieTagEntryCollection implements TagEntryCollection {
         return this.table
             .where("timestamp").between(start, end, true, true)
             .toArray();
+    }
+
+    async getEntriesByOffsetAndLimit(page: number, pageSize: number): Promise<TagEntry[]> {
+        return await getEntitiesByOffsetAndLimit(this.table, page, pageSize);
     }
 
 }

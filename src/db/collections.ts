@@ -183,6 +183,8 @@ export interface TagEntryCollection {
     createEntry(entry: TagEntry): Promise<void>;
 
     getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]>;
+
+    getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<TagEntry[]>;
 }
 
 export interface IndexCollection {

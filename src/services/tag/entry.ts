@@ -25,7 +25,7 @@ export class TagEntryService {
 
     async deleteEntryById(entryId: string) {
         let entry = await this.tagEntryCollection.getEntryById(entryId);
-        if(entry == undefined) return;
+        if (entry == undefined) return;
         await this.tagEntryCollection.deleteEntryById(entryId);
         await this.observers.notifyObservers(EntityObserverType.CREATED, entry);
     }
@@ -38,4 +38,7 @@ export class TagEntryService {
         this.observers.removeObserver(type, callback);
     }
 
+    async getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<TagEntry[]> {
+        return this.tagEntryCollection.getEntriesByOffsetAndLimit(offset, limit);
+    }
 }

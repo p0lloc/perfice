@@ -5,8 +5,6 @@ export function mockEntry(id: string, formId: string, answers: Record<string, Pr
     return {
         id,
         formId,
-        name: "",
-        icon: "",
         snapshotId: "",
         timestamp,
         displayValue: "",
