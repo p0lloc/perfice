@@ -176,9 +176,6 @@ export function TrackableDetailedAnalytics(id: string, rawQuestionId: string | n
 }
 
 export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[]>> {
-    // derived trackables
-    // derived analytics settings????
-
     return derived([analytics, trackables, analyticsSettings], ([$res, $trackables, $settings], set) => {
         let promise = new Promise<TrackableAnalyticsResult[]>(
             async (resolve) => {

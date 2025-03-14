@@ -19,11 +19,13 @@ export interface AnalyticsResult {
 
     timeScope: SimpleTimeScopeType;
     range: number;
+    date: Date;
 }
 
 async function fetchAnalytics(analyticsService: AnalyticsService, date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
     let [rawValues, forms] = await analyticsService.fetchRawValues(timeScope, date, range);
-    let [tagValues, tags] = await analyticsService.fetchTagValues(timeScope, date, range);
+    let [tagValues, tags] = await analyticsService.fetchTagValues(timeScope, date, 7 * 14);
+    // TODO: limit tag values to same range for correlations
     let correlations = await analyticsService.runBasicCorrelations(rawValues, tagValues, date, range, minimumSampleSize);
 
     return {
@@ -33,7 +35,8 @@ async function fetchAnalytics(analyticsService: AnalyticsService, date: Date, ti
         tagValues,
         timeScope,
         tags,
-        range
+        range,
+        date
     };
 }
 

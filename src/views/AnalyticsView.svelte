@@ -6,8 +6,8 @@
         ANALYTICS_SEGMENTED_ITEMS,
         AnalyticsViewType,
     } from "@perfice/model/analytics/ui";
-    import AnalyticsTrackableView from "@perfice/components/analytics/AnalyticsTrackableView.svelte";
-    import AnalyticsTagView from "@perfice/components/analytics/AnalyticsTagView.svelte";
+    import AnalyticsTrackableView from "@perfice/components/analytics/trackable/AnalyticsTrackableView.svelte";
+    import AnalyticsTagView from "@perfice/components/analytics/tag/AnalyticsTagView.svelte";
     import AnalyticsCorrelationView from "@perfice/components/analytics/AnalyticsCorrelationView.svelte";
     import type {Component} from "svelte";
 

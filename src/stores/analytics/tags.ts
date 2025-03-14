@@ -1,6 +1,6 @@
 import {derived, readable, type Readable} from "svelte/store";
 import type {Tag} from "@perfice/model/tag/tag";
-import {analytics, analyticsSettings, trackables} from "@perfice/main";
+import {analytics} from "@perfice/main";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {AnalyticsService, TAG_KEY_PREFIX, type TagWeekDayAnalytics} from "@perfice/services/analytics/analytics";
 import {
@@ -10,9 +10,14 @@ import {
 } from "@perfice/stores/analytics/analytics";
 import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 
-
 export interface TagAnalyticsResult {
+    results: SingleTagAnalyticsResult[];
+    date: Date;
+}
+
+export interface SingleTagAnalyticsResult {
     tag: Tag;
+    values: Map<number, number>;
 }
 
 export type TagWeekDayAnalyticsTransformed = Omit<TagWeekDayAnalytics, 'values'> & {
@@ -23,18 +28,25 @@ export interface TagDetailedAnalyticsResult {
     tag: Tag;
     weekDayAnalytics: TagWeekDayAnalyticsTransformed;
     correlations: DetailCorrelation[];
+    values: Map<number, number>;
+    date: Date;
 }
 
-export function TagAnalytics(): Readable<Promise<TagAnalyticsResult[]>> {
-    return derived([analytics, trackables, analyticsSettings], ([$res, $trackables, $settings], set) => {
-        let promise = new Promise<TagAnalyticsResult[]>(
+export function TagAnalytics(): Readable<Promise<TagAnalyticsResult>> {
+    return derived([analytics], ([$res], set) => {
+        let promise = new Promise<TagAnalyticsResult>(
             async (resolve) => {
                 let result = await $res;
-                resolve(result.tags.map(tag => {
-                    return {
-                        tag
-                    }
-                }));
+
+                let results: SingleTagAnalyticsResult[] = [];
+                for (let tag of result.tags) {
+                    let values = result.tagValues.get(`${TAG_KEY_PREFIX}${tag.id}`);
+                    if (values == null) continue;
+
+                    results.push({tag, values})
+                }
+
+                resolve({results, date: result.date});
             }
         );
 
@@ -64,7 +76,9 @@ function createPromise(id: string,
                     ...weekDayAnalytics,
                     values: Object.fromEntries(weekDayAnalytics.values.entries().map(([k, v]) => [WEEK_DAYS_SHORT[k], v]))
                 },
-                correlations: createDetailedCorrelations(result, tag.id)
+                correlations: createDetailedCorrelations(result, tag.id),
+                values,
+                date: result.date,
             });
         });
 }
