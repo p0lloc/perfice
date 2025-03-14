@@ -88,16 +88,15 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
     }
 
     getDefaultValue(settings: HierarchyFormQuestionDataSettings): PrimitiveValue[] {
-        return [
-        ]
+        return []
     }
 
     getPrimitiveType(): PrimitiveValueType {
         return PrimitiveValueType.LIST;
     }
 
-    serialize(value: PrimitiveValue) : PrimitiveValue[] {
-        if(value.type == PrimitiveValueType.LIST) {
+    serialize(value: PrimitiveValue): PrimitiveValue[] {
+        if (value.type == PrimitiveValueType.LIST) {
             return value.value;
         }
 
@@ -113,14 +112,19 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
     }
 
     export(value: PrimitiveValue): ExportedPrimitive | null {
-        if(value.type != PrimitiveValueType.LIST) return null;
+        if (value.type != PrimitiveValueType.LIST) return null;
         return value.value.map(v => exportPrimitive(v));
     }
 
     import(value: ExportedPrimitive): PrimitiveValue | null {
-        if(!Array.isArray(value)) return pList([]);
+        if (!Array.isArray(value)) return pList([]);
 
         return pList(value.map(v => importPrimitive(v)));
+    }
+
+    getDisplayValue(value: PrimitiveValue[]): PrimitiveValue | null {
+        // Handled by display type
+        return null;
     }
 
 }

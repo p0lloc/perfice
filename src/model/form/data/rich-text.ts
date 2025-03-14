@@ -2,7 +2,8 @@ import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 
-export interface RichTextFormQuestionDataSettings {}
+export interface RichTextFormQuestionDataSettings {
+}
 
 export class RichTextFormQuestionDataType implements FormQuestionDataTypeDefinition<string, RichTextFormQuestionDataSettings> {
     getSupportedDisplayTypes(): FormQuestionDisplayType[] {
@@ -42,6 +43,10 @@ export class RichTextFormQuestionDataType implements FormQuestionDataTypeDefinit
 
     export(value: PrimitiveValue): any {
         return null;
+    }
+
+    getDisplayValue(value: string): PrimitiveValue | null {
+        return pString(value);
     }
 
 }

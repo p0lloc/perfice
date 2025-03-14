@@ -65,6 +65,18 @@ export function formatTimestampHHMM(timestamp: number) {
     return formatDateHHMM(new Date(timestamp));
 }
 
+
+export function formatTimeElapsed(minutes: number) {
+    let hours = Math.floor(minutes / 60);
+    minutes = Math.floor(minutes % 60);
+
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+
+    return `${minutes}m`;
+}
+
 export function formatDateHHMM(date: Date) {
     return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
 }

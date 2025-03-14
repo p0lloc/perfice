@@ -10,20 +10,24 @@ export interface SegmentedOption {
 export interface SegmentedFormQuestionSettings {
     options: SegmentedOption[];
 }
+
 export class SegmentedFieldDefinition implements FormDisplayTypeDefinition<SegmentedFormQuestionSettings> {
     validate(value: PrimitiveValue): string | null {
         return null;
     }
+
     hasMultiple(s: SegmentedFormQuestionSettings): boolean {
         return false;
     }
+
     getDefaultSettings(): SegmentedFormQuestionSettings {
         return {
             options: []
         };
     }
-    getDisplayValue(value: PrimitiveValue, displaySettings: SegmentedFormQuestionSettings): PrimitiveValue {
-        return value;
+
+    getDisplayValue(value: PrimitiveValue, displaySettings: SegmentedFormQuestionSettings): PrimitiveValue | null {
+        return null;
     }
 
 

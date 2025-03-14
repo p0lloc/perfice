@@ -1,5 +1,5 @@
 import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
-import {pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 
 export interface NumberFormQuestionDataSettings {
@@ -9,11 +9,11 @@ export interface NumberFormQuestionDataSettings {
 
 export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinition<number, NumberFormQuestionDataSettings> {
     validate(value: number, settings: NumberFormQuestionDataSettings): string | null {
-        if(settings.min != null && value < settings.min) {
+        if (settings.min != null && value < settings.min) {
             return `Value is too small (min ${settings.min})`;
         }
 
-        if(settings.max != null && value > settings.max) {
+        if (settings.max != null && value > settings.max) {
             return `Value is too large (max ${settings.max})`;
         }
 
@@ -36,7 +36,7 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
     }
 
     serialize(value: PrimitiveValue) {
-        if(value.type == PrimitiveValueType.NUMBER) {
+        if (value.type == PrimitiveValueType.NUMBER) {
             return value.value;
         }
 
@@ -45,7 +45,7 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
 
     deserialize(value: any): PrimitiveValue | null {
         let number = parseFloat(value);
-        if(isNaN(number)) {
+        if (isNaN(number)) {
             return null;
         }
 
@@ -62,6 +62,10 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
 
     export(value: PrimitiveValue): any {
         return null;
+    }
+
+    getDisplayValue(value: number): PrimitiveValue | null {
+        return pString(value.toString());
     }
 
 }

@@ -17,7 +17,8 @@
     import CorrelationAnalytics from "@perfice/components/analytics/details/CorrelationAnalytics.svelte";
     import type {FormQuestion} from "@perfice/model/form/form";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
-    import {faRuler, faTag} from "@fortawesome/free-solid-svg-icons";
+    import {faRuler} from "@fortawesome/free-solid-svg-icons";
+    // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
     let {id}: { id: string } = $props();
@@ -67,10 +68,10 @@
     <div class="grid grid-cols-1 gap-4 items-center mt-4 flex-wrap"
          class:md:grid-cols-3={val.basicAnalytics.quantitative}
          class:md:grid-cols-2={!val.basicAnalytics.quantitative}
-
     >
         {#if val.basicAnalytics.quantitative}
-            <BasicQuantitativeAnalyticsRow timeScope={val.timeScope} analytics={val.basicAnalytics.value}/>
+            <BasicQuantitativeAnalyticsRow dataType={val.questionType}
+                                           timeScope={val.timeScope} analytics={val.basicAnalytics.value}/>
         {:else}
             <BasicCategoricalAnalyticsRow analytics={val.basicAnalytics.value}/>
         {/if}
@@ -87,6 +88,7 @@
                             hideGrid={true}
                             minimal={false}
                             dataPoints={val.chart.values}
+                            labelFormatter={val.chart.labelFormatter}
                             labels={val.chart.labels}
                     />
                 </div>

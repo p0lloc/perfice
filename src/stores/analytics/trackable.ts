@@ -19,9 +19,10 @@ import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 import type {TrackableService} from "@perfice/services/trackable/trackable";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 import type {FormService} from "@perfice/services/form/form";
-import type {FormQuestion} from "@perfice/model/form/form";
+import {type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {formatSimpleTimestamp} from "@perfice/model/variable/ui";
+import {formatValueAsDataType} from "@perfice/model/form/data";
 
 export enum AnalyticsChartType {
     LINE,
@@ -31,7 +32,8 @@ export enum AnalyticsChartType {
 export type AnalyticsChartData = {
     type: AnalyticsChartType.LINE,
     values: number[],
-    labels: string[]
+    labels: string[],
+    labelFormatter: (v: number) => string
 } | {
     type: AnalyticsChartType.PIE,
     values: Record<string, number>
@@ -62,10 +64,12 @@ export interface TrackableDetailedAnalyticsResult {
     correlations: DetailCorrelation[];
     questions: FormQuestion[];
     questionId: string;
+    questionType: FormQuestionDataType;
     timeScope: SimpleTimeScopeType;
 }
 
-function constructChartFromValues(bag: ValueBag, useMeanValue: boolean, timeScope: SimpleTimeScopeType): AnalyticsChartData {
+function constructChartFromValues(bag: ValueBag, useMeanValue: boolean,
+                                  timeScope: SimpleTimeScopeType, dataType: FormQuestionDataType): AnalyticsChartData {
     if (bag.quantitative) {
         let values = [];
         let labels = [];
@@ -78,7 +82,8 @@ function constructChartFromValues(bag: ValueBag, useMeanValue: boolean, timeScop
         return {
             type: AnalyticsChartType.LINE,
             values: values,
-            labels: labels
+            labels: labels,
+            labelFormatter: (v: number) => formatValueAsDataType(v, dataType)
         }
     } else {
         return {
@@ -118,6 +123,9 @@ function createPromise(id: string, rawQuestionId: string | null,
                 questionId = rawQuestionId;
             }
 
+            let formQuestion = form.questions.find(q => q.id == questionId);
+            if (formQuestion == null) return;
+
             let bag = topValues.get(questionId);
             if (bag == null)
                 return;
@@ -149,8 +157,9 @@ function createPromise(id: string, rawQuestionId: string | null,
                 basicAnalytics: basic,
                 questions: form.questions,
                 correlations: createDetailedCorrelations(result, questionId),
-                chart: constructChartFromValues(bag, useMeanValue, timeScope),
+                chart: constructChartFromValues(bag, useMeanValue, timeScope, formQuestion.dataType),
                 questionId,
+                questionType: formQuestion.dataType,
                 timeScope
             });
         });
@@ -194,11 +203,17 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
                     let mainValues = formData.get(settings.questionId);
                     if (mainValues == null) continue;
 
+                    let form = result.forms.find(f => f.id == trackable.formId);
+                    if (form == null) continue;
+
+                    let formQuestion = form.questions.find(q => q.id == settings.questionId);
+                    if (formQuestion == null) continue;
+
                     let useMeanValue = settings.useMeanValue[settings.questionId] ?? false;
 
                     res.push({
                         trackable,
-                        chart: constructChartFromValues(mainValues, useMeanValue, SimpleTimeScopeType.DAILY),
+                        chart: constructChartFromValues(mainValues, useMeanValue, SimpleTimeScopeType.DAILY, formQuestion.dataType),
                         settings: settings
                     });
                 }

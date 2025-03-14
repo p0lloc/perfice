@@ -1,6 +1,12 @@
 <script lang="ts">
     import type {FormQuestion} from "@perfice/model/form/form";
-    import {pDisplay, pList, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+    import {
+        pDisplay,
+        pList,
+        type PrimitiveValue,
+        PrimitiveValueType,
+        pString
+    } from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import FormFieldRenderer from "@perfice/components/form/fields/FormFieldRenderer.svelte";
@@ -89,6 +95,10 @@
         errorMessage = "";
 
         let displayValue = displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings);
+        if (displayValue == null) {
+            displayValue = dataTypeDef.getDisplayValue(valueSnapshot) ?? pString("");
+        }
+
         if (displayValue.type == PrimitiveValueType.STRING && question.unit != null) {
             // Append unit to the display value
             displayValue.value += ` ${question.unit}`;

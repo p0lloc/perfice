@@ -25,11 +25,11 @@ export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<
     }
 
     validate(value: string, settings: TextFormQuestionDataSettings): string | null {
-        if(settings.maxLength != null && value.length > settings.maxLength){
+        if (settings.maxLength != null && value.length > settings.maxLength) {
             return `Text is too long! (max ${settings.maxLength})`;
         }
 
-        if(settings.minLength != null && value.length > settings.minLength){
+        if (settings.minLength != null && value.length > settings.minLength) {
             return `Text is too short (min ${settings.minLength})!`;
         }
 
@@ -54,6 +54,10 @@ export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<
 
     export(value: PrimitiveValue): any {
         return null;
+    }
+
+    getDisplayValue(value: string): PrimitiveValue | null {
+        return pString(value);
     }
 
 }

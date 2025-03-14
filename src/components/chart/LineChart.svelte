@@ -11,6 +11,7 @@
         minimal = true,
         fillColor = "#9BD0F5",
         borderColor = "#36A2EB",
+        labelFormatter = (v: number) => v.toString(),
         ...rest
     } = $props();
 
@@ -46,13 +47,22 @@
                         bottom: -10,
                     }
                 },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                return labelFormatter(context.parsed.y);
+                            }
+                        }
+                    }
+                },
                 scales: {
-
                     y: {
                         beginAtZero: true,
                         ticks: {
                             padding: 0,
-                            display: !hideLabels
+                            display: !hideLabels,
+                            callback: (tickValue) => labelFormatter(tickValue),
                         },
                         grid: {
                             display: !hideGrid,

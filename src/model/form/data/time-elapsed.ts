@@ -1,6 +1,7 @@
 import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
-import {pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
+import {formatTimeElapsed, formatTimestampHHMM} from "@perfice/util/time/format";
 
 export interface TimeElapsedFormQuestionDataSettings {
 }
@@ -8,7 +9,7 @@ export interface TimeElapsedFormQuestionDataSettings {
 
 export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefinition<number, TimeElapsedFormQuestionDataSettings> {
     validate(value: number, settings: TimeElapsedFormQuestionDataSettings): string | null {
-        if(value < 0) {
+        if (value < 0) {
             return "Duration cannot be negative";
         }
 
@@ -28,7 +29,7 @@ export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefi
     }
 
     serialize(value: PrimitiveValue) {
-        if(value.type == PrimitiveValueType.NUMBER) {
+        if (value.type == PrimitiveValueType.NUMBER) {
             return value.value;
         }
 
@@ -37,7 +38,7 @@ export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefi
 
     deserialize(value: any): PrimitiveValue | null {
         let number = parseFloat(value);
-        if(isNaN(number)) {
+        if (isNaN(number)) {
             return null;
         }
 
@@ -55,6 +56,10 @@ export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefi
 
     export(value: PrimitiveValue): any {
         return null;
+    }
+
+    getDisplayValue(value: number): PrimitiveValue | null {
+        return pString(formatTimeElapsed(value));
     }
 
 }

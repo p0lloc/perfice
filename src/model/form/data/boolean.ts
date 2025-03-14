@@ -1,5 +1,5 @@
-import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
-import {pBoolean, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import type {FormQuestionDataSettings, FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
+import {pBoolean, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
 
 export interface BooleanFormQuestionDataSettings {
@@ -38,13 +38,16 @@ export class BooleanFormQuestionDataType implements FormQuestionDataTypeDefiniti
         return [FormQuestionDisplayType.INPUT];
     }
 
-
     import(value: any): PrimitiveValue | null {
         return null;
     }
 
     export(value: PrimitiveValue): any {
         return null;
+    }
+
+    getDisplayValue(value: boolean): PrimitiveValue | null {
+        return pString(value.toString());
     }
 
 }

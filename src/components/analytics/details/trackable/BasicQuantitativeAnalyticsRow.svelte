@@ -3,11 +3,16 @@
     import {faArrowDown, faArrowUp} from "@fortawesome/free-solid-svg-icons";
     import TitledCard from "@perfice/components/base/card/TitledCard.svelte";
     import CardButton from "@perfice/components/base/button/CardButton.svelte";
-    import {formatTimestampYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format.js";
     import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
     import {formatSimpleTimestamp} from "@perfice/model/variable/ui";
+    import type {FormQuestionDataType} from "@perfice/model/form/form";
+    import {formatValueAsDataType} from "@perfice/model/form/data";
 
-    let {analytics, timeScope}: { analytics: QuantitativeBasicAnalytics, timeScope: SimpleTimeScopeType } = $props();
+    let {analytics, timeScope, dataType}: {
+        analytics: QuantitativeBasicAnalytics,
+        timeScope: SimpleTimeScopeType,
+        dataType: FormQuestionDataType
+    } = $props();
 
     // TODO: link to journal with filtered entries
     function showMax() {
@@ -22,7 +27,7 @@
         class=""
         title="Avg"
         icon={faArrowDown}
-        description={analytics.average.toString()}
+        description={formatValueAsDataType(analytics.average, dataType)}
 >
 </TitledCard>
 
@@ -37,7 +42,7 @@
         title="Max"
         onClick={showMax}
         icon={faArrowUp}
-        description={analytics.max.value.toString()}
+        description={formatValueAsDataType(analytics.max.value, dataType)}
 >
     {#snippet cardSuffix()}
         {@render suffix(analytics.max.timestamp)}
@@ -48,7 +53,7 @@
         title="Min"
         onClick={showMin}
         icon={faArrowDown}
-        description={analytics.min.value.toString()}
+        description={formatValueAsDataType(analytics.min.value, dataType)}
 >
     {#snippet cardSuffix()}
         {@render suffix(analytics.min.timestamp)}

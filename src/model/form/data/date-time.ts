@@ -26,7 +26,7 @@ export class DateTimeFormQuestionDataType implements FormQuestionDataTypeDefinit
     }
 
     serialize(value: PrimitiveValue) {
-        if(value.type == PrimitiveValueType.STRING){
+        if (value.type == PrimitiveValueType.STRING) {
             return value.value;
         }
 
@@ -53,6 +53,10 @@ export class DateTimeFormQuestionDataType implements FormQuestionDataTypeDefinit
 
     export(value: PrimitiveValue): any {
         return null;
+    }
+
+    getDisplayValue(value: string): PrimitiveValue | null {
+        return pString(value.toString());
     }
 
 }

@@ -8,7 +8,7 @@ import {type DateFormQuestionDataSettings, DateFormQuestionDataType} from "./dat
 import {type DateTimeFormQuestionDataSettings, DateTimeFormQuestionDataType} from "./data/date-time";
 import {type TimeElapsedFormQuestionDataSettings, TimeElapsedFormQuestionDataType} from "./data/time-elapsed";
 import {type TimeOfDayFormQuestionDataSettings, TimeOfDayFormQuestionDataType} from "./data/time-of-day";
-import {type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
+import {prettyPrintPrimitive, type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
 import type {ExportedPrimitive} from "@perfice/services/export/export";
 
 export type FormQuestionDataSettings =
@@ -62,8 +62,9 @@ export interface FormQuestionDataTypeDefinition<V, S> {
     export(value: PrimitiveValue): ExportedPrimitive | null;
 
     import(value: ExportedPrimitive): PrimitiveValue | null;
-}
 
+    getDisplayValue(value: V): PrimitiveValue | null;
+}
 
 export class FormQuestionDataTypeRegistry {
     private types: Map<string, FormQuestionDataTypeDefinition<any, any>> = new Map();
@@ -78,7 +79,7 @@ export class FormQuestionDataTypeRegistry {
 
     getDefaultValue(type: string): any {
         let definition = this.getDefinition(type);
-        if(definition === undefined) return undefined;
+        if (definition === undefined) return undefined;
         return definition.getDefaultValue(definition.getDefaultSettings());
     }
 
@@ -87,7 +88,7 @@ export class FormQuestionDataTypeRegistry {
      */
     getFirstSuitableForDisplayType(type: FormQuestionDisplayType): [string, FormQuestionDataTypeDefinition<any, any>] | null {
         for (let [key, value] of this.types.entries()) {
-            if(!value.getSupportedDisplayTypes().includes(type)) continue;
+            if (!value.getSupportedDisplayTypes().includes(type)) continue;
 
             return [key, value];
         }
@@ -106,3 +107,13 @@ questionDataTypeRegistry.registerDataType(FormQuestionDataType.TIME_OF_DAY, new 
 questionDataTypeRegistry.registerDataType(FormQuestionDataType.BOOLEAN, new BooleanFormQuestionDataType());
 questionDataTypeRegistry.registerDataType(FormQuestionDataType.HIERARCHY, new HierarchyFormQuestionDataType());
 questionDataTypeRegistry.registerDataType(FormQuestionDataType.RICH_TEXT, new RichTextFormQuestionDataType());
+
+export function formatValueAsDataType(value: any, dataType: string): string {
+    let dataTypeDef = questionDataTypeRegistry.getDefinition(dataType);
+    if (dataTypeDef == null) return value.toString();
+
+    let displayValue = dataTypeDef.getDisplayValue(value);
+    if (displayValue == null) return value.toString();
+
+    return prettyPrintPrimitive(displayValue);
+}

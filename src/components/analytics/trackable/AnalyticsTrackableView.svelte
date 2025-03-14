@@ -36,6 +36,7 @@
                                     hideGrid={true}
                                     minimal={false}
                                     dataPoints={value.chart.values}
+                                    labelFormatter={value.chart.labelFormatter}
                                     labels={value.chart.labels}/>
                         </div>
                     {/if}
