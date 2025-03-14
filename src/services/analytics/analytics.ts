@@ -570,6 +570,7 @@ export class AnalyticsService {
                 // Skip if actually same key but first is just lagged
                 if (firstLag && this.stripLag(firstKey) == secondKey) continue;
 
+
                 // Skip if same key but reverse order
                 let existingKey = this.constructResultKey(secondKey, firstKey);
                 if (results.has(existingKey)) continue;

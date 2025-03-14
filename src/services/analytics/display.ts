@@ -71,9 +71,10 @@ export function convertResultKey(key: string, result: CorrelationResult, forms: 
         let firstConverted = convertSingleKey(first.substring(LAG_KEY_PREFIX.length), result.firstKeyType, forms, tags);
         let secondConverted = convertSingleKey(second, result.secondKeyType, forms, tags);
 
+        // Different order because it's the first one that is lagged
         return {
-            first: firstConverted,
-            second: secondConverted,
+            first: secondConverted,
+            second: firstConverted,
             between: "after days with"
         }
     }

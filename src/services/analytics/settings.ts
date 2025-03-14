@@ -29,10 +29,12 @@ export class AnalyticsSettingsService {
     }
 
     async createAnalyticsSettingsFromForm(formId: string, questions: FormQuestion[]) {
-        await this.analyticsSettingsCollection.insertSettings({
+        let settings: AnalyticsSettings = {
             formId,
             questionId: questions.length > 0 ? questions[0].id : "",
             useMeanValue: Object.fromEntries(questions.map(q => [q.id, true]))
-        });
+        };
+
+        await this.analyticsSettingsCollection.insertSettings(settings);
     }
 }
