@@ -59,9 +59,6 @@
     function getCorrelationsToShow(correlations: Map<string, CorrelationResult>, filter: Record<DatasetKeyType, boolean>, search: string, forms: Form[], tags: Tag[]): DetailCorrelation[] {
         let result: DetailCorrelation[] = [];
         for (let [key, correlation] of correlations.entries()) {
-            if (correlation.sampleSize < 7)
-                continue;
-
             // Filter out correlations with low confidence
             if (Math.abs(correlation.coefficient) < (confidence / 100)) {
                 continue;

@@ -57,7 +57,7 @@
 </script>
 <div class="bg-white rounded border p-2 {className} flex flex-col justify-between">
     <div>
-        <div class="flex gap-2 items-start">
+        <div class="flex gap-2 justify-between items-start">
             <CorrelationMessage positive={correlation.value.coefficient > 0} display={correlation.display}/>
             <IconButton onClick={showChart} icon={faLineChart} class="text-gray-400"/>
         </div>

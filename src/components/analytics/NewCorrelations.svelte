@@ -7,21 +7,26 @@
 
     let {newCorrelations, result}: { newCorrelations: AnalyticsHistoryEntry[], result: AnalyticsResult } = $props();
 
-    function convertToDetail(key: string, correlationResult: CorrelationResult): DetailCorrelation {
+    type NewCorrelation = DetailCorrelation & {
+        timestamp: number;
+    }
+
+    function convertToDetail(key: string, correlationResult: CorrelationResult, timestamp: number): NewCorrelation {
         return {
             key,
             display: convertResultKey(key, correlationResult, result.forms, result.tags),
-            value: correlationResult
+            value: correlationResult,
+            timestamp
         };
     }
 
     let detailedCorrelations = $derived.by(() => {
-        let out: DetailCorrelation[] = [];
+        let out: NewCorrelation[] = [];
         for (let correlation of newCorrelations) {
             let data = result.correlations.get(correlation.key);
             if (data == null) continue;
 
-            out.push(convertToDetail(correlation.key, data));
+            out.push(convertToDetail(correlation.key, data, correlation.timestamp));
         }
 
         return out;

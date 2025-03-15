@@ -34,7 +34,7 @@ export class AnalyticsHistoryService {
             .sort((a, b) => {
                 // Mainly sort by timestamp, but if timestamps are the same, sort by coefficient
                 if (a.timestamp == b.timestamp) {
-                    return b.coefficient - a.coefficient;
+                    return Math.abs(b.coefficient) - Math.abs(a.coefficient);
                 }
 
                 return b.timestamp - a.timestamp;
@@ -46,7 +46,7 @@ export class AnalyticsHistoryService {
         let result: AnalyticsHistoryEntry[] = [];
         let newTimestamp = date.getTime();
         for (let [key, correlation] of correlations.entries()) {
-            if (correlation.coefficient < this.confidenceThreshold)
+            if (Math.abs(correlation.coefficient) < this.confidenceThreshold)
                 continue;
 
             let timestamp: number = newTimestamp;
