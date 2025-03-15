@@ -23,6 +23,8 @@
     }
 
     function right() {
+        // Don't allow going into the future, this is for mobile where we're not hiding the button
+        if (endDate.getTime() == todayDate.getTime()) return;
         endDate = addDaysDate(endDate, 5);
     }
 
@@ -36,6 +38,7 @@
         pickedDate.setFullYear(parsed.getFullYear());
         pickedDate.setMonth(parsed.getMonth());
         pickedDate.setDate(parsed.getDate());
+        if (pickedDate.getTime() > todayDate.getTime()) return;
 
         let offset = getDaysDifference(todayDate, parsed) % 5;
         endDate = addDaysDate(pickedDate, offset);
@@ -67,11 +70,11 @@
         {/each}
     </div>
     <div class="md:w-10 flex items-center">
-        <button onclick={right} class="ml-3" class:md:hidden={atEnd}>
+        <button onclick={right} class="ml-3" class:hidden={atEnd}>
             <Fa icon={faChevronRight}/>
         </button>
         {#if atEnd}
-            <div class="hidden md:flex items-center justify-center">
+            <div class="md:flex items-center justify-center">
                 <input
                         type="date"
                         class="invisible"
@@ -81,11 +84,10 @@
                 />
                 <button
                         onclick={openDatePicker}
-                        class="bg-white p-2 border rounded-full pointer-feedback:bg-gray-100 ml-2"
+                        class="bg-white md:p-2 py-2 md:border rounded-full pointer-feedback:bg-gray-100 md:ml-2"
                 >
                     <Fa icon={faCalendarAlt}/>
-                </button
-                >
+                </button>
             </div>
         {/if}
     </div>
