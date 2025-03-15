@@ -158,6 +158,8 @@ export function GroupedJournal(): IGroupedJournal {
         // Load tags so we can display names in the UI
         await tags.load();
 
+        currentPage = new Date().getTime();
+
         await journal.init();
         await tagEntries.init();
         await nextPage();

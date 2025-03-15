@@ -105,8 +105,10 @@
 {#await $analytics}
     Loading...
 {:then result}
-    <div class="flex gap-4 mt-4 flex-wrap items-start">
-        <NewCorrelations {newCorrelations} result={result}/>
+    <div class="flex md:flex-row flex-col gap-4 mt-4 flex-wrap items-start">
+        <div class="w-full md:w-auto">
+            <NewCorrelations {newCorrelations} result={result}/>
+        </div>
         <div class="grid-cols-1 md:grid-cols-4 grid gap-4 flex-1">
             {#each getCorrelationsToShow(result.correlations, keyFilter, search, result.forms, result.tags) as correlation}
                 <CorrelationCard {correlation} fullBar={true}/>

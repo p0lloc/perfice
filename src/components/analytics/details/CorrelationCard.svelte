@@ -55,25 +55,26 @@
     let [firstLabel, secondLabel] = $derived(convertLabelsForChart(correlation.display.first.entityName,
         correlation.display.second.entityName, chartVisible));
 </script>
-<div class="bg-white rounded border p-2 {className}">
-    <div class="row-between">
-        <CorrelationMessage positive={correlation.value.coefficient > 0} display={correlation.display}/>
-        <IconButton onClick={showChart} icon={faLineChart} class="text-gray-400"/>
-    </div>
-    {#if chartVisible}
-        <div class="h-36">
-            <DualLineChart {first}
-                           {second}
-                           {firstLabel}
-                           {secondLabel}
-                           firstFillColor="#9BD0F533"
-                           firstBorderColor="#36A2EB"
-                           secondFillColor="#f59b9b33"
-                           secondBorderColor="#eb363c"
-                           labels={correlation.value.timestamps.map(v => formatTimestampYYYYMMDD(v))}/>
+<div class="bg-white rounded border p-2 {className} flex flex-col justify-between">
+    <div>
+        <div class="flex gap-2 items-start">
+            <CorrelationMessage positive={correlation.value.coefficient > 0} display={correlation.display}/>
+            <IconButton onClick={showChart} icon={faLineChart} class="text-gray-400"/>
         </div>
-    {:else}
-    {/if}
+        {#if chartVisible}
+            <div class="h-36">
+                <DualLineChart {first}
+                               {second}
+                               {firstLabel}
+                               {secondLabel}
+                               firstFillColor="#9BD0F533"
+                               firstBorderColor="#36A2EB"
+                               secondFillColor="#f59b9b33"
+                               secondBorderColor="#eb363c"
+                               labels={correlation.value.timestamps.map(v => formatTimestampYYYYMMDD(v))}/>
+            </div>
+        {/if}
+    </div>
     <div class="row-gap">
         <CorrelationBar
                 full={fullBar}

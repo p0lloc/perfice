@@ -1,7 +1,7 @@
 <script lang="ts">
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
-    import {faChartLine} from "@fortawesome/free-solid-svg-icons";
+    import {faArrowLeft, faBars, faChartLine, faCheck} from "@fortawesome/free-solid-svg-icons";
     import {
         ANALYTICS_SEGMENTED_ITEMS,
         AnalyticsViewType,
@@ -10,6 +10,8 @@
     import AnalyticsTagView from "@perfice/components/analytics/tag/AnalyticsTagView.svelte";
     import AnalyticsCorrelationView from "@perfice/components/analytics/AnalyticsCorrelationView.svelte";
     import type {Component} from "svelte";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import Fa from "svelte-fa";
 
     let viewType = $state(AnalyticsViewType.TRACKABLES);
 
@@ -29,10 +31,17 @@
     let RendererComponent = $derived(VIEWS[viewType]);
 </script>
 
-<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2">
+<MobileTopBar title="Analytics">
+    {#snippet leading()}
+        <button class="icon-button" onclick={() => console.log("TODO")}>
+            <Fa icon={faBars}/>
+        </button>
+    {/snippet}
+</MobileTopBar>
+<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 md:border-none border-b">
     <Title title="Analytics" icon={faChartLine}/>
     <SegmentedControl
-            class="w-full mt-4"
+            class="w-full md:mt-4"
             value={viewType}
             onChange={changeView}
             segmentClass="h-10"

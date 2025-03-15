@@ -28,7 +28,7 @@
     });
 </script>
 
-<div class="w-72 flex flex-col gap-2 p-4 bg-white rounded-md border">
+<div class="md:w-72 flex flex-col gap-2 p-4 bg-white rounded-md border">
     <h2 class="text-xl">New correlations</h2>
     {#each detailedCorrelations as correlation}
         <div>

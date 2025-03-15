@@ -101,5 +101,5 @@ body {
 }
 
 .main-content {
-    @apply h-screen md:h-auto overflow-y-scroll md:overflow-auto pb-32 md:pb-0 scrollbar-hide;
+    @apply h-screen md:h-auto overflow-y-scroll md:overflow-auto pb-40 md:pb-4 scrollbar-hide;
 }
