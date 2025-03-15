@@ -52,6 +52,7 @@ import {AnalyticsSettingsService} from './services/analytics/settings';
 import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/analytics/trackable";
 import {TagAnalytics, TagDetailedAnalytics} from "@perfice/stores/analytics/tags";
 import {TagEntryStore} from './stores/journal/tag';
+import {AnalyticsHistoryService} from "@perfice/services/analytics/history";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -81,6 +82,7 @@ const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
+const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);
@@ -104,7 +106,7 @@ export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);
 
 export const analyticsSettings = new AnalyticsSettingsStore(analyticsSettingsService);
-export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, new Date(), 30, 6);
+export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, new Date(), 30, 6);
 
 export const appReady = writable(false);
 

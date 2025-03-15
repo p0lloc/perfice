@@ -4,6 +4,10 @@ import {fileURLToPath, URL} from "node:url";
 
 // https://vite.dev/config/
 export default defineConfig({
+    test: {
+        setupFiles: ['vitest-localstorage-mock'],
+        mockReset: false,
+    },
     plugins: [
         svelte(),
         // VitePWA({

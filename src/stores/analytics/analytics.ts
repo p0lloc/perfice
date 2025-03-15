@@ -10,6 +10,7 @@ import {AsyncStore} from "@perfice/stores/store";
 import type {Tag} from "@perfice/model/tag/tag";
 import {convertResultKey, type CorrelationDisplay} from "@perfice/services/analytics/display";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
+import type {AnalyticsHistoryService} from "@perfice/services/analytics/history";
 
 export interface AnalyticsResult {
     correlations: Map<string, CorrelationResult>;
@@ -24,6 +25,7 @@ export interface AnalyticsResult {
 }
 
 async function fetchAnalytics(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
+                              historyService: AnalyticsHistoryService | null,
                               date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
 
     let allSettings = await settingsService.getAllSettings();
@@ -31,6 +33,10 @@ async function fetchAnalytics(analyticsService: AnalyticsService, settingsServic
     let [tagValues, tags] = await analyticsService.fetchTagValues(timeScope, date, 7 * 14);
     // TODO: limit tag values to same range for correlations
     let correlations = await analyticsService.runBasicCorrelations(rawValues, tagValues, allSettings, date, range, minimumSampleSize);
+
+    if (historyService != null) {
+        historyService.processResult(correlations, date);
+    }
 
     return {
         correlations,
@@ -76,8 +82,10 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
     private readonly analyticsService: AnalyticsService;
     private readonly settingsService: AnalyticsSettingsService;
 
-    constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService, date: Date, range: number, minimumSampleSize: number) {
-        super(fetchAnalytics(analyticsService, settingsService, date, SimpleTimeScopeType.DAILY, range, minimumSampleSize));
+    constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
+                historyService: AnalyticsHistoryService,
+                date: Date, range: number, minimumSampleSize: number) {
+        super(fetchAnalytics(analyticsService, settingsService, historyService, date, SimpleTimeScopeType.DAILY, range, minimumSampleSize));
         this.settingsService = settingsService;
         this.analyticsService = analyticsService;
     }
@@ -88,7 +96,7 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
             return analytics;
         }
 
-        return fetchAnalytics(this.analyticsService, this.settingsService, date, timeScope, range, minimumSampleSize);
+        return fetchAnalytics(this.analyticsService, this.settingsService, null, date, timeScope, range, minimumSampleSize);
     }
 
 }

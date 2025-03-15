@@ -13,7 +13,7 @@ import {JournalEntry} from "../../src/model/journal/journal";
 
 export function mockEntry(formId: string, answers: Record<string, any>, timestamp: number): JournalEntry {
     return {
-        id: "test",
+        id: crypto.randomUUID(),
         formId: formId,
         answers: answers,
         timestamp: timestamp,

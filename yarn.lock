@@ -4326,6 +4326,11 @@ vitefu@^1.0.4:
   resolved "https://registry.npmjs.org/vitefu/-/vitefu-1.0.5.tgz"
   integrity sha512-h4Vflt9gxODPFNGPwp4zAMZRpZR7eslzwH2c5hn5kNZ5rhnKyRJ50U+yGCdc2IRaBs8O4haIgLNGrV5CrpMsCA==
 
+vitest-localstorage-mock@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/vitest-localstorage-mock/-/vitest-localstorage-mock-0.1.2.tgz#c2e4a196b76b38d50858c4173ad5a7d532ee0a04"
+  integrity sha512-1oee6iDWhhquzVogssbpwQi6a2F3L+nCKF2+qqyCs5tH0sOYRyTqnsfj2dtmEQiL4xtJkHLn42hEjHGESlsJHw==
+
 vitest@^2.1.8:
   version "2.1.8"
   resolved "https://registry.npmjs.org/vitest/-/vitest-2.1.8.tgz"

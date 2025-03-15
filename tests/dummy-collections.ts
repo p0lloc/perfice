@@ -38,8 +38,8 @@ export class DummyJournalCollection implements JournalCollection {
         throw new Error("Method not implemented.");
     }
 
-    getAllEntries(): Promise<JournalEntry[]> {
-        throw new Error("Method not implemented.");
+    async getAllEntries(): Promise<JournalEntry[]> {
+        return this.entries;
     }
 
     getEntriesByFormId(formId: string): Promise<JournalEntry[]> {
@@ -126,6 +126,10 @@ export class DummyTagEntryCollection implements TagEntryCollection {
 
     constructor(entries: TagEntry[] = []) {
         this.entries = entries;
+    }
+
+    getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<TagEntry[]> {
+        throw new Error("Method not implemented.");
     }
 
     async getEntryById(entryId: string): Promise<TagEntry | undefined> {
