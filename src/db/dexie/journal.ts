@@ -1,7 +1,6 @@
 import type {JournalCollection} from "@perfice/db/collections";
 import type {EntityTable} from "dexie";
-import type {JournalEntry} from "@perfice/model/journal/journal";
-import {getEntitiesByOffsetAndLimit} from "./common";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 
 export class DexieJournalCollection implements JournalCollection {
 
@@ -66,10 +65,6 @@ export class DexieJournalCollection implements JournalCollection {
         return this.table.where("snapshotId").equals(snapshotId).toArray();
     }
 
-    async getEntriesByOffsetAndLimit(page: number, pageSize: number): Promise<JournalEntry[]> {
-        return await getEntitiesByOffsetAndLimit(this.table, page, pageSize);
-    }
-
     async clear(): Promise<void> {
         await this.table.clear();
     }
@@ -89,6 +84,17 @@ export class DexieJournalCollection implements JournalCollection {
     async getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]> {
         return this.table
             .where("timestamp").between(start, end, true, true)
+            .toArray();
+    }
+
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
+        // We sort by both timestamp and id so that we get deterministic results when entries have the same timestamp
+        // This returns the newest entries first
+        return this.table
+            .where("[timestamp+id]")
+            .belowOrEqual([untilTimestamp, ""])
+            .limit(limit)
+            .reverse()
             .toArray();
     }
 

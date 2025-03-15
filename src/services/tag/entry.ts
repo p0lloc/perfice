@@ -12,6 +12,10 @@ export class TagEntryService {
         this.observers = new EntityObservers();
     }
 
+    async getAllEntries(): Promise<TagEntry[]> {
+        return this.tagEntryCollection.getAllEntries();
+    }
+
     async logTagEntry(tag: Tag, timestamp: number) {
         let entry: TagEntry = {
             id: crypto.randomUUID(),
@@ -21,6 +25,10 @@ export class TagEntryService {
 
         await this.tagEntryCollection.createEntry(entry);
         await this.observers.notifyObservers(EntityObserverType.CREATED, entry);
+    }
+
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]> {
+        return this.tagEntryCollection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
     }
 
     async deleteEntryById(entryId: string) {
@@ -36,9 +44,5 @@ export class TagEntryService {
 
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<TagEntry>) {
         this.observers.removeObserver(type, callback);
-    }
-
-    async getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<TagEntry[]> {
-        return this.tagEntryCollection.getEntriesByOffsetAndLimit(offset, limit);
     }
 }

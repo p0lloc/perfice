@@ -1,5 +1,5 @@
 import type {JournalCollection} from "@perfice/db/collections";
-import type {JournalEntry} from "@perfice/model/journal/journal";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
@@ -29,12 +29,12 @@ export class JournalService {
         this.observers = [];
     }
 
-    async getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<JournalEntry[]> {
-        return this.collection.getEntriesByOffsetAndLimit(offset, limit);
-    }
-
     getEntryById(id: string) {
         return this.collection.getEntryById(id);
+    }
+
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
+        return this.collection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
     }
 
     async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry> {

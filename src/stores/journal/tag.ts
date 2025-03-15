@@ -3,12 +3,9 @@ import {AsyncStore} from "@perfice/stores/store";
 import type {TagEntryService} from "@perfice/services/tag/entry";
 import {resolvedPromise} from "@perfice/util/promise";
 
-const PAGE_SIZE = 30;
-
 export class TagEntryStore extends AsyncStore<TagEntry[]> {
 
     private tagEntryService: TagEntryService;
-    private page: number = 0;
 
     constructor(tagEntryService: TagEntryService) {
         super(resolvedPromise([]));
@@ -17,16 +14,10 @@ export class TagEntryStore extends AsyncStore<TagEntry[]> {
 
     async init() {
         this.setResolved([]);
-        this.page = 0;
-        await this.nextPage();
     }
 
-    async nextPage() {
-        let nextEntries = await this.tagEntryService.getEntriesByOffsetAndLimit(this.page, PAGE_SIZE);
-        if (nextEntries.length == 0) return;
-
-        this.updateResolved(v => [...v, ...nextEntries]);
-        this.page++;
+    async nextPage(page: number, size: number): Promise<TagEntry[]> {
+        return await this.tagEntryService.getEntriesUntilTimeAndLimit(page, size);
     }
 
     async deleteEntryById(id: string) {

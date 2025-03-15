@@ -10,7 +10,7 @@ import {AsyncStore} from "@perfice/stores/store";
 import type {Tag} from "@perfice/model/tag/tag";
 import {convertResultKey, type CorrelationDisplay} from "@perfice/services/analytics/display";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
-import type {AnalyticsHistoryService} from "@perfice/services/analytics/history";
+import type {AnalyticsHistoryEntry, AnalyticsHistoryService} from "@perfice/services/analytics/history";
 
 export interface AnalyticsResult {
     correlations: Map<string, CorrelationResult>;
@@ -82,12 +82,15 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
     private readonly analyticsService: AnalyticsService;
     private readonly settingsService: AnalyticsSettingsService;
 
+    private readonly historyService: AnalyticsHistoryService;
+
     constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
                 historyService: AnalyticsHistoryService,
                 date: Date, range: number, minimumSampleSize: number) {
         super(fetchAnalytics(analyticsService, settingsService, historyService, date, SimpleTimeScopeType.DAILY, range, minimumSampleSize));
         this.settingsService = settingsService;
         this.analyticsService = analyticsService;
+        this.historyService = historyService;
     }
 
     async getSpecificAnalytics(date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
@@ -97,6 +100,10 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
         }
 
         return fetchAnalytics(this.analyticsService, this.settingsService, null, date, timeScope, range, minimumSampleSize);
+    }
+
+    getNewestCorrelations(limit: number, until: number): AnalyticsHistoryEntry[] {
+        return this.historyService.getNewestCorrelations(limit, until);
     }
 
 }

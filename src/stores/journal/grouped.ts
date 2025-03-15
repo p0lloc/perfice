@@ -69,6 +69,10 @@ export interface IGroupedJournal extends Readable<Promise<JournalDay[]>> {
 }
 
 export function GroupedJournal(): IGroupedJournal {
+
+    const PAGE_SIZE = 20;
+    let currentPage = new Date().getTime();
+
     let {subscribe} = derived<[JournalEntryStore, TagEntryStore, FormStore, TagStore], Promise<JournalDay[]>>([journal, tagEntries, forms, tags],
         ([$entries, $tagEntries, $forms, $tags], set) => {
             set(new Promise<JournalDay[]>(async (resolve) => {
@@ -156,11 +160,26 @@ export function GroupedJournal(): IGroupedJournal {
 
         await journal.init();
         await tagEntries.init();
+        await nextPage();
     }
 
     async function nextPage() {
-        await journal.nextPage();
-        await tagEntries.nextPage();
+        let formEntries = await journal.nextPage(currentPage, PAGE_SIZE);
+        let taggedEntries = await tagEntries.nextPage(currentPage, PAGE_SIZE);
+
+        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1].timestamp : currentPage;
+        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1].timestamp : currentPage;
+        // Entries might be uneven so only include up to the oldest entry even if there are more
+        if (oldestJournalEntry > oldestTagEntry) {
+            taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntry);
+            currentPage = oldestJournalEntry;
+        } else {
+            formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntry);
+            currentPage = oldestTagEntry;
+        }
+
+        journal.updateResolved(v => [...v, ...formEntries]);
+        tagEntries.updateResolved(v => [...v, ...taggedEntries]);
     }
 
     return {

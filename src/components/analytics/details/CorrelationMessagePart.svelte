@@ -35,6 +35,6 @@
 
 <style>
     span {
-        @apply bg-gray-200 rounded-md px-2;
+        @apply bg-gray-100 border rounded-md px-2;
     }
 </style>

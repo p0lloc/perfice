@@ -6,7 +6,6 @@ import type {
     TagCollection,
     TagEntryCollection,
 } from "@perfice/db/collections";
-import {getEntitiesByOffsetAndLimit} from "@perfice/db/dexie/common";
 
 export class DexieTagEntryCollection implements TagEntryCollection {
 
@@ -65,8 +64,17 @@ export class DexieTagEntryCollection implements TagEntryCollection {
             .toArray();
     }
 
-    async getEntriesByOffsetAndLimit(page: number, pageSize: number): Promise<TagEntry[]> {
-        return await getEntitiesByOffsetAndLimit(this.table, page, pageSize);
+    async getAllEntries(): Promise<TagEntry[]> {
+        return this.table.toArray();
+    }
+
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]> {
+        return this.table
+            .where("[timestamp+id]")
+            .belowOrEqual([untilTimestamp, ""])
+            .limit(limit)
+            .reverse()
+            .toArray();
     }
 
 }

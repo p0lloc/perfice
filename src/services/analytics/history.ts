@@ -29,14 +29,17 @@ export class AnalyticsHistoryService {
     }
 
     getNewestCorrelations(limit: number, until: number): AnalyticsHistoryEntry[] {
-        // First find the newest entries
-        let newest = this.entries
+        return this.entries
             .filter(e => e.timestamp <= until)
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .slice(0, limit);
+            .sort((a, b) => {
+                // Mainly sort by timestamp, but if timestamps are the same, sort by coefficient
+                if (a.timestamp == b.timestamp) {
+                    return b.coefficient - a.coefficient;
+                }
 
-        // Then sort them by coefficient
-        return newest.sort((a, b) => a.coefficient - b.coefficient);
+                return b.timestamp - a.timestamp;
+            })
+            .slice(0, limit);
     }
 
     processResult(correlations: Map<string, CorrelationResult>, date: Date) {

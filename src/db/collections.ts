@@ -115,8 +115,6 @@ export interface AnalyticsSettingsCollection {
 }
 
 export interface JournalCollection {
-    getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<JournalEntry[]>;
-
     getAllEntriesByFormId(formId: string): Promise<JournalEntry[]>;
 
     getEntriesByFormIdAndTimeRange(formId: string, start: number, end: number): Promise<JournalEntry[]>;
@@ -148,6 +146,8 @@ export interface JournalCollection {
     getEntriesByFormId(formId: string): Promise<JournalEntry[]>;
 
     getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]>;
+
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
 }
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
@@ -166,6 +166,8 @@ export interface TagCollection {
 }
 
 export interface TagEntryCollection {
+    getAllEntries(): Promise<TagEntry[]>;
+
     getEntryById(entryId: string): Promise<TagEntry | undefined>;
 
     getTagEntriesByTagId(tagId: string): Promise<TagEntry[]>;
@@ -186,7 +188,7 @@ export interface TagEntryCollection {
 
     getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]>;
 
-    getEntriesByOffsetAndLimit(offset: number, limit: number): Promise<TagEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]>;
 }
 
 export interface IndexCollection {

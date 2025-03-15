@@ -6,6 +6,7 @@
     import type {DetailCorrelation} from "@perfice/stores/analytics/analytics";
     import type {Form} from "@perfice/model/form/form";
     import type {Tag} from "@perfice/model/tag/tag";
+    import NewCorrelations from "@perfice/components/analytics/NewCorrelations.svelte";
 
     const KEY_FILTERS = [
         {
@@ -32,6 +33,8 @@
         [DatasetKeyType.TAG]: true,
         [DatasetKeyType.WEEK_DAY]: true,
     })
+
+    let newCorrelations = $derived(analytics.getNewestCorrelations(5, new Date().getTime()));
 
     let confidence = $state(50);
     let search = $state('');
@@ -99,15 +102,18 @@
                                               onchange={onConfidenceChange}></div>
     </div>
 </div>
-<div class="grid-cols-1 md:grid-cols-4 grid gap-4 mt-4">
-    {#await $analytics}
-        Loading...
-    {:then values}
-        {#each getCorrelationsToShow(values.correlations, keyFilter, search, values.forms, values.tags) as correlation}
-            <CorrelationCard {correlation}/>
-        {/each}
-    {/await}
-</div>
+{#await $analytics}
+    Loading...
+{:then result}
+    <div class="flex gap-4 mt-4 flex-wrap items-start">
+        <NewCorrelations {newCorrelations} result={result}/>
+        <div class="grid-cols-1 md:grid-cols-4 grid gap-4 flex-1">
+            {#each getCorrelationsToShow(result.correlations, keyFilter, search, result.forms, result.tags) as correlation}
+                <CorrelationCard {correlation} fullBar={true}/>
+            {/each}
+        </div>
+    </div>
+{/await}
 
 <style>
     .setting {

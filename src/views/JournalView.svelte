@@ -27,12 +27,15 @@
     let selectMode = $state(false);
     let selectedEntities = $state<JournalEntity[]>([]);
 
+    // Padding between bottom and scroll end
+    const SCROLL_SLACK = 300;
+
     async function load() {
         await groupedJournal.load();
     }
 
     function onScroll() {
-        let reachedBottom = (window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight;
+        let reachedBottom = (window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - SCROLL_SLACK;
         if (reachedBottom) {
             groupedJournal.nextPage();
         }

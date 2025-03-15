@@ -83,6 +83,7 @@ const exportService = new EntryExportService(journalService, formService);
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
+analyticsHistoryService.load();
 
 export const trackables = new TrackableStore(trackableService);
 export const forms = new FormStore(formService, formTemplateService);

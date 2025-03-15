@@ -286,6 +286,8 @@ export class AnalyticsService {
                 timestamps.push(timestamp);
             }
         } else {
+            // TODO: This assumes the entries are added to the map in the same order as the timestamps
+            //  This is not guaranteed to be the case
             for (let [timestamp, value] of first.entries()) {
                 let fetchTimestamp = timestamp;
                 if (lag) {
@@ -687,7 +689,7 @@ export class AnalyticsService {
         let result: Map<string, Map<number, number>> = new Map();
         for (let tag of tags) {
             let logged: Map<number, number> = new Map();
-            for (let i = 0; i < range; i++) {
+            for (let i = range - 1; i >= 0; i--) {
                 let timestamp = dateToMidnight(offsetDateByTimeScope(date, timeScope, -i)).getTime();
                 logged.set(timestamp, loggedDates.has(serialize(tag.id, timestamp)) ? 1 : 0);
             }
