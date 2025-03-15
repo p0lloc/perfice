@@ -5,9 +5,11 @@
     import GoalNewCard from "@perfice/components/goal/GoalNewCard.svelte";
     import {onMount} from "svelte";
     import {faBars, faBullseye} from "@fortawesome/free-solid-svg-icons";
+    // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import FormModal from "@perfice/components/form/modals/FormModal.svelte";
+    import {dateToMidnight} from "@perfice/util/time/simple";
+
     function onDateChange(e: Date) {
         $goalDate = e;
     }
@@ -15,6 +17,8 @@
     onMount(() => {
         goals.load();
     })
+
+    goalDate.set(dateToMidnight(new Date()));
 </script>
 
 
@@ -35,7 +39,7 @@
                 <GoalCard date={$goalDate} goal={goal}/>
             {/each}
 
-            <GoalNewCard />
+            <GoalNewCard/>
         </div>
     {/await}
 </div>

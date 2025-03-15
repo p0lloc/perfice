@@ -1,13 +1,14 @@
 <script lang="ts">
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
-    import { tagCategories, tagDate } from "@perfice/main";
-    import { tags } from "@perfice/main";
-    import { onMount } from "svelte";
-    import type { Tag } from "@perfice/model/tag/tag";
-    import { weekStart, categorizedTags } from "@perfice/main";
+    import {tagCategories, tagDate} from "@perfice/main";
+    import {tags} from "@perfice/main";
+    import {onMount} from "svelte";
+    import type {Tag} from "@perfice/model/tag/tag";
+    import {weekStart, categorizedTags} from "@perfice/main";
     import TagCategoryContainer from "@perfice/components/tag/TagCategoryContainer.svelte";
     import LineButton from "@perfice/components/base/button/LineButton.svelte";
-    import { faTags } from "@fortawesome/free-solid-svg-icons";
+    import {faTags} from "@fortawesome/free-solid-svg-icons";
+    import {dateToMidnight} from "@perfice/util/time/simple";
 
     function onDateChange(e: Date) {
         $tagDate = e;
@@ -28,14 +29,16 @@
     onMount(() => {
         tags.load();
     });
+
+    tagDate.set(dateToMidnight(new Date()));
 </script>
 
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar
-        date={$tagDate}
-        {onDateChange}
-        title="Tags"
-        icon={faTags}
+            date={$tagDate}
+            {onDateChange}
+            title="Tags"
+            icon={faTags}
     />
 
     <div class="flex flex-col gap-8">
@@ -44,13 +47,13 @@
         {:then categories}
             {#each categories as category (category.category?.id)}
                 <TagCategoryContainer
-                    date={$tagDate}
-                    {category}
-                    weekStart={$weekStart}
-                    onTagClicked={(t, entryId) => onTagClicked(t, entryId)}
+                        date={$tagDate}
+                        {category}
+                        weekStart={$weekStart}
+                        onTagClicked={(t, entryId) => onTagClicked(t, entryId)}
                 />
             {/each}
-            <LineButton onClick={addCategory} />
+            <LineButton onClick={addCategory}/>
         {/await}
     </div>
 </div>
