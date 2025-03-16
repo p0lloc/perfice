@@ -5,6 +5,7 @@ import {
     type CorrelationResult,
     DatasetKeyType,
     LAG_KEY_PREFIX,
+    TAG_KEY_PREFIX,
     WEEK_DAY_KEY_PREFIX
 } from "@perfice/services/analytics/analytics";
 
@@ -18,8 +19,8 @@ export function convertSingleKey(key: string, type: DatasetKeyType, forms: Form[
         return {entityName: weekDayString, type: type, msg: `it is ${weekDayString}`};
     }
 
-    if (key.startsWith("tag_")) {
-        let tag = tags.find(t => t.id == key.substring(4));
+    if (type == DatasetKeyType.TAG) {
+        let tag = tags.find(t => t.id == key.substring(TAG_KEY_PREFIX.length));
         if (tag == null) return {entityName: "Unknown tag", type, msg: "Unknown tag"};
 
         let tagName = tag.name;
