@@ -6,6 +6,7 @@ import type {Goal} from "@perfice/model/goal/goal";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
 
 export interface TrackableCollection {
     count(): Promise<number>;
@@ -216,4 +217,28 @@ export interface IndexCollection {
 
     removeDeleteListener(listener: IndexDeleteListener): void;
 
+}
+
+export interface DashboardCollection {
+    getDashboards(): Promise<Dashboard[]>;
+
+    getDashboardById(id: string): Promise<Dashboard | undefined>;
+
+    createDashboard(dashboard: Dashboard): Promise<void>;
+
+    updateDashboard(dashboard: Dashboard): Promise<void>;
+
+    deleteDashboardById(id: string): Promise<void>;
+}
+
+export interface DashboardWidgetCollection {
+    getWidgetsByDashboardId(dashboardId: string): Promise<DashboardWidget[]>;
+
+    getWidgetById(id: string): Promise<DashboardWidget | undefined>;
+
+    createWidget(widget: DashboardWidget): Promise<void>;
+
+    updateWidget(widget: DashboardWidget): Promise<void>;
+
+    deleteWidgetById(id: string): Promise<void>;
 }

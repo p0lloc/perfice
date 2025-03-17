@@ -1,0 +1,150 @@
+<script lang="ts">
+    import 'gridstack/dist/gridstack.min.css';
+    import 'gridstack/dist/gridstack-extra.min.css';
+    import {mount, onMount} from "svelte";
+    import {GridStack, type GridStackNode} from "gridstack";
+    import {
+        type DashboardWidget,
+        type DashboardWidgetDisplaySettings,
+        DashboardWidgetType,
+        getDashboardWidgetDefinition
+    } from "@perfice/model/dashboard/dashboard";
+    import DashboardWidgetRenderer from "@perfice/components/dashboard/DashboardWidgetRenderer.svelte";
+    import type {DashboardWidgetRendererExports} from "@perfice/model/dashboard/ui";
+
+    let {edit, widgets, onWidgetSelect, onWidgetAdd, onWidgetDelete, onWidgetUpdate}: {
+        edit: boolean,
+        widgets: DashboardWidget[],
+        onWidgetSelect: (widget: DashboardWidget) => void
+        onWidgetDelete: (id: DashboardWidget) => void
+        onWidgetAdd: (widget: DashboardWidgetType, display: DashboardWidgetDisplaySettings) => Promise<DashboardWidget>
+        onWidgetUpdate: (widget: DashboardWidget) => void
+    } = $props();
+
+    let grid: GridStack;
+    let mountedWidgets: Map<string, DashboardWidgetRendererExports> = new Map();
+
+    export function removeWidget(widget: DashboardWidget) {
+        let element = grid.getGridItems().find(i => i.dataset.widgetId == widget.id);
+        if (element == undefined) return;
+
+        grid.removeWidget(element);
+    }
+
+    export function updateWidget(widget: DashboardWidget) {
+        let renderer = mountedWidgets.get(widget.id);
+        if (renderer == undefined) return;
+
+        widgets = widgets.map(v => v.id == widget.id ? widget : v);
+        renderer.onWidgetUpdated(widget);
+    }
+
+    function parseRenderOptsFromGridElement(
+        element: HTMLElement,
+    ): DashboardWidgetDisplaySettings {
+        return {
+            x: parseInt(element.getAttribute("gs-x") ?? "0"),
+            y: parseInt(element.getAttribute("gs-y") ?? "0"),
+            width: parseInt(element.getAttribute("gs-w") ?? "0"),
+            height: parseInt(element.getAttribute("gs-h") ?? "0"),
+        };
+    }
+
+    function onGridItemManipulated(_: Event, element: HTMLElement) {
+        const widgetId = element.dataset.widgetId;
+        const widget = widgets.find(w => w.id == widgetId);
+        if (widget == undefined) return;
+
+        onWidgetUpdate({
+            ...widget,
+            display: parseRenderOptsFromGridElement(element)
+        });
+    }
+
+    async function onGridItemAdded(_: Event, items: GridStackNode[]) {
+        // This function will be called for ALL items added, even previous.
+        for (const item of items) {
+            const element = item.el;
+            if (element == null) continue;
+
+            // Only create widget if it is a new one
+            if (!element.classList.contains("drag-card")) continue;
+
+            let renderer = element.querySelector(".widget-renderer") as HTMLElement | null;
+            if (renderer == null) continue;
+
+            let widgetType: DashboardWidgetType = renderer.dataset.widgetType as DashboardWidgetType;
+            let widget: DashboardWidget = await onWidgetAdd(widgetType, parseRenderOptsFromGridElement(element));
+            element.dataset.widgetId = widget.id;
+
+            widgets.push(widget);
+
+            element.removeChild(renderer);
+            mountWidgetRenderer(element, widget);
+        }
+    }
+
+    function mountWidgetRenderer(element: HTMLElement, widget: DashboardWidget) {
+        let exports = mount(DashboardWidgetRenderer, {
+            target: element, props: {
+                widget,
+                onClick: () => onWidgetSelect(widget),
+                onDelete: () => onWidgetDelete(widget)
+            },
+        });
+
+        mountedWidgets.set(widget.id, exports);
+    }
+
+    onMount(() => {
+        grid = GridStack.init({
+            cellHeight: 25,
+            acceptWidgets: true,
+            minRow: 10,
+            margin: 0,
+            staticGrid: !edit,
+            animate: false,
+
+            float: true,
+            columnOpts: {
+                breakpoints: [
+                    {
+                        w: 768,
+                        c: 2
+                    }
+                ]
+            }
+        });
+
+        grid.on("added", onGridItemAdded);
+        grid.on("dragstop resizestop", onGridItemManipulated);
+
+        for (let widget of widgets) {
+            let definition = getDashboardWidgetDefinition(widget.type);
+            if (definition == undefined) continue;
+
+            let element = document.createElement("div");
+            element.dataset.widgetId = widget.id;
+            grid.el.appendChild(element);
+            mountWidgetRenderer(element, widget);
+
+            grid.makeWidget(element, {
+                x: widget.display.x,
+                y: widget.display.y,
+                w: widget.display.width,
+                h: widget.display.height,
+                minH: definition.getMinHeight(),
+                minW: definition.getMinWidth(),
+            });
+        }
+    });
+
+    $effect(() => {
+        grid.setStatic(!edit)
+    });
+</script>
+
+<div class="grid-stack min-h-[85vh]">
+</div>
+
+

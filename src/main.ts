@@ -53,6 +53,10 @@ import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/an
 import {TagAnalytics, TagDetailedAnalytics} from "@perfice/stores/analytics/tags";
 import {TagEntryStore} from './stores/journal/tag';
 import {AnalyticsHistoryService} from "@perfice/services/analytics/history";
+import {DashboardService} from './services/dashboard/dashboard';
+import {DashboardWidgetService} from './services/dashboard/widget';
+import {DashboardStore, DashboardWidgetStore} from "@perfice/stores/dashboard/dashboard";
+import {DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -76,6 +80,9 @@ const trackableCategoryService = new TrackableCategoryService(db.trackableCatego
 const goalService = new GoalService(db.goals, variableService);
 const tagService = new TagService(db.tags, variableService, tagEntryService);
 const formTemplateService = new FormTemplateService(db.formTemplates);
+
+const dashboardService = new DashboardService(db.dashboards);
+const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets);
 
 const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
@@ -102,6 +109,9 @@ export const tags = new TagStore(tagService);
 export const groupedJournal = GroupedJournal();
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
+
+export const dashboards = new DashboardStore(dashboardService);
+export const dashboardWidgets = new DashboardWidgetStore(dashboardWidgetService);
 
 export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);

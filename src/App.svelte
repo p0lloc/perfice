@@ -14,6 +14,7 @@
     import {clearClosables} from "./model/ui/modal";
     import AnalyticsView from "@perfice/views/AnalyticsView.svelte";
     import AnalyticsDetailView from "@perfice/views/AnalyticsDetailView.svelte";
+    import DashboardView from "@perfice/views/DashboardView.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
@@ -23,7 +24,7 @@
         {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
-        {path: "/", component: TrackableView},
+        {path: "/", component: DashboardView},
     ];
 
     function onBodyClick(e: MouseEvent) {

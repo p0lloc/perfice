@@ -1,6 +1,6 @@
 import {
     faBook,
-    faBullseye,
+    faBullseye, faHome,
     faLineChart,
     faRuler,
     faTag,
@@ -12,13 +12,15 @@ export interface SidebarLink {
     name: string,
     icon: IconDefinition,
     path: string,
-    title: string
+    title: string,
+    showOnMobile?: boolean
 }
 
 export const SIDEBAR_LINKS: SidebarLink[] = [
-    {name: "Trackables", icon: faRuler, path: "/", title: "Trackables"},
+    {name: "Home", icon: faHome, path: "/", title: "Home"},
+    {name: "Trackables", icon: faRuler, path: "/trackables", title: "Trackables"},
     {name: "Journal", icon: faBook, path: "/journal", title: "Journal"},
     {name: "Goals", icon: faBullseye, path: "/goals", title: "Goals"},
     {name: "Tags", icon: faTags, path: "/tags", title: "Tags"},
-    {name: "Analytics", icon: faLineChart, path: "/analytics", title: "Tags"},
+    {name: "Analytics", icon: faLineChart, path: "/analytics", title: "Analytics", showOnMobile: false},
 ];
