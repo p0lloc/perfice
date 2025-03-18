@@ -3,6 +3,7 @@ import type {
     DashboardWidgetDisplaySettings,
     DashboardWidgetType
 } from "@perfice/model/dashboard/dashboard";
+import type {Form} from "@perfice/model/form/form";
 
 export interface DashboardWidgetAddEvent {
     type: DashboardWidgetType;
@@ -23,6 +24,7 @@ export interface DashboardAddWidgetAction {
 
 export interface DashboardEditWidgetAction {
     widget: DashboardWidget;
+    forms: Form[];
     onChange: (widget: DashboardWidget) => void;
 }
 

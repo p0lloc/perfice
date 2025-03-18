@@ -17,13 +17,13 @@
         disabled?: boolean
     } = $props();
 
-    function getSelectedItemPosition(){
-        if(selectedItem == null) return 0;
+    function getSelectedItemPosition() {
+        if (selectedItem == null) return 0;
         return items.indexOf(selectedItem) * DROPDOWN_BUTTON_HEIGHT;
     }
 
     function open(e: MouseEvent) {
-        if(disabled) return;
+        if (disabled) return;
         contextMenu.openFromClick(e.target as HTMLElement, button, true, getSelectedItemPosition());
     }
 
@@ -56,6 +56,7 @@
             name: item.name,
             icon: item.icon ?? null,
             action: () => onAction(item),
+            separated: item.separated,
         }
     })}/>
 </ContextMenu>

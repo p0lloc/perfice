@@ -13,6 +13,8 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
     import CalendarScroll from "@perfice/components/base/calendarScroll/CalendarScroll.svelte";
+    import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
+    import {faPlus} from "@fortawesome/free-solid-svg-icons";
 
     let currentDashboard = $state("test");
 
@@ -54,14 +56,16 @@
         unselectWidget();
     }
 
-    function onWidgetSelect(widget: DashboardWidget) {
+    async function onWidgetSelect(widget: DashboardWidget) {
         if (!$editingDashboard) return;
 
         $selectedWidget = widget;
         sidebar.open({
             type: DashboardSidebarActionType.EDIT_WIDGET,
             value: {
-                widget, onChange: (v: DashboardWidget) => {
+                widget,
+                forms: await $forms,
+                onChange: (v: DashboardWidget) => {
                     onWidgetUpdate($state.snapshot(v))
                 }
             }
@@ -99,11 +103,10 @@
             <input type="checkbox" bind:checked={$editingDashboard}>
             <button onclick={() => sidebar.open({type: DashboardSidebarActionType.ADD_WIDGET, value: {}})}>+</button>
             {#await $dashboards then values}
-                <select>
-                    {#each values as dashboard}
-                        <option value={dashboard.id}>{dashboard.name}</option>
-                    {/each}
-                </select>
+                <BindableDropdownButton value={currentDashboard} items={
+                [...values.map(v => {
+                    return {value: v.id, name: v.name}
+                }), {value: "create", name: "Create new", icon: faPlus, separated: true}]}/>
             {/await}
         </div>
     </div>
