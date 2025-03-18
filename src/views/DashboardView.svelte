@@ -16,7 +16,7 @@
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
 
-    let currentDashboard = $state("test");
+    let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
 
     let deleteWidgetModal: GenericDeleteModal<DashboardWidget>;
     let grid: GridstackGrid;
@@ -40,6 +40,18 @@
             dateWithCurrentTime($dashboardDate),
             templates,
         );
+    }
+
+    async function onDashboardChange(dashboardId: string) {
+        if (dashboardId == "create") {
+            let dashboard = await dashboards.createDashboard(prompt("Name") ?? "");
+            currentDashboard = dashboard.id;
+            return;
+        }
+
+        currentDashboard = dashboardId;
+        await dashboardWidgets.load(currentDashboard);
+        window.localStorage.setItem("currentDashboard", currentDashboard);
     }
 
     function onWidgetAdd(widgetType: DashboardWidgetType, display: DashboardWidgetDisplaySettings) {
@@ -103,7 +115,11 @@
             <input type="checkbox" bind:checked={$editingDashboard}>
             <button onclick={() => sidebar.open({type: DashboardSidebarActionType.ADD_WIDGET, value: {}})}>+</button>
             {#await $dashboards then values}
-                <BindableDropdownButton value={currentDashboard} items={
+                <BindableDropdownButton
+                        class="min-w-64"
+                        value={currentDashboard}
+                        onChange={onDashboardChange}
+                        items={
                 [...values.map(v => {
                     return {value: v.id, name: v.name}
                 }), {value: "create", name: "Create new", icon: faPlus, separated: true}]}/>

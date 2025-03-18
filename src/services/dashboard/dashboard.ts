@@ -21,9 +21,15 @@ export class DashboardService {
         return this.collection.getDashboardById(id);
     }
 
-    async createDashboard(dashboard: Dashboard): Promise<void> {
+    async createDashboard(name: string): Promise<Dashboard> {
+        let dashboard = {
+            id: crypto.randomUUID(),
+            name,
+        };
+
         await this.collection.createDashboard(dashboard);
         await this.observers.notifyObservers(EntityObserverType.CREATED, dashboard);
+        return dashboard;
     }
 
     async updateDashboard(dashboard: Dashboard): Promise<void> {

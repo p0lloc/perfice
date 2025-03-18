@@ -10,6 +10,7 @@ import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 import type {DashboardWidgetService} from "@perfice/services/dashboard/widget";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight} from "@perfice/util/time/simple";
+import {EntityObserverType} from "@perfice/services/observer";
 
 export const editingDashboard = writable(true);
 export const dashboardDate = writable(dateToMidnight(new Date()));
@@ -22,12 +23,21 @@ export class DashboardStore extends AsyncStore<Dashboard[]> {
     constructor(dashboardService: DashboardService) {
         super(resolvedPromise([]));
         this.dashboardService = dashboardService;
+        this.dashboardService.addObserver(EntityObserverType.CREATED,
+            async (e: Dashboard) => await this.onDashboardCreated(e));
     }
 
     async load() {
         this.set(this.dashboardService.getDashboards());
     }
 
+    async createDashboard(prompt: string): Promise<Dashboard> {
+        return this.dashboardService.createDashboard(prompt);
+    }
+
+    async onDashboardCreated(dashboard: Dashboard) {
+        this.updateResolved(v => [...v, dashboard]);
+    }
 }
 
 export class DashboardWidgetStore extends AsyncStore<DashboardWidget[]> {
