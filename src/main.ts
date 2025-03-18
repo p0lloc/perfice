@@ -56,7 +56,8 @@ import {AnalyticsHistoryService} from "@perfice/services/analytics/history";
 import {DashboardService} from './services/dashboard/dashboard';
 import {DashboardWidgetService} from './services/dashboard/widget';
 import {DashboardStore, DashboardWidgetStore} from "@perfice/stores/dashboard/dashboard";
-import {DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
+import {type DashboardEntryRowWidgetSettings, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
+import {EntryRowWidget} from "@perfice/stores/dashboard/widget/entryRow";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -82,7 +83,7 @@ const tagService = new TagService(db.tags, variableService, tagEntryService);
 const formTemplateService = new FormTemplateService(db.formTemplates);
 
 const dashboardService = new DashboardService(db.dashboards);
-const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets);
+const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets, variableService);
 
 const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
@@ -128,6 +129,11 @@ export function variableValue(id: string, timeContext: TimeScope, key: string) {
 
 export function trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {
     return TrackableValueStore(trackable, date, weekStart, key, variableService);
+}
+
+export function entryRowWidget(dependencies: Record<string, string>, settings: DashboardEntryRowWidgetSettings, date: Date,
+                               weekStart: WeekStart, key: string,) {
+    return EntryRowWidget(dependencies, settings, date, weekStart, key, variableService);
 }
 
 export function tagValue(tag: Tag, date: Date, weekStart: WeekStart, key: string) {

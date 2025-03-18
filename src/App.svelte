@@ -24,6 +24,7 @@
         {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
+        {path: "/trackables", component: TrackableView},
         {path: "/", component: DashboardView},
     ];
 

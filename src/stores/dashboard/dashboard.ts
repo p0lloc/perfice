@@ -9,8 +9,10 @@ import type {DashboardService} from "@perfice/services/dashboard/dashboard";
 import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 import type {DashboardWidgetService} from "@perfice/services/dashboard/widget";
 import {writable, type Writable} from "svelte/store";
+import {dateToMidnight} from "@perfice/util/time/simple";
 
 export const editingDashboard = writable(true);
+export const dashboardDate = writable(dateToMidnight(new Date()));
 export const selectedWidget: Writable<DashboardWidget | undefined> = writable(undefined);
 
 export class DashboardStore extends AsyncStore<Dashboard[]> {

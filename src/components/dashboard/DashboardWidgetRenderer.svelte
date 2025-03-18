@@ -1,19 +1,24 @@
 <script lang="ts">
     import {type DashboardWidget, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
-    import type {Component} from "svelte";
+    import {type Component} from "svelte";
     import DashboardEntryRowWidget from "@perfice/components/dashboard/types/entryRow/DashboardEntryRowWidget.svelte";
     import {editingDashboard, selectedWidget} from "@perfice/stores/dashboard/dashboard";
     import {faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
-    let {widget, onClick, onDelete}: {
+    let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
+        openFormModal: (formId: string) => void,
         onClick: () => void,
         onDelete: () => void
     } = $props();
 
-    const RENDERERS: Record<DashboardWidgetType, Component<{ settings: any }>> = {
+    const RENDERERS: Record<DashboardWidgetType, Component<{
+        settings: any,
+        dependencies: Record<string, string>,
+        openFormModal: (formId: string) => void
+    }>> = {
         [DashboardWidgetType.ENTRY_ROW]: DashboardEntryRowWidget,
     };
 
@@ -25,7 +30,6 @@
 
     // noinspection JSUnusedGlobalSymbols Dynamically used in exports
     export function onWidgetUpdated(updated: DashboardWidget) {
-        console.log("Updated", updated);
         widget = updated;
     }
 
@@ -33,13 +37,16 @@
     let selected = $derived($selectedWidget?.id == widget.id);
 </script>
 
-<div onclick={onClick} class="w-full h-full bg-white widget-renderer text-left border-dashed"
-     class:border-2={selected}
+<!-- svelte-ignore a11y_no_noninteractive_tabindex Only clickable if the dashboard is in edit mode -->
+<div onclick={onClick} class="w-full h-full bg-white widget-renderer text-left"
      onkeydown={onKeyDown}
-     role="button"
+     role={$editingDashboard ? "button" : ""}
      tabindex="0"
      data-widget-type={widget.type}>
     {#if selected}
+        <!-- Dummy container for border -->
+        <div class="w-full h-full absolute border-2 border-green-500 border-dashed pointer-events-none"></div>
+        <!-- Delete button -->
         <div class="absolute right-3 top-3">
             <button onclick={onDelete} class="text-red-500 hover:text-red-700">
                 <Fa icon={faTrash}/>
@@ -47,6 +54,6 @@
         </div>
     {/if}
     <div class="w-full h-full" class:pointer-events-none={$editingDashboard}>
-        <RendererComponent settings={widget.settings}/>
+        <RendererComponent settings={widget.settings} dependencies={widget.dependencies} {openFormModal}/>
     </div>
 </div>

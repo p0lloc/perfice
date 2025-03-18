@@ -29,6 +29,8 @@
             target: clonedElement,
             props: {
                 widget: createDummyWidget(),
+                openFormModal: (formId: string) => {
+                },
                 onClick: () => {
                 },
                 onDelete: () => {
@@ -52,14 +54,17 @@
     onMount(() => {
         GridStack.setupDragIn([element], {
             appendTo: "body",
-            helper: transformDraggedElement,
+            //helper: transformDraggedElement,
         });
     });
 </script>
 
 <div
-        class="grid-stack-item drag-card border h-32 flex-center"
+        class="grid-stack-item"
+        data-widget-type={definition.getType()}
         bind:this={element}
 >
-    {definition.getType()}
+    <div class="drag-card border flex-center w-full h-32">
+        {definition.getType()}
+    </div>
 </div>

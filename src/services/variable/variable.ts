@@ -26,7 +26,7 @@ interface VariableListener {
     callback: VariableCallback;
 
     updateListenerCallback: IndexUpdateListener;
-    deleteListenerCallback: IndexDeleteListener;
+    deleteListenerCallback: IndexDeleteListener | undefined;
 }
 
 export class VariableService {
@@ -71,8 +71,9 @@ export class VariableService {
      * @param id Id of the variable to evaluate
      * @param timeScope Time scope to evaluate the variable in
      * @param callback Called when the variable value changes
+     * @param deleteNotifications Whether to reevaluate the variable when it indices are deleted, and notify the callback again
      */
-    async evaluateVariableLive(id: string, timeScope: TimeScope, callback: VariableCallback): Promise<PrimitiveValue> {
+    async evaluateVariableLive(id: string, timeScope: TimeScope, callback: VariableCallback, deleteNotifications = true): Promise<PrimitiveValue> {
         let updateListener = async (i: VariableIndex) => {
             // Index must match both variable id and time context fully
             if (i.variableId != id ||
@@ -82,17 +83,21 @@ export class VariableService {
             callback(i.value);
         };
 
-        let deleteListener = async (i: VariableIndex) => {
-            // Index must match both variable id and time context fully
-            if (i.variableId != id ||
-                i.timeScope != serializeTimeScope(timeScope)) return;
-
-            let evaluated = await this.evaluateVariable(id, timeScope);
-            callback(evaluated);
-        }
-
         this.indexCollection.addUpdateListener(updateListener);
-        this.indexCollection.addDeleteListener(deleteListener);
+
+        let deleteListener: IndexDeleteListener | undefined = undefined;
+        if (deleteNotifications) {
+            deleteListener = async (i: VariableIndex) => {
+                // Index must match both variable id and time context fully
+                if (i.variableId != id ||
+                    i.timeScope != serializeTimeScope(timeScope)) return;
+
+                let evaluated = await this.evaluateVariable(id, timeScope);
+                callback(evaluated);
+            }
+
+            this.indexCollection.addDeleteListener(deleteListener);
+        }
 
         this.listeners.push({
             variableId: id,
@@ -129,7 +134,10 @@ export class VariableService {
             }
 
             this.indexCollection.removeUpdateListener(listener.updateListenerCallback);
-            this.indexCollection.removeDeleteListener(listener.deleteListenerCallback);
+
+            if (listener.deleteListenerCallback != undefined) {
+                this.indexCollection.removeDeleteListener(listener.deleteListenerCallback);
+            }
         }
 
         this.listeners = remaining;
@@ -186,7 +194,7 @@ export class VariableService {
 
     async deleteVariableAndDependencies(variableId: string) {
         let variablesToDelete = await this.graph.deleteVariableAndDependencies(variableId);
-        for(let variable of variablesToDelete) {
+        for (let variable of variablesToDelete) {
             await this.variableCollection.deleteVariableById(variable.id);
             await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
         }

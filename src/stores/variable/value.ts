@@ -1,6 +1,6 @@
 import type {VariableCallback, VariableService} from "@perfice/services/variable/variable";
-import {SimpleTimeScope, tSimple, type TimeScope} from "@perfice/model/variable/time/time";
-import {pNumber, type PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {SimpleTimeScope, type TimeScope, tSimple} from "@perfice/model/variable/time/time";
+import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type Readable} from "svelte/store";
 import {resolvedPromise} from "@perfice/util/promise";
 import {CachedPromiseStore} from "@perfice/stores/cached";
@@ -14,9 +14,16 @@ export class VariableFetchContext {
         this.variableService = variableService;
     }
 
-    async evaluateVariableLive(variableId: string, timeScope: TimeScope, callback: VariableCallback): Promise<PrimitiveValue> {
+    /**
+     * Evaluates a variable live, i.e. as soon as the value changes, the callback is called.
+     * @param variableId Id of the variable to evaluate
+     * @param timeScope Time scope to evaluate the variable in
+     * @param callback Called when the variable value changes
+     * @param deleteNotifications Whether to reevaluate the variable when it indices are deleted, and notify the callback again
+     */
+    async evaluateVariableLive(variableId: string, timeScope: TimeScope, callback: VariableCallback, deleteNotifications: boolean = true): Promise<PrimitiveValue> {
         this.listeners.push(callback);
-        return this.variableService.evaluateVariableLive(variableId, timeScope, callback);
+        return this.variableService.evaluateVariableLive(variableId, timeScope, callback, deleteNotifications);
     }
 
     unregister() {
@@ -26,18 +33,20 @@ export class VariableFetchContext {
     }
 }
 
-export function VariableValueStore(id: string, timeContext: TimeScope, variableService: VariableService, key: string, defaultValue?: PrimitiveValue): Readable<Promise<PrimitiveValue>> {
+export function VariableValueStore(id: string, timeContext: TimeScope, variableService: VariableService, key: string,
+                                   deleteNotifications: boolean = true, customDispose: boolean = false, defaultValue?: PrimitiveValue): Readable<Promise<PrimitiveValue>> {
+
     let context = new VariableFetchContext(variableService);
     const {subscribe, set} = CachedPromiseStore<PrimitiveValue>(key, new Promise<PrimitiveValue>(async (resolve) => {
         // When the variable value is updated, update the store
         let onVariableUpdated = (res: PrimitiveValue) => set(resolvedPromise(res));
-        let val = await context.evaluateVariableLive(id, timeContext, onVariableUpdated);
+        let val = await context.evaluateVariableLive(id, timeContext, onVariableUpdated, deleteNotifications);
 
         resolve(val);
     }), () => {
         // When this store is destroyed, unregister the listener
-        return () => context.unregister()
-    }, defaultValue);
+        context.unregister()
+    }, customDispose, defaultValue);
 
     return {
         subscribe,
@@ -69,7 +78,7 @@ export function RangedVariableValueStore(id: string, timeContext: SimpleTimeScop
         resolve(vals);
     }), () => {
         // When this store is destroyed, unregister the listener
-        return () => context.unregister()
+        context.unregister()
     });
 
     return {

@@ -1,7 +1,7 @@
 <script lang="ts">
     import 'gridstack/dist/gridstack.min.css';
     import 'gridstack/dist/gridstack-extra.min.css';
-    import {mount, onMount} from "svelte";
+    import {mount, onDestroy, onMount, unmount} from "svelte";
     import {GridStack, type GridStackNode} from "gridstack";
     import {
         type DashboardWidget,
@@ -12,9 +12,10 @@
     import DashboardWidgetRenderer from "@perfice/components/dashboard/DashboardWidgetRenderer.svelte";
     import type {DashboardWidgetRendererExports} from "@perfice/model/dashboard/ui";
 
-    let {edit, widgets, onWidgetSelect, onWidgetAdd, onWidgetDelete, onWidgetUpdate}: {
+    let {edit, widgets, openFormModal, onWidgetSelect, onWidgetAdd, onWidgetDelete, onWidgetUpdate}: {
         edit: boolean,
         widgets: DashboardWidget[],
+        openFormModal: (formId: string) => void,
         onWidgetSelect: (widget: DashboardWidget) => void
         onWidgetDelete: (id: DashboardWidget) => void
         onWidgetAdd: (widget: DashboardWidgetType, display: DashboardWidgetDisplaySettings) => Promise<DashboardWidget>
@@ -28,6 +29,11 @@
         let element = grid.getGridItems().find(i => i.dataset.widgetId == widget.id);
         if (element == undefined) return;
 
+        let renderer = mountedWidgets.get(widget.id);
+        if (renderer == undefined) return;
+
+        unmount(renderer);
+        mountedWidgets.delete(widget.id);
         grid.removeWidget(element);
     }
 
@@ -67,19 +73,16 @@
             const element = item.el;
             if (element == null) continue;
 
+            let child = element.firstElementChild;
             // Only create widget if it is a new one
-            if (!element.classList.contains("drag-card")) continue;
+            if (child == null || !child.classList.contains("drag-card")) continue;
 
-            let renderer = element.querySelector(".widget-renderer") as HTMLElement | null;
-            if (renderer == null) continue;
-
-            let widgetType: DashboardWidgetType = renderer.dataset.widgetType as DashboardWidgetType;
+            let widgetType: DashboardWidgetType = element.dataset.widgetType as DashboardWidgetType;
             let widget: DashboardWidget = await onWidgetAdd(widgetType, parseRenderOptsFromGridElement(element));
             element.dataset.widgetId = widget.id;
+            element.removeChild(child);
 
             widgets.push(widget);
-
-            element.removeChild(renderer);
             mountWidgetRenderer(element, widget);
         }
     }
@@ -89,7 +92,8 @@
             target: element, props: {
                 widget,
                 onClick: () => onWidgetSelect(widget),
-                onDelete: () => onWidgetDelete(widget)
+                onDelete: () => onWidgetDelete(widget),
+                openFormModal,
             },
         });
 
@@ -142,6 +146,10 @@
     $effect(() => {
         grid.setStatic(!edit)
     });
+
+    onDestroy(() => {
+        mountedWidgets.values().forEach(v => unmount(v));
+    })
 </script>
 
 <div class="grid-stack min-h-[85vh]">

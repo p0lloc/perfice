@@ -9,6 +9,8 @@
         null,
     );
 
+    let {onClose}: { onClose: () => void } = $props();
+
     let sidebar: Sidebar;
 
     export function open(sidebarAction: DashboardSidebarAction) {
@@ -40,6 +42,7 @@
 
 <Sidebar
         title={SIDEBAR_TITLES[action?.type ?? DashboardSidebarActionType.ADD_WIDGET]}
+        {onClose}
         bind:this={sidebar}
 >
     {#if action != null}
