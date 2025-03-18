@@ -37,6 +37,9 @@ function extractIconFromQuestion(value: string, question: FormQuestion): [string
 export function EntryRowWidget(dependencies: Record<string, string>, settings: DashboardEntryRowWidgetSettings, date: Date,
                                weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<EntryRowWidgetResult>> {
     const variableId = dependencies["list"];
+
+    // Delete notifications is set to false, since we don't want to run this callback when the internal variable changes
+    // It will have values for potentially different form/questions, even though the "settings" field has not updated yet.
     let store = VariableValueStore(variableId,
         tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
 
