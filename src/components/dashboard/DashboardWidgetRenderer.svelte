@@ -8,10 +8,12 @@
     import Fa from "svelte-fa";
     import DashboardChartWidget from "@perfice/components/dashboard/types/chart/DashboardChartWidget.svelte";
     import DashboardWelcomeWidget from "@perfice/components/dashboard/types/welcome/DashboardWelcomeWidget.svelte";
+    import DashboardTableWidget from "@perfice/components/dashboard/types/table/DashboardTableWidget.svelte";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
-        openFormModal: (formId: string) => void,
+        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void,
         onClick: (widget: DashboardWidget) => void,
         onDelete: (widget: DashboardWidget) => void
     } = $props();
@@ -19,11 +21,12 @@
     const RENDERERS: Record<DashboardWidgetType, Component<{
         settings: any,
         dependencies: Record<string, string>,
-        openFormModal: (formId: string) => void
+        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void
     }>> = {
         [DashboardWidgetType.ENTRY_ROW]: DashboardEntryRowWidget,
         [DashboardWidgetType.CHART]: DashboardChartWidget,
         [DashboardWidgetType.WELCOME]: DashboardWelcomeWidget,
+        [DashboardWidgetType.TABLE]: DashboardTableWidget,
     };
 
     function onClicked() {

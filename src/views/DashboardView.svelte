@@ -16,6 +16,7 @@
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     import {get} from "svelte/store";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
 
@@ -28,7 +29,7 @@
     dashboards.load();
     dashboardWidgets.load(currentDashboard);
 
-    async function openFormModal(formId: string) {
+    async function openFormModal(formId: string, answers?: Record<string, PrimitiveValue>) {
         // TODO: streamline form opening process?
         let form = await forms.getFormById(formId);
         let templates = await forms.getTemplatesByFormId(formId);
@@ -40,6 +41,7 @@
             form.format,
             dateWithCurrentTime($dashboardDate),
             templates,
+            answers
         );
     }
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type {DashboardChartWidgetSettings} from "@perfice/model/dashboard/widgets/chart";
+    import type {DashboardWelcomeWidgetSettings} from "@perfice/model/dashboard/widgets/welcome";
 
     let {settings}: {
-        settings: DashboardChartWidgetSettings,
+        settings: DashboardWelcomeWidgetSettings,
         dependencies: Record<string, string>,
         openFormModal: (formId: string) => void
     } = $props();

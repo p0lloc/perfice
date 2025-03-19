@@ -11,11 +11,12 @@
     } from "@perfice/model/dashboard/dashboard";
     import DashboardWidgetRenderer from "@perfice/components/dashboard/DashboardWidgetRenderer.svelte";
     import type {DashboardWidgetRendererExports} from "@perfice/model/dashboard/ui";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {edit, widgets, openFormModal, onWidgetSelect, onWidgetAdd, onWidgetDelete, onWidgetUpdate}: {
         edit: boolean,
         widgets: DashboardWidget[],
-        openFormModal: (formId: string) => void,
+        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void,
         onWidgetSelect: (widget: DashboardWidget) => void
         onWidgetDelete: (id: DashboardWidget) => void
         onWidgetAdd: (widget: DashboardWidgetType, display: DashboardWidgetDisplaySettings) => Promise<DashboardWidget>

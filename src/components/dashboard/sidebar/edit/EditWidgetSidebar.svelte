@@ -8,6 +8,9 @@
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
     import EditChartWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditChartWidgetSidebar.svelte";
+    import EditTableWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditTableWidgetSidebar.svelte";
+    import EditWelcomeWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/EditWelcomeWidgetSidebar.svelte";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -17,7 +20,9 @@
         forms: Form[]
     }>> = {
         [DashboardWidgetType.ENTRY_ROW]: EditEntryRowWidgetSidebar,
-        [DashboardWidgetType.CHART]: EditChartWidgetSidebar
+        [DashboardWidgetType.CHART]: EditChartWidgetSidebar,
+        [DashboardWidgetType.TABLE]: EditTableWidgetSidebar,
+        [DashboardWidgetType.WELCOME]: EditWelcomeWidgetSidebar,
     };
 
     function onSettingsChange(settings: any) {
