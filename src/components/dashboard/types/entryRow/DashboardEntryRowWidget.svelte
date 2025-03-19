@@ -24,7 +24,9 @@
 
 <div class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col ">
     {#await $result}
-        Loading..
+        <span class="p-2">
+            Please select a form
+        </span>
     {:then value}
         <div class="border-b basic self-stretch p-2 font-bold text-gray-600 row-between">
             <div class="row-gap">

@@ -10,8 +10,8 @@
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
         openFormModal: (formId: string) => void,
-        onClick: () => void,
-        onDelete: () => void
+        onClick: (widget: DashboardWidget) => void,
+        onDelete: (widget: DashboardWidget) => void
     } = $props();
 
     const RENDERERS: Record<DashboardWidgetType, Component<{
@@ -22,10 +22,18 @@
         [DashboardWidgetType.ENTRY_ROW]: DashboardEntryRowWidget,
     };
 
+    function onClicked() {
+        onClick(widget);
+    }
+
+    function onDeleteClicked() {
+        onDelete(widget);
+    }
+
     function onKeyDown(e: KeyboardEvent) {
         if (e.key != "Enter") return;
 
-        onClick();
+        onClicked();
     }
 
     // noinspection JSUnusedGlobalSymbols Dynamically used in exports
@@ -38,7 +46,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex Only clickable if the dashboard is in edit mode -->
-<div onclick={onClick} class="w-full h-full bg-white widget-renderer text-left"
+<div onclick={onClicked} class="w-full h-full bg-white widget-renderer text-left"
      onkeydown={onKeyDown}
      role={$editingDashboard ? "button" : ""}
      tabindex="0"
@@ -48,7 +56,7 @@
         <div class="w-full h-full absolute border-2 border-green-500 border-dashed pointer-events-none"></div>
         <!-- Delete button -->
         <div class="absolute right-3 top-3">
-            <button onclick={onDelete} class="text-red-500 hover:text-red-700">
+            <button onclick={onDeleteClicked} class="text-red-500 hover:text-red-700">
                 <Fa icon={faTrash}/>
             </button>
         </div>

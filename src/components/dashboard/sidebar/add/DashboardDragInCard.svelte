@@ -1,16 +1,18 @@
 <script lang="ts">
-    import {mount, onMount} from "svelte";
+    import {onMount} from "svelte";
     import {GridStack} from "gridstack";
-    import DashboardWidgetRenderer from "@perfice/components/dashboard/DashboardWidgetRenderer.svelte";
     import {
-        type DashboardWidget,
         type DashboardWidgetDefinition,
         DashboardWidgetType
     } from "@perfice/model/dashboard/dashboard";
 
     let element: HTMLElement;
-    let {definition}: { definition: DashboardWidgetDefinition<DashboardWidgetType, any> } = $props();
+    let {definition, onClick}: {
+        definition: DashboardWidgetDefinition<DashboardWidgetType, any>,
+        onClick: () => void
+    } = $props();
 
+    /*
     function createDummyWidget(): DashboardWidget {
         return {
             id: "",
@@ -21,6 +23,7 @@
         } as DashboardWidget;
     }
 
+
     function transformDraggedElement(_: any) {
         const clonedElement = element.cloneNode(true) as HTMLElement;
         clonedElement.innerHTML = "";
@@ -29,7 +32,7 @@
             target: clonedElement,
             props: {
                 widget: createDummyWidget(),
-                openFormModal: (formId: string) => {
+                openFormModal: () => {
                 },
                 onClick: () => {
                 },
@@ -49,7 +52,7 @@
             element.style.width = "auto";
             element.style.height = "auto";
         });
-    }
+    }*/
 
     onMount(() => {
         GridStack.setupDragIn([element], {
@@ -60,11 +63,12 @@
 </script>
 
 <div
-        class="grid-stack-item"
+        class="grid-stack-item hover-feedback cursor-grab"
+        onclick={onClick}
         data-widget-type={definition.getType()}
         bind:this={element}
 >
-    <div class="drag-card border flex-center w-full h-32">
+    <div class="drag-card border flex-center bg-white w-full h-32">
         {definition.getType()}
     </div>
 </div>

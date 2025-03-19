@@ -45,6 +45,25 @@
         renderer.onWidgetUpdated(widget);
     }
 
+    export function addWidget(widget: DashboardWidget) {
+        let definition = getDashboardWidgetDefinition(widget.type);
+        if (definition == undefined) return;
+
+        let element = document.createElement("div");
+        element.dataset.widgetId = widget.id;
+        grid.el.appendChild(element);
+        mountWidgetRenderer(element, widget);
+
+        grid.makeWidget(element, {
+            x: widget.display.x,
+            y: widget.display.y,
+            w: widget.display.width,
+            h: widget.display.height,
+            minH: definition.getMinHeight(),
+            minW: definition.getMinWidth(),
+        });
+    }
+
     function parseRenderOptsFromGridElement(
         element: HTMLElement,
     ): DashboardWidgetDisplaySettings {
@@ -79,6 +98,7 @@
 
             let widgetType: DashboardWidgetType = element.dataset.widgetType as DashboardWidgetType;
             let widget: DashboardWidget = await onWidgetAdd(widgetType, parseRenderOptsFromGridElement(element));
+            element.className = "grid-stack-item"; // Reset any drag card classes
             element.dataset.widgetId = widget.id;
             element.removeChild(child);
 
@@ -91,8 +111,8 @@
         let exports = mount(DashboardWidgetRenderer, {
             target: element, props: {
                 widget,
-                onClick: () => onWidgetSelect(widget),
-                onDelete: () => onWidgetDelete(widget),
+                onClick: (widget) => onWidgetSelect(widget),
+                onDelete: (widget) => onWidgetDelete(widget),
                 openFormModal,
             },
         });
@@ -123,24 +143,7 @@
         grid.on("added", onGridItemAdded);
         grid.on("dragstop resizestop", onGridItemManipulated);
 
-        for (let widget of widgets) {
-            let definition = getDashboardWidgetDefinition(widget.type);
-            if (definition == undefined) continue;
-
-            let element = document.createElement("div");
-            element.dataset.widgetId = widget.id;
-            grid.el.appendChild(element);
-            mountWidgetRenderer(element, widget);
-
-            grid.makeWidget(element, {
-                x: widget.display.x,
-                y: widget.display.y,
-                w: widget.display.width,
-                h: widget.display.height,
-                minH: definition.getMinHeight(),
-                minW: definition.getMinWidth(),
-            });
-        }
+        widgets.forEach(w => addWidget(w));
     });
 
     $effect(() => {

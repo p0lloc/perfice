@@ -5,6 +5,8 @@
         from "@perfice/components/dashboard/sidebar/edit/types/EditEntryRowWidgetSidebar.svelte";
     import type {Component} from "svelte";
     import type {Form} from "@perfice/model/form/form";
+    import Button from "@perfice/components/base/button/Button.svelte";
+    import {ButtonColor} from "@perfice/model/ui/button";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -28,3 +30,5 @@
         settings={action.widget.settings}
         onChange={onSettingsChange}
         forms={action.forms}/>
+
+<Button onClick={action.onDelete} color={ButtonColor.RED} class="md:hidden block w-full mt-8">Delete</Button>

@@ -20,12 +20,14 @@ export type DashboardSidebarAction =
     | SA<DashboardSidebarActionType.EDIT_WIDGET, DashboardEditWidgetAction>;
 
 export interface DashboardAddWidgetAction {
+    onClick: (definition: DashboardWidgetType) => void;
 }
 
 export interface DashboardEditWidgetAction {
     widget: DashboardWidget;
     forms: Form[];
     onChange: (widget: DashboardWidget) => void;
+    onDelete: () => void;
 }
 
 export interface SA<T extends DashboardSidebarActionType, V> {

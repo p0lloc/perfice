@@ -11,6 +11,6 @@
 
 <div class="grid grid-cols-2 gap-2">
     {#each definitions as definition}
-        <DashboardDragInCard {definition}/>
+        <DashboardDragInCard {definition} onClick={() => action.onClick(definition.getType())}/>
     {/each}
 </div>
