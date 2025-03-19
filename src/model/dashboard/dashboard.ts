@@ -1,5 +1,12 @@
-import {type VariableTypeDef, VariableTypeName} from "@perfice/model/variable/variable";
-import {ListVariableType} from "@perfice/services/variable/types/list";
+import {type Variable, type VariableTypeDef} from "@perfice/model/variable/variable";
+import {
+    DashboardEntryRowWidgetDefinition,
+    type DashboardEntryRowWidgetSettings
+} from "@perfice/model/dashboard/widgets/entryRow";
+import {
+    DashboardChartWidgetDefinition,
+    type DashboardChartWidgetSettings
+} from "@perfice/model/dashboard/widgets/chart";
 
 export interface Dashboard {
     id: string;
@@ -15,6 +22,7 @@ export interface DashboardWidgetDisplaySettings {
 
 export enum DashboardWidgetType {
     ENTRY_ROW = "ENTRY_ROW",
+    CHART = "CHART",
 }
 
 export type DashboardWidget = {
@@ -24,16 +32,13 @@ export type DashboardWidget = {
     dependencies: Record<string, string>;
 } & DashboardWidgetSettings;
 
-export type DashboardWidgetSettings = DS<DashboardWidgetType.ENTRY_ROW, DashboardEntryRowWidgetSettings>;
+export type DashboardWidgetSettings =
+    DS<DashboardWidgetType.ENTRY_ROW, DashboardEntryRowWidgetSettings>
+    | DS<DashboardWidgetType.CHART, DashboardChartWidgetSettings>;
 
 export interface DS<T extends DashboardWidgetType, V> {
     type: T;
     settings: V;
-}
-
-export interface DashboardEntryRowWidgetSettings {
-    formId: string;
-    questionId: string;
 }
 
 export interface DashboardWidgetDefinition<T extends DashboardWidgetType, S> {
@@ -46,51 +51,15 @@ export interface DashboardWidgetDefinition<T extends DashboardWidgetType, S> {
     getDefaultSettings(): S;
 
     // Creates the variables that this widget depends on
-    createDependencies(settings: S): Map<string, VariableTypeDef>;
+    createDependencies(settings: S): Map<string, Variable>;
 
     // Returns the variable updates should occur when the settings change
-    updateDependencies(previousSettings: S, updatedSettings: S): Map<string, VariableTypeDef>;
-}
-
-export class DashboardEntryRowWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.ENTRY_ROW, DashboardEntryRowWidgetSettings> {
-    getType(): DashboardWidgetType.ENTRY_ROW {
-        return DashboardWidgetType.ENTRY_ROW;
-    }
-
-    getMinHeight(): number | undefined {
-        return undefined;
-    }
-
-    getMinWidth(): number | undefined {
-        return undefined;
-    }
-
-    getDefaultSettings(): DashboardEntryRowWidgetSettings {
-        return {
-            formId: "abc",
-            questionId: "",
-        };
-    }
-
-    createDependencies(settings: DashboardEntryRowWidgetSettings): Map<string, VariableTypeDef> {
-        return new Map([["list", {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(settings.formId, {[settings.questionId]: true}, [])
-        }]]);
-    }
-
-    updateDependencies(previousSettings: DashboardEntryRowWidgetSettings, settings: DashboardEntryRowWidgetSettings): Map<string, VariableTypeDef> {
-        // No settings changed, return empty map
-        if (previousSettings.formId == settings.formId
-            && previousSettings.questionId == settings.questionId) return new Map();
-
-        return this.createDependencies(settings);
-    }
-
+    updateDependencies(dependencies: Record<string, string>, previousSettings: S, updatedSettings: S): Map<string, VariableTypeDef>;
 }
 
 const definitions: Map<DashboardWidgetType, DashboardWidgetDefinition<DashboardWidgetType, any>> = new Map();
 definitions.set(DashboardWidgetType.ENTRY_ROW, new DashboardEntryRowWidgetDefinition());
+definitions.set(DashboardWidgetType.CHART, new DashboardChartWidgetDefinition());
 
 export function getDashboardWidgetDefinitions(): DashboardWidgetDefinition<DashboardWidgetType, any>[] {
     return Array.from(definitions.values());

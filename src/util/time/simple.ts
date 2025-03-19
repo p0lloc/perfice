@@ -21,6 +21,18 @@ export function dateWithCurrentTime(date: Date) {
     return clone;
 }
 
+export function getWeekNumber(date: Date): number {
+    let target = new Date(date);
+    let dayNr = (target.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    let firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() != 4) {
+        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target.getTime()) / 604800000);
+}
+
 export function isSameDay(first: Date, second: Date): boolean {
     return first.getFullYear() == second.getFullYear()
         && first.getMonth() == second.getMonth()

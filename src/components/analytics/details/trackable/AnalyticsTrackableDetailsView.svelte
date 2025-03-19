@@ -1,5 +1,4 @@
 <script lang="ts">
-    import LineChart from "@perfice/components/chart/LineChart.svelte";
     import PieChart from "@perfice/components/chart/PieChart.svelte";
     import {trackableDetailedAnalytics} from "@perfice/main";
     import {AnalyticsChartType, type TrackableDetailedAnalyticsResult,} from "@perfice/stores/analytics/trackable";

@@ -9,9 +9,10 @@ import {
     faPlus, faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import {TimeScopeType, type TimeScope, SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-import {formatDateYYYYMMDD, formatTimestampYYYYMMDD, MONTHS_SHORT} from "@perfice/util/time/format";
+import {formatDateYYYYMMDD, formatTimestampYYYYMMDD, MONTHS_SHORT, WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 import {CalculationOperator} from "@perfice/services/variable/types/calculation";
 import {FilterComparisonOperator} from "@perfice/services/variable/filtering";
+import {getWeekNumber} from "@perfice/util/time/simple";
 
 export const AGGREGATE_TYPES = [
     {
@@ -49,12 +50,12 @@ export const SIMPLE_TIME_SCOPE_TYPES = [
 ];
 
 
-export function formatSimpleTimestamp(timestamp: number, timeScope: SimpleTimeScopeType): string {
+export function formatSimpleTimestamp(timestamp: number, timeScope: SimpleTimeScopeType, useWeekDay: boolean = false): string {
     switch (timeScope) {
         case SimpleTimeScopeType.DAILY:
-            return formatTimestampYYYYMMDD(timestamp);
+            return useWeekDay ? WEEK_DAYS_SHORT[new Date(timestamp).getDay()] : formatTimestampYYYYMMDD(timestamp);
         case SimpleTimeScopeType.WEEKLY:
-            return `${formatTimestampYYYYMMDD(timestamp)}-${formatTimestampYYYYMMDD(timestamp + 1000 * 60 * 60 * 24 * 7)}`;
+            return `W${getWeekNumber(new Date(timestamp))}`;
         case SimpleTimeScopeType.MONTHLY:
             return MONTHS_SHORT[new Date(timestamp).getMonth()];
         default:

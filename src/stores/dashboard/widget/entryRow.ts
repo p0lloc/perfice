@@ -1,4 +1,3 @@
-import type {DashboardEntryRowWidgetSettings} from "@perfice/model/dashboard/dashboard";
 import {prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
@@ -6,6 +5,7 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/t
 import type {VariableService} from "@perfice/services/variable/variable";
 import {forms} from "@perfice/main";
 import {type FormQuestion, FormQuestionDisplayType} from "@perfice/model/form/form";
+import type {DashboardEntryRowWidgetSettings} from "@perfice/model/dashboard/widgets/entryRow";
 
 export interface EntryRowWidgetEntry {
     id: string;

@@ -53,7 +53,9 @@ export function VariableValueStore(id: string, timeContext: TimeScope, variableS
     }
 }
 
-export function RangedVariableValueStore(id: string, timeContext: SimpleTimeScope, variableService: VariableService, key: string, count: number): Readable<Promise<PrimitiveValue[]>> {
+export function RangedVariableValueStore(id: string, timeContext: SimpleTimeScope, variableService: VariableService, key: string, count: number,
+                                         deleteNotifications: boolean = true): Readable<Promise<PrimitiveValue[]>> {
+
     let context = new VariableFetchContext(variableService);
     const {
         subscribe,
@@ -70,7 +72,8 @@ export function RangedVariableValueStore(id: string, timeContext: SimpleTimeScop
             // Count backwards from the specified date, for `count` amount of times
             let offsetDate = offsetDateByTimeScope(new Date(timeContext.getTimestamp()), timeContext.getType(), -i);
             let val = await context.evaluateVariableLive(id,
-                tSimple(timeContext.getType(), timeContext.getWeekStart(), offsetDate.getTime()), onVariableUpdated);
+                tSimple(timeContext.getType(), timeContext.getWeekStart(), offsetDate.getTime()), onVariableUpdated,
+                deleteNotifications);
 
             vals.push(val);
         }

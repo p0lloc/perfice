@@ -1,7 +1,7 @@
 <script lang="ts">
     import type {TrackableWeekDayAnalyticsTransformed} from "@perfice/stores/analytics/trackable";
     import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
-    import BarChart from "@perfice/components/chart/BarChart.svelte";
+    import SingleChart from "@perfice/components/chart/SingleChart.svelte";
 
     let {analytics}: { analytics: TrackableWeekDayAnalyticsTransformed } = $props();
 </script>
@@ -13,11 +13,14 @@
             Highest on {WEEK_DAYS_SHORT[analytics.value.max]}, lowest on {WEEK_DAYS_SHORT[analytics.value.min]}
         </p>
         <div class="h-56 mt-2">
-            <BarChart
-                    hideLabels={true}
-                    hideGrid={true}
+            <SingleChart
+                    type="bar"
+                    fillColor="#0ccf84"
+                    borderColor="#0b9661"
+                    legend={false}
                     minimal={false}
-                    dataPoints={analytics.value.values}
+                    dataPoints={analytics.value.dataPoints}
+                    labels={analytics.value.labels}
             />
         </div>
     {:else}

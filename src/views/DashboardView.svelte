@@ -72,7 +72,6 @@
     async function onWidgetSelect(widget: DashboardWidget) {
         if (!$editingDashboard) return;
 
-        console.log(widget)
         $selectedWidget = widget;
         sidebar.open({
             type: DashboardSidebarActionType.EDIT_WIDGET,

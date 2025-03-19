@@ -1,5 +1,5 @@
 <script lang="ts">
-    import BaseChart from "@perfice/components/chart/BaseChart.svelte";
+    import CanvasChartRenderer from "@perfice/components/chart/CanvasChartRenderer.svelte";
     import type {ChartConfiguration, DefaultDataPoint} from "chart.js";
 
     const {
@@ -11,7 +11,6 @@
 
         hideLabels = true,
         hideGrid = false,
-        minimal = true,
 
         firstFillColor = "#9BD0F5",
         firstBorderColor = "#36A2EB",
@@ -114,4 +113,4 @@
     };
 </script>
 
-<BaseChart {data} {config}/>
+<CanvasChartRenderer {data} {config}/>

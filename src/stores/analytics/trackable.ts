@@ -51,7 +51,8 @@ export interface TrackableAnalyticsResult {
 export type TrackableWeekDayAnalyticsTransformed = {
     quantitative: true,
     value: Omit<QuantitativeWeekDayAnalytics, 'values'> & {
-        values: Record<string, number>;
+        dataPoints: number[];
+        labels: string[];
     }
 } | {
     quantitative: false,
@@ -142,8 +143,10 @@ function createPromise(id: string, rawQuestionId: string | null,
                 if (weekDay.quantitative) {
                     transformedWeekDay = {
                         ...weekDay, value: {
-                            ...weekDay.value, values:
-                                Object.fromEntries(weekDay.value.values.entries().map(([k, v]) => [WEEK_DAYS_SHORT[k], v.value]))
+                            ...weekDay.value,
+
+                            labels: weekDay.value.values.keys().map(v => WEEK_DAYS_SHORT[v]).toArray(),
+                            dataPoints: weekDay.value.values.values().map(v => v.value).toArray(),
                         }
                     };
                 } else {

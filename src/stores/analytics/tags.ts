@@ -21,7 +21,8 @@ export interface SingleTagAnalyticsResult {
 }
 
 export type TagWeekDayAnalyticsTransformed = Omit<TagWeekDayAnalytics, 'values'> & {
-    values: Record<string, number>;
+    labels: string[];
+    dataPoints: number[];
 }
 
 export interface TagDetailedAnalyticsResult {
@@ -74,7 +75,8 @@ function createPromise(id: string,
                 tag,
                 weekDayAnalytics: {
                     ...weekDayAnalytics,
-                    values: Object.fromEntries(weekDayAnalytics.values.entries().map(([k, v]) => [WEEK_DAYS_SHORT[k], v]))
+                    labels: weekDayAnalytics.values.keys().map(v => WEEK_DAYS_SHORT[v]).toArray(),
+                    dataPoints: weekDayAnalytics.values.values().toArray(),
                 },
                 correlations: createDetailedCorrelations(result, tag.id),
                 values,

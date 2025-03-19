@@ -7,6 +7,7 @@
     import type {Form} from "@perfice/model/form/form";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
+    import EditChartWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditChartWidgetSidebar.svelte";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -15,7 +16,8 @@
         onChange: (settings: any) => void,
         forms: Form[]
     }>> = {
-        [DashboardWidgetType.ENTRY_ROW]: EditEntryRowWidgetSidebar
+        [DashboardWidgetType.ENTRY_ROW]: EditEntryRowWidgetSidebar,
+        [DashboardWidgetType.CHART]: EditChartWidgetSidebar
     };
 
     function onSettingsChange(settings: any) {

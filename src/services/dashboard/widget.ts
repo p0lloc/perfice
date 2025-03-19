@@ -6,7 +6,6 @@ import {
     DashboardWidgetType, getDashboardWidgetDefinition
 } from "@perfice/model/dashboard/dashboard";
 import type {VariableService} from "@perfice/services/variable/variable";
-import type {Variable} from "@perfice/model/variable/variable";
 
 export class DashboardWidgetService {
 
@@ -35,13 +34,7 @@ export class DashboardWidgetService {
 
         const dependenciesMap = definition.createDependencies(settings);
         let storedDependencies: Record<string, string> = {};
-        for (let [key, value] of dependenciesMap.entries()) {
-            const variable: Variable = {
-                id: crypto.randomUUID(),
-                name: key,
-                type: value,
-            }
-
+        for (let [key, variable] of dependenciesMap.entries()) {
             await this.variableService.createVariable(variable);
             storedDependencies[key] = variable.id;
         }
@@ -63,7 +56,7 @@ export class DashboardWidgetService {
 
     private async updateWidgetDependencies(previous: DashboardWidget, widget: DashboardWidget) {
         const definition = getDashboardWidgetDefinition(widget.type)!;
-        const variableUpdates = definition.updateDependencies(previous.settings, widget.settings);
+        const variableUpdates = definition.updateDependencies(widget.dependencies, previous.settings, widget.settings);
         for (let [key, updatedType] of variableUpdates.entries()) {
             const variableId = widget.dependencies[key];
             if (variableId == undefined) {

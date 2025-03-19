@@ -6,6 +6,7 @@
     import {faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import DashboardChartWidget from "@perfice/components/dashboard/types/chart/DashboardChartWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -20,6 +21,7 @@
         openFormModal: (formId: string) => void
     }>> = {
         [DashboardWidgetType.ENTRY_ROW]: DashboardEntryRowWidget,
+        [DashboardWidgetType.CHART]: DashboardChartWidget,
     };
 
     function onClicked() {
@@ -55,7 +57,7 @@
         <!-- Dummy container for border -->
         <div class="w-full h-full absolute border-2 border-green-500 border-dashed pointer-events-none"></div>
         <!-- Delete button -->
-        <div class="absolute right-3 top-3">
+        <div class="absolute right-2 px-2 pt-1 rounded-t-md top-[-25px] bg-white border-t border-x z-10">
             <button onclick={onDeleteClicked} class="text-red-500 hover:text-red-700">
                 <Fa icon={faTrash}/>
             </button>
