@@ -7,6 +7,10 @@ import {
     DashboardChartWidgetDefinition,
     type DashboardChartWidgetSettings
 } from "@perfice/model/dashboard/widgets/chart";
+import {
+    DashboardWelcomeWidgetDefinition,
+    type DashboardWelcomeWidgetSettings
+} from "@perfice/model/dashboard/widgets/welcome";
 
 export interface Dashboard {
     id: string;
@@ -23,6 +27,7 @@ export interface DashboardWidgetDisplaySettings {
 export enum DashboardWidgetType {
     ENTRY_ROW = "ENTRY_ROW",
     CHART = "CHART",
+    WELCOME = "WELCOME",
 }
 
 export type DashboardWidget = {
@@ -34,7 +39,9 @@ export type DashboardWidget = {
 
 export type DashboardWidgetSettings =
     DS<DashboardWidgetType.ENTRY_ROW, DashboardEntryRowWidgetSettings>
-    | DS<DashboardWidgetType.CHART, DashboardChartWidgetSettings>;
+    | DS<DashboardWidgetType.CHART, DashboardChartWidgetSettings>
+    | DS<DashboardWidgetType.WELCOME, DashboardWelcomeWidgetSettings>
+    ;
 
 export interface DS<T extends DashboardWidgetType, V> {
     type: T;
@@ -60,6 +67,7 @@ export interface DashboardWidgetDefinition<T extends DashboardWidgetType, S> {
 const definitions: Map<DashboardWidgetType, DashboardWidgetDefinition<DashboardWidgetType, any>> = new Map();
 definitions.set(DashboardWidgetType.ENTRY_ROW, new DashboardEntryRowWidgetDefinition());
 definitions.set(DashboardWidgetType.CHART, new DashboardChartWidgetDefinition());
+definitions.set(DashboardWidgetType.WELCOME, new DashboardWelcomeWidgetDefinition());
 
 export function getDashboardWidgetDefinitions(): DashboardWidgetDefinition<DashboardWidgetType, any>[] {
     return Array.from(definitions.values());

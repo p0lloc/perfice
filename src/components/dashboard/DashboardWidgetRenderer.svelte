@@ -7,6 +7,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import DashboardChartWidget from "@perfice/components/dashboard/types/chart/DashboardChartWidget.svelte";
+    import DashboardWelcomeWidget from "@perfice/components/dashboard/types/welcome/DashboardWelcomeWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -22,6 +23,7 @@
     }>> = {
         [DashboardWidgetType.ENTRY_ROW]: DashboardEntryRowWidget,
         [DashboardWidgetType.CHART]: DashboardChartWidget,
+        [DashboardWidgetType.WELCOME]: DashboardWelcomeWidget,
     };
 
     function onClicked() {

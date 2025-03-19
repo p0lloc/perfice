@@ -150,7 +150,7 @@
 
 <div class="flex-1 h-screen overflow-y-scroll scrollbar-hide md:w-auto w-screen pb-32 px-2">
     <div class="flex justify-end">
-        <div class="row-gap p-2">
+        <div class="row-gap p-2 flex-wrap">
             <CalendarScroll value={$dashboardDate} onChange={(v) => $dashboardDate = v}/>
             <input type="checkbox" bind:checked={$editingDashboard}>
             <button onclick={openAddWidgetSidebar}>+</button>
