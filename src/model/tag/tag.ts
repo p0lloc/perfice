@@ -5,6 +5,8 @@ export interface Tag {
     categoryId: string | null;
 }
 
+export const UNCATEGORIZED_TAG_CATEGORY_ID = "";
+
 export interface TagCategory {
     id: string;
     name: string;

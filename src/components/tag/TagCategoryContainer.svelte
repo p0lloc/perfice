@@ -2,7 +2,7 @@
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import type {CategoryList} from "@perfice/util/category";
+    import {type CategoryList, UNCATEGORIZED_NAME} from "@perfice/util/category";
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import type {Tag, TagCategory} from "@perfice/model/tag/tag";
     import TagCard from "@perfice/components/tag/TagCard.svelte";
@@ -23,14 +23,14 @@
 
 <div>
     <h1 class="text-3xl flex justify-between">
-        {category.category?.name ?? "Uncategorized"}
+        {category.category?.name ?? UNCATEGORIZED_NAME}
         <button onclick={createTag}>
             <Fa icon={faPlus}/>
         </button>
     </h1>
     <hr>
     <div
-            class="w-full mt-4 grid grid-cols-3 md:grid-cols-7 gap-2 md:gap-4">
+            class="w-full mt-4 flex flex-wrap gap-2 md:gap-2">
         {#each category.items as tag}
             <TagCard tag={tag} onClick={(log) => onTagClicked(tag, log)} date={date}
                      weekStart={weekStart}/>

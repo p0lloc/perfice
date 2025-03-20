@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {CategoryList} from "@perfice/util/category";
+    import {type CategoryList, UNCATEGORIZED_NAME} from "@perfice/util/category";
     import {type Trackable, type TrackableCategory} from "@perfice/model/trackable/trackable";
     import TrackableCard from "@perfice/components/trackable/card/TrackableCard.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
@@ -30,7 +30,7 @@
 
 <div>
     <h1 class="text-3xl flex justify-between">
-        {category.category?.name ?? "Uncategorized"}
+        {category.category?.name ?? UNCATEGORIZED_NAME}
         <button onclick={createTrackable}>
             <Fa icon={faPlus}/>
         </button>

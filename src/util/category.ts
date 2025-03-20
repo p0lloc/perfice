@@ -1,5 +1,7 @@
 import type {Identified} from "@perfice/util/array";
 
+export const UNCATEGORIZED_NAME = "Uncategorized";
+
 export interface CategoryList<C, T> {
     category: C | null;
     items: T[];

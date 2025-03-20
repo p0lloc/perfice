@@ -3,6 +3,7 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
     import type {TrackableCategory} from "@perfice/model/trackable/trackable";
+    import {UNCATEGORIZED_NAME} from "@perfice/util/category";
 
     let {categories, categoryId, onChange}: {
         categories: TrackableCategory[],
@@ -10,7 +11,7 @@
         onChange: (id: string | null) => void
     } = $props();
 
-    let dropdownItems = $derived([{id: null, name: "Uncategorized"}, ...categories].map(c => {
+    let dropdownItems = $derived([{id: null, name: UNCATEGORIZED_NAME}, ...categories].map(c => {
         return {
             name: c.name,
             value: c.id,

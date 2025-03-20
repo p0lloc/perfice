@@ -2,7 +2,7 @@ import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/mode
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
 
 export interface DashboardTagsWidgetSettings {
-
+    categories: string[];
 }
 
 export class DashboardTagsWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.TAGS, DashboardTagsWidgetSettings> {
@@ -19,7 +19,9 @@ export class DashboardTagsWidgetDefinition implements DashboardWidgetDefinition<
     }
 
     getDefaultSettings(): DashboardTagsWidgetSettings {
-        return {};
+        return {
+            categories: []
+        };
     }
 
     createDependencies(settings: DashboardTagsWidgetSettings): Map<string, Variable> {

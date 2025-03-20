@@ -27,6 +27,7 @@
     }
 
     onMount(() => {
+        tagCategories.load();
         tags.load();
     });
 

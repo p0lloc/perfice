@@ -20,7 +20,7 @@
 <!-- This should always be resolved since we have a default value in the variable store -->
 {#await $tagEntry then entryId}
     <TagButtonBase checked={entryId != null} onClick={() => onClick(entryId)}>
-        {tag.name}
+        <span class="text-ellipsis overflow-hidden">{tag.name}</span>
         <span class="w-2">
             {#if entryId != null}
             <Fa icon={faTimes}/>
