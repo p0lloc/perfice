@@ -11,6 +11,7 @@
     import EditTableWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditTableWidgetSidebar.svelte";
     import EditWelcomeWidgetSidebar
         from "@perfice/components/dashboard/sidebar/edit/types/EditWelcomeWidgetSidebar.svelte";
+    import EditGoalWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditGoalWidgetSidebar.svelte";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -23,6 +24,7 @@
         [DashboardWidgetType.CHART]: EditChartWidgetSidebar,
         [DashboardWidgetType.TABLE]: EditTableWidgetSidebar,
         [DashboardWidgetType.WELCOME]: EditWelcomeWidgetSidebar,
+        [DashboardWidgetType.GOAL]: EditGoalWidgetSidebar,
     };
 
     function onSettingsChange(settings: any) {

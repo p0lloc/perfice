@@ -10,6 +10,8 @@
     import DashboardWelcomeWidget from "@perfice/components/dashboard/types/welcome/DashboardWelcomeWidget.svelte";
     import DashboardTableWidget from "@perfice/components/dashboard/types/table/DashboardTableWidget.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import DashboardTagsWidget from "@perfice/components/dashboard/types/tags/DashboardTagsWidget.svelte";
+    import DashboardGoalWidget from "@perfice/components/dashboard/types/goal/DashboardGoalWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -27,6 +29,8 @@
         [DashboardWidgetType.CHART]: DashboardChartWidget,
         [DashboardWidgetType.WELCOME]: DashboardWelcomeWidget,
         [DashboardWidgetType.TABLE]: DashboardTableWidget,
+        [DashboardWidgetType.GOAL]: DashboardGoalWidget,
+        [DashboardWidgetType.TAGS]: DashboardTagsWidget,
     };
 
     function onClicked() {

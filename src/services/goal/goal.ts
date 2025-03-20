@@ -75,6 +75,9 @@ export class GoalService {
         this.observers.removeObserver(type, callback);
     }
 
+    async getGoalByVariableId(goalVariableId: string): Promise<Goal | undefined> {
+        return this.goalCollection.getGoalByVariableId(goalVariableId);
+    }
 }
 
 

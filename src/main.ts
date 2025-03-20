@@ -63,6 +63,8 @@ import type {DashboardChartWidgetSettings} from "@perfice/model/dashboard/widget
 import {ChartWidget} from "@perfice/stores/dashboard/widget/chart";
 import {TableWidget} from "@perfice/stores/dashboard/widget/table";
 import type {DashboardTableWidgetSettings} from "@perfice/model/dashboard/widgets/table";
+import {GoalWidget} from "@perfice/stores/dashboard/widget/goal";
+import type {DashboardGoalWidgetSettings} from "@perfice/model/dashboard/widgets/goal";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -152,12 +154,17 @@ export function chartWidget(dependencies: Record<string, string>, settings: Dash
     return ChartWidget(dependencies, settings, date, weekStart, key, variableService);
 }
 
+export function goalWidget(settings: DashboardGoalWidgetSettings, date: Date,
+                           weekStart: WeekStart, key: string) {
+    return GoalWidget(settings, date, weekStart, key);
+}
+
 export function tagValue(tag: Tag, date: Date, weekStart: WeekStart, key: string) {
     return TagValueStore(tag, date, weekStart, key, variableService);
 }
 
-export function goalValue(goal: Goal, date: Date, weekStart: WeekStart, key: string) {
-    return GoalValueStore(goal, date, weekStart, key, variableService);
+export function goalValue(goalVariableId: string, date: Date, weekStart: WeekStart, key: string) {
+    return GoalValueStore(goalVariableId, date, weekStart, key, variableService);
 }
 
 export function trackableAnalytics() {

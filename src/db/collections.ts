@@ -103,6 +103,8 @@ export interface GoalCollection {
     updateGoal(goal: Goal): Promise<void>;
 
     deleteGoalById(id: string): Promise<void>;
+
+    getGoalByVariableId(goalVariableId: string): Promise<Goal | undefined>;
 }
 
 export interface AnalyticsSettingsCollection {

@@ -2,7 +2,7 @@ import type {Goal} from "@perfice/model/goal/goal";
 import {AsyncStore} from "../store";
 import type {GoalService} from "@perfice/services/goal/goal";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
-import { EntityObserverType } from "@perfice/services/observer";
+import {EntityObserverType} from "@perfice/services/observer";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight} from "@perfice/util/time/simple";
 import {resolvedPromise} from "@perfice/util/promise";
@@ -28,6 +28,13 @@ export class GoalStore extends AsyncStore<Goal[]> {
 
     load() {
         this.set(this.goalService.getGoals());
+    }
+
+    /**
+     * Fetches all goals directly from the goal service, without caching.
+     */
+    fetchGoals(): Promise<Goal[]> {
+        return this.goalService.getGoals();
     }
 
     /**
@@ -66,5 +73,21 @@ export class GoalStore extends AsyncStore<Goal[]> {
         this.updateResolved(v => deleteIdentifiedInArray(v, goal.id));
     }
 
+    /**
+     * Fetches a goal by its variable id.
+     * If "fetch" is true and the goal is not cached, it will be fetched from the database.
+     */
+    async getGoalByVariableId(goalVariableId: string, fetch: boolean = false) {
+        let goals = await this.get();
+        let cached = goals.find(f => f.variableId == goalVariableId);
+        if (cached != null) return cached;
 
+        if (!fetch) return null;
+
+        let goal = await this.goalService.getGoalByVariableId(goalVariableId);
+        if (goal == null) return null;
+
+        this.updateResolved(v => [...v, goal]);
+        return goal;
+    }
 }

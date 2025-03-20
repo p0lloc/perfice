@@ -74,10 +74,10 @@ export interface GoalValueResult {
     results: GoalConditionValueResult[];
 }
 
-export function GoalValueStore(goal: Goal, date: Date,
+export function GoalValueStore(variableId: string, date: Date,
                                weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<GoalValueResult>> {
 
-    let goalVariable = variableService.getVariableById(goal.variableId);
+    let goalVariable = variableService.getVariableById(variableId);
     if (goalVariable == null || goalVariable.type.type != VariableTypeName.GOAL)
         return readable(emptyPromise());
 
@@ -88,7 +88,7 @@ export function GoalValueStore(goal: Goal, date: Date,
     // otherwise we will get an incorrect "DAILY" time scope for RANGED/FOREVER time scopes.
     let convertedTimeScope = convertTimeScopeToGoalTimeScope(timeScope, goalData.getTimeScope());
 
-    let store = VariableValueStore(goal.variableId,
+    let store = VariableValueStore(variableId,
         convertedTimeScope, variableService, key);
 
     return derived(store, (value, set) => {
