@@ -10,7 +10,8 @@
     let {settings, onChange, forms}: {
         settings: DashboardTableWidgetSettings,
         onChange: (settings: DashboardTableWidgetSettings) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     } = $props();
 
     let selectedForm = $derived<Form | undefined>(forms.find(f => f.id == settings.formId));

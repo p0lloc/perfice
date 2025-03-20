@@ -1,8 +1,11 @@
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
-import {type Variable, type VariableTypeDef} from "@perfice/model/variable/variable";
+import {type Variable, type VariableTypeDef, VariableTypeName} from "@perfice/model/variable/variable";
+import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
+import {ListVariableType} from "@perfice/services/variable/types/list";
+import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface DashboardMetricWidgetSettings {
-    icon: string;
+    timeScope: SimpleTimeScopeType;
 }
 
 export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.METRIC, DashboardMetricWidgetSettings> {
@@ -20,12 +23,37 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
 
     getDefaultSettings(): DashboardMetricWidgetSettings {
         return {
-            icon: "moon"
+            timeScope: SimpleTimeScopeType.DAILY
         };
     }
 
     createDependencies(settings: DashboardMetricWidgetSettings): Map<string, Variable> {
-        return new Map();
+        const listVariableId = crypto.randomUUID();
+        return new Map([
+            [
+                "list_variable",
+                {
+                    id: listVariableId,
+                    name: "Metric",
+                    type: {
+                        type: VariableTypeName.LIST,
+                        value: new ListVariableType("", {}, [])
+                    }
+                }
+            ],
+
+            [
+                "variable",
+                {
+                    id: crypto.randomUUID(),
+                    name: "Metric",
+                    type: {
+                        type: VariableTypeName.AGGREGATE,
+                        value: new AggregateVariableType(AggregateType.MEAN, listVariableId, "metric")
+                    }
+                }
+            ]
+        ]);
     }
 
     updateDependencies(dependencies: Record<string, string>, previousSettings: DashboardMetricWidgetSettings, settings: DashboardMetricWidgetSettings): Map<string, VariableTypeDef> {

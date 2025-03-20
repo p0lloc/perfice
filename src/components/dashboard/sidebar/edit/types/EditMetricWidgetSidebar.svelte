@@ -1,16 +1,35 @@
 <script lang="ts">
     import type {DashboardMetricWidgetSettings} from "@perfice/model/dashboard/widgets/metric";
     import type {Form} from "@perfice/model/form/form";
-    import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
+    import {onMount} from "svelte";
+    import {variableEditProvider} from "@perfice/main";
+    import EditVariable from "@perfice/components/variable/edit/EditVariable.svelte";
+    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
+    import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
 
-    let {settings, onChange, forms}: {
+    let {dependencies, settings, onChange}: {
         settings: DashboardMetricWidgetSettings,
         onChange: (settings: DashboardMetricWidgetSettings) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     } = $props();
+
+    let loaded = $state(false);
+
+    onMount(() => {
+        variableEditProvider.newEdit(true);
+        loaded = true;
+    })
 </script>
 
-<div class="row-between">
-    Icon
-    <IconPickerButton right={true} icon={settings.icon} onChange={(icon) => onChange({...settings, icon})}/>
-</div>
+{#if loaded}
+    <div class="mt-4">
+        <EditVariable useDisplayValues={true} editName={false} variableId={dependencies["variable"]} onEdit={() => {}}/>
+    </div>
+    <div class="row-between mt-2">
+        Time scope
+        <BindableDropdownButton value={settings.timeScope}
+                                onChange={(v) => onChange({...settings, timeScope: v})}
+                                items={SIMPLE_TIME_SCOPE_TYPES}/>
+    </div>
+{/if}

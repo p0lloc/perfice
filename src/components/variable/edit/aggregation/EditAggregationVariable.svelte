@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AggregateVariableType} from "@perfice/services/variable/types/aggregate";
+    import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
     import {VariableTypeName} from "@perfice/model/variable/variable";
     import {variableEditProvider} from "@perfice/main.js";
     import type {Variable} from "@perfice/model/variable/variable.js";
@@ -11,14 +11,15 @@
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
     import {ListVariableType} from "@perfice/services/variable/types/list";
 
-    let {variable, value, editState}: {
+    let {variable, value, editState, useDisplayValues = false}: {
         variable: Variable,
         value: AggregateVariableType,
         editState: EditAggregationVariableState,
-        onEdit: (v: EditConstantOrVariableState) => void
+        onEdit: (v: EditConstantOrVariableState) => void,
+        useDisplayValues?: boolean
     } = $props();
 
-    let aggregateType = $state<string>(value.getAggregateType());
+    let aggregateType = $state<AggregateType>(value.getAggregateType());
     let field = $state<string>(value.getField());
     let filters = $state<JournalEntryFilter[]>(editState.listVariableValue.getFilters());
 
@@ -33,12 +34,22 @@
         });
     }
 
+    function onAggregateTypeChange(newType: AggregateType) {
+        aggregateType = newType;
+        variableEditProvider.updateVariable({
+            ...variable, type: {
+                type: VariableTypeName.AGGREGATE,
+                value: new AggregateVariableType(newType, value.getListVariableId(), value.getField())
+            }
+        });
+    }
+
     function onFieldChange(newField: string) {
         field = newField;
         variableEditProvider.updateVariable({
             ...editState.listVariable, type: {
                 type: VariableTypeName.LIST,
-                value: new ListVariableType(editState.listVariableValue.getFormId(), {[newField]: false}, editState.listVariableValue.getFilters())
+                value: new ListVariableType(editState.listVariableValue.getFormId(), {[newField]: useDisplayValues}, editState.listVariableValue.getFilters())
             }
         });
         variableEditProvider.updateVariable({
@@ -82,7 +93,7 @@
 <div class="flex flex-col gap-2">
     <div class="row-between">
         Type
-        <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={(v) => aggregateType = v}/>
+        <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={onAggregateTypeChange}/>
     </div>
     <div class="row-between">
         Entity

@@ -24,7 +24,8 @@
     const RENDERERS: Record<DashboardWidgetType, Component<{
         settings: any,
         dependencies: Record<string, string>,
-        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void
+        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void,
+        widgetId: string,
     }>> = {
         [DashboardWidgetType.ENTRY_ROW]: DashboardEntryRowWidget,
         [DashboardWidgetType.CHART]: DashboardChartWidget,
@@ -75,6 +76,7 @@
         </div>
     {/if}
     <div class="w-full h-full" class:pointer-events-none={$editingDashboard}>
-        <RendererComponent settings={widget.settings} dependencies={widget.dependencies} {openFormModal}/>
+        <RendererComponent settings={widget.settings}
+                           dependencies={widget.dependencies} widgetId={widget.id} {openFormModal}/>
     </div>
 </div>

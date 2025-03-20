@@ -12,7 +12,8 @@
     let {settings, onChange, forms}: {
         settings: DashboardChartWidgetSettings,
         onChange: (settings: DashboardChartWidgetSettings) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     } = $props();
 </script>
 

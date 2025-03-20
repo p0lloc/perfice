@@ -6,7 +6,8 @@
     let {settings, onChange, forms}: {
         settings: DashboardEntryRowWidgetSettings,
         onChange: (settings: DashboardEntryRowWidgetSettings) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     } = $props();
 </script>
 

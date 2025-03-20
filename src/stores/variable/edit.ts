@@ -42,6 +42,8 @@ export class VariableEditProvider {
     private changes: VariableChange[] = [];
     private variables: Variable[] = [];
 
+    private autoSave: boolean = false;
+
     private readonly editStateProvider: VariableEditStateProvider;
 
     constructor(variableService: VariableService, formService: FormService, trackableService: TrackableService) {
@@ -53,9 +55,10 @@ export class VariableEditProvider {
      * Starts a new edit by fetching all available variables.
      * Discards any previous changes.
      */
-    newEdit() {
+    newEdit(autoSave: boolean = false) {
         this.variables = this.variableService.getVariables();
         this.changes = [];
+        this.autoSave = autoSave;
     }
 
     getVariableById(id: string): Variable | undefined {
@@ -154,7 +157,7 @@ export class VariableEditProvider {
     }
 
     createVariable(variable: Variable) {
-        this.changes.push({id: variable.id, type: VariableChangeType.CREATE, data: variable});
+        this.addChange({id: variable.id, type: VariableChangeType.CREATE, data: variable});
     }
 
     createVariableFromType(variableType: VariableTypeName): Variable {
@@ -171,7 +174,7 @@ export class VariableEditProvider {
         // Delete any previous updates as they are now obsolete
         this.changes = this.changes.filter(c => c.id != variable.id || c.type != VariableChangeType.UPDATE);
 
-        this.changes.push({id: variable.id, type: VariableChangeType.UPDATE, data: variable});
+        this.addChange({id: variable.id, type: VariableChangeType.UPDATE, data: variable});
         this.variables = updateIdentifiedInArray(this.variables, variable);
     }
 
@@ -182,11 +185,18 @@ export class VariableEditProvider {
         let variable = this.getVariableById(id);
         if (variable == null) return;
 
-        this.changes.push({id, type: VariableChangeType.DELETE, data: null});
+        this.addChange({id, type: VariableChangeType.DELETE, data: null});
         this.variables = deleteIdentifiedInArray(this.variables, id);
 
         for (let dependencyId of variable.type.value.getDependencies()) {
             this.deleteVariableAndDependencies(dependencyId);
+        }
+    }
+
+    private addChange(change: VariableChange) {
+        this.changes.push(change);
+        if (this.autoSave) {
+            this.save();
         }
     }
 

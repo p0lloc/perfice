@@ -7,7 +7,8 @@
     let {settings, onChange}: {
         settings: DashboardGoalWidgetSettings,
         onChange: (settings: DashboardGoalWidgetSettings) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     } = $props();
 
     // This is done to avoid caching all goals unnecessarily in the store

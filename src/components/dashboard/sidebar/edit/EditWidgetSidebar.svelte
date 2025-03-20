@@ -21,7 +21,8 @@
     const RENDERERS: Record<DashboardWidgetType, Component<{
         settings: any,
         onChange: (settings: any) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     }>> = {
         [DashboardWidgetType.ENTRY_ROW]: EditEntryRowWidgetSidebar,
         [DashboardWidgetType.CHART]: EditChartWidgetSidebar,
@@ -42,6 +43,7 @@
 
 <RendererComponent
         settings={action.widget.settings}
+        dependencies={action.widget.dependencies}
         onChange={onSettingsChange}
         forms={action.forms}/>
 

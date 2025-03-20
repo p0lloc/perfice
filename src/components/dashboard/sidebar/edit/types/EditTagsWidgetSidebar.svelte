@@ -8,7 +8,8 @@
     let {settings, onChange, forms}: {
         settings: DashboardTagsWidgetSettings,
         onChange: (settings: DashboardTagsWidgetSettings) => void,
-        forms: Form[]
+        forms: Form[],
+        dependencies: Record<string, string>
     } = $props();
 
 

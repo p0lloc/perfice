@@ -1,17 +1,18 @@
 <script lang="ts">
     import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
-    import {type Component, onMount, untrack} from "svelte";
+    import {type Component, untrack} from "svelte";
     import {variableEditProvider} from "@perfice/main";
     import EditAggregationVariable from "@perfice/components/variable/edit/aggregation/EditAggregationVariable.svelte";
     import EditCalculationVariable from "@perfice/components/variable/edit/calculation/EditCalculationVariable.svelte";
-    import type {ConstantOrVariable} from "@perfice/services/variable/types/goal";
     import EditVariableName from "@perfice/components/variable/edit/EditVariableName.svelte";
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
     import EditLatestVariable from "@perfice/components/variable/edit/latest/EditLatestVariable.svelte";
 
-    let {variableId, onEdit}: {
+    let {variableId, onEdit, editName = false, useDisplayValues = false}: {
         variableId: string,
-        onEdit: (v: EditConstantOrVariableState) => void
+        onEdit: (v: EditConstantOrVariableState) => void,
+        editName?: boolean
+        useDisplayValues?: boolean
     } = $props();
 
     let variable = $state<Variable | null>(null);
@@ -21,7 +22,8 @@
         value: any,
         editState: any,
         variable: Variable,
-        onEdit: (v: EditConstantOrVariableState) => void
+        onEdit: (v: EditConstantOrVariableState) => void,
+        useDisplayValues?: boolean
     }>>> = {
         [VariableTypeName.AGGREGATE]: EditAggregationVariable,
         [VariableTypeName.CALCULATION]: EditCalculationVariable,
@@ -47,10 +49,13 @@
     let RendererComponent = $derived(variable != null ? RENDERERS[variable.type.type] : null);
 </script>
 {#if variable != null && editState != null}
-    <EditVariableName {variable} onChange={onVariableChange}/>
+    {#if editName}
+        <EditVariableName {variable} onChange={onVariableChange}/>
+    {/if}
     <div>
         {#if RendererComponent != null}
-            <RendererComponent {variable} value={variable.type.value} {editState} {onEdit} />
+            <RendererComponent {variable} value={variable.type.value} {editState} {onEdit}
+                               useDisplayValues={useDisplayValues}/>
         {:else}
             This variable type has no settings.
         {/if}
