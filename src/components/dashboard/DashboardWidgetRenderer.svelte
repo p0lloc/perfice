@@ -57,7 +57,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex Only clickable if the dashboard is in edit mode -->
-<div onclick={onClicked} class="w-full h-full bg-white widget-renderer text-left"
+<div onclick={onClicked} class="w-full h-full widget-renderer text-left"
      onkeydown={onKeyDown}
      role={$editingDashboard ? "button" : ""}
      tabindex="0"

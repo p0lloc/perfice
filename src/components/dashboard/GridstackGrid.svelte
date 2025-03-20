@@ -1,6 +1,7 @@
 <script lang="ts">
     import 'gridstack/dist/gridstack.min.css';
     import 'gridstack/dist/gridstack-extra.min.css';
+    import '@perfice/gridstack-extra-columns.css';
     import {mount, onDestroy, onMount, unmount} from "svelte";
     import {GridStack, type GridStackNode} from "gridstack";
     import {
@@ -132,6 +133,7 @@
 
             float: true,
             columnOpts: {
+                columnMax: 30,
                 breakpoints: [
                     {
                         w: 768,

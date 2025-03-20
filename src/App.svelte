@@ -41,7 +41,7 @@
 
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
-    <div class="flex">
+    <div class="flex main-container">
         <NavigationSidebar/>
         <div class="flex-1">
             <Router post={onRouterRoute} {routes}/>

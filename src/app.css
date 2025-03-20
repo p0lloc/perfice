@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.main-container {
+    background-color: rgb(250, 250, 250);
+    min-height: 100vh;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
