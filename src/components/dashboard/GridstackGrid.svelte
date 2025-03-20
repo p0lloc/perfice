@@ -127,7 +127,7 @@
             cellHeight: 25,
             acceptWidgets: true,
             minRow: 10,
-            margin: 0,
+            margin: 5,
             staticGrid: !edit,
             animate: false,
 

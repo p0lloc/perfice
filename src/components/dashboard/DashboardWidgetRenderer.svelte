@@ -12,6 +12,7 @@
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import DashboardTagsWidget from "@perfice/components/dashboard/types/tags/DashboardTagsWidget.svelte";
     import DashboardGoalWidget from "@perfice/components/dashboard/types/goal/DashboardGoalWidget.svelte";
+    import DashboardMetricWidget from "@perfice/components/dashboard/types/metric/DashboardMetricWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -31,6 +32,7 @@
         [DashboardWidgetType.TABLE]: DashboardTableWidget,
         [DashboardWidgetType.GOAL]: DashboardGoalWidget,
         [DashboardWidgetType.TAGS]: DashboardTagsWidget,
+        [DashboardWidgetType.METRIC]: DashboardMetricWidget,
     };
 
     function onClicked() {
@@ -57,7 +59,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex Only clickable if the dashboard is in edit mode -->
-<div onclick={onClicked} class="w-full h-full widget-renderer text-left"
+<div onclick={onClicked} class="widget-renderer text-left grid-stack-item-content"
      onkeydown={onKeyDown}
      role={$editingDashboard ? "button" : ""}
      tabindex="0"
@@ -66,7 +68,7 @@
         <!-- Dummy container for border -->
         <div class="w-full h-full absolute border-2 border-green-500 border-dashed pointer-events-none"></div>
         <!-- Delete button -->
-        <div class="absolute right-2 px-2 pt-1 rounded-t-md top-[-25px] bg-white border-t border-x z-10">
+        <div class="absolute right-2 px-2 pt-1 rounded-t-md top-[-25px] bg-white border-t border-x z-[100]">
             <button onclick={onDeleteClicked} class="text-red-500 hover:text-red-700">
                 <Fa icon={faTrash}/>
             </button>

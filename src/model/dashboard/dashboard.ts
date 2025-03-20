@@ -20,6 +20,10 @@ import {
     type DashboardGoalWidgetSettings
 } from "@perfice/model/dashboard/widgets/goal";
 import {DashboardTagsWidgetDefinition, type DashboardTagsWidgetSettings} from "@perfice/model/dashboard/widgets/tags";
+import {
+    DashboardMetricWidgetDefinition,
+    type DashboardMetricWidgetSettings
+} from "@perfice/model/dashboard/widgets/metric";
 
 export interface Dashboard {
     id: string;
@@ -40,6 +44,7 @@ export enum DashboardWidgetType {
     TABLE = "TABLE",
     GOAL = "GOAL",
     TAGS = "TAGS",
+    METRIC = "METRIC",
 }
 
 export type DashboardWidget = {
@@ -56,6 +61,7 @@ export type DashboardWidgetSettings =
     | DS<DashboardWidgetType.TABLE, DashboardTableWidgetSettings>
     | DS<DashboardWidgetType.GOAL, DashboardGoalWidgetSettings>
     | DS<DashboardWidgetType.TAGS, DashboardTagsWidgetSettings>
+    | DS<DashboardWidgetType.METRIC, DashboardMetricWidgetSettings>
     ;
 
 export interface DS<T extends DashboardWidgetType, V> {
@@ -86,6 +92,7 @@ definitions.set(DashboardWidgetType.WELCOME, new DashboardWelcomeWidgetDefinitio
 definitions.set(DashboardWidgetType.TABLE, new DashboardTableWidgetDefinition());
 definitions.set(DashboardWidgetType.GOAL, new DashboardGoalWidgetDefinition());
 definitions.set(DashboardWidgetType.TAGS, new DashboardTagsWidgetDefinition());
+definitions.set(DashboardWidgetType.METRIC, new DashboardMetricWidgetDefinition());
 
 export function getDashboardWidgetDefinitions(): DashboardWidgetDefinition<DashboardWidgetType, any>[] {
     return Array.from(definitions.values());

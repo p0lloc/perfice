@@ -11,6 +11,11 @@
     display: none;
 }
 
+.grid-stack-item-content {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+}
+
 /* For IE, Edge and Firefox */
 .scrollbar-hide {
     -ms-overflow-style: none; /* IE and Edge */
