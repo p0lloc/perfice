@@ -34,7 +34,7 @@
         } else {
             // Create a new option
             let defaultValue = dataDef.deserialize(dataDef.getDefaultValue(dataSettings));
-            if(defaultValue == null) return promise;
+            if (defaultValue == null) return promise;
 
             valueStr = dataDef.serialize(defaultValue);
             sameDisplayText = true;
@@ -77,7 +77,7 @@
         if (value == null) return;
         option.value = value;
 
-        if(sameDisplayText){
+        if (sameDisplayText) {
             option.text = dataDef.serialize(value);
         }
 
@@ -107,7 +107,7 @@
                 <Button onClick={addIcon}>Add icon</Button>
             {:else}
                 <div class="row-gap">
-                    <IconPickerButton icon={option.icon} onChange={onIconChange}/>
+                    <IconPickerButton right={true} icon={option.icon} onChange={onIconChange}/>
                     <IconButton icon={faTimes} onClick={removeIcon}/>
                 </div>
             {/if}

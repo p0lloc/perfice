@@ -13,6 +13,8 @@
         from "@perfice/components/dashboard/sidebar/edit/types/EditWelcomeWidgetSidebar.svelte";
     import EditGoalWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditGoalWidgetSidebar.svelte";
     import EditTagsWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditTagsWidgetSidebar.svelte";
+    import EditMetricWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/EditMetricWidgetSidebar.svelte";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -27,6 +29,7 @@
         [DashboardWidgetType.WELCOME]: EditWelcomeWidgetSidebar,
         [DashboardWidgetType.GOAL]: EditGoalWidgetSidebar,
         [DashboardWidgetType.TAGS]: EditTagsWidgetSidebar,
+        [DashboardWidgetType.METRIC]: EditMetricWidgetSidebar,
     };
 
     function onSettingsChange(settings: any) {

@@ -20,7 +20,7 @@
     <div class="row-gap w-full">
         <input id="first_name" bind:value={editState.trackable.name} placeholder="Trackable name" type="text"
                class="input flex-1">
-        <IconPickerButton icon={editState.trackable.icon} onChange={onIconChange}/>
+        <IconPickerButton right={true} icon={editState.trackable.icon} onChange={onIconChange}/>
     </div>
 
     <EditTrackableCategory categories={editState.categories} categoryId={editState.trackable.categoryId}

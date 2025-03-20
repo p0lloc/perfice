@@ -2,7 +2,7 @@ import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/mode
 import {type Variable, type VariableTypeDef} from "@perfice/model/variable/variable";
 
 export interface DashboardMetricWidgetSettings {
-
+    icon: string;
 }
 
 export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.METRIC, DashboardMetricWidgetSettings> {
@@ -19,7 +19,9 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
     }
 
     getDefaultSettings(): DashboardMetricWidgetSettings {
-        return {};
+        return {
+            icon: "moon"
+        };
     }
 
     createDependencies(settings: DashboardMetricWidgetSettings): Map<string, Variable> {

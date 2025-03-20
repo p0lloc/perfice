@@ -5,11 +5,19 @@
     import {ICONS} from "@perfice/components/base/icon/icons";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
 
+    let {right = false}: { right?: boolean } = $props();
+
+    const WIDTH = 290;
+
     let opened = $state(false);
+    let x = $state(0);
+    let y = $state(0);
     let resolve: (icon: string) => void;
 
-    export function open(): Promise<string> {
+    export function open(xPos: number, yPos: number, right: boolean = false): Promise<string> {
         opened = true;
+        x = (right || xPos + WIDTH > window.innerWidth) ? xPos - WIDTH : xPos;
+        y = yPos;
         return new Promise((res) => resolve = res);
     }
 
@@ -25,7 +33,11 @@
 
 {#if opened}
     <div
-            class="fixed bottom-0 left-0 md:left-auto md:bottom-auto w-full md:absolute bg-white z-[200] border md:w-[290px] md:mr-[150px] rounded-md p-4 h-64 overflow-y-scroll"
+            style:left="{x}px"
+            style:top="{y}px"
+            style:width="{WIDTH}px"
+            class="fixed w-full picker
+             bg-white z-[200] border md:w-[290px] rounded-md overflow-visible p-4 h-64 overflow-y-scroll"
     >
         <div class="flex justify-end mb-2">
             <button class="pointer-feedback:text-red-700" onclick={close}>
@@ -41,5 +53,17 @@
                     <Icon name={key} class="text-xl"/>
                 </button>
             {/each}
-        </div>    </div>
+        </div>
+    </div>
 {/if}
+
+<style>
+    @media (max-width: 768px) {
+        .picker {
+            width: 100% !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            top: auto !important;
+        }
+    }
+</style>
