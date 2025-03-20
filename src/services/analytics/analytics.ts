@@ -548,6 +548,27 @@ export class AnalyticsService {
         return res;
     }
 
+    private getSampleSize(firstType: DatasetKeyType, secondType: DatasetKeyType,
+                          first: number[], second: number[], firstDataset: FlattenedDataSet, secondDataset: FlattenedDataSet): number {
+
+        let firstSize = firstDataset.size;
+        let secondSize = secondDataset.size;
+
+        // Tags have huge datasets of mostly zeroes, but we practically only care when they are 1
+        if (firstType == DatasetKeyType.TAG) {
+            firstSize = first.reduce((a, b) => a + b, 0);
+        }
+        if (secondType == DatasetKeyType.TAG) {
+            secondSize = second.reduce((a, b) => a + b, 0);
+        }
+
+        // If including empty we might expand the dataset, but we want the absolute MINIMAL size
+        return Math.min(
+            Math.min(first.length, firstSize),
+            Math.min(second.length, secondSize)
+        );
+    }
+
     async runBasicCorrelations(values: RawAnalyticsValues, tagValues: TagAnalyticsValues,
                                allSettings: AnalyticsSettings[],
                                date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
@@ -575,7 +596,6 @@ export class AnalyticsService {
 
                 // Skip if actually same key but first is just lagged
                 if (firstLag && this.stripLag(firstKey) == secondKey) continue;
-
 
                 // Skip if same key but reverse order
                 let existingKey = this.constructResultKey(secondKey, firstKey);
@@ -613,11 +633,8 @@ export class AnalyticsService {
                     firstLag
                 );
 
-                // If including empty we might expand the dataset, but we want the absolute MINIMAL size
-                let sampleSize = Math.min(
-                    Math.min(matching.first.length, firstDataset.size),
-                    Math.min(matching.second.length, secondDataset.size)
-                );
+                let sampleSize = this.getSampleSize(firstType, secondType, matching.first,
+                    matching.second, firstDataset, secondDataset);
 
                 // Ignore samples that are not large enough
                 if (sampleSize < minimumSampleSize)

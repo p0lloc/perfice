@@ -1,4 +1,4 @@
-import {isSameDay} from "@perfice/util/time/simple";
+import {getDaysDifference, isSameDay} from "@perfice/util/time/simple";
 
 export const WEEK_DAYS_SHORT = [
     "Sun",
@@ -43,6 +43,10 @@ export function formatDateYYYYMMDD(date: Date) {
     return `${year}-${month}-${day}`;
 }
 
+export function formatDayDifference(first: Date, second: Date) {
+    let diff = getDaysDifference(first, second);
+    return diff == 0 ? "Today" : `${diff}d ago`;
+}
 
 export function formatTimestampYYYYMMDD(timestamp: number) {
     return formatDateYYYYMMDD(new Date(timestamp));

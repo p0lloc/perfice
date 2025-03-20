@@ -4,6 +4,8 @@
     import CorrelationCard from "@perfice/components/analytics/details/CorrelationCard.svelte";
     import type {CorrelationResult} from "@perfice/services/analytics/analytics";
     import {convertResultKey} from "@perfice/services/analytics/display";
+    import {formatDayDifference, formatTimestampYYYYMMDD} from "@perfice/util/time/format";
+    import {getDaysDifference} from "@perfice/util/time/simple";
 
     let {newCorrelations, result}: { newCorrelations: AnalyticsHistoryEntry[], result: AnalyticsResult } = $props();
 
@@ -38,6 +40,7 @@
     {#each detailedCorrelations as correlation}
         <div>
             <CorrelationCard fullBar={true} correlation={correlation}/>
+            <span class="text-right text-sm text-gray-400 flex justify-end">{formatDayDifference(new Date(), new Date(correlation.timestamp))}</span>
         </div>
     {/each}
 </div>
