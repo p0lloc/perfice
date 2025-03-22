@@ -169,15 +169,21 @@ export function GroupedJournal(): IGroupedJournal {
         let formEntries = await journal.nextPage(currentPage, PAGE_SIZE);
         let taggedEntries = await tagEntries.nextPage(currentPage, PAGE_SIZE);
 
-        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1].timestamp : currentPage;
-        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1].timestamp : currentPage;
-        // Entries might be uneven so only include up to the oldest entry even if there are more
-        if (oldestJournalEntry > oldestTagEntry) {
-            taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntry);
-            currentPage = oldestJournalEntry;
+        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1].timestamp : 0;
+        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1].timestamp : 0;
+
+        if (formEntries.length > 0 && taggedEntries.length > 0) {
+            // Entries might be uneven so only include up to the oldest entry even if there are more
+            if (oldestJournalEntry > oldestTagEntry) {
+                taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntry);
+                currentPage = oldestJournalEntry;
+            } else {
+                formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntry);
+                currentPage = oldestTagEntry;
+            }
         } else {
-            formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntry);
-            currentPage = oldestTagEntry;
+            // If one of them has no more entries, we still want to load the next page
+            currentPage = Math.max(oldestJournalEntry, oldestTagEntry);
         }
 
         journal.updateResolved(v => [...v, ...formEntries]);
