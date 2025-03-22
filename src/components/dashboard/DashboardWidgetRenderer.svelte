@@ -15,6 +15,8 @@
     import DashboardMetricWidget from "@perfice/components/dashboard/types/metric/DashboardMetricWidget.svelte";
     import DashboardTrackableWidget
         from "@perfice/components/dashboard/types/trackable/DashboardTrackableWidget.svelte";
+    import DashboardNewCorrelationsWidget
+        from "@perfice/components/dashboard/types/newCorrelations/DashboardNewCorrelationsWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -37,6 +39,7 @@
         [DashboardWidgetType.TAGS]: DashboardTagsWidget,
         [DashboardWidgetType.METRIC]: DashboardMetricWidget,
         [DashboardWidgetType.TRACKABLE]: DashboardTrackableWidget,
+        [DashboardWidgetType.NEW_CORRELATIONS]: DashboardNewCorrelationsWidget,
     };
 
     function onClicked() {

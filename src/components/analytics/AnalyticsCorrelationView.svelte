@@ -104,7 +104,10 @@
 {:then result}
     <div class="flex md:flex-row flex-col gap-4 mt-4 flex-wrap items-start">
         <div class="w-full md:w-auto">
-            <NewCorrelations {newCorrelations} result={result}/>
+            <div class="md:w-72 flex flex-col gap-2 p-3 bg-white rounded-md border">
+                <h2 class="text-xl">New correlations</h2>
+                <NewCorrelations {newCorrelations} result={result}/>
+            </div>
         </div>
         <div class="grid-cols-1 md:grid-cols-4 grid gap-4 flex-1">
             {#each getCorrelationsToShow(result.correlations, keyFilter, search, result.forms, result.tags) as correlation}
