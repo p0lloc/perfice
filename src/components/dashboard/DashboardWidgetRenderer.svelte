@@ -13,6 +13,8 @@
     import DashboardTagsWidget from "@perfice/components/dashboard/types/tags/DashboardTagsWidget.svelte";
     import DashboardGoalWidget from "@perfice/components/dashboard/types/goal/DashboardGoalWidget.svelte";
     import DashboardMetricWidget from "@perfice/components/dashboard/types/metric/DashboardMetricWidget.svelte";
+    import DashboardTrackableWidget
+        from "@perfice/components/dashboard/types/trackable/DashboardTrackableWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -34,6 +36,7 @@
         [DashboardWidgetType.GOAL]: DashboardGoalWidget,
         [DashboardWidgetType.TAGS]: DashboardTagsWidget,
         [DashboardWidgetType.METRIC]: DashboardMetricWidget,
+        [DashboardWidgetType.TRACKABLE]: DashboardTrackableWidget,
     };
 
     function onClicked() {

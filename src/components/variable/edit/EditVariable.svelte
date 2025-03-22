@@ -1,7 +1,7 @@
 <script lang="ts">
     import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
     import {type Component, untrack} from "svelte";
-    import {variableEditProvider} from "@perfice/main";
+    import {variableEditProvider} from "@perfice/app";
     import EditAggregationVariable from "@perfice/components/variable/edit/aggregation/EditAggregationVariable.svelte";
     import EditCalculationVariable from "@perfice/components/variable/edit/calculation/EditCalculationVariable.svelte";
     import EditVariableName from "@perfice/components/variable/edit/EditVariableName.svelte";

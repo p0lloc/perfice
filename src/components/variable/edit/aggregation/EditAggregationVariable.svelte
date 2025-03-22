@@ -1,7 +1,7 @@
 <script lang="ts">
     import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
     import {VariableTypeName} from "@perfice/model/variable/variable";
-    import {variableEditProvider} from "@perfice/main.js";
+    import {variableEditProvider} from "@perfice/app.js";
     import type {Variable} from "@perfice/model/variable/variable.js";
     import type {EditAggregationVariableState} from "@perfice/stores/variable/editState";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
     import PieChart from "@perfice/components/chart/PieChart.svelte";
-    import {trackableDetailedAnalytics} from "@perfice/main";
+    import {trackableDetailedAnalytics} from "@perfice/app";
     import {AnalyticsChartType, type TrackableDetailedAnalyticsResult,} from "@perfice/stores/analytics/trackable";
     import type {Readable} from "svelte/store";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";

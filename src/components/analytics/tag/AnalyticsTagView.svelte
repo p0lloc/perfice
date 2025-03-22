@@ -1,6 +1,6 @@
 <script lang="ts">
     import Heatmap from "@perfice/components/analytics/Heatmap.svelte";
-    import {tagAnalytics} from "@perfice/main";
+    import {tagAnalytics} from "@perfice/app";
     import {getAnalyticsDetailsLink} from "@perfice/model/analytics/ui";
 
     let res = $derived(tagAnalytics());

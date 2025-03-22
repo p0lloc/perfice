@@ -13,7 +13,7 @@ import {
     type QuantitativeWeekDayAnalytics,
     type ValueBag
 } from "@perfice/services/analytics/analytics";
-import {analytics, analyticsSettings, trackables} from "@perfice/main";
+import {analytics, analyticsSettings, trackables} from "@perfice/app";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 import type {TrackableService} from "@perfice/services/trackable/trackable";

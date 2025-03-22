@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {analytics} from "@perfice/main";
+    import {analytics} from "@perfice/app";
     import CorrelationCard from "@perfice/components/analytics/details/CorrelationCard.svelte";
     import {convertResultKey, type CorrelationDisplayPart} from "@perfice/services/analytics/display";
     import {type CorrelationResult, DatasetKeyType} from "@perfice/services/analytics/analytics";

@@ -1,7 +1,7 @@
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import {categorize, type CategoryList} from "@perfice/util/category";
 import {derived, type Readable} from "svelte/store";
-import {trackableCategories, trackables} from "@perfice/main";
+import {trackableCategories, trackables} from "@perfice/app";
 
 export function CategorizedTrackables(): Readable<Promise<CategoryList<TrackableCategory, Trackable>[]>> {
     return derived<[Readable<Promise<Trackable[]>>, Readable<Promise<TrackableCategory[]>>],

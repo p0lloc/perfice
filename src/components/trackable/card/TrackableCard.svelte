@@ -1,7 +1,7 @@
 <script lang="ts">
     import {type Trackable, TrackableCardType} from "@perfice/model/trackable/trackable";
     import {WeekStart} from "@perfice/model/variable/time/time";
-    import {trackableValue} from "@perfice/main";
+    import {trackableValue} from "@perfice/app";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {type Component} from "svelte";
     import ChartTrackableRenderer from "@perfice/components/trackable/card/chart/ChartTrackableRenderer.svelte";
@@ -9,12 +9,13 @@
     import ValueTrackableRenderer from "@perfice/components/trackable/card/value/ValueTrackableRenderer.svelte";
     import TallyTrackableRenderer from "@perfice/components/trackable/card/tally/TallyTrackableRenderer.svelte";
 
-    let {trackable, date, weekStart, onEdit, onLog}: {
+    let {trackable, date, weekStart, onEdit, onLog, class: className = 'max-h-40 min-h-40'}: {
         trackable: Trackable,
         date: Date,
         weekStart: WeekStart,
         onEdit: () => void
-        onLog: () => void
+        onLog: () => void,
+        class?: string
     } = $props();
 
     let res = $derived(trackableValue(trackable, date, weekStart, trackable.id));
@@ -34,9 +35,9 @@
         onEdit();
     }
 
-    function onInnerClick(){
+    function onInnerClick() {
         // Tally has custom logging logic
-        if(trackable.cardType == TrackableCardType.TALLY) return;
+        if (trackable.cardType == TrackableCardType.TALLY) return;
 
         onLog();
     }
@@ -45,7 +46,7 @@
 </script>
 
 
-<div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch min-h-40 max-h-40 text-gray-500">
+<div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch text-gray-500 {className}">
     <button class="border-b rounded-t-xl p-2 flex gap-2 items-center hover-feedback"
             onclick={onEditClick}>
         <Icon name={trackable.icon} class="text-green-500"/>

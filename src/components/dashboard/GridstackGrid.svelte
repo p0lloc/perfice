@@ -77,15 +77,20 @@
         };
     }
 
-    function onGridItemManipulated(_: Event, element: HTMLElement) {
-        const widgetId = element.dataset.widgetId;
-        const widget = widgets.find(w => w.id == widgetId);
-        if (widget == undefined) return;
+    function onGridItemsChange(_: Event, items: GridStackNode[]) {
+        for (let item of items) {
+            let element = item.el;
+            if (element == null) continue;
 
-        onWidgetUpdate({
-            ...widget,
-            display: parseRenderOptsFromGridElement(element)
-        });
+            const widgetId = element.dataset.widgetId;
+            const widget = widgets.find(w => w.id == widgetId);
+            if (widget == undefined) return;
+
+            onWidgetUpdate({
+                ...widget,
+                display: parseRenderOptsFromGridElement(element)
+            });
+        }
     }
 
     async function onGridItemAdded(_: Event, items: GridStackNode[]) {
@@ -133,7 +138,7 @@
 
             float: true,
             columnOpts: {
-                columnMax: 30,
+                //columnMax: 30,
                 breakpoints: [
                     {
                         w: 768,
@@ -144,7 +149,7 @@
         });
 
         grid.on("added", onGridItemAdded);
-        grid.on("dragstop resizestop", onGridItemManipulated);
+        grid.on("change", onGridItemsChange);
 
         widgets.forEach(w => addWidget(w));
     });

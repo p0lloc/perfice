@@ -2,7 +2,7 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/t
 import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
-import {forms} from "@perfice/main";
+import {forms} from "@perfice/app";
 import {VariableTypeName} from "@perfice/model/variable/variable";
 import {formatValueAsDataType} from "@perfice/model/form/data";
 import type {DashboardMetricWidgetSettings} from "@perfice/model/dashboard/widgets/metric";

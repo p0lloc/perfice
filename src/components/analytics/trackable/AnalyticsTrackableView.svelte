@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {analyticsSettings, trackableAnalytics, trackables} from "@perfice/main";
+    import {analyticsSettings, trackableAnalytics, trackables} from "@perfice/app";
     import EditAnalyticsSettingsModal from "@perfice/components/analytics/modal/EditAnalyticsSettingsModal.svelte";
     import AnalyticsTrackableCard from "@perfice/components/analytics/trackable/AnalyticsTrackableCard.svelte";
     import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";

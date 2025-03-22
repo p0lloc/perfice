@@ -5,12 +5,12 @@ import {writable, type Writable} from "svelte/store";
 import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import type {EditTrackableCardState, EditTrackableState} from "@perfice/model/trackable/ui";
-import {forms, journal, trackableCategories, variables} from "@perfice/main";
+import {forms, journal, trackableCategories, variables} from "@perfice/app";
 import {EntityObserverType} from "@perfice/services/observer";
 import {VariableTypeName} from "@perfice/model/variable/variable";
 import {type JournalEntryValue, pDisplay, pNumber, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-import {emptyPromise} from "@perfice/util/promise";
+import {resolvedPromise} from "@perfice/util/promise";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -21,7 +21,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
     private trackableService: TrackableService;
 
     constructor(trackableService: TrackableService) {
-        super(emptyPromise())
+        super(resolvedPromise([]))
         this.trackableService = trackableService;
         this.trackableService.addObserver(EntityObserverType.CREATED,
             async (trackable) => await this.onTrackableCreated(trackable));
@@ -31,7 +31,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             async (trackable) => await this.onTrackableDeleted(trackable));
     }
 
-    load(){
+    load() {
         this.set(this.trackableService.getTrackables());
     }
 
@@ -182,14 +182,14 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             }, form.format, timestamp);
         } else {
             let entry = await journal.getEntryById(entryValue.id);
-            if(entry == null) return;
+            if (entry == null) return;
 
             let answers = entry.answers;
             let answer = answers[questionId];
-            if(answer == null) return;
+            if (answer == null) return;
 
             let previousValue = extractValueFromDisplay(answer);
-            if(previousValue.type != PrimitiveValueType.NUMBER) return;
+            if (previousValue.type != PrimitiveValueType.NUMBER) return;
 
             let value = pNumber(previousValue.value + (increment ? 1 : -1));
             answers[questionId] = pDisplay(value, value);
@@ -200,5 +200,24 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             }, form.format);
         }
     }
+
+    async fetchTrackables() {
+        return await this.trackableService.getTrackables();
+    }
+
+    async getTrackableById(trackableId: string, fetch: boolean): Promise<Trackable | null> {
+        let trackables = await this.get();
+        let cached = trackables.find(f => f.id == trackableId);
+        if (cached != null) return cached;
+
+        if (!fetch) return null;
+
+        let trackable = await this.trackableService.getTrackableById(trackableId);
+        if (trackable == null) return null;
+
+        this.updateResolved(v => [...v, trackable]);
+        return trackable;
+    }
+
 }
 

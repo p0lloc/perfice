@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {Variable} from "@perfice/model/variable/variable";
-    import {variableEditProvider} from "@perfice/main";
+    import {variableEditProvider} from "@perfice/app";
 
     let {variable, onChange}: { variable: Variable, onChange: (v: Variable) => void } = $props();
 

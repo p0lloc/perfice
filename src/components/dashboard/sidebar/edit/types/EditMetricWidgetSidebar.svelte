@@ -2,7 +2,7 @@
     import type {DashboardMetricWidgetSettings} from "@perfice/model/dashboard/widgets/metric";
     import type {Form} from "@perfice/model/form/form";
     import {onMount} from "svelte";
-    import {variableEditProvider} from "@perfice/main";
+    import {variableEditProvider} from "@perfice/app";
     import EditVariable from "@perfice/components/variable/edit/EditVariable.svelte";
     import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";

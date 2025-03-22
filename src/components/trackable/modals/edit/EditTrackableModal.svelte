@@ -8,7 +8,7 @@
     import EditTrackableImportExport from "@perfice/components/trackable/modals/edit/EditTrackableImportExport.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
-    import {trackables} from "@perfice/main";
+    import {trackables} from "@perfice/app";
     import {goto} from "@mateothegreat/svelte5-router";
     import type {Trackable} from "@perfice/model/trackable/trackable";
 
@@ -23,7 +23,7 @@
         modal.open();
     }
 
-    function close(){
+    function close() {
         modal.close();
     }
 
@@ -44,11 +44,18 @@
     const SEGMENTS: SegmentedItem<string>[] = [
         {name: "General", value: TrackableEditViewType.GENERAL},
         {name: "Form", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
-        {name: "Analytics", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
+        {
+            name: "Analytics",
+            suffix: faArrowUpRightFromSquare,
+            onClick: () => goto(`/forms/${editState.trackable.formId}`)
+        },
         {name: "Import/Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 
-    function getViewComponent(e: TrackableEditViewType): Component<{ editState: EditTrackableState, close: () => void }> {
+    function getViewComponent(e: TrackableEditViewType): Component<{
+        editState: EditTrackableState,
+        close: () => void
+    }> {
         switch (e) {
             case TrackableEditViewType.GENERAL:
                 return EditTrackableGeneral;

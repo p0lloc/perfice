@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {DashboardTagsWidgetSettings} from "@perfice/model/dashboard/widgets/tags";
-    import {categorizedTags, tagCategories, tags, weekStart} from "@perfice/main";
+    import {categorizedTags, tagCategories, tags, weekStart} from "@perfice/app";
     import {onMount} from "svelte";
     import {UNCATEGORIZED_NAME} from "@perfice/util/category";
     import TagCard from "@perfice/components/tag/TagCard.svelte";

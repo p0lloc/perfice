@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { forms } from "@perfice/main";
+    import {forms} from "@perfice/app";
     import {
         type Form,
         type FormQuestion,
@@ -7,7 +7,7 @@
         FormQuestionDisplayType,
     } from "@perfice/model/form/form";
     import Button from "@perfice/components/base/button/Button.svelte";
-    import { ButtonColor } from "@perfice/model/ui/button";
+    import {ButtonColor} from "@perfice/model/ui/button";
     import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
     import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
     import FormFieldEdit from "@perfice/components/form/editor/field/FormFieldEdit.svelte";
@@ -20,7 +20,7 @@
         faPlusCircle,
         faQuestionCircle,
     } from "@fortawesome/free-solid-svg-icons";
-    import { QUESTION_DISPLAY_TYPES } from "@perfice/model/form/ui";
+    import {QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
     import FormEditorSidebar from "@perfice/components/form/editor/sidebar/FormEditorSidebar.svelte";
     import {
         type FormQuestionDataSettings,
@@ -31,13 +31,13 @@
         type FormQuestionDisplaySettings,
         questionDisplayTypeRegistry,
     } from "@perfice/model/form/display";
-    import { goto } from "@mateothegreat/svelte5-router";
+    import {goto} from "@mateothegreat/svelte5-router";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
-    import type { TextOrDynamic } from "@perfice/model/variable/variable";
+    import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
 
-    let { params }: { params: Record<string, string> } = $props();
+    let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
 
     let currentQuestion = $state<FormQuestion | null>(null);
@@ -138,19 +138,19 @@
     <MobileTopBar title={form.name}>
         {#snippet leading()}
             <button class="icon-button" onclick={back}>
-                <Fa icon={faArrowLeft} />
+                <Fa icon={faArrowLeft}/>
             </button>
         {/snippet}
         {#snippet actions()}
             <button class="icon-button" onclick={save}>
-                <Fa icon={faCheck} />
+                <Fa icon={faCheck}/>
             </button>
         {/snippet}
     </MobileTopBar>
 
     <FormEditorSidebar
-        onClose={() => (currentQuestion = null)}
-        bind:this={sidebar}
+            onClose={() => (currentQuestion = null)}
+            bind:this={sidebar}
     />
     <div class="flex justify-between">
         <div class="p-2 flex-1 flex">
@@ -158,47 +158,47 @@
                 <h2 class="text-3xl font-bold">{form.name}</h2>
 
                 <div
-                    class="row-gap items-center text-2xl text-gray-500 mt-8 mb-4"
+                        class="row-gap items-center text-2xl text-gray-500 mt-8 mb-4"
                 >
-                    <Fa icon={faQuestionCircle} />
+                    <Fa icon={faQuestionCircle}/>
                     <h2>Questions</h2>
                 </div>
                 <DragAndDropContainer
-                    bind:this={questionContainer}
-                    onFinalize={onReorderQuestions}
-                    items={form.questions}
-                    class="flex flex-col gap-4"
+                        bind:this={questionContainer}
+                        onFinalize={onReorderQuestions}
+                        items={form.questions}
+                        class="flex flex-col gap-4"
                 >
                     {#snippet item(question)}
                         <FormFieldEdit
-                            {question}
-                            selected={currentQuestion?.id === question.id}
-                            onClick={() => editQuestion(question)}
-                            onDelete={() => deleteQuestion(question)}
+                                {question}
+                                selected={currentQuestion?.id === question.id}
+                                onClick={() => editQuestion(question)}
+                                onDelete={() => deleteQuestion(question)}
                         />
                     {/snippet}
                 </DragAndDropContainer>
 
                 <button
-                    class="horizontal-add-button mt-4"
-                    onclick={(e) => startAddingQuestion(e)}
+                        class="horizontal-add-button mt-4"
+                        onclick={(e) => startAddingQuestion(e)}
                 >
-                    <Fa icon={faPlusCircle} class="pointer-events-none" />
+                    <Fa icon={faPlusCircle} class="pointer-events-none"/>
                 </button>
 
-                <hr class="my-8" />
+                <hr class="my-8"/>
 
                 <div class="row-gap items-center text-2xl text-gray-500 mb-4">
-                    <Fa icon={faHeading} />
+                    <Fa icon={faHeading}/>
                     <h2>Display format</h2>
                 </div>
 
                 <EditTextOrDynamic
-                    value={form.format}
-                    availableDynamic={form.questions}
-                    onChange={onFormatChange}
-                    getDynamicId={(v) => v.id}
-                    getDynamicText={(v) => v.name}
+                        value={form.format}
+                        availableDynamic={form.questions}
+                        onChange={onFormatChange}
+                        getDynamicId={(v) => v.id}
+                        getDynamicText={(v) => v.name}
                 />
 
                 <div class="hidden md:block mt-10">
@@ -214,7 +214,7 @@
 
         <ContextMenu bind:this={contextMenu}>
             <ContextMenuButtons
-                buttons={QUESTION_DISPLAY_TYPES.map((t) => {
+                    buttons={QUESTION_DISPLAY_TYPES.map((t) => {
                     return {
                         name: t.name,
                         icon: t.icon,

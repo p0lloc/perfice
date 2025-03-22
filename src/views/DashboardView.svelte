@@ -1,6 +1,6 @@
 <script lang="ts">
     import GridstackGrid from "@perfice/components/dashboard/GridstackGrid.svelte";
-    import {dashboards, dashboardWidgets, forms} from "@perfice/main";
+    import {dashboards, dashboardWidgets, forms} from "@perfice/app";
     import {
         type DashboardWidget,
         type DashboardWidgetDisplaySettings,

@@ -1,7 +1,7 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {type GoalSidebarAction, GoalSidebarActionType, NEW_GOAL_ROUTE} from "@perfice/model/goal/ui";
-    import {back, goals, variableEditProvider} from "@perfice/main";
+    import {back, goals, variableEditProvider} from "@perfice/app";
     import type {Goal} from "@perfice/model/goal/goal";
     import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
     import {type GoalCondition, GoalVariableType} from "@perfice/services/variable/types/goal";

@@ -3,7 +3,7 @@ import {derived, type Readable} from "svelte/store";
 import type {DashboardGoalWidgetSettings} from "@perfice/model/dashboard/widgets/goal";
 import type {GoalValueResult} from "@perfice/stores/goal/value";
 import type {Goal} from "@perfice/model/goal/goal";
-import {goals, goalValue} from "@perfice/main";
+import {goals, goalValue} from "@perfice/app";
 
 export interface GoalWidgetResult {
     goal: Goal;

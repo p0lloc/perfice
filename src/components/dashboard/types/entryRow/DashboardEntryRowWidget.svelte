@@ -1,6 +1,6 @@
 <script lang="ts">
     import EntryRowItem from "./EntryRowItem.svelte";
-    import {entryRowWidget, weekStart} from "@perfice/main";
+    import {entryRowWidget, weekStart} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";

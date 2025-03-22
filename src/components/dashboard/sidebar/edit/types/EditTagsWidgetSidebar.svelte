@@ -1,7 +1,7 @@
 <script lang="ts">
     import type {DashboardTagsWidgetSettings} from "@perfice/model/dashboard/widgets/tags";
     import type {Form} from "@perfice/model/form/form";
-    import {tagCategories} from "@perfice/main";
+    import {tagCategories} from "@perfice/app";
     import MultiSelectDropdownButton from "@perfice/components/base/dropdown/MultiSelectDropdownButton.svelte";
     import {UNCATEGORIZED_TAG_CATEGORY_ID} from "@perfice/model/tag/tag";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {categorizedTrackables, trackableCategories, trackables} from "@perfice/main";
+    import {categorizedTrackables, trackableCategories, trackables} from "@perfice/app";
     import TrackableCategoryContainer from "@perfice/components/trackable/TrackableCategoryContainer.svelte";
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";

@@ -4,7 +4,7 @@
     import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {trackables} from "@perfice/main";
+    import {trackables} from "@perfice/app";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list.js";
 
     let {trackable, value, cardSettings, date}: {

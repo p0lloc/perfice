@@ -7,7 +7,7 @@
     import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
-    import {forms, journal} from "@perfice/main";
+    import {forms, journal} from "@perfice/app";
     import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
     import type {FormTemplate} from "@perfice/model/form/form.js";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
@@ -46,11 +46,11 @@
         modal.close();
     }
 
-    function createOrUpdateTemplate(name: string, answers: Record<string, PrimitiveValue>){
+    function createOrUpdateTemplate(name: string, answers: Record<string, PrimitiveValue>) {
         let extractedValues = Object.fromEntries(
             Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
 
-        if(editingTemplate != null) {
+        if (editingTemplate != null) {
             forms.updateFormTemplate($state.snapshot(editingTemplate), name, extractedValues);
         } else {
             forms.createFormTemplate(form.id, name, extractedValues);

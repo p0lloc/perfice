@@ -3,7 +3,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
-    import {metricWidget, weekStart} from "@perfice/main";
+    import {metricWidget, weekStart} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
 
     let {widgetId, dependencies, settings}: {

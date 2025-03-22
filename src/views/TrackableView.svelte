@@ -1,6 +1,6 @@
 <script lang="ts">
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
-    import {forms, trackableDate, trackables, weekStart} from "@perfice/main";
+    import {forms, trackableDate, trackables, weekStart} from "@perfice/app";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import EditTrackableModal from "@perfice/components/trackable/modals/edit/EditTrackableModal.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";

@@ -1,10 +1,10 @@
 <script lang="ts">
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
-    import {tagCategories, tagDate} from "@perfice/main";
-    import {tags} from "@perfice/main";
+    import {tagCategories, tagDate} from "@perfice/app";
+    import {tags} from "@perfice/app";
     import {onMount} from "svelte";
     import type {Tag} from "@perfice/model/tag/tag";
-    import {weekStart, categorizedTags} from "@perfice/main";
+    import {weekStart, categorizedTags} from "@perfice/app";
     import TagCategoryContainer from "@perfice/components/tag/TagCategoryContainer.svelte";
     import LineButton from "@perfice/components/base/button/LineButton.svelte";
     import {faTags} from "@fortawesome/free-solid-svg-icons";

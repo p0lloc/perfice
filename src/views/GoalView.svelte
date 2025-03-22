@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {goals, goalDate} from "@perfice/main";
+    import {goals, goalDate} from "@perfice/app";
     import GoalCard from "@perfice/components/goal/GoalCard.svelte";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import GoalNewCard from "@perfice/components/goal/GoalNewCard.svelte";

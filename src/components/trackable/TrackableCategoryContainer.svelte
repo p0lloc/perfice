@@ -5,7 +5,7 @@
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {trackables} from "@perfice/main";
+    import {trackables} from "@perfice/app";
     import type {WeekStart} from "@perfice/model/variable/time/time";
 
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";

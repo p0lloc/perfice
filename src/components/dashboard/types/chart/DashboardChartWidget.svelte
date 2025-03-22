@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {DashboardChartWidgetSettings} from "@perfice/model/dashboard/widgets/chart";
-    import {chartWidget, weekStart} from "@perfice/main";
+    import {chartWidget, weekStart} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import SingleChart from "@perfice/components/chart/SingleChart.svelte";
 

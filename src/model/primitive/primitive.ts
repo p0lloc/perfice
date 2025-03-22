@@ -216,6 +216,10 @@ export function prettyPrintPrimitive(v: PrimitiveValue): string {
             return v.value.map(prettyPrintPrimitive).join(", ");
         }
 
+        case PrimitiveValueType.NUMBER: {
+            return Math.round(v.value).toString();
+        }
+
         default:
             return v.value?.toString() ?? "";
     }
@@ -237,7 +241,7 @@ export function primitiveAsNumber(value: PrimitiveValue): number {
 
 
 export function primitiveAsString(value: PrimitiveValue): string {
-    if(value.type == PrimitiveValueType.STRING){
+    if (value.type == PrimitiveValueType.STRING) {
         return value.value;
     }
 

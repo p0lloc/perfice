@@ -3,7 +3,7 @@
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import TableWidgetEntry from "@perfice/components/dashboard/types/table/TableWidgetEntry.svelte";
     import TableWidgetGroupHeader from "@perfice/components/dashboard/types/table/TableWidgetGroupHeader.svelte";
-    import {tableWidget, weekStart} from "@perfice/main";
+    import {tableWidget, weekStart} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import type {DashboardTableWidgetGroup} from "@perfice/stores/dashboard/widget/table";
     import {type PrimitiveValue, pString} from "@perfice/model/primitive/primitive";

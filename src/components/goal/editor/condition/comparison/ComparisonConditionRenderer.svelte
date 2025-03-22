@@ -14,7 +14,7 @@
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {pNumber, prettyPrintPrimitive, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
     import type {VariableTypeName} from "@perfice/model/variable/variable";
-    import {variableEditProvider} from "@perfice/main";
+    import {variableEditProvider} from "@perfice/app";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
     import EditConstantOrVariable from "@perfice/components/variable/edit/EditConstantOrVariable.svelte";
 
@@ -66,50 +66,51 @@
 
     function editSource(source: boolean) {
         let value = source ? condition.getSource() : condition.getTarget();
-        if(value == null) return;
+        if (value == null) return;
 
         onEdit({value, onChange: onSourceUpdate});
         editingSource = source;
     }
 
     function removeSource() {
-        if(source == null) return;
+        if (source == null) return;
 
         deleteSourceVariable(source);
         onValueChange(new ComparisonGoalCondition(null, condition.getOperator(), condition.getTarget()));
     }
 
     function removeTarget() {
-        if(target == null) return;
+        if (target == null) return;
 
         deleteSourceVariable(target);
         onValueChange(new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), null));
     }
 
-    function deleteSourceVariable(v: ConstantOrVariable){
+    function deleteSourceVariable(v: ConstantOrVariable) {
         if (!v.constant && v.value.type == PrimitiveValueType.STRING) {
             variableEditProvider.deleteVariableAndDependencies(v.value.value);
         }
     }
 
-    function onBack(){
+    function onBack() {
         editStack.pop();
         editing = editStack.length > 0 ? editStack[editStack.length - 1] : null;
     }
 
-    function onSourceUpdate(value: ConstantOrVariable){
+    function onSourceUpdate(value: ConstantOrVariable) {
         if (editingSource) {
             onValueChange(new ComparisonGoalCondition(value, condition.getOperator(), condition.getTarget()));
         } else {
             onValueChange(new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), value));
         }
     }
-    function onEditingChange(value: ConstantOrVariable){
-        if(editing == null) return;
+
+    function onEditingChange(value: ConstantOrVariable) {
+        if (editing == null) return;
         editing.onChange(value);
     }
 
-    function onEdit(value: EditConstantOrVariableState){
+    function onEdit(value: EditConstantOrVariableState) {
         editing = value;
         editStack.push(value);
     }
@@ -117,10 +118,11 @@
 
 <div class="flex flex-col gap-2">
     {#if editing != null}
-        <EditConstantOrVariable value={editing.value} onBack={onBack} onChange={onEditingChange} onEdit={onEdit} />
+        <EditConstantOrVariable value={editing.value} onBack={onBack} onChange={onEditingChange} onEdit={onEdit}/>
     {:else}
         {#if source != null }
-            <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(source)} onEdit={() => editSource(true)}
+            <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(source)}
+                                   onEdit={() => editSource(true)}
                                    onDelete={removeSource}/>
         {:else}
             <AddSourceButton onAdd={(constant) => onAddSource(constant, true)}/>
@@ -128,7 +130,8 @@
         <BindableDropdownButton value={condition.getOperator()} items={COMPARISON_OPERATORS}
                                 onChange={onChangeOperator}/>
         {#if target != null}
-            <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(target)} onEdit={() => editSource(false)}
+            <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(target)}
+                                   onEdit={() => editSource(false)}
                                    onDelete={removeTarget}/>
         {:else}
             <AddSourceButton onAdd={(constant) => onAddSource(constant, false)}/>

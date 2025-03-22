@@ -3,7 +3,7 @@ import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
 import type {VariableService} from "@perfice/services/variable/variable";
-import {forms} from "@perfice/main";
+import {forms} from "@perfice/app";
 import {type FormQuestion, FormQuestionDisplayType} from "@perfice/model/form/form";
 import type {DashboardEntryRowWidgetSettings} from "@perfice/model/dashboard/widgets/entryRow";
 

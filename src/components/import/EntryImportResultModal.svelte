@@ -3,7 +3,7 @@
     import Modal from "@perfice/components/base/modal/Modal.svelte";
     import {ModalType} from "@perfice/model/ui/modal";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
-    import {imports} from "@perfice/main";
+    import {imports} from "@perfice/app";
 
     let event = $state<ImportEvent>();
     let modal: Modal;

@@ -1,6 +1,6 @@
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {derived, type Readable} from "svelte/store";
-import {forms, journal, tagEntries, tags} from "@perfice/main";
+import {forms, journal, tagEntries, tags} from "@perfice/app";
 import {timestampToMidnight} from "@perfice/util/time/simple";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {TagEntryStore} from "@perfice/stores/journal/tag";

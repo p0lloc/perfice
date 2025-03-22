@@ -1,7 +1,7 @@
 <script lang="ts">
     import type {DashboardGoalWidgetSettings} from "@perfice/model/dashboard/widgets/goal";
     import type {Form} from "@perfice/model/form/form";
-    import {goals} from "@perfice/main";
+    import {goals} from "@perfice/app";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
 
     let {settings, onChange}: {

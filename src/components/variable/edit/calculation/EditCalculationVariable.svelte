@@ -10,7 +10,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {ButtonColor} from "@perfice/model/ui/button";
-    import {variableEditProvider} from "@perfice/main";
+    import {variableEditProvider} from "@perfice/app";
     import {pNull, pNumber, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
@@ -103,7 +103,7 @@
         updateVariable();
     }
 
-    function updateVariable(){
+    function updateVariable() {
         variableEditProvider.updateVariable({
             ...variable, type: {
                 type: VariableTypeName.CALCULATION,

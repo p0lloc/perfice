@@ -65,7 +65,7 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
     }
 
     getDisplayValue(value: number): PrimitiveValue | null {
-        return pString(value.toString());
+        return pString(Number.isInteger(value) ? value.toString() : value.toFixed(2));
     }
 
 }

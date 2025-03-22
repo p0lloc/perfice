@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {forms, groupedJournal, journal, tagEntries} from "@perfice/main";
+    import {forms, groupedJournal, journal, tagEntries} from "@perfice/app";
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
     import {
         jeForm,

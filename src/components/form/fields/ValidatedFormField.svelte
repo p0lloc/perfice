@@ -96,7 +96,7 @@
 
         let displayValue = displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings);
         if (displayValue == null) {
-            displayValue = dataTypeDef.getDisplayValue(valueSnapshot) ?? pString("");
+            displayValue = dataTypeDef.getDisplayValue(dataTypeDef.serialize(value)) ?? pString("");
         }
 
         if (displayValue.type == PrimitiveValueType.STRING && question.unit != null) {

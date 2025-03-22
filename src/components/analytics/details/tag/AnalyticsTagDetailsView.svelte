@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {Readable} from "svelte/store";
-    import {tagDetailedAnalytics} from "@perfice/main";
+    import {tagDetailedAnalytics} from "@perfice/app";
     import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
     import type {TagDetailedAnalyticsResult} from "@perfice/stores/analytics/tags";
     import CorrelationAnalytics from "@perfice/components/analytics/details/CorrelationAnalytics.svelte";

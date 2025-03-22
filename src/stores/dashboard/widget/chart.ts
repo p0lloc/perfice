@@ -3,7 +3,7 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
 import {type DashboardChartWidgetSettings, DashboardChartWidgetType} from "@perfice/model/dashboard/widgets/chart";
 import {RangedVariableValueStore} from "@perfice/stores/variable/value";
-import {forms} from "@perfice/main";
+import {forms} from "@perfice/app";
 import {PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {getChartColors} from "@perfice/util/color";
 import {formatValueAsDataType} from "@perfice/model/form/data";

@@ -2,7 +2,7 @@ import {writable} from "svelte/store";
 import {publishToEventStore} from "@perfice/util/event";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {EntryImportService} from "@perfice/services/import/import";
-import {forms} from "@perfice/main";
+import {forms} from "@perfice/app";
 
 export interface ImportEvent {
     success: boolean;
@@ -23,7 +23,7 @@ export class EntryImportStore {
     async importFile(file: File, formId: string) {
 
         let form = await forms.getFormById(formId);
-        if(form == null) return;
+        if (form == null) return;
 
         try {
             this.currentImport = await this.importService.readFile(file, form);

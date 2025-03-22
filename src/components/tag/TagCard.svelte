@@ -4,7 +4,7 @@
     import {faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {tagValue} from "@perfice/main";
+    import {tagValue} from "@perfice/app";
     import type {WeekStart} from "@perfice/model/variable/time/time";
 
     let {tag, date, weekStart, onClick}: {
