@@ -27,6 +27,8 @@
     let grid: GridStack;
     let mountedWidgets: Map<string, DashboardWidgetRendererExports> = new Map();
 
+    let lastManipulationEvent = 0;
+
     export function removeWidget(widget: DashboardWidget) {
         let element = grid.getGridItems().find(i => i.dataset.widgetId == widget.id);
         if (element == undefined) return;
@@ -77,7 +79,15 @@
         };
     }
 
-    function onGridItemsChange(_: Event, items: GridStackNode[]) {
+    function onGridMoveOrResize() {
+        lastManipulationEvent = Date.now();
+    }
+
+    function onGridItemsChange(e: Event, items: GridStackNode[]) {
+        // Only update if the event was triggered by a resize/drag event
+        // This is to prevent the responsive layouting from messing up the grid
+        if (Date.now() - lastManipulationEvent > 10) return;
+
         for (let item of items) {
             let element = item.el;
             if (element == null) continue;
@@ -138,7 +148,7 @@
 
             float: true,
             columnOpts: {
-                //columnMax: 30,
+                columnMax: 30,
                 breakpoints: [
                     {
                         w: 768,
@@ -149,6 +159,7 @@
         });
 
         grid.on("added", onGridItemAdded);
+        grid.on("dragstop resizestop", onGridMoveOrResize);
         grid.on("change", onGridItemsChange);
 
         widgets.forEach(w => addWidget(w));

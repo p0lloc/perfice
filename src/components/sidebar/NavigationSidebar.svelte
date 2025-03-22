@@ -10,7 +10,7 @@
 <!-- Dummy container to fill up the space, "sticky" doesn't work since it won't follow scrolling -->
 <div class="md:w-14"></div>
 <div
-        class="md:min-h-screen left-0 fixed bg-gray-100 md:bg-green-500 md:w-14 w-screen px-6 py-2 md:p-2 bottom-0 z-[150]"
+        class="md:min-h-screen left-0 fixed bg-white border-t md:border-0 md:bg-green-500 md:w-14 w-screen px-6 py-2 md:p-2 bottom-0 z-[150]"
 >
     <div class="flex md:flex-col justify-between items-center gap-2">
         {#each SIDEBAR_LINKS as link}
