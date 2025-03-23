@@ -137,8 +137,13 @@ function createPromise(id: string, rawQuestionId: string | null,
                 return;
 
             let useMeanValue = settings.useMeanValue[questionId] ?? false;
+            let basicAnalytics = result.basicAnalytics
+                .get(timeScope)
+                ?.get(trackable.formId)
+                ?.get(questionId);
 
-            let basic = await analyticsService.calculateBasicAnalytics(questionId, bag, settings);
+            if (basicAnalytics == null) return;
+
             let transformedWeekDay: TrackableWeekDayAnalyticsTransformed | null;
             if (timeScope == SimpleTimeScopeType.DAILY) {
                 let weekDay = await analyticsService.calculateFormWeekDayAnalytics(questionId, bag, settings);
@@ -164,7 +169,7 @@ function createPromise(id: string, rawQuestionId: string | null,
             resolve({
                 trackable,
                 weekDayAnalytics: transformedWeekDay,
-                basicAnalytics: basic,
+                basicAnalytics,
                 questions: form.questions,
                 correlations: createDetailedCorrelations(correlations, result, questionId, timeScope),
                 chart: constructChartFromValues(bag, useMeanValue, timeScope, formQuestion.dataType),

@@ -1,15 +1,18 @@
-import type {Form} from "@perfice/model/form/form";
+import {type Form, FormQuestionDataType} from "@perfice/model/form/form";
 import type {Tag} from "@perfice/model/tag/tag";
 import {
     CATEGORICAL_KEY_PREFIX,
     type CorrelationResult,
     DatasetKeyType,
+    type HistoricalQuantitativeInsight,
     LAG_KEY_PREFIX,
     TAG_KEY_PREFIX,
     WEEK_DAY_KEY_PREFIX
 } from "@perfice/services/analytics/analytics";
 import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {TIME_SCOPE_UNITS} from "@perfice/model/variable/ui";
+import {numberToMaxDecimals} from "@perfice/util/math";
+import {formatValueAsDataType} from "@perfice/model/form/data";
 
 export function convertSingleKey(key: string, type: DatasetKeyType, forms: Form[], tags: Tag[]): CorrelationDisplayPart {
     if (type == DatasetKeyType.CATEGORICAL) {
@@ -90,4 +93,23 @@ export function convertResultKey(key: string, result: CorrelationResult, timeSco
         second: secondConverted,
         between: "when"
     }
+}
+
+export interface InsightText {
+    text: string;
+    percentage: string;
+}
+
+export function getInsightText(insight: HistoricalQuantitativeInsight, questionType: FormQuestionDataType): InsightText {
+    let direction = insight.error > 1 ? "increased" : "decreased";
+    let sign = insight.error > 1 ? "+" : "-";
+
+    let percentage = numberToMaxDecimals(insight.diff * 100, 1);
+    let currentFormatted = formatValueAsDataType(insight.current, questionType);
+    let averageFormatted = formatValueAsDataType(insight.average, questionType);
+
+    return {
+        text: `greatly ${direction} (${currentFormatted}) compared to average ${averageFormatted}`,
+        percentage: `(${sign}${percentage}%)`
+    };
 }

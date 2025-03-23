@@ -11,6 +11,7 @@
     } from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import QuestionLabel from "@perfice/components/analytics/QuestionLabel.svelte";
 
     let {part, positive}: { part: CorrelationDisplayPart, positive: boolean } = $props();
 
@@ -28,13 +29,6 @@
     }
 </script>
 
-<span class="items-center gap-1 flex" title={part.msg}>
-    <Fa icon={getIcon(part.type, positive)} class="w-3"/>
-    {ellipsis(part.msg, 20)}
-</span>
-
-<style>
-    span {
-        @apply bg-gray-100 border rounded-md px-2;
-    }
-</style>
+<QuestionLabel message={part.msg}>
+    <Fa icon={getIcon(part.type, positive)}/>
+</QuestionLabel>

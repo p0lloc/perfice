@@ -56,6 +56,13 @@ export const TIME_SCOPE_UNITS = {
     [SimpleTimeScopeType.YEARLY]: "years",
 };
 
+export const TIME_SCOPE_LABELS = {
+    [SimpleTimeScopeType.DAILY]: "Today",
+    [SimpleTimeScopeType.WEEKLY]: "This week",
+    [SimpleTimeScopeType.MONTHLY]: "This month",
+    [SimpleTimeScopeType.YEARLY]: "This year",
+};
+
 export function formatSimpleTimestamp(timestamp: number, timeScope: SimpleTimeScopeType, useWeekDay: boolean = false): string {
     switch (timeScope) {
         case SimpleTimeScopeType.DAILY:

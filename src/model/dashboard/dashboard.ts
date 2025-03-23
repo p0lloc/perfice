@@ -26,6 +26,7 @@ import {
 } from "@perfice/model/dashboard/widgets/metric";
 import {DashboardTrackableWidgetDefinition} from "@perfice/model/dashboard/widgets/trackable";
 import {DashboardNewCorrelationsWidgetDefinition} from "@perfice/model/dashboard/widgets/newCorrelations";
+import {DashboardInsightsWidgetDefinition} from "@perfice/model/dashboard/widgets/insights";
 
 export interface Dashboard {
     id: string;
@@ -49,6 +50,7 @@ export enum DashboardWidgetType {
     METRIC = "METRIC",
     TRACKABLE = "TRACKABLE",
     NEW_CORRELATIONS = "NEW_CORRELATIONS",
+    INSIGHTS = "INSIGHTS",
 }
 
 export type DashboardWidget = {
@@ -99,6 +101,7 @@ definitions.set(DashboardWidgetType.TAGS, new DashboardTagsWidgetDefinition());
 definitions.set(DashboardWidgetType.METRIC, new DashboardMetricWidgetDefinition());
 definitions.set(DashboardWidgetType.TRACKABLE, new DashboardTrackableWidgetDefinition());
 definitions.set(DashboardWidgetType.NEW_CORRELATIONS, new DashboardNewCorrelationsWidgetDefinition());
+definitions.set(DashboardWidgetType.INSIGHTS, new DashboardInsightsWidgetDefinition());
 
 export function getDashboardWidgetDefinitions(): DashboardWidgetDefinition<DashboardWidgetType, any>[] {
     return Array.from(definitions.values());

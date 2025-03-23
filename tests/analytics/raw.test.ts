@@ -7,7 +7,7 @@ import {
 } from "../dummy-collections";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
-import {Form, FormQuestion, FormQuestionDataType} from "../../src/model/form/form";
+import {Form, FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "../../src/model/form/form";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {JournalEntry} from "../../src/model/journal/journal";
 
@@ -30,7 +30,8 @@ export function mockForm(id: string, questions: Record<string, FormQuestionDataT
             name: questionId,
             unit: null,
             dataType: dataType,
-            dataSettings: {}
+            dataSettings: {},
+            displayType: FormQuestionDisplayType.SELECT
         });
     }
     return {

@@ -1,6 +1,7 @@
 import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
+import {numberToMaxDecimals} from "@perfice/util/math";
 
 export interface NumberFormQuestionDataSettings {
     min: number | null;
@@ -65,7 +66,7 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
     }
 
     getDisplayValue(value: number): PrimitiveValue | null {
-        return pString(Number.isInteger(value) ? value.toString() : value.toFixed(2));
+        return pString(numberToMaxDecimals(value, 2));
     }
 
 }

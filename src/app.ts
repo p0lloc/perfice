@@ -66,6 +66,8 @@ import {MetricWidget} from "@perfice/stores/dashboard/widget/metric";
 import type {DashboardMetricWidgetSettings} from "@perfice/model/dashboard/widgets/metric";
 import {TrackableWidget} from './stores/dashboard/widget/trackable';
 import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
+import type {DashboardInsightsWidgetSettings} from "@perfice/model/dashboard/widgets/insights";
+import {InsightsWidget} from "@perfice/stores/dashboard/widget/insights";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -159,6 +161,11 @@ export function chartWidget(dependencies: Record<string, string>, settings: Dash
 export function metricWidget(dependencies: Record<string, string>, settings: DashboardMetricWidgetSettings, date: Date,
                              weekStart: WeekStart, key: string,) {
     return MetricWidget(dependencies, settings, date, weekStart, key, variableService);
+}
+
+
+export function insightsWidget(settings: DashboardInsightsWidgetSettings, date: Date) {
+    return InsightsWidget(settings, date);
 }
 
 export function trackableWidget(settings: DashboardTrackableWidgetSettings) {

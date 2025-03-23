@@ -1,6 +1,6 @@
 <script lang="ts">
     import GridstackGrid from "@perfice/components/dashboard/GridstackGrid.svelte";
-    import {dashboards, dashboardWidgets, forms} from "@perfice/app";
+    import {dashboards, dashboardWidgets, forms, trackableDate} from "@perfice/app";
     import {
         type DashboardWidget,
         type DashboardWidgetDisplaySettings,
@@ -11,7 +11,7 @@
     import DashboardSidebar from "@perfice/components/dashboard/DashboardSidebar.svelte";
     import {DashboardSidebarActionType} from "@perfice/model/dashboard/ui";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
-    import {dateWithCurrentTime} from "@perfice/util/time/simple";
+    import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
     import CalendarScroll from "@perfice/components/base/calendarScroll/CalendarScroll.svelte";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
@@ -145,6 +145,8 @@
         await dashboardWidgets.updateWidget(widget);
         grid.updateWidget(widget);
     }
+
+    dashboardDate.set(dateToMidnight(new Date()));
 </script>
 
 <GenericDeleteModal subject="this widget" onDelete={onWidgetDelete} bind:this={deleteWidgetModal}/>

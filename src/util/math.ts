@@ -3,3 +3,7 @@ export function calculateProgressSafe(first: number, total: number): number {
 
     return first / total;
 }
+
+export function numberToMaxDecimals(value: number, decimals: number): string {
+    return Number.isInteger(value) ? value.toString() : value.toFixed(decimals)
+}

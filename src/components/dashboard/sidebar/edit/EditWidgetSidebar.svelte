@@ -17,6 +17,8 @@
         from "@perfice/components/dashboard/sidebar/edit/types/EditMetricWidgetSidebar.svelte";
     import EditTrackableWidgetSidebar
         from "@perfice/components/dashboard/sidebar/edit/types/EditTrackableWidgetSidebar.svelte";
+    import EditInsightsWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/EditInsightsWidgetSidebar.svelte";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -34,6 +36,7 @@
         [DashboardWidgetType.TAGS]: EditTagsWidgetSidebar,
         [DashboardWidgetType.METRIC]: EditMetricWidgetSidebar,
         [DashboardWidgetType.TRACKABLE]: EditTrackableWidgetSidebar,
+        [DashboardWidgetType.INSIGHTS]: EditInsightsWidgetSidebar,
     };
 
     function onSettingsChange(settings: any) {

@@ -3,7 +3,8 @@ import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time"
 import {
     type Form,
     type FormQuestion,
-    FormQuestionDataType, FormQuestionDisplayType,
+    FormQuestionDataType,
+    FormQuestionDisplayType,
     isFormQuestionNumberRepresentable
 } from "@perfice/model/form/form";
 import {extractDisplayFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
@@ -37,6 +38,15 @@ const CATEGORICAL_DISPLAY_TYPES = [
     FormQuestionDisplayType.SELECT,
     FormQuestionDisplayType.HIERARCHY,
 ]
+
+export interface HistoricalQuantitativeInsight {
+    formId: string;
+    questionId: string;
+    current: number;
+    average: number;
+    error: number;
+    diff: number;
+}
 
 export function convertValue(value: Value, useMean: boolean): Value {
     if (!useMean) return value;
@@ -98,7 +108,9 @@ export type ValueBag = {
     values: CategoricalValues
 }
 
+// Question id -> values
 export type QuestionIdToValues = Map<string, ValueBag>;
+// Form id -> question id -> values
 export type RawAnalyticsValues = Map<string, QuestionIdToValues>;
 export type TagAnalyticsValues = Map<string, Map<number, number>>; // Tag id -> timestamp -> tagged
 
@@ -376,6 +388,66 @@ export class AnalyticsService {
             mostCommon: mostCommon ?? {category: "", frequency: 0},
             leastCommon: leastCommon ?? {category: "", frequency: 0}
         }
+    }
+
+    async calculateAllBasicAnalytics(values: RawAnalyticsValues, allSettings: AnalyticsSettings[]): Promise<Map<string, Map<string, BasicAnalytics>>> {
+        let res: Map<string, Map<string, BasicAnalytics>> = new Map();
+        for (let [formId, questionIdToValues] of values.entries()) {
+            let settings = allSettings.find(s => s.formId == formId);
+            if (settings == null) continue;
+
+            let map = new Map();
+            for (let [questionId, values] of questionIdToValues.entries()) {
+                map.set(questionId, await this.calculateBasicAnalytics(questionId, values, settings));
+            }
+            res.set(formId, map);
+        }
+        return res;
+    }
+
+    async findHistoricalQuantitativeInsights(values: RawAnalyticsValues, allBasicAnalytics: Map<string, Map<string, BasicAnalytics>>,
+                                             date: Date, timeScope: SimpleTimeScopeType, allSettings: AnalyticsSettings[], threshold: number = 0.3): Promise<HistoricalQuantitativeInsight[]> {
+        let currentTimestamp = dateToStartOfTimeScope(date, timeScope, WeekStart.MONDAY).getTime();
+        let result: HistoricalQuantitativeInsight[] = [];
+        for (let [formId, questionIdToValues] of values.entries()) {
+            let forForm = allBasicAnalytics.get(formId);
+            if (forForm == null) continue;
+
+            let settings = allSettings.find(s => s.formId == formId);
+            if (settings == null) continue;
+
+            for (let [questionId, values] of questionIdToValues.entries()) {
+                if (!values.quantitative) continue;
+
+                let byQuestion = forForm.get(questionId);
+                if (byQuestion == null || !byQuestion.quantitative) continue;
+
+                let currentValue = values.values.get(currentTimestamp);
+                if (currentValue == null)
+                    continue;
+
+                let useMeanValue = settings.useMeanValue[questionId] ?? false;
+                let currentNumericalValue = convertValue(currentValue, useMeanValue).value;
+                let average = byQuestion.value.average;
+
+                let error = average != 0 ? currentNumericalValue / average : currentNumericalValue;
+                let diff = error != 0 ? Math.abs(error - 1) : 0;
+
+                if (diff < threshold)
+                    continue;
+
+                result.push({
+                    formId: formId,
+                    questionId: questionId,
+                    current: currentNumericalValue,
+                    average: average,
+                    diff,
+                    error: error
+                });
+            }
+        }
+
+        return result;
     }
 
     async calculateBasicAnalytics(questionId: string, values: ValueBag, settings: AnalyticsSettings): Promise<BasicAnalytics> {
