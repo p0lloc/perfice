@@ -33,14 +33,17 @@ async function fetchAnalytics(analyticsService: AnalyticsService, settingsServic
     let [dailyValues] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7 * 14);
     // TODO: limit tag values to same range for correlations
-    let dailyCorrelations = await analyticsService.runBasicCorrelations(dailyValues, tagValues, allSettings, date, range, minimumSampleSize);
+    let dailyCorrelations = await analyticsService.runBasicCorrelations(dailyValues, tagValues, allSettings, date, range, minimumSampleSize, true);
 
     if (historyService != null) {
         historyService.processResult(dailyCorrelations, date);
     }
 
     let [weeklyValues] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.WEEKLY);
-    let weeklyCorrelations = await analyticsService.runBasicCorrelations(weeklyValues, tagValues, allSettings, date, range, minimumSampleSize);
+    // We don't use week days or tag values for weekly correlations, only numerical/categorical
+    let weeklyCorrelations = await analyticsService.runBasicCorrelations(weeklyValues, new Map(), allSettings, date, range, minimumSampleSize, false);
+
+    let [monthlyValues] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.MONTHLY);
 
     return {
         correlations: new Map([
@@ -51,6 +54,7 @@ async function fetchAnalytics(analyticsService: AnalyticsService, settingsServic
         rawValues: new Map([
             [SimpleTimeScopeType.DAILY, dailyValues],
             [SimpleTimeScopeType.WEEKLY, weeklyValues],
+            [SimpleTimeScopeType.MONTHLY, monthlyValues],
         ]),
         tagValues,
         tags,
@@ -63,16 +67,18 @@ export interface DetailCorrelation {
     key: string;
     display: CorrelationDisplay;
     value: CorrelationResult;
+    timeScope: SimpleTimeScopeType;
 }
 
-export function createDetailedCorrelations(correlations: Map<string, CorrelationResult>, result: AnalyticsResult, search: string): DetailCorrelation[] {
+export function createDetailedCorrelations(correlations: Map<string, CorrelationResult>, result: AnalyticsResult, search: string, timeScope: SimpleTimeScopeType): DetailCorrelation[] {
     return correlations.entries()
         .filter(([k, v]) => k.includes(search) && Math.abs(v.coefficient) > 0.2)
         .map(([key, value]) => {
             return {
                 key,
-                display: convertResultKey(key, value, result.forms, result.tags),
-                value
+                display: convertResultKey(key, value, timeScope, result.forms, result.tags),
+                value,
+                timeScope
             };
         })
         .toArray().sort((a, b) => {

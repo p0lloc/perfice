@@ -9,7 +9,7 @@ import {
     AnalyticsService,
     type BasicAnalytics,
     type CategoricalWeekDayAnalytics,
-    convertValue,
+    convertValue, type CorrelationResult,
     type QuantitativeWeekDayAnalytics,
     type ValueBag
 } from "@perfice/services/analytics/analytics";
@@ -159,15 +159,14 @@ function createPromise(id: string, rawQuestionId: string | null,
                 transformedWeekDay = null;
             }
 
-            let correlations = result.correlations.get(timeScope);
-            if (correlations == null) return;
+            let correlations = result.correlations.get(timeScope) ?? new Map<string, CorrelationResult>();
 
             resolve({
                 trackable,
                 weekDayAnalytics: transformedWeekDay,
                 basicAnalytics: basic,
                 questions: form.questions,
-                correlations: createDetailedCorrelations(correlations, result, questionId),
+                correlations: createDetailedCorrelations(correlations, result, questionId, timeScope),
                 chart: constructChartFromValues(bag, useMeanValue, timeScope, formQuestion.dataType),
                 questionId,
                 questionType: formQuestion.dataType,

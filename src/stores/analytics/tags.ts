@@ -2,7 +2,12 @@ import {derived, readable, type Readable} from "svelte/store";
 import type {Tag} from "@perfice/model/tag/tag";
 import {analytics} from "@perfice/app";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-import {AnalyticsService, TAG_KEY_PREFIX, type TagWeekDayAnalytics} from "@perfice/services/analytics/analytics";
+import {
+    AnalyticsService,
+    type CorrelationResult,
+    TAG_KEY_PREFIX,
+    type TagWeekDayAnalytics
+} from "@perfice/services/analytics/analytics";
 import {
     type AnalyticsResult,
     createDetailedCorrelations,
@@ -72,8 +77,7 @@ function createPromise(id: string,
 
             let weekDayAnalytics = await analyticsService.calculateTagWeekDayAnalytics(values);
 
-            let correlations = result.correlations.get(timeScope);
-            if (correlations == null) return;
+            let correlations = result.correlations.get(timeScope) ?? new Map<string, CorrelationResult>();
 
             resolve({
                 tag,
@@ -82,7 +86,7 @@ function createPromise(id: string,
                     labels: weekDayAnalytics.values.keys().map(v => WEEK_DAYS_SHORT[v]).toArray(),
                     dataPoints: weekDayAnalytics.values.values().toArray(),
                 },
-                correlations: createDetailedCorrelations(correlations, result, tag.id),
+                correlations: createDetailedCorrelations(correlations, result, tag.id, timeScope),
                 values,
                 date: result.date,
             });

@@ -7,6 +7,7 @@
     import type {Form} from "@perfice/model/form/form";
     import type {Tag} from "@perfice/model/tag/tag";
     import NewCorrelations from "@perfice/components/analytics/NewCorrelations.svelte";
+    import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time.js";
 
     const KEY_FILTERS = [
         {
@@ -56,28 +57,31 @@
         return part.msg.toLowerCase().includes(search.toLowerCase());
     }
 
-    function getCorrelationsToShow(correlations: Map<string, CorrelationResult>, filter: Record<DatasetKeyType, boolean>, search: string, forms: Form[], tags: Tag[]): DetailCorrelation[] {
+    function getCorrelationsToShow(correlations: Map<SimpleTimeScopeType, Map<string, CorrelationResult>>, filter: Record<DatasetKeyType, boolean>, search: string, forms: Form[], tags: Tag[]): DetailCorrelation[] {
         let result: DetailCorrelation[] = [];
-        for (let [key, correlation] of correlations.entries()) {
-            // Filter out correlations with low confidence
-            if (Math.abs(correlation.coefficient) < (confidence / 100)) {
-                continue;
+        for (let [timeScope, values] of correlations.entries()) {
+            for (let [key, correlation] of values.entries()) {
+                // Filter out correlations with low confidence
+                if (Math.abs(correlation.coefficient) < (confidence / 100)) {
+                    continue;
+                }
+
+                // Filter out correlations that don't match the key filter
+                if (!shouldIncludeCorrelation(correlation, filter))
+                    continue;
+
+                // Search based on text in display value, any of them might match
+                let display = convertResultKey(key, correlation, timeScope, forms, tags);
+                if (!searchDisplayPart(display.first, search) && !searchDisplayPart(display.second, search))
+                    continue;
+
+                result.push({
+                    key: key,
+                    display: display,
+                    value: correlation,
+                    timeScope: timeScope
+                });
             }
-
-            // Filter out correlations that don't match the key filter
-            if (!shouldIncludeCorrelation(correlation, filter))
-                continue;
-
-            // Search based on text in display value, any of them might match
-            let display = convertResultKey(key, correlation, forms, tags);
-            if (!searchDisplayPart(display.first, search) && !searchDisplayPart(display.second, search))
-                continue;
-
-            result.push({
-                key: key,
-                display: display,
-                value: correlation,
-            });
         }
 
         result.sort((a, b) => Math.abs(b.value.coefficient) - Math.abs(a.value.coefficient));

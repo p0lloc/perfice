@@ -4,10 +4,10 @@
     import {faLineChart} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import DualLineChart from "@perfice/components/chart/DualLineChart.svelte";
-    import {formatTimestampYYYYMMDD} from "@perfice/util/time/format";
     import {normalizeNumberArray} from "@perfice/services/analytics/analytics.js";
     import {ellipsis} from "@perfice/services/analytics/display.js";
     import CorrelationMessage from "@perfice/components/analytics/details/CorrelationMessage.svelte";
+    import {formatSimpleTimestamp} from "@perfice/model/variable/ui";
 
     const LEGEND_LABEL_MAX_LENGTH = 8;
 
@@ -49,11 +49,17 @@
         return [convertedFirst, convertedSecond];
     }
 
+    function constructDataPointLabels(timestamps: number[]): string[] {
+        return timestamps.map(v => formatSimpleTimestamp(v, correlation.timeScope));
+    }
+
     let [first, second] = $derived(convertNumbersForChart(correlation.value.first,
         correlation.value.second, correlation.value.lagged, chartVisible));
 
     let [firstLabel, secondLabel] = $derived(convertLabelsForChart(correlation.display.first.entityName,
         correlation.display.second.entityName, chartVisible));
+
+    let labels = $derived(constructDataPointLabels(correlation.value.timestamps));
 </script>
 <div class="bg-white rounded border p-2 {className} flex flex-col justify-between">
     <div>
@@ -71,7 +77,7 @@
                                firstBorderColor="#36A2EB"
                                secondFillColor="#f59b9b33"
                                secondBorderColor="#eb363c"
-                               labels={correlation.value.timestamps.map(v => formatTimestampYYYYMMDD(v))}/>
+                               {labels}/>
             </div>
         {/if}
     </div>

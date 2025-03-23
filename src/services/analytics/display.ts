@@ -8,6 +8,8 @@ import {
     TAG_KEY_PREFIX,
     WEEK_DAY_KEY_PREFIX
 } from "@perfice/services/analytics/analytics";
+import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import {TIME_SCOPE_UNITS} from "@perfice/model/variable/ui";
 
 export function convertSingleKey(key: string, type: DatasetKeyType, forms: Form[], tags: Tag[]): CorrelationDisplayPart {
     if (type == DatasetKeyType.CATEGORICAL) {
@@ -63,7 +65,7 @@ export function ellipsis(text: string, maxLength: number) {
     return text.substring(0, maxLength - ELLIPSIS.length) + ELLIPSIS;
 }
 
-export function convertResultKey(key: string, result: CorrelationResult, forms: Form[], tags: Tag[]): CorrelationDisplay {
+export function convertResultKey(key: string, result: CorrelationResult, timeScope: SimpleTimeScopeType, forms: Form[], tags: Tag[]): CorrelationDisplay {
     let parts = key.split("|");
     let first = parts[0];
     let second = parts[1];
@@ -76,7 +78,7 @@ export function convertResultKey(key: string, result: CorrelationResult, forms: 
         return {
             first: secondConverted,
             second: firstConverted,
-            between: "after days with"
+            between: `after ${TIME_SCOPE_UNITS[timeScope]} with`
         }
     }
 

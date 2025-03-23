@@ -1,6 +1,11 @@
 import type {FormService} from "@perfice/services/form/form";
 import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
-import {type Form, FormQuestionDataType, isFormQuestionNumberRepresentable} from "@perfice/model/form/form";
+import {
+    type Form,
+    type FormQuestion,
+    FormQuestionDataType, FormQuestionDisplayType,
+    isFormQuestionNumberRepresentable
+} from "@perfice/model/form/form";
 import {extractDisplayFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {primitiveAsNumber, primitiveAsString, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {
@@ -26,6 +31,12 @@ export enum DatasetKeyType {
     CATEGORICAL,
     TAG,
 }
+
+// We only support questions that have a finite set of options, free text would generate too many combinations
+const CATEGORICAL_DISPLAY_TYPES = [
+    FormQuestionDisplayType.SELECT,
+    FormQuestionDisplayType.HIERARCHY,
+]
 
 export function convertValue(value: Value, useMean: boolean): Value {
     if (!useMean) return value;
@@ -75,9 +86,6 @@ export function aValue(value: number, count: number): Value {
         count: count
     }
 }
-
-// "formId:questionId": {0 => 12000, 1 => 78721}
-// "formId:questionId": {0 => 12000, 1 => 78721, 2 => 31090}
 
 export type QuantitativeValues = Map<number, Value>; // Timestamp -> value
 export type CategoricalValues = Map<string, Map<number, number>>; // Category -> timestamp -> frequency
@@ -572,17 +580,21 @@ export class AnalyticsService {
 
     async runBasicCorrelations(values: RawAnalyticsValues, tagValues: TagAnalyticsValues,
                                allSettings: AnalyticsSettings[],
-                               date: Date, range: number, minimumSampleSize: number): Promise<Map<string, CorrelationResult>> {
+                               date: Date, range: number, minimumSampleSize: number, useWeekDays: boolean = true, useLagged: boolean = true): Promise<Map<string, CorrelationResult>> {
 
         let flattenedFormValues = this.flattenRawValues(values, allSettings);
         tagValues.forEach((value, key) => flattenedFormValues.set(key, value));
 
-        let lagged = this.generateLagDataSet(flattenedFormValues);
-        lagged.forEach((value, key) => flattenedFormValues.set(key, value));
+        if (useLagged) {
+            let lagged = this.generateLagDataSet(flattenedFormValues);
+            lagged.forEach((value, key) => flattenedFormValues.set(key, value));
+        }
 
-        // Add week day datasets
-        let datasets = this.generateWeekDayDataSets(date, SimpleTimeScopeType.DAILY, range);
-        datasets.forEach((value, key) => flattenedFormValues.set(key, value));
+        if (useWeekDays) {
+            // Add week day datasets
+            let datasets = this.generateWeekDayDataSets(date, SimpleTimeScopeType.DAILY, range);
+            datasets.forEach((value, key) => flattenedFormValues.set(key, value));
+        }
 
         let results: Map<string, CorrelationResult> = new Map();
         for (let [firstKey, firstDataset] of flattenedFormValues.entries()) {
@@ -727,6 +739,10 @@ export class AnalyticsService {
         return [forms, entries];
     }
 
+    private isCategoricalQuestion(question: FormQuestion): boolean {
+        return CATEGORICAL_DISPLAY_TYPES.includes(question.displayType);
+    }
+
     async constructRawValues(forms: Form[], entries: JournalEntry[], timeScope: SimpleTimeScopeType): Promise<[RawAnalyticsValues, Form[]]> {
 
         // Form id -> question id -> values
@@ -737,15 +753,17 @@ export class AnalyticsService {
 
             for (let question of form.questions) {
                 if (question.dataType == FormQuestionDataType.HIERARCHY) {
+                    // Hierarchy question values are lists, we want to use the string display value as the category
                     displayAnswerQuestions.push(question.id);
                 }
 
+                // Number questions are always quantitative
                 if (isFormQuestionNumberRepresentable(question.dataType)) {
                     map.set(question.id, {
                         quantitative: true,
                         values: new Map()
                     });
-                } else {
+                } else if (this.isCategoricalQuestion(question)) {
                     map.set(question.id, {
                         quantitative: false,
                         values: new Map()

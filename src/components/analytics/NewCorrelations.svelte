@@ -5,6 +5,7 @@
     import type {CorrelationResult} from "@perfice/services/analytics/analytics";
     import {convertResultKey} from "@perfice/services/analytics/display";
     import {formatDayDifference} from "@perfice/util/time/format";
+    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
     let {newCorrelations, result}: { newCorrelations: AnalyticsHistoryEntry[], result: AnalyticsResult } = $props();
 
@@ -15,16 +16,19 @@
     function convertToDetail(key: string, correlationResult: CorrelationResult, timestamp: number): NewCorrelation {
         return {
             key,
-            display: convertResultKey(key, correlationResult, result.forms, result.tags),
+            display: convertResultKey(key, correlationResult, SimpleTimeScopeType.DAILY, result.forms, result.tags),
             value: correlationResult,
-            timestamp
+            timestamp,
+            timeScope: SimpleTimeScopeType.DAILY
         };
     }
 
     let detailedCorrelations = $derived.by(() => {
         let out: NewCorrelation[] = [];
+        let daily = result.correlations.get(SimpleTimeScopeType.DAILY);
+        if (daily == null) return out;
         for (let correlation of newCorrelations) {
-            let data = result.correlations.get(correlation.key);
+            let data = daily.get(correlation.key);
             if (data == null) continue;
 
             out.push(convertToDetail(correlation.key, data, correlation.timestamp));

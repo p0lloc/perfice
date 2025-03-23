@@ -49,6 +49,12 @@ export const SIMPLE_TIME_SCOPE_TYPES = [
     {name: "Yearly", value: SimpleTimeScopeType.YEARLY},
 ];
 
+export const TIME_SCOPE_UNITS = {
+    [SimpleTimeScopeType.DAILY]: "days",
+    [SimpleTimeScopeType.WEEKLY]: "weeks",
+    [SimpleTimeScopeType.MONTHLY]: "months",
+    [SimpleTimeScopeType.YEARLY]: "years",
+};
 
 export function formatSimpleTimestamp(timestamp: number, timeScope: SimpleTimeScopeType, useWeekDay: boolean = false): string {
     switch (timeScope) {
