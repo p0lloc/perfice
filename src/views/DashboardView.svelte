@@ -1,6 +1,6 @@
 <script lang="ts">
     import GridstackGrid from "@perfice/components/dashboard/GridstackGrid.svelte";
-    import {dashboards, dashboardWidgets, forms, trackableDate} from "@perfice/app";
+    import {dashboards, dashboardWidgets, forms} from "@perfice/app";
     import {
         type DashboardWidget,
         type DashboardWidgetDisplaySettings,
@@ -14,9 +14,12 @@
     import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
     import CalendarScroll from "@perfice/components/base/calendarScroll/CalendarScroll.svelte";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
-    import {faPlus} from "@fortawesome/free-solid-svg-icons";
+    import {faBars, faCheck, faPen, faPlus} from "@fortawesome/free-solid-svg-icons";
     import {get} from "svelte/store";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import IconButton from "@perfice/components/base/button/IconButton.svelte";
+    import Fa from "svelte-fa";
 
     let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
 
@@ -152,12 +155,26 @@
 <GenericDeleteModal subject="this widget" onDelete={onWidgetDelete} bind:this={deleteWidgetModal}/>
 <FormModal bind:this={formModal}/>
 
+<MobileTopBar title="Dashboard">
+    {#snippet leading()}
+        <button class="icon-button" onclick={() => console.log("TODO")}>
+            <Fa icon={faBars}/>
+        </button>
+    {/snippet}
+    {#snippet actions()}
+        <IconButton icon={$editingDashboard ? faCheck : faPen} onClick={() => $editingDashboard = !$editingDashboard}/>
+        {#if $editingDashboard}
+            <IconButton icon={faPlus} onClick={openAddWidgetSidebar}/>
+        {/if}
+    {/snippet}
+</MobileTopBar>
+
 <div class="flex-1 h-screen overflow-y-scroll scrollbar-hide md:w-auto w-screen pb-32 px-2">
     <div class="flex justify-end">
         <div class="row-gap p-2 flex-wrap">
             <CalendarScroll value={$dashboardDate} onChange={(v) => $dashboardDate = v}/>
-            <input type="checkbox" bind:checked={$editingDashboard}>
-            <button onclick={openAddWidgetSidebar}>+</button>
+            <input type="checkbox" class="hidden md:block" bind:checked={$editingDashboard}>
+            <button onclick={openAddWidgetSidebar} class="hidden md:block">+</button>
             {#await $dashboards then values}
                 <BindableDropdownButton
                         class="min-w-64"
