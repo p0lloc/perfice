@@ -13,6 +13,7 @@ import type {JournalCollection, TagCollection, TagEntryCollection} from "@perfic
 import {WEEK_DAY_TO_NAME} from "@perfice/util/time/format";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import type {Tag} from "@perfice/model/tag/tag";
+import type {JournalEntry} from "@perfice/model/journal/journal";
 
 export const WEEK_DAY_KEY_PREFIX = "wd_";
 export const CATEGORICAL_KEY_PREFIX = "cat_";
@@ -717,11 +718,16 @@ export class AnalyticsService {
         return [result, tags];
     }
 
-    async fetchRawValues(timeScope: SimpleTimeScopeType, date: Date, range: number): Promise<[RawAnalyticsValues, Form[]]> {
+    async fetchFormsAndEntries(date: Date, range: number): Promise<[Form[], JournalEntry[]]> {
         let forms = await this.formService.getForms();
-        let [start, end] = this.getTimeRange(date, timeScope, range);
+        let start = offsetDateByTimeScope(date, SimpleTimeScopeType.DAILY, -range);
         let entries = await this.journalCollection
-            .getEntriesByTimeRange(start, end);
+            .getEntriesByTimeRange(start.getTime(), date.getTime());
+
+        return [forms, entries];
+    }
+
+    async constructRawValues(forms: Form[], entries: JournalEntry[], timeScope: SimpleTimeScopeType): Promise<[RawAnalyticsValues, Form[]]> {
 
         // Form id -> question id -> values
         let res: RawAnalyticsValues = new Map();

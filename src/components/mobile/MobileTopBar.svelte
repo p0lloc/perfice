@@ -4,7 +4,7 @@
     let {title, leading, actions}: { title: string, leading?: Snippet, actions?: Snippet } = $props();
 </script>
 
-<div class="w-screen max-w-screen border-b md:hidden p-2 flex items-center sticky justify-between min-h-12">
+<div class="w-screen max-w-screen border-b md:hidden p-2 flex items-center sticky justify-between min-h-12 bg-white">
     <div class="z-10 row-gap">
         {@render leading?.()}
     </div>

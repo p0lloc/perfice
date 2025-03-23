@@ -13,37 +13,46 @@ import type {AnalyticsSettingsService} from "@perfice/services/analytics/setting
 import type {AnalyticsHistoryEntry, AnalyticsHistoryService} from "@perfice/services/analytics/history";
 
 export interface AnalyticsResult {
-    correlations: Map<string, CorrelationResult>;
+    correlations: Map<SimpleTimeScopeType, Map<string, CorrelationResult>>;
     forms: Form[];
     tags: Tag[];
-    rawValues: RawAnalyticsValues;
+    rawValues: Map<SimpleTimeScopeType, RawAnalyticsValues>;
     tagValues: TagAnalyticsValues;
 
-    timeScope: SimpleTimeScopeType;
     range: number;
     date: Date;
 }
 
 async function fetchAnalytics(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
                               historyService: AnalyticsHistoryService | null,
-                              date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+                              date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
 
     let allSettings = await settingsService.getAllSettings();
-    let [rawValues, forms] = await analyticsService.fetchRawValues(timeScope, date, range);
-    let [tagValues, tags] = await analyticsService.fetchTagValues(timeScope, date, 7 * 14);
+    let [forms, entries] = await analyticsService.fetchFormsAndEntries(date, range);
+
+    let [dailyValues] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
+    let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7 * 14);
     // TODO: limit tag values to same range for correlations
-    let correlations = await analyticsService.runBasicCorrelations(rawValues, tagValues, allSettings, date, range, minimumSampleSize);
+    let dailyCorrelations = await analyticsService.runBasicCorrelations(dailyValues, tagValues, allSettings, date, range, minimumSampleSize);
 
     if (historyService != null) {
-        historyService.processResult(correlations, date);
+        historyService.processResult(dailyCorrelations, date);
     }
 
+    let [weeklyValues] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.WEEKLY);
+    let weeklyCorrelations = await analyticsService.runBasicCorrelations(weeklyValues, tagValues, allSettings, date, range, minimumSampleSize);
+
     return {
-        correlations,
+        correlations: new Map([
+            [SimpleTimeScopeType.DAILY, dailyCorrelations],
+            [SimpleTimeScopeType.WEEKLY, weeklyCorrelations],
+        ]),
         forms,
-        rawValues,
+        rawValues: new Map([
+            [SimpleTimeScopeType.DAILY, dailyValues],
+            [SimpleTimeScopeType.WEEKLY, weeklyValues],
+        ]),
         tagValues,
-        timeScope,
         tags,
         range,
         date
@@ -56,8 +65,8 @@ export interface DetailCorrelation {
     value: CorrelationResult;
 }
 
-export function createDetailedCorrelations(result: AnalyticsResult, search: string): DetailCorrelation[] {
-    return result.correlations.entries()
+export function createDetailedCorrelations(correlations: Map<string, CorrelationResult>, result: AnalyticsResult, search: string): DetailCorrelation[] {
+    return correlations.entries()
         .filter(([k, v]) => k.includes(search) && Math.abs(v.coefficient) > 0.2)
         .map(([key, value]) => {
             return {
@@ -87,19 +96,19 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
     constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
                 historyService: AnalyticsHistoryService,
                 date: Date, range: number, minimumSampleSize: number) {
-        super(fetchAnalytics(analyticsService, settingsService, historyService, date, SimpleTimeScopeType.DAILY, range, minimumSampleSize));
+        super(fetchAnalytics(analyticsService, settingsService, historyService, date, range, minimumSampleSize));
         this.settingsService = settingsService;
         this.analyticsService = analyticsService;
         this.historyService = historyService;
     }
 
-    async getSpecificAnalytics(date: Date, timeScope: SimpleTimeScopeType, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+    async getSpecificAnalytics(date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
         let analytics = await this.get();
-        if (analytics.timeScope == timeScope && analytics.range == range) {
+        if (analytics.range == range) {
             return analytics;
         }
 
-        return fetchAnalytics(this.analyticsService, this.settingsService, null, date, timeScope, range, minimumSampleSize);
+        return fetchAnalytics(this.analyticsService, this.settingsService, null, date, range, minimumSampleSize);
     }
 
     getNewestCorrelations(limit: number, until: number): AnalyticsHistoryEntry[] {

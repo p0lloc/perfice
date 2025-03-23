@@ -58,7 +58,8 @@ test("basic raw values single", async () => {
         ]
     ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     expect(values).toEqual(new Map([
         ["test_form", new Map([
             ["test", {
@@ -87,7 +88,9 @@ test("basic raw quantitative values multiple", async () => {
         ],
     ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
+
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     expect(values).toEqual(new Map([
         ["test_form", new Map([
             ["test", {
@@ -115,7 +118,8 @@ test("basic raw categorical values multiple", async () => {
         ],
     ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     expect(values).toEqual(new Map([
         ["test_form", new Map([
             ["test", {

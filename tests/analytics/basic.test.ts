@@ -27,7 +27,8 @@ test("basic quantitative values", async () => {
         ],
     ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let basic = await analytics.calculateBasicAnalytics("test", values.get("test_form")!.get("test")!, {
         formId: "test_form",
         useMeanValue: {
@@ -69,7 +70,8 @@ test("basic categorical values", async () => {
         ],
     ), journal, tags, tagEntries);
 
-    let [values] = await analytics.fetchRawValues(SimpleTimeScopeType.DAILY, new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let categorical = await analytics.calculateBasicAnalytics("test", values.get("test_form")!.get("test")!, {
         formId: "test_form",
         useMeanValue: {

@@ -126,7 +126,7 @@ export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);
 
 export const analyticsSettings = new AnalyticsSettingsStore(analyticsSettingsService);
-export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, new Date(), 30, 6);
+export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, new Date(), 60, 6);
 
 export const appReady = writable(false);
 

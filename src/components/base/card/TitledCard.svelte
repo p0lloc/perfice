@@ -13,7 +13,7 @@
     } = $props();
 </script>
 
-<div class="border p-4 flex justify-between gap-4 w-full rounded-xl {className}">
+<div class="border p-4 flex justify-between gap-4 w-full rounded-xl {className} bg-white">
     <div class="flex items-center"><span class="w-8">
         {#if icon != null}
             <Fa icon={icon} size="2.0x"/>

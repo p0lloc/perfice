@@ -58,7 +58,8 @@ export function TagAnalytics(): Readable<Promise<TagAnalyticsResult>> {
 
 function createPromise(id: string,
                        res: Promise<AnalyticsResult>,
-                       analyticsService: AnalyticsService) {
+                       analyticsService: AnalyticsService,
+                       timeScope: SimpleTimeScopeType) {
     return new Promise<TagDetailedAnalyticsResult>(
         async (resolve) => {
             let result = await res;
@@ -71,6 +72,9 @@ function createPromise(id: string,
 
             let weekDayAnalytics = await analyticsService.calculateTagWeekDayAnalytics(values);
 
+            let correlations = result.correlations.get(timeScope);
+            if (correlations == null) return;
+
             resolve({
                 tag,
                 weekDayAnalytics: {
@@ -78,7 +82,7 @@ function createPromise(id: string,
                     labels: weekDayAnalytics.values.keys().map(v => WEEK_DAYS_SHORT[v]).toArray(),
                     dataPoints: weekDayAnalytics.values.values().toArray(),
                 },
-                correlations: createDetailedCorrelations(result, tag.id),
+                correlations: createDetailedCorrelations(correlations, result, tag.id),
                 values,
                 date: result.date,
             });
@@ -91,11 +95,11 @@ export function TagDetailedAnalytics(id: string,
 
     if (timeScope != SimpleTimeScopeType.DAILY) {
         // Differing time scope requires a new analytics result
-        return readable(createPromise(id, analytics.getSpecificAnalytics(new Date(), timeScope, 30, 5), analyticsService));
+        return readable(createPromise(id, analytics.getSpecificAnalytics(new Date(), 30, 5), analyticsService, timeScope));
     } else {
         // Use cached value from analytics store
         return derived([analytics], ([$res], set) => {
-            set(createPromise(id, $res, analyticsService));
+            set(createPromise(id, $res, analyticsService, timeScope));
         });
     }
 }

@@ -1,4 +1,4 @@
-import {derived, readable, type Readable} from "svelte/store";
+import {derived, type Readable} from "svelte/store";
 import type {Trackable} from "@perfice/model/trackable/trackable";
 import {
     type AnalyticsResult,
@@ -110,7 +110,10 @@ function createPromise(id: string, rawQuestionId: string | null,
             let trackable = await trackableService.getTrackableById(id);
             if (trackable == null) return;
 
-            let topValues = result.rawValues.get(trackable.formId);
+            let valuesByTimeScope = result.rawValues.get(timeScope);
+            if (valuesByTimeScope == null) return;
+
+            let topValues = valuesByTimeScope.get(trackable.formId);
             if (topValues == null) return;
 
             let settings = await settingsService.getSettingsByForm(trackable.formId);
@@ -156,12 +159,15 @@ function createPromise(id: string, rawQuestionId: string | null,
                 transformedWeekDay = null;
             }
 
+            let correlations = result.correlations.get(timeScope);
+            if (correlations == null) return;
+
             resolve({
                 trackable,
                 weekDayAnalytics: transformedWeekDay,
                 basicAnalytics: basic,
                 questions: form.questions,
-                correlations: createDetailedCorrelations(result, questionId),
+                correlations: createDetailedCorrelations(correlations, result, questionId),
                 chart: constructChartFromValues(bag, useMeanValue, timeScope, formQuestion.dataType),
                 questionId,
                 questionType: formQuestion.dataType,
@@ -175,18 +181,18 @@ export function TrackableDetailedAnalytics(id: string, rawQuestionId: string | n
                                            trackableService: TrackableService,
                                            formService: FormService, settingsService: AnalyticsSettingsService,
                                            analyticsService: AnalyticsService): Readable<Promise<TrackableDetailedAnalyticsResult>> {
-
-    if (timeScope != SimpleTimeScopeType.DAILY) {
-        // Differing time scope requires a new analytics result
-        return readable(createPromise(id, rawQuestionId, timeScope, analytics.getSpecificAnalytics(new Date(), timeScope, 30, 5), trackableService,
-            formService, settingsService, analyticsService));
-    } else {
-        // Use cached value from analytics store
-        return derived([analytics], ([$res], set) => {
-            set(createPromise(id, rawQuestionId, timeScope, $res, trackableService,
+    /*
+        if (timeScope != SimpleTimeScopeType.DAILY) {
+            // Differing time scope requires a new analytics result
+            return readable(createPromise(id, rawQuestionId, timeScope, analytics.getSpecificAnalytics(new Date(), 30, 5), trackableService,
                 formService, settingsService, analyticsService));
-        });
-    }
+        } else {
+            */
+    // Use cached value from analytics store
+    return derived([analytics], ([$res], set) => {
+        set(createPromise(id, rawQuestionId, timeScope, $res, trackableService,
+            formService, settingsService, analyticsService));
+    });
 }
 
 export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[]>> {
@@ -202,7 +208,10 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
                     let settings = allSettings.find(s => s.formId == trackable.formId);
                     if (settings == null) continue;
 
-                    let formData = result.rawValues.get(trackable.formId);
+                    let valuesByTimeScope = result.rawValues.get(SimpleTimeScopeType.DAILY);
+                    if (valuesByTimeScope == null) return;
+
+                    let formData = valuesByTimeScope.get(trackable.formId);
                     if (formData == null) continue;
 
                     let mainValues = formData.get(settings.questionId);
