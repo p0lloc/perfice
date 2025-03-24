@@ -3,11 +3,12 @@
     import {longPress} from "@perfice/util/long-press";
     import type {Snippet} from "svelte";
 
-    let {items, item, class: className = '', disabled = false, onFinalize}: {
+    let {items, item, class: className = '', disabled = false, onFinalize, zoneId = "dnd"}: {
         items: any[],
         item: Snippet<[any]>,
         class?: string,
         disabled?: boolean,
+        zoneId?: string,
 
         onFinalize: (items: any[]) => void
     } = $props();
@@ -54,7 +55,7 @@
 </script>
 
 <div
-        use:dndzone="{{items: currentItems, dragDisabled: dragDisabled || disabled, dropTargetStyle: {}, transformDraggedElement}}"
+        use:dndzone="{{type: zoneId, items: currentItems, dragDisabled: dragDisabled || disabled, dropTargetStyle: {}, transformDraggedElement}}"
         onconsider={onConsider}
         onfinalize={onFinalized}
         class="{className}">

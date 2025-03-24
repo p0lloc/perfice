@@ -53,7 +53,8 @@
     <h2 class="text-xl text-gray-500 font-bold">Options</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>
-<DragAndDropContainer bind:this={dragContainer} onFinalize={onReorderFinalize} items={settings.options}
+<DragAndDropContainer zoneId="select-options" bind:this={dragContainer} onFinalize={onReorderFinalize}
+                      items={settings.options}
                       class="flex flex-col gap-2 mt-2">
     {#snippet item(option)}
         <EditSelectOptionCard {option} onEdit={() => onEditOption(option)}

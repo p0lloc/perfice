@@ -164,6 +164,7 @@
                     <h2>Questions</h2>
                 </div>
                 <DragAndDropContainer
+                        zoneId="form-questions"
                         bind:this={questionContainer}
                         onFinalize={onReorderQuestions}
                         items={form.questions}
