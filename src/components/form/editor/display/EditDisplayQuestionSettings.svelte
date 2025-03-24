@@ -18,6 +18,8 @@
         from "@perfice/components/form/editor/display/select/EditSelectQuestionSettings.svelte";
     import EditSegmentedQuestionSettings
         from "@perfice/components/form/editor/display/segmented/EditSegmentedQuestionSettings.svelte";
+    import EditRangeQuestionSettings
+        from "@perfice/components/form/editor/display/range/EditRangeQuestionSettings.svelte";
 
     let {currentQuestion = $bindable(), dataTypeDef}: {
         currentQuestion: FormQuestion,
@@ -53,6 +55,7 @@
     }>>> = {
         [FormQuestionDisplayType.SELECT]: EditSelectQuestionSettings,
         [FormQuestionDisplayType.SEGMENTED]: EditSegmentedQuestionSettings,
+        [FormQuestionDisplayType.RANGE]: EditRangeQuestionSettings,
     }
 
     const RendererComponent = $derived(FIELD_RENDERERS[currentQuestion.displayType]);

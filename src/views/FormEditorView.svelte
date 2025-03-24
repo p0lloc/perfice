@@ -188,10 +188,12 @@
 
                 <hr class="my-8"/>
 
-                <div class="row-gap items-center text-2xl text-gray-500 mb-4">
-                    <Fa icon={faHeading}/>
-                    <h2>Display format</h2>
-                </div>
+                <div class="mb-4">
+                    <div class="row-gap text-2xl text-gray-500">
+                        <Fa icon={faHeading}/>
+                        <h2>Display format</h2>
+                    </div>
+                    <p class="text-xs">Decides which values to show in the journal</p></div>
 
                 <EditTextOrDynamic
                         value={form.format}

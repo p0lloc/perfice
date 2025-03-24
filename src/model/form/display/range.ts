@@ -3,6 +3,7 @@ import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {HierarchyFormDisplaySettings} from "@perfice/model/form/display/hierarchy";
 
 export interface RangeFormQuestionSettings {
+    step: number;
 }
 
 export class RangeFieldDefinition implements FormDisplayTypeDefinition<RangeFormQuestionSettings> {
@@ -15,7 +16,9 @@ export class RangeFieldDefinition implements FormDisplayTypeDefinition<RangeForm
     }
 
     getDefaultSettings(): RangeFormQuestionSettings {
-        return {};
+        return {
+            step: 1
+        };
     }
 
     getDisplayValue(value: PrimitiveValue, displaySettings: RangeFormQuestionSettings): PrimitiveValue | null {

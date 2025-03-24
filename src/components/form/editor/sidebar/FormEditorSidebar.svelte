@@ -10,8 +10,9 @@
         type FormQuestion,
         FormQuestionDataType,
     } from "@perfice/model/form/form";
-    import { questionDataTypeRegistry } from "@perfice/model/form/data";
-    import EditDisplayQuestionSettings from "@perfice/components/form/editor/display/EditDisplayQuestionSettings.svelte";
+    import {questionDataTypeRegistry} from "@perfice/model/form/data";
+    import EditDisplayQuestionSettings
+        from "@perfice/components/form/editor/display/EditDisplayQuestionSettings.svelte";
     import EditDataQuestionSettings from "@perfice/components/form/editor/data/EditDataQuestionSettings.svelte";
     import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
     import Sidebar from "@perfice/components/base/sidebar/Sidebar.svelte";
@@ -45,34 +46,34 @@
 </script>
 
 <Sidebar
-    title="Edit question"
-    {onClose}
-    closeButtonIcon={faCheck}
-    class="md:w-96"
-    bind:this={sidebar}
+        title="Edit question"
+        {onClose}
+        closeButtonIcon={faCheck}
+        class="md:w-96"
+        bind:this={sidebar}
 >
     {#if currentQuestion != null}
-        <div class="overflow-y-scroll h-full pb-20">
+        <div class="overflow-y-scroll scrollbar-hide h-full pb-32">
             <div class="mt-4 px-4">
-                <IconLabel icon={faFont} title="Name" />
+                <IconLabel icon={faFont} title="Name"/>
                 <input
-                    type="text"
-                    class="w-full border mt-2"
-                    bind:value={currentQuestion.name}
+                        type="text"
+                        class="w-full border mt-2"
+                        bind:value={currentQuestion.name}
                 />
             </div>
             <div class="mt-4 px-4">
-                <IconLabel icon={faDumbbell} title="Unit (optional)" />
+                <IconLabel icon={faDumbbell} title="Unit (optional)"/>
                 <input
-                    type="text"
-                    class="w-full border mt-2"
-                    bind:value={currentQuestion.unit}
-                    placeholder="kg, ml, ..."
+                        type="text"
+                        class="w-full border mt-2"
+                        bind:value={currentQuestion.unit}
+                        placeholder="kg, ml, ..."
                 />
             </div>
 
-            <EditDataQuestionSettings bind:currentQuestion />
-            <EditDisplayQuestionSettings bind:currentQuestion {dataTypeDef} />
+            <EditDataQuestionSettings bind:currentQuestion/>
+            <EditDisplayQuestionSettings bind:currentQuestion {dataTypeDef}/>
         </div>
     {/if}
 </Sidebar>

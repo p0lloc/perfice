@@ -1,8 +1,6 @@
 <script lang="ts">
     import type {SelectFormQuestionSettings, SelectOption} from "@perfice/model/form/display/select";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import EditSelectOptionCard from "@perfice/components/form/editor/display/select/EditSelectOptionCard.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
@@ -19,14 +17,14 @@
 
     async function addOption() {
         let newOption = await editOptionModal.open(null);
-        if(newOption == null) return;
+        if (newOption == null) return;
 
         settings.options.push(newOption);
     }
 
     async function onEditOption(option: SelectOption) {
         let updatedOption = await editOptionModal.open($state.snapshot(option));
-        if(updatedOption == null) return;
+        if (updatedOption == null) return;
 
         settings.options = updateIdentifiedInArray(settings.options, updatedOption);
     }
@@ -61,10 +59,10 @@
         {/if}
     </div>
     {#if settings.grid != null}
-        <div class="mt-2">
+        <div class="mt-2 flex flex-col gap-2">
             <div class="row-between">
                 <p>Items per row</p>
-                <input type="number" class="border" bind:value={settings.grid.itemsPerRow}/>
+                <input type="number" class="border w-1/2" bind:value={settings.grid.itemsPerRow}/>
             </div>
             <div class="row-between">
                 <p>Border</p>

@@ -19,7 +19,7 @@
     function onConsider(e: CustomEvent<DndEvent>) {
         currentItems = e.detail.items;
 
-        if(e.detail.info.source === SOURCES.KEYBOARD && e.detail.info.trigger === TRIGGERS.DRAG_STOPPED){
+        if (e.detail.info.source === SOURCES.KEYBOARD && e.detail.info.trigger === TRIGGERS.DRAG_STOPPED) {
             dragDisabled = true;
             document.body.classList.remove("lock-screen");
         }
@@ -39,16 +39,23 @@
         dragDisabled = false;
     }
 
+    function transformDraggedElement(el?: HTMLElement) {
+        if (el == null) return;
+        // Sometimes the element inherits the background color, but when we drag it we don't want any transparency
+        el.style.backgroundColor = "white";
+    }
+
     /**
      * Invalidates the current items and uses the passed in items instead.
      */
-    export function invalidateItems(){
+    export function invalidateItems() {
         currentItems = items;
     }
 </script>
 
 <div
-        use:dndzone="{{items: currentItems, dragDisabled: dragDisabled || disabled, dropTargetStyle: {}}}" onconsider={onConsider}
+        use:dndzone="{{items: currentItems, dragDisabled: dragDisabled || disabled, dropTargetStyle: {}, transformDraggedElement}}"
+        onconsider={onConsider}
         onfinalize={onFinalized}
         class="{className}">
     {#each currentItems as trackable (trackable.id)}
