@@ -7,19 +7,23 @@
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import EditSelectOptionModal from "@perfice/components/form/editor/display/select/EditSelectOptionModal.svelte";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
+    import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
 
     let {settings = $bindable(), dataType, dataSettings}: {
         settings: SelectFormQuestionSettings,
         dataType: FormQuestionDataType,
         dataSettings: any
     } = $props();
+
     let editOptionModal: EditSelectOptionModal;
+    let dragContainer: DragAndDropContainer;
 
     async function addOption() {
         let newOption = await editOptionModal.open(null);
         if (newOption == null) return;
 
         settings.options.push(newOption);
+        dragContainer.invalidateItems();
     }
 
     async function onEditOption(option: SelectOption) {
@@ -27,10 +31,16 @@
         if (updatedOption == null) return;
 
         settings.options = updateIdentifiedInArray(settings.options, updatedOption);
+        dragContainer.invalidateItems();
+    }
+
+    function onReorderFinalize(items: SelectOption[]) {
+        settings.options = items;
     }
 
     function onDeleteOption(option: SelectOption) {
         settings.options = deleteIdentifiedInArray(settings.options, option.id);
+        dragContainer.invalidateItems();
     }
 </script>
 
@@ -43,12 +53,13 @@
     <h2 class="text-xl text-gray-500 font-bold">Options</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>
-<div class="flex flex-col gap-2 mt-2">
-    {#each settings.options as option}
+<DragAndDropContainer bind:this={dragContainer} onFinalize={onReorderFinalize} items={settings.options}
+                      class="flex flex-col gap-2 mt-2">
+    {#snippet item(option)}
         <EditSelectOptionCard {option} onEdit={() => onEditOption(option)}
                               onDelete={() => onDeleteOption(option)}/>
-    {/each}
-</div>
+    {/snippet}
+</DragAndDropContainer>
 <div class="mt-4">
     <div class="row-between">
         <h2 class="text-xl text-gray-500 font-bold">Grid</h2>

@@ -6,5 +6,6 @@
     let {option, onDelete, onEdit}: { option: SelectOption, onDelete: () => void, onEdit: () => void } = $props();
 </script>
 
-<GenericEditDeleteCard {onEdit} {onDelete} icon={option.icon != null ? ICONS[option.icon] : null} text={option.text}/>
+<GenericEditDeleteCard {onEdit} {onDelete} icon={option.icon != null ? ICONS[option.icon] : undefined}
+                       text={option.text}/>
 

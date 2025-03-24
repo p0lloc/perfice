@@ -3979,6 +3979,11 @@ svelte-fa@^4.0.3:
   resolved "https://registry.npmjs.org/svelte-fa/-/svelte-fa-4.0.3.tgz"
   integrity sha512-saZ8yACM0k9Aexey+2NXU1W0MBosU5lBsRgqFCJKM+Taw7d0HyimPaPAjmvY/Xkyi3UwEYL/Sdu1IZJv/p0Flw==
 
+svelte-range-slider-pips@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/svelte-range-slider-pips/-/svelte-range-slider-pips-3.2.2.tgz#ea57eb43175d1a25e4f89387c4b440b1a9d4b7fc"
+  integrity sha512-Q2+hn5jEP2CtbWFrvFZoThRUURbijWSCsoOR6Z8UUKjA5ftYQI7Z+mHYxHQpnGd3LCb9OlkHX2wM1If+Vbci6g==
+
 svelte@^5.15.0:
   version "5.18.0"
   resolved "https://registry.npmjs.org/svelte/-/svelte-5.18.0.tgz"
