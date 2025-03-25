@@ -44,11 +44,11 @@
     const SEGMENTS: SegmentedItem<string>[] = [
         {name: "General", value: TrackableEditViewType.GENERAL},
         {name: "Form", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
-        {
-            name: "Analytics",
-            suffix: faArrowUpRightFromSquare,
-            onClick: () => goto(`/forms/${editState.trackable.formId}`)
-        },
+        // {
+        //     name: "Analytics",
+        //     suffix: faArrowUpRightFromSquare,
+        //     onClick: () => goto(`/forms/${editState.trackable.formId}`)
+        // },
         {name: "Import/Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 

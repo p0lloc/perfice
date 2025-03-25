@@ -9,7 +9,7 @@ export function longPress(node: HTMLElement) {
     let initialTouchPos = {x: 0, y: 0};
 
     function handleStart(e: TouchEvent | MouseEvent) {
-        if(!e.isTrusted) return; // Prevent redispatch from infinitely looping
+        if (!e.isTrusted) return; // Prevent redispatch from infinitely looping
 
         isTouchEvent = e.type === 'touchstart';
         if (isTouchEvent) {
@@ -82,7 +82,7 @@ export function longPress(node: HTMLElement) {
     node.addEventListener('mousedown', handleStart, {passive: false});
     node.addEventListener('mouseup', handleEnd);
     node.addEventListener('mouseleave', handleEnd);
-    node.addEventListener('touchstart', handleStart, { passive: true });
+    node.addEventListener('touchstart', handleStart, {passive: true});
     node.addEventListener('touchend', handleEnd);
 
     return {
