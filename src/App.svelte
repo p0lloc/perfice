@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { appReady, forms, tags } from "./app";
+    import { appReady, forms, journal, tags } from "./app";
     import type { Route } from "@mateothegreat/svelte5-router";
     import { Router } from "@mateothegreat/svelte5-router";
     import TrackableView from "@perfice/views/TrackableView.svelte";
@@ -15,10 +15,7 @@
     import AnalyticsView from "@perfice/views/AnalyticsView.svelte";
     import AnalyticsDetailView from "@perfice/views/AnalyticsDetailView.svelte";
     import DashboardView from "@perfice/views/DashboardView.svelte";
-    import DynamicInput from "@perfice/components/base/dynamic/DynamicInput.svelte";
-    import { FormQuestionDisplayType, type Form } from "./model/form/form";
-    import type { InputEntity, InputField } from "./model/ui/dynamicInput";
-    import { primitiveAsString } from "./model/primitive/primitive";
+    import QuickLogField from "@perfice/components/QuickLogField.svelte";
 
     const routes: Route[] = [
         { path: "/forms/(?<formId>.*)", component: FormEditorView },
@@ -41,35 +38,6 @@
         routingNavigatorState.push(r.path.toString());
         return r;
     }
-
-    function mapFormsToInputEntities(forms: Form[]): InputEntity[] {
-        let res: InputEntity[] = [];
-        for (let form of forms) {
-            let fields: InputField[] = [];
-            for (let question of form.questions) {
-                let options = undefined;
-                if (question.displayType == FormQuestionDisplayType.SELECT) {
-                    options = question.displaySettings.options.map((o) =>
-                        primitiveAsString(o.value),
-                    );
-                }
-
-                fields.push({
-                    id: question.id,
-                    name: question.name,
-                    options,
-                });
-            }
-
-            res.push({
-                id: form.id,
-                name: form.name,
-                fields,
-            });
-        }
-
-        return res;
-    }
 </script>
 
 <svelte:body onclick={onBodyClick} />
@@ -82,15 +50,7 @@
     </div>
 {/if}
 
-{#await $forms then forms}
-    {#await $tags then tags}
-        <div
-            class="fixed bg-white bottom-12 md:bottom-0 h-16 flex items-center justify-center w-screen border-t px-4"
-        >
-            <DynamicInput entities={mapFormsToInputEntities(forms)} />
-        </div>
-    {/await}
-{/await}
+<QuickLogField />
 
 <style>
     .inp {

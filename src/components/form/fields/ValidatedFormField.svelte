@@ -2,7 +2,6 @@
     import type {FormQuestion} from "@perfice/model/form/form";
     import {
         pDisplay,
-        pList,
         type PrimitiveValue,
         PrimitiveValueType,
         pString
@@ -10,6 +9,7 @@
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import FormFieldRenderer from "@perfice/components/form/fields/FormFieldRenderer.svelte";
+    import {parseAndValidateValue} from "@perfice/model/form/validation";
 
     let {question, disabled, value}: {
         question: FormQuestion,
@@ -35,76 +35,17 @@
 
     let serializedValue: any = $state(serializeValue(value));
 
-    function deserializeMultiple(multiple: any[]): PrimitiveValue | null {
-        let result: PrimitiveValue[] = [];
-        for (let v of multiple) {
-            let deserialized = dataTypeDef.deserialize(v);
-            if (deserialized == null) {
-                return null;
-            }
-
-            result.push(deserialized);
-        }
-
-        return pList(result);
-    }
-
-    function validateMultiple(value: PrimitiveValue): string | null {
-        if (value.type == PrimitiveValueType.LIST) {
-            for (let v of value.value) {
-                let error = dataTypeDef.validate(v.value, question.dataSettings);
-                if (error != null) return error;
-            }
-        }
-
-        return null;
-    }
-
     export function validateAndGetValue(): PrimitiveValue | null {
-        let value: PrimitiveValue | null;
-        let valueSnapshot = $state.snapshot(serializedValue);
-        if (displayTypeDef.hasMultiple(question.displaySettings) && Array.isArray(serializedValue)) {
-            value = deserializeMultiple(valueSnapshot);
-        } else {
-            value = dataTypeDef.deserialize(valueSnapshot);
-        }
-
-        if (value == null) {
-            errorMessage = "Input is incorrectly formatted!";
-            return null;
-        }
-
-        let dataError;
-        if (displayTypeDef.hasMultiple(question.displaySettings)) {
-            dataError = validateMultiple(value);
-        } else {
-            dataError = dataTypeDef.validate(value.value, question.dataSettings);
-        }
-
-        if (dataError != null) {
-            errorMessage = dataError;
-            return null;
-        }
-
-        let error = displayTypeDef.validate(value);
+        let [value, error] = parseAndValidateValue($state.snapshot(serializedValue), question, dataTypeDef, displayTypeDef);
         if (error != null) {
             errorMessage = error;
             return null;
         }
 
-        errorMessage = "";
+        if (value == null)
+            return null;
 
-        let displayValue = displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings);
-        if (displayValue == null) {
-            displayValue = dataTypeDef.getDisplayValue(dataTypeDef.serialize(value)) ?? pString("");
-        }
-
-        if (displayValue.type == PrimitiveValueType.STRING && question.unit != null) {
-            // Append unit to the display value
-            displayValue.value += ` ${question.unit}`;
-        }
-
-        return pDisplay(value, displayValue);
+        return value;
     }
 
     /**

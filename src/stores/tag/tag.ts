@@ -52,4 +52,9 @@ export class TagStore extends AsyncStore<Tag[]> {
         await this.tagService.createTag(name, categoryId);
     }
 
+    async getTagById(id: string): Promise<Tag | undefined> {
+        let tags = await this.get();
+        return tags.find(t => t.id == id);
+    }
+
 }

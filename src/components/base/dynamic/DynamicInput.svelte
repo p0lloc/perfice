@@ -1,204 +1,317 @@
 <script lang="ts">
-	import DynamicLabel from "./DynamicLabel.svelte";
-	import type {
-		InputAnswer,
-		InputEntity,
-		InputField,
-	} from "@perfice/model/ui/dynamicInput";
+    import DynamicLabel from "./DynamicLabel.svelte";
+    import type {
+        DynamicInputAnswer,
+        DynamicInputEntity,
+        DynamicInputField,
+    } from "@perfice/model/ui/dynamicInput";
+    import createFuzzySearch from "@nozbe/microfuzz";
 
-	let { entities }: { entities: InputEntity[] } = $props();
-	let available = $derived(
-		entities.map((f) => f.name.toLowerCase().replace(" ", "-")),
-	);
-	let currentEntity = $state<InputEntity | undefined>(undefined);
+    let {
+        entities,
+        validateAnswer,
+        onSubmit,
+    }: {
+        entities: DynamicInputEntity[];
+        validateAnswer: (answers: DynamicInputAnswer) => Promise<boolean>;
+        onSubmit: (answers: DynamicInputAnswer[]) => void;
+    } = $props();
+    let currentEntity = $state<DynamicInputEntity | undefined>(undefined);
 
-	let dynamic = $state<InputAnswer[]>([]);
-	let suggestions: string[] = $state([]);
-	let currentField = $state<InputField | undefined>(undefined);
+    let dynamic = $state<DynamicInputAnswer[]>([]);
+    let suggestions: string[] = $state([]);
+    let currentField = $state<DynamicInputField | undefined>(undefined);
+    let suggestionStart: number = $state(0);
+    let suggestionEnd: number = $state(0);
+    let suggestionSuffix: string = $state(",");
 
-	function currentWord(full: string, cursorPos: number): number {
-		let start = 0;
-		for (let i = cursorPos; i >= 0; i--) {
-			if (full.charAt(i) == "#") {
-				break;
-			}
+    function currentWord(full: string, cursorPos: number): number {
+        let start = 0;
+        for (let i = cursorPos; i >= 0; i--) {
+            if (full.charAt(i) == "#") {
+                break;
+            }
 
-			start = i;
-		}
+            start = i;
+        }
 
-		return start;
-	}
+        return start;
+    }
 
-	function countSpaces(sub: string, pos: number): number {
-		let res = 0;
-		for (let i = 0; i < pos; i++) {
-			if (sub.charAt(i) != ",") continue;
+    function splitWithIndices(
+        str: string,
+        delim: string,
+    ): [string[], number[]] {
+        let result = [];
+        let indices = [];
+        let lastIndex = 0;
+        let offset = 0; // To account for multi-character delimiters
 
-			res++;
-		}
+        while ((offset = str.indexOf(delim, lastIndex)) !== -1) {
+            result.push(str.substring(lastIndex, offset));
+            indices.push(offset);
+            lastIndex = offset + delim.length;
+        }
 
-		return res;
-	}
+        // Push the remaining part of the string
+        result.push(str.substring(lastIndex));
 
-	function replaceRange(
-		s: string,
-		start: number,
-		end: number,
-		substitute: string,
-	) {
-		return s.substring(0, start) + substitute + s.substring(end);
-	}
+        return [result, indices];
+    }
 
-	function findIndices(str: string, char: string): number[] {
-		var indices = [];
-		for (var i = 0; i < str.length; i++) {
-			if (str[i] === char) indices.push(i);
-		}
+    function countCharacter(sub: string, pos: number, char: string): number {
+        let res = 0;
+        for (let i = 0; i < pos; i++) {
+            if (sub.charAt(i) != char) continue;
 
-		return indices;
-	}
+            res++;
+        }
 
-	function onKeydown(e: KeyboardEvent) {
-		const target = e.target as HTMLInputElement;
-		let value = target.value;
-		switch (e.key) {
-			case "Backspace": {
-				if (value != "") break;
-				dynamic.pop();
-				break;
-			}
+        return res;
+    }
 
-			case "Tab": {
-				if (suggestions.length == 0) return;
+    function replaceRange(
+        s: string,
+        start: number,
+        end: number,
+        substitute: string,
+    ) {
+        return s.substring(0, start) + substitute + s.substring(end);
+    }
 
-				const cursorPos = target.selectionStart ?? 0;
-				let start = currentWord(value, cursorPos);
-				let suggestion = suggestions[0];
-				if (currentEntity == null) {
-					let entity = entities.find((e) => e.name == suggestion);
-					if (entity == null) return;
-					target.value = replaceRange(
-						value,
-						start,
-						value.length,
-						suggestion + ",",
-					);
-					e.preventDefault();
-					currentField = entity.fields[0];
-				} else {
-					if (currentField == null) return;
-					let idx = findIndices(value, ",");
-					let fieldIndex = currentEntity.fields.indexOf(currentField);
-					let lastField =
-						fieldIndex == currentEntity.fields.length - 1;
-					target.value = replaceRange(
-						value,
-						idx[fieldIndex] + 1,
-						value.length,
-						suggestion + (lastField ? "" : ","),
-					);
-					e.preventDefault();
-					//console.log(value, currentField, value.indexOf(","));
-				}
-				break;
-			}
-			case "Enter": {
-				if (
-					currentEntity == null ||
-					currentField !=
-						currentEntity.fields[currentEntity.fields.length - 1]
-				)
-					return;
+    function findIndices(str: string, char: string): number[] {
+        var indices = [];
+        for (var i = 0; i < str.length; i++) {
+            if (str[i] === char) indices.push(i);
+        }
 
-				dynamic.push({
-					id: currentEntity.id,
-					name: currentEntity.name,
-					answers: target.value.split(",").slice(1),
-				});
-				target.value = "";
-				currentField = undefined;
-				break;
-			}
-		}
+        return indices;
+    }
 
-		setTimeout(() => {
-			let full = target.value;
-			const cursorPos = target.selectionStart ?? 0;
-			const endOfInput = cursorPos == full.length;
-			let start = currentWord(full, cursorPos);
+    async function onKeydown(e: KeyboardEvent) {
+        const target = e.target as HTMLInputElement;
+        let value = target.value;
+        switch (e.key) {
+            case "Backspace": {
+                if (value != "") break;
+                dynamic.pop();
+                break;
+            }
 
-			let value = full.substring(start);
-			let parts = value.split(",");
+            case "Tab": {
+                e.preventDefault();
+                if (suggestions.length == 0) return;
 
-			currentEntity = entities.find((e) => e.name == parts[0]);
+                const cursorPos = target.selectionStart ?? 0;
+                let start = currentWord(value, cursorPos);
+                let suggestion = suggestions[0];
+                if (currentEntity == null) {
+                    let entity = entities.find((e) => e.name == suggestion);
+                    if (entity == null) return;
+                    target.value = replaceRange(
+                        value,
+                        start,
+                        value.length,
+                        suggestion + suggestionSuffix,
+                    );
 
-			if (parts.length > 1 && currentEntity != null) {
-				let index = countSpaces(value, cursorPos - start) - 1;
-				if (index >= currentEntity.fields.length) {
-					// Reached the end of fields, no more suggestions after this point
-					suggestions = [];
-					currentField = undefined;
-					return;
-				}
+                    currentField = entity.fields[0];
+                } else {
+                    target.value = replaceRange(
+                        value,
+                        suggestionStart + 1,
+                        suggestionEnd + 1,
+                        suggestion + suggestionSuffix,
+                    );
+                }
+                break;
+            }
+            case "Enter": {
+                if (value.length == 0) {
+                    onSubmit(dynamic);
+                    dynamic = [];
+                    target.value = "";
+                    return;
+                }
 
-				currentField = currentEntity.fields[index];
-				let isLastField =
-					currentField ==
-					currentEntity.fields[currentEntity.fields.length - 1];
+                if (currentEntity == null) return;
 
-				let isLastPartEmpty = parts[parts.length - 1] == "";
-				if (currentField.options) {
-					// Should provide suggestions as long as we're not at the absolute end with no more fields (and the user has typed something)
+                let answers = target.value.split(",").slice(1);
+                let answer: DynamicInputAnswer = {
+                    id: currentEntity.id,
+                    type: currentEntity.type,
+                    name: currentEntity.name,
+                    answers: answers,
+                };
 
-					suggestions = currentField.options.filter((k) =>
-						k.includes(parts[index + 1]),
-					);
-					return;
-				}
-				suggestions = [];
-			} else {
-				if (full.charAt(start - (start != 0 ? 1 : 0)) != "#") {
-					suggestions = [];
-					return;
-				}
+                if (!(await validateAnswer(answer))) {
+                    return;
+                }
 
-				suggestions = available.filter((v) => v.includes(value));
-				currentField = undefined;
-			}
-		});
-	}
+                dynamic.push(answer);
+                target.value = "";
+                currentField = undefined;
+                break;
+            }
+        }
+
+        setTimeout(() => {
+            let full = target.value;
+            const fullCursorPos = target.selectionStart ?? 0;
+            let start = currentWord(full, fullCursorPos);
+            let cursorPos = fullCursorPos - start - 1;
+
+            let value = full.substring(start);
+            let [args, argumentIndices] = splitWithIndices(value, ",");
+
+            currentEntity = entities.find((e) => e.name == args[0]);
+            if (currentEntity != null) {
+                if (currentEntity.fields.length != 0) {
+                    // Only set current entity if we've started the argument list with a comma
+                    currentEntity = args.length < 2 ? undefined : currentEntity;
+                } else {
+                    // Entities without fields don't need arguments
+                    suggestionSuffix = "";
+                    return;
+                }
+            }
+
+            if (args.length > 1 && currentEntity != null) {
+                let o = argumentIndices.filter((i) => cursorPos >= i);
+                let argumentIndex = o.length - 1;
+                let argumentStart = o.length > 0 ? o[argumentIndex] + 1 : 0;
+                let argumentEnd =
+                    argumentIndices.length > o.length
+                        ? argumentIndices[o.length]
+                        : value.length;
+                let argumentContent = value.substring(
+                    argumentStart,
+                    argumentEnd,
+                );
+                let topField = currentEntity.fields[argumentIndex];
+
+                suggestionStart = argumentStart;
+                suggestionEnd = argumentEnd;
+                suggestionSuffix =
+                    argumentIndex < currentEntity.fields.length - 1 ? "," : "";
+
+                if (topField == null) return;
+
+                let curr: DynamicInputField = topField;
+                let search = argumentContent;
+                if (topField.fields) {
+                    let [subArgs, rawSubArgumentIndices] = splitWithIndices(
+                        argumentContent,
+                        "|",
+                    );
+                    // Subargs input doesn't start with a pipe, so we need to add a dummy argument
+                    let subArgumentIndices = [-1, ...rawSubArgumentIndices];
+
+                    let o = subArgumentIndices.filter(
+                        (i) => cursorPos >= argumentStart + i,
+                    );
+                    let subArgumentIndex = o.length - 1;
+                    let subArgumentStart =
+                        argumentStart +
+                        (o.length > 0 ? o[subArgumentIndex] + 1 : 0);
+                    let subArgumentEnd =
+                        subArgumentIndices.length > o.length
+                            ? argumentStart + subArgumentIndices[o.length]
+                            : argumentEnd;
+                    let subArgumentContent = subArgs[subArgumentIndex];
+
+                    suggestionStart = subArgumentStart;
+                    suggestionEnd = subArgumentEnd;
+                    search = subArgumentContent;
+
+                    if (curr.nested === true) {
+                        for (let x of subArgs) {
+                            let val: DynamicInputField | undefined =
+                                curr.fields?.find((v) => v.name == x);
+                            if (val == undefined) continue;
+
+                            curr = val;
+                        }
+                    }
+                }
+
+                currentField = curr;
+
+                if (curr.fields == undefined) {
+                    suggestions = [];
+                    return;
+                }
+
+                let suggested: DynamicInputField[] = [];
+                if (search == "") {
+                    suggested = curr.fields.slice(0, 3);
+                } else {
+                    const fuzzySearch = createFuzzySearch(
+                        $state.snapshot(curr.fields),
+                        { key: "name" },
+                    );
+                    suggested = fuzzySearch(search).map((v) => v.item);
+                }
+
+                if (suggested.length > 0) {
+                    suggestionSuffix =
+                        suggested[0].fields != undefined
+                            ? "|"
+                            : suggestionSuffix;
+                }
+
+                suggestions = suggested.map((v) => v.name);
+            } else {
+                if (full.charAt(start - (start != 0 ? 1 : 0)) != "#") {
+                    suggestions = [];
+                    return;
+                }
+
+                const fuzzySearch = createFuzzySearch(entities, {
+                    key: "name",
+                });
+
+                let suggested = fuzzySearch(value).map((v) => v.item);
+                if (suggested.length > 0) {
+                    suggestionSuffix =
+                        suggested[0].fields.length > 0 ? "," : "";
+                }
+                suggestions = suggested.map((v) => v.name);
+                currentField = undefined;
+            }
+        });
+    }
 </script>
 
 <div class="fixed bottom-12 flex gap-2 bg-white border border-green-400 p-2">
-	{#if suggestions.length > 0}
-		{#each suggestions as suggestion}
-			<span>{suggestion}</span>
-		{/each}
-		<span class="text-gray-400">(Tab)</span>
-	{:else if currentField != null && currentEntity != null}
-		{currentField.name}
-		{#if currentField == currentEntity.fields[currentEntity.fields.length - 1]}
-			<span class="text-gray-400">(Enter)</span>
-		{/if}
-	{/if}
+    {#if suggestions.length > 0}
+        {#each suggestions as suggestion}
+            <span>{suggestion}</span>
+        {/each}
+    {:else if currentField != null && currentEntity != null}
+        {currentField.name}
+    {/if}
+    <span class="text-gray-400"
+        >({suggestionSuffix === "" ? "Enter" : "Tab"})</span
+    >
 </div>
 <div
-	class="flex flex-wrap items-center md:w-1/3 border-red-500 border-2 inp py-1 px-2 gap-1"
+    class="flex flex-wrap items-center md:w-1/3 border-red-500 border-2 inp py-1 px-2 gap-1"
 >
-	{#each dynamic as v}
-		<DynamicLabel>{v.name}</DynamicLabel>
-	{/each}
-	<input
-		type="text"
-		placeholder="#mood 5,content"
-		onkeydown={onKeydown}
-		class="border-none outline-none flex-1"
-		value="#"
-	/>
+    {#each dynamic as v}
+        <DynamicLabel>{v.name}</DynamicLabel>
+    {/each}
+    <input
+        type="text"
+        placeholder="#food,rice|chicken,2000"
+        onkeydown={onKeydown}
+        class="border-none outline-none flex-1"
+        value=""
+    />
 </div>
 
 <style>
-	input[type="text"] {
-		padding: 0px;
-	}
+    input[type="text"] {
+        padding: 0px;
+    }
 </style>

@@ -1,17 +1,20 @@
-export interface InputEntity {
-	id: string;
-	name: string;
-	fields: InputField[];
+export interface DynamicInputEntity {
+    id: string;
+    type: string;
+    name: string;
+    fields: DynamicInputField[];
 }
 
-export interface InputField {
-	id: string;
-	name: string;
-	options?: string[];
+export interface DynamicInputField {
+    id: string;
+    name: string;
+    nested?: boolean;
+    fields?: DynamicInputField[];
 }
 
-export interface InputAnswer {
-	id: string;
-	name: string;
-	answers: string[];
+export interface DynamicInputAnswer {
+    id: string;
+    type: string;
+    name: string;
+    answers: string[];
 }
