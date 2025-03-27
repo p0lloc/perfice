@@ -13,7 +13,7 @@ import {dateToMidnight} from "@perfice/util/time/simple";
 import {EntityObserverType} from "@perfice/services/observer";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
-export const editingDashboard = writable(true);
+export const editingDashboard = writable(false);
 export const dashboardDate = writable(dateToMidnight(new Date()));
 export const selectedWidget: Writable<DashboardWidget | undefined> = writable(undefined);
 

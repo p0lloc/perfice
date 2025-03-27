@@ -8,6 +8,7 @@ export interface HierarchyOption {
     value: PrimitiveValue;
     text: string;
     color: string;
+    gridSize: number;
     children: HierarchyOption[];
 }
 
@@ -27,13 +28,15 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
                 value: pString("root"),
                 text: "",
                 color: "#ff0000",
+                gridSize: 2,
                 children: [
                     {
                         id: "high_unpleasant",
                         value: pString("high_unpleasant"),
                         text: "High energy\nUnpleasant",
                         color: "#FFA9A9",
-                        children: []
+                        children: [],
+                        gridSize: 2,
                     },
 
                     {
@@ -41,7 +44,8 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
                         value: pString("high_pleasant"),
                         text: "High energy\nPleasant",
                         color: "#F5FFA9",
-                        children: []
+                        children: [],
+                        gridSize: 2,
                     },
 
                     {
@@ -49,13 +53,15 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
                         value: pString("low_unpleasant"),
                         text: "Low energy\nUnpleasant",
                         color: "#A9AAFF",
+                        gridSize: 2,
                         children: [
                             {
                                 id: "depressed",
                                 value: pString("Depressed"),
                                 text: "Depressed",
                                 color: "#A9AAFF",
-                                children: []
+                                children: [],
+                                gridSize: 2,
                             },
                         ]
                     },
@@ -64,12 +70,14 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
                         value: pString("low_pleasant"),
                         text: "Low energy\nPleasant",
                         color: "#C0FFA9",
+                        gridSize: 2,
                         children: [
                             {
                                 id: "grateful",
                                 value: pString("Grateful"),
                                 text: "Grateful",
                                 color: "#C0FFA9",
+                                gridSize: 2,
                                 children: []
                             },
 
@@ -78,6 +86,7 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
                                 value: pString("Content"),
                                 text: "Content",
                                 color: "#C0FFA9",
+                                gridSize: 2,
                                 children: []
                             }
                         ]

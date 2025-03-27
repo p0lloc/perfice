@@ -10,6 +10,8 @@
     import EditNumberQuestionSettings
         from "@perfice/components/form/editor/data/number/EditNumberQuestionSettings.svelte";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
+    import EditHierarchyQuestionSettings
+        from "@perfice/components/form/editor/data/hierarchy/EditHierarchyQuestionSettings.svelte";
 
     let {currentQuestion = $bindable()}: { currentQuestion: FormQuestion } = $props();
 
@@ -27,7 +29,7 @@
         currentQuestion.dataSettings = definition.getDefaultSettings();
 
         let displayDef = questionDisplayTypeRegistry.getFieldByType(currentQuestion.displayType)!;
-        if(displayDef != null) {
+        if (displayDef != null) {
             // Transform the display settings to the new data type
             currentQuestion.displaySettings = displayDef.onDataTypeChanged(currentQuestion.displaySettings, type);
         }
@@ -47,6 +49,7 @@
     const FIELD_RENDERERS: Partial<Record<FormQuestionDataType, Component<{ settings: any }>>> = {
         [FormQuestionDataType.TEXT]: EditTextQuestionSettings,
         [FormQuestionDataType.NUMBER]: EditNumberQuestionSettings,
+        [FormQuestionDataType.HIERARCHY]: EditHierarchyQuestionSettings,
     }
 
     const RendererComponent = $derived(FIELD_RENDERERS[currentQuestion.dataType]);

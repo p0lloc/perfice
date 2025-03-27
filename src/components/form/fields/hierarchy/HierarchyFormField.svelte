@@ -23,7 +23,7 @@
 
             selectedOption = child;
 
-            if(child.children.length > 0) {
+            if (child.children.length > 0) {
                 newRoot = child;
             }
         }
@@ -36,9 +36,9 @@
     }
 
     function onOptionClicked(o: HierarchyOption) {
-        if(disabled) return;
+        if (disabled) return;
         let currentValue: PrimitiveValue[] = $state.snapshot(value);
-        if(selected?.children.length == 0){
+        if (selected?.children.length == 0) {
             // If current value has no children, remove it as the selected option
             currentValue = currentValue.filter(v => !comparePrimitives(v, selected!.value));
         }
@@ -51,10 +51,11 @@
 <div class="md:max-w-96">
     {#if selected != null && (value.length > 1 || selected.children.length > 0)}
         <div class="mb-2">
-            <IconButton icon={faArrowLeft} onClick={reset} />
+            <IconButton icon={faArrowLeft} onClick={reset}/>
         </div>
     {/if}
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid gap-4"
+         style:grid-template-columns="repeat({root.gridSize ?? 2}, minmax(0, 1fr))">
         {#each root.children as option(option.id)}
             <HierarchyButton selected={selected?.id === option.id} {option}
                              onClick={() => onOptionClicked(option)}/>
