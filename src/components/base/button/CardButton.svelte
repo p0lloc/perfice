@@ -16,8 +16,8 @@
 </script>
 
 
-<button onclick={onClick} class="hover-feedback {className}">
-    <TitledCard icon={icon} title={title} description={description}>
+<button onclick={onClick} class="{className}">
+    <TitledCard icon={icon} title={title} description={description} class="hover-feedback">
         {#snippet suffix()}
             {@render cardSuffix?.()}
         {/snippet}

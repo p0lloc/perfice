@@ -1,5 +1,6 @@
 import {AggregateType} from "@perfice/services/variable/types/aggregate";
 import {
+    faDiceOne,
     faDivide,
     faEquals,
     faGreaterThan,
@@ -15,6 +16,11 @@ import {FilterComparisonOperator} from "@perfice/services/variable/filtering";
 import {getWeekNumber} from "@perfice/util/time/simple";
 
 export const AGGREGATE_TYPES = [
+    {
+        value: AggregateType.COUNT,
+        name: "Count",
+        icon: faDiceOne
+    },
     {
         value: AggregateType.SUM,
         name: "Sum",

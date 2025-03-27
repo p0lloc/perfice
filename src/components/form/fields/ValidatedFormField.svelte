@@ -59,9 +59,11 @@
     function onRendererUpdateValue(v: any) {
         serializedValue = v;
     }
+
+    let unitFormatted = $derived(question.unit != null ? ` (${question.unit})` : "");
 </script>
 
-<p class="label mb-2">{question.name}</p>
+<p class="label mb-2">{question.name}{unitFormatted}</p>
 <FormFieldRenderer dataSettings={question} value={serializedValue} {disabled}
                    onChange={onRendererUpdateValue}
                    displayType={question.displayType}

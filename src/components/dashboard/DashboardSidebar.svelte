@@ -46,7 +46,7 @@
         bind:this={sidebar}
 >
     {#if action != null}
-        <div class="p-4">
+        <div class="p-4 pb-20 flex-1 overflow-y-scroll scrollbar-hide">
             <RendererComponent action={action.value}/>
         </div>
     {/if}

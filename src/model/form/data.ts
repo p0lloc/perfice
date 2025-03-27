@@ -106,7 +106,8 @@ questionDataTypeRegistry.registerDataType(FormQuestionDataType.DATE_TIME, new Da
 questionDataTypeRegistry.registerDataType(FormQuestionDataType.TIME_OF_DAY, new TimeOfDayFormQuestionDataType());
 questionDataTypeRegistry.registerDataType(FormQuestionDataType.BOOLEAN, new BooleanFormQuestionDataType());
 questionDataTypeRegistry.registerDataType(FormQuestionDataType.HIERARCHY, new HierarchyFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.RICH_TEXT, new RichTextFormQuestionDataType());
+
+//questionDataTypeRegistry.registerDataType(FormQuestionDataType.RICH_TEXT, new RichTextFormQuestionDataType());
 
 export function formatValueAsDataType(value: any, dataType: string): string {
     let dataTypeDef = questionDataTypeRegistry.getDefinition(dataType);

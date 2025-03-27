@@ -15,9 +15,12 @@
 
 {#if value.source.type === PrimitiveValueType.NUMBER && value.target.type === PrimitiveValueType.NUMBER}
     <div class="row-between">
-        <CircularProgressBar width={30} height={30} strokeWidth={60}
-                             progress={calculateProgressSafe(value.source.value, value.target.value)}
-                             strokeColor={color}/>
+        <div class="row-gap">
+            <CircularProgressBar width={30} height={30} strokeWidth={60}
+                                 progress={calculateProgressSafe(value.source.value, value.target.value)}
+                                 strokeColor={color}/>
+            <span class="text-xs">{value.name}</span>
+        </div>
         {formatComparisonNumberValues(value.source.value, value.target.value)}
     </div>
 {:else}

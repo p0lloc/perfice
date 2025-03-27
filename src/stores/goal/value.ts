@@ -18,6 +18,7 @@ export type GoalConditionValueResult =
     | GV<GoalConditionType.COMPARISON, ComparisonValueResult>;
 
 export interface ComparisonValueResult {
+    name: string;
     source: PrimitiveValue;
     operator: ComparisonOperator;
     target: PrimitiveValue;
@@ -42,9 +43,16 @@ function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: Goa
         case GoalConditionType.COMPARISON: {
             if (result.type != PrimitiveValueType.COMPARISON_RESULT) return null;
 
+            let name = "Goal";
+            let dependencies = condition.value.getDependencies();
+            if (dependencies.length > 0) {
+                let variable = variableService.getVariableById(dependencies[0]);
+                name = variable?.name ?? "Unknown";
+            }
             return {
                 type: GoalConditionType.COMPARISON,
                 value: {
+                    name: name,
                     source: result.value.source,
                     operator: condition.value.getOperator(),
                     target: result.value.target,

@@ -36,37 +36,44 @@
 
     function onAggregateTypeChange(newType: AggregateType) {
         aggregateType = newType;
+        value = new AggregateVariableType(newType, value.getListVariableId(), value.getField());
         variableEditProvider.updateVariable({
             ...variable, type: {
                 type: VariableTypeName.AGGREGATE,
-                value: new AggregateVariableType(newType, value.getListVariableId(), value.getField())
+                value: value
             }
         });
     }
 
     function onFieldChange(newField: string) {
         field = newField;
+        editState.listVariableValue = new ListVariableType(editState.listVariableValue.getFormId(),
+            {[newField]: useDisplayValues}, editState.listVariableValue.getFilters());
+        value = new AggregateVariableType(value.getAggregateType(), editState.listVariable.id, newField);
+
         variableEditProvider.updateVariable({
             ...editState.listVariable, type: {
                 type: VariableTypeName.LIST,
-                value: new ListVariableType(editState.listVariableValue.getFormId(), {[newField]: useDisplayValues}, editState.listVariableValue.getFilters())
+                value: editState.listVariableValue
             }
         });
         variableEditProvider.updateVariable({
             ...variable, type: {
                 type: VariableTypeName.AGGREGATE,
-                value: new AggregateVariableType(value.getAggregateType(), editState.listVariable.id, newField)
+                value: value,
             }
         });
     }
 
     function onFilterChange(newFilters: JournalEntryFilter[]) {
         filters = newFilters;
+        editState.listVariableValue = new ListVariableType(editState.listVariableValue.getFormId(),
+            editState.listVariableValue.getFields(), $state.snapshot(newFilters));
+
         variableEditProvider.updateVariable({
             ...editState.listVariable, type: {
                 type: VariableTypeName.LIST,
-                value: new ListVariableType(editState.listVariableValue.getFormId(),
-                    editState.listVariableValue.getFields(), $state.snapshot(newFilters))
+                value: editState.listVariableValue
             }
         });
     }

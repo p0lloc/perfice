@@ -8,7 +8,7 @@
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
     import EditLatestVariable from "@perfice/components/variable/edit/latest/EditLatestVariable.svelte";
 
-    let {variableId, onEdit, editName = false, useDisplayValues = false}: {
+    let {variableId, onEdit, editName = true, useDisplayValues = false}: {
         variableId: string,
         onEdit: (v: EditConstantOrVariableState) => void,
         editName?: boolean

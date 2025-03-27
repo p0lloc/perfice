@@ -149,7 +149,10 @@
         grid.updateWidget(widget);
     }
 
+    // Reset state when we visit the page
     dashboardDate.set(dateToMidnight(new Date()));
+    selectedWidget.set(undefined);
+    editingDashboard.set(false);
 </script>
 
 <GenericDeleteModal subject="this widget" onDelete={onWidgetDelete} bind:this={deleteWidgetModal}/>

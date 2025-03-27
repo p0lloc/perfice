@@ -1,9 +1,11 @@
 import type {FormQuestionDisplaySettingsValue} from "./display";
 import type {DataSettingValues, FormQuestionDataSettings} from "@perfice/model/form/data";
-import {FormQuestionDataType, FormQuestionDisplayType } from "./form";
-import {faBorderAll, faCalendar, faCircleDot, faFolderTree, faHashtag, faKeyboard,
-    faRulerHorizontal, faStopwatch, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { faFont } from "@fortawesome/free-solid-svg-icons/faFont";
+import {FormQuestionDataType, FormQuestionDisplayType} from "./form";
+import {
+    faBorderAll, faCalendar, faCheck, faCircleDot, faFolderTree, faHashtag, faKeyboard,
+    faRulerHorizontal, faStopwatch, type IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
+import {faFont} from "@fortawesome/free-solid-svg-icons/faFont";
 
 export interface FormFieldProps {
     displaySettings: FormQuestionDisplaySettingsValue;
@@ -86,7 +88,7 @@ export const QUESTION_DATA_TYPES: FriendlyQuestionDataType [] = [
     {
         name: "True/false",
         type: FormQuestionDataType.BOOLEAN,
-        icon: faHashtag
+        icon: faCheck
     },
 
     {
@@ -95,20 +97,12 @@ export const QUESTION_DATA_TYPES: FriendlyQuestionDataType [] = [
         icon: faCalendar
     },
 
-
-    {
-        name: "Rich text",
-        type: FormQuestionDataType.RICH_TEXT,
-        icon: faCalendar
-    },
-
     {
         name: "Hierarchy",
         type: FormQuestionDataType.HIERARCHY,
-        icon: faCalendar
+        icon: faFolderTree
     }
 ];
-
 
 
 export const QUESTION_DISPLAY_TYPES: FriendlyQuestionDisplayType[] = [

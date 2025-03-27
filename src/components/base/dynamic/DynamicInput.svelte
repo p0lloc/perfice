@@ -1,10 +1,6 @@
 <script lang="ts">
     import DynamicLabel from "./DynamicLabel.svelte";
-    import type {
-        DynamicInputAnswer,
-        DynamicInputEntity,
-        DynamicInputField,
-    } from "@perfice/model/ui/dynamicInput";
+    import type {DynamicInputAnswer, DynamicInputEntity, DynamicInputField,} from "@perfice/model/ui/dynamicInput";
     import createFuzzySearch from "@nozbe/microfuzz";
 
     let {
@@ -24,6 +20,8 @@
     let suggestionStart: number = $state(0);
     let suggestionEnd: number = $state(0);
     let suggestionSuffix: string = $state(",");
+
+    let inputField: HTMLInputElement;
 
     function currentWord(full: string, cursorPos: number): number {
         let start = 0;
@@ -59,17 +57,6 @@
         return [result, indices];
     }
 
-    function countCharacter(sub: string, pos: number, char: string): number {
-        let res = 0;
-        for (let i = 0; i < pos; i++) {
-            if (sub.charAt(i) != char) continue;
-
-            res++;
-        }
-
-        return res;
-    }
-
     function replaceRange(
         s: string,
         start: number,
@@ -77,15 +64,6 @@
         substitute: string,
     ) {
         return s.substring(0, start) + substitute + s.substring(end);
-    }
-
-    function findIndices(str: string, char: string): number[] {
-        var indices = [];
-        for (var i = 0; i < str.length; i++) {
-            if (str[i] === char) indices.push(i);
-        }
-
-        return indices;
     }
 
     async function onKeydown(e: KeyboardEvent) {
@@ -248,7 +226,7 @@
                 } else {
                     const fuzzySearch = createFuzzySearch(
                         $state.snapshot(curr.fields),
-                        { key: "name" },
+                        {key: "name"},
                     );
                     suggested = fuzzySearch(search).map((v) => v.item);
                 }
@@ -267,11 +245,17 @@
                     return;
                 }
 
-                const fuzzySearch = createFuzzySearch(entities, {
-                    key: "name",
-                });
+                let suggested: DynamicInputEntity[];
+                if (value == "") {
+                    suggested = entities.slice(0, 3);
+                } else {
+                    const fuzzySearch = createFuzzySearch(entities, {
+                        key: "name",
+                    });
 
-                let suggested = fuzzySearch(value).map((v) => v.item);
+                    suggested = fuzzySearch(value).map((v) => v.item);
+                }
+
                 if (suggested.length > 0) {
                     suggestionSuffix =
                         suggested[0].fields.length > 0 ? "," : "";
@@ -281,37 +265,51 @@
             }
         });
     }
+
+    function handleBodyKeydown(e: KeyboardEvent) {
+        if (e.ctrlKey && e.key == "k") {
+            e.preventDefault();
+            e.stopPropagation();
+
+            inputField.focus();
+        }
+    }
 </script>
 
-<div class="fixed bottom-12 flex gap-2 bg-white border border-green-400 p-2">
-    {#if suggestions.length > 0}
-        {#each suggestions as suggestion}
-            <span>{suggestion}</span>
-        {/each}
-    {:else if currentField != null && currentEntity != null}
-        {currentField.name}
-    {/if}
-    <span class="text-gray-400"
+<svelte:body on:keydown={handleBodyKeydown}/>
+
+{#if (currentField != null && currentEntity != null) || suggestions.length > 0}
+    <div class="fixed bottom-12 flex gap-2 bg-white border-t border-x  rounded-t-md p-2">
+        {#if suggestions.length > 0}
+            {#each suggestions as suggestion}
+                <span>{suggestion}</span>
+            {/each}
+        {:else if currentField != null && currentEntity != null}
+            {currentField.name}
+        {/if}
+        <span class="text-gray-400"
         >({suggestionSuffix === "" ? "Enter" : "Tab"})</span
-    >
-</div>
+        >
+    </div>
+{/if}
 <div
-    class="flex flex-wrap items-center md:w-1/3 border-red-500 border-2 inp py-1 px-2 gap-1"
+        class="flex flex-wrap items-center border rounded-md inp py-1 px-2 gap-1"
 >
     {#each dynamic as v}
         <DynamicLabel>{v.name}</DynamicLabel>
     {/each}
     <input
-        type="text"
-        placeholder="#food,rice|chicken,2000"
-        onkeydown={onKeydown}
-        class="border-none outline-none flex-1"
-        value=""
+            bind:this={inputField}
+            type="text"
+            placeholder="#food,rice|chicken,2000 (Ctrl+K)"
+            onkeydown={onKeydown}
+            class="border-none outline-none flex-1"
+            value=""
     />
 </div>
 
 <style>
     input[type="text"] {
-        padding: 0px;
+        padding: 0;
     }
 </style>

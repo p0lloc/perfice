@@ -7,6 +7,7 @@ import {pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/p
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 
 export enum AggregateType {
+    COUNT = "COUNT",
     SUM = "SUM",
     MEAN = "MEAN",
 }
@@ -76,6 +77,9 @@ export class AggregateVariableType implements VariableType {
         let numbers = extractNumbers(list);
 
         switch (this.aggregateType) {
+            case AggregateType.COUNT: {
+                return pNumber(numbers.length);
+            }
             case AggregateType.SUM: {
                 return pNumber(sumNumbers(numbers));
             }

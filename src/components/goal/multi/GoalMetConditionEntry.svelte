@@ -6,6 +6,6 @@
 </script>
 
 <div class="row-between">
-    <GoalMetIndicator value={value.met} />
+    <GoalMetIndicator value={value.met}/>
     {value.name}
 </div>

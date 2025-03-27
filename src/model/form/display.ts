@@ -59,5 +59,5 @@ questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.SELECT, new Se
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.INPUT, new InputFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.HIERARCHY, new HierarchyFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.SEGMENTED, new SegmentedFieldDefinition());
-questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RICH_INPUT, new RichInputFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RANGE, new RangeFieldDefinition());
+//questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RICH_INPUT, new RichInputFieldDefinition());
