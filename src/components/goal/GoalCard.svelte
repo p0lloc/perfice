@@ -10,7 +10,7 @@
     import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
     import GoalCardBase from "@perfice/components/goal/GoalCardBase.svelte";
 
-    let {goal, date}: { goal: Goal; date: Date } = $props();
+    let {goal, date, onDelete}: { goal: Goal; date: Date, onDelete: () => void } = $props();
     let cardId = crypto.randomUUID();
 
     let res = $derived(goalValue(goal.variableId, date, WeekStart.MONDAY, cardId));
@@ -19,14 +19,10 @@
         goto(`/goals/${goal.id}`);
     }
 
-    async function deleteGoal() {
-        if (goal == null) return;
-        await goals.deleteGoalById(goal.id);
-    }
 
     const EDIT_POPUP: ContextMenuButton[] = [
         {name: "Edit", action: editGoal, icon: faPen},
-        {name: "Delete", action: deleteGoal, icon: faTrash},
+        {name: "Delete", action: onDelete, icon: faTrash},
     ];
 
     onDestroy(() => disposeCachedStoreKey(cardId));

@@ -9,9 +9,22 @@
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {dateToMidnight} from "@perfice/util/time/simple";
+    import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
+    import type {Goal} from "@perfice/model/goal/goal";
+
+    let deleteGoalModal: GenericDeleteModal<Goal>;
 
     function onDateChange(e: Date) {
         $goalDate = e;
+    }
+
+    function onGoalStartDelete(goal: Goal) {
+        deleteGoalModal.open(goal);
+    }
+
+    async function onGoalDelete(goal: Goal) {
+        if (goal == null) return;
+        await goals.deleteGoalById(goal.id);
     }
 
     onMount(() => {
@@ -22,6 +35,7 @@
 </script>
 
 
+<GenericDeleteModal subject="this goal" onDelete={onGoalDelete} bind:this={deleteGoalModal}/>
 <MobileTopBar title="Goals">
     {#snippet leading()}
         <button class="icon-button" onclick={() => console.log("TODO")}>
@@ -36,7 +50,7 @@
     {:then value}
         <div class="w-full mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {#each value as goal(goal.id)}
-                <GoalCard date={$goalDate} goal={goal}/>
+                <GoalCard onDelete={() => onGoalStartDelete(goal)} date={$goalDate} goal={goal}/>
             {/each}
 
             <GoalNewCard/>
