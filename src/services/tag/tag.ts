@@ -1,7 +1,7 @@
 import type {Tag} from "@perfice/model/tag/tag";
 import type {TagCollection} from "@perfice/db/collections";
 import {VariableTypeName, type Variable} from "@perfice/model/variable/variable";
-import { TagVariableType } from "../variable/types/tag";
+import {TagVariableType} from "../variable/types/tag";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {TagEntryService} from "@perfice/services/tag/entry";
@@ -25,8 +25,8 @@ export class TagService {
         return await this.tagCollection.getTags();
     }
 
-    async logTag(tag: Tag, date: Date) {
-        await this.tagEntryService.logTagEntry(tag, date.getTime());
+    async logTag(tagId: string, date: Date) {
+        await this.tagEntryService.logTagEntry(tagId, date.getTime());
     }
 
     async getTagById(id: string): Promise<Tag | undefined> {

@@ -98,10 +98,7 @@
                     break;
                 }
                 case "tag": {
-                    let tag = await tags.getTagById(answer.id);
-                    if (tag == null) continue;
-
-                    await tags.logTag(tag, new Date());
+                    await tags.logTag(answer.id, new Date());
                     break;
                 }
             }

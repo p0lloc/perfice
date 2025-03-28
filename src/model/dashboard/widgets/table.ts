@@ -66,7 +66,6 @@ export class DashboardTableWidgetDefinition implements DashboardWidgetDefinition
     updateDependencies(dependencies: Record<string, string>,
                        previousSettings: DashboardTableWidgetSettings, settings: DashboardTableWidgetSettings): Map<string, VariableTypeDef> {
 
-        // TODO: make sure it actually changed something important
         return new Map([["list", this.createTypeDef(settings)]]);
     }
 

@@ -2,23 +2,31 @@
     import type {DashboardEditWidgetAction} from "@perfice/model/dashboard/ui";
     import {DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
     import EditEntryRowWidgetSidebar
-        from "@perfice/components/dashboard/sidebar/edit/types/EditEntryRowWidgetSidebar.svelte";
+        from "@perfice/components/dashboard/sidebar/edit/types/entryRow/EditEntryRowWidgetSidebar.svelte";
     import type {Component} from "svelte";
     import type {Form} from "@perfice/model/form/form";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
-    import EditChartWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditChartWidgetSidebar.svelte";
-    import EditTableWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditTableWidgetSidebar.svelte";
+    import EditChartWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/chart/EditChartWidgetSidebar.svelte";
+    import EditTableWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/table/EditTableWidgetSidebar.svelte";
     import EditWelcomeWidgetSidebar
-        from "@perfice/components/dashboard/sidebar/edit/types/EditWelcomeWidgetSidebar.svelte";
-    import EditGoalWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditGoalWidgetSidebar.svelte";
-    import EditTagsWidgetSidebar from "@perfice/components/dashboard/sidebar/edit/types/EditTagsWidgetSidebar.svelte";
+        from "@perfice/components/dashboard/sidebar/edit/types/welcome/EditWelcomeWidgetSidebar.svelte";
+    import EditGoalWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/goal/EditGoalWidgetSidebar.svelte";
+    import EditTagsWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/tags/EditTagsWidgetSidebar.svelte";
     import EditMetricWidgetSidebar
-        from "@perfice/components/dashboard/sidebar/edit/types/EditMetricWidgetSidebar.svelte";
+        from "@perfice/components/dashboard/sidebar/edit/types/metric/EditMetricWidgetSidebar.svelte";
     import EditTrackableWidgetSidebar
-        from "@perfice/components/dashboard/sidebar/edit/types/EditTrackableWidgetSidebar.svelte";
+        from "@perfice/components/dashboard/sidebar/edit/types/trackable/EditTrackableWidgetSidebar.svelte";
     import EditInsightsWidgetSidebar
-        from "@perfice/components/dashboard/sidebar/edit/types/EditInsightsWidgetSidebar.svelte";
+        from "@perfice/components/dashboard/sidebar/edit/types/insights/EditInsightsWidgetSidebar.svelte";
+    import EditChecklistWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/checklist/EditChecklistWidgetSidebar.svelte";
+    import EditNewCorrelationsWidgetSidebar
+        from "@perfice/components/dashboard/sidebar/edit/types/newCorrelations/EditNewCorrelationsWidgetSidebar.svelte";
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
@@ -37,6 +45,8 @@
         [DashboardWidgetType.METRIC]: EditMetricWidgetSidebar,
         [DashboardWidgetType.TRACKABLE]: EditTrackableWidgetSidebar,
         [DashboardWidgetType.INSIGHTS]: EditInsightsWidgetSidebar,
+        [DashboardWidgetType.NEW_CORRELATIONS]: EditNewCorrelationsWidgetSidebar,
+        [DashboardWidgetType.CHECKLIST]: EditChecklistWidgetSidebar,
     };
 
     function onSettingsChange(settings: any) {

@@ -16,11 +16,11 @@ export class TagEntryService {
         return this.tagEntryCollection.getAllEntries();
     }
 
-    async logTagEntry(tag: Tag, timestamp: number) {
+    async logTagEntry(tagId: string, timestamp: number) {
         let entry: TagEntry = {
             id: crypto.randomUUID(),
             timestamp: timestamp,
-            tagId: tag.id,
+            tagId: tagId,
         };
 
         await this.tagEntryCollection.createEntry(entry);

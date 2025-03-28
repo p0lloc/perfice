@@ -1,11 +1,11 @@
-import { writable, type Writable } from "svelte/store";
-import { dateToMidnight } from "@perfice/util/time/simple";
-import { AsyncStore } from "@perfice/stores/store";
-import { resolvedPromise } from "@perfice/util/promise";
-import { EntityObserverType } from "@perfice/services/observer";
-import type { TagService } from "@perfice/services/tag/tag";
-import type { Tag } from "@perfice/model/tag/tag";
-import { deleteIdentifiedInArray, updateIdentifiedInArray } from "@perfice/util/array";
+import {writable, type Writable} from "svelte/store";
+import {dateToMidnight} from "@perfice/util/time/simple";
+import {AsyncStore} from "@perfice/stores/store";
+import {resolvedPromise} from "@perfice/util/promise";
+import {EntityObserverType} from "@perfice/services/observer";
+import type {TagService} from "@perfice/services/tag/tag";
+import type {Tag} from "@perfice/model/tag/tag";
+import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
 export function TagDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -28,8 +28,8 @@ export class TagStore extends AsyncStore<Tag[]> {
         this.set(resolvedPromise(await this.tagService.getTags()));
     }
 
-    async logTag(tag: Tag, date: Date) {
-        await this.tagService.logTag(tag, date);
+    async logTag(tagId: string, date: Date) {
+        await this.tagService.logTag(tagId, date);
     }
 
     async unlogTagEntry(entryId: string) {

@@ -21,7 +21,6 @@ import {VariableStore} from "@perfice/stores/variable/variable";
 import {GroupedJournal} from "@perfice/stores/journal/grouped";
 import {GoalService} from "@perfice/services/goal/goal";
 import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
-import type {Goal} from "@perfice/model/goal/goal";
 import {GoalValueStore} from "@perfice/stores/goal/value";
 import {routingNavigatorState} from './model/ui/router.svelte';
 import {goto} from '@mateothegreat/svelte5-router';
@@ -53,7 +52,6 @@ import {AnalyticsHistoryService} from "@perfice/services/analytics/history";
 import {DashboardService} from './services/dashboard/dashboard';
 import {DashboardWidgetService} from './services/dashboard/widget';
 import {DashboardStore, DashboardWidgetStore} from "@perfice/stores/dashboard/dashboard";
-import {DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import {EntryRowWidget} from "@perfice/stores/dashboard/widget/entryRow";
 import type {DashboardEntryRowWidgetSettings} from "@perfice/model/dashboard/widgets/entryRow";
 import type {DashboardChartWidgetSettings} from "@perfice/model/dashboard/widgets/chart";
@@ -68,6 +66,8 @@ import {TrackableWidget} from './stores/dashboard/widget/trackable';
 import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
 import type {DashboardInsightsWidgetSettings} from "@perfice/model/dashboard/widgets/insights";
 import {InsightsWidget} from "@perfice/stores/dashboard/widget/insights";
+import {ChecklistWidget} from "@perfice/stores/dashboard/widget/checklist";
+import type {DashboardChecklistWidgetSettings} from './model/dashboard/widgets/checklist';
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -146,6 +146,10 @@ export function entryRowWidget(dependencies: Record<string, string>, settings: D
     return EntryRowWidget(dependencies, settings, date, weekStart, key, variableService);
 }
 
+export function checklistWidget(dependencies: Record<string, string>, settings: DashboardChecklistWidgetSettings, date: Date,
+                                weekStart: WeekStart, key: string,) {
+    return ChecklistWidget(dependencies, settings, date, weekStart, variableService, key);
+}
 
 export function tableWidget(dependencies: Record<string, string>, settings: DashboardTableWidgetSettings, date: Date,
                             weekStart: WeekStart, key: string,) {

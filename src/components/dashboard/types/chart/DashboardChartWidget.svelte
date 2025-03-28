@@ -13,7 +13,6 @@
     let result = $derived(chartWidget(dependencies, settings, $dashboardDate,
         $weekStart, `${settings.formId}:${settings.questionId}:${settings.aggregateType}:${settings.count}`));
 </script>
-
 <div class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col p-2">
     {#await $result}
         <span class="p-2">

@@ -95,11 +95,6 @@ export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition
     }
 
     updateDependencies(dependencies: Record<string, string>, previousSettings: DashboardChartWidgetSettings, settings: DashboardChartWidgetSettings): Map<string, VariableTypeDef> {
-        // No settings changed, return empty map
-        if (previousSettings.formId == settings.formId
-            && previousSettings.questionId == settings.questionId
-            && previousSettings.aggregateType == settings.aggregateType) return new Map();
-
         return new Map([
             ["list", this.createListTypeDef(settings)],
             ["aggregate", this.createAggregateTypeDef(dependencies["list"], settings)]

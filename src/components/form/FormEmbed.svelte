@@ -10,6 +10,9 @@
         let result: Record<string, PrimitiveValue> = {};
         let failed = false;
         for (let [id, field] of Object.entries(fields)) {
+            // If "questions" was updated, the field might be null since it's no longer being rendered
+            if (field == null) continue;
+
             let value = field.validateAndGetValue();
             if (value == null) {
                 failed = true;
@@ -27,7 +30,7 @@
     /**
      * Invalidates all fields to use the value passed in "answers".
      */
-    export function invalidateValues(){
+    export function invalidateValues() {
         Object.values(fields)
             .forEach(f => f.invalidateValue());
     }

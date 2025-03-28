@@ -57,12 +57,26 @@ export class DashboardWidgetService {
     private async updateWidgetDependencies(previous: DashboardWidget, widget: DashboardWidget) {
         const definition = getDashboardWidgetDefinition(widget.type)!;
         const variableUpdates = definition.updateDependencies(widget.dependencies, previous.settings, widget.settings);
-        for (let [key, updatedType] of variableUpdates.entries()) {
-            const variableId = widget.dependencies[key];
+
+        let previousDependencies = structuredClone(previous.dependencies);
+        for (let [dependencyId, updatedType] of variableUpdates.entries()) {
+            const variableId = widget.dependencies[dependencyId];
             if (variableId == undefined) {
-                // TODO: Create a new variable here?
+                // Update returned a new variable, so we need to create it
+
+                let newId = crypto.randomUUID();
+                await this.variableService.createVariable({
+                    id: newId,
+                    name: "",
+                    type: updatedType,
+                })
+
+                widget.dependencies[dependencyId] = newId;
                 continue;
             }
+
+            // Remove any dependencies that are still returned by the definition
+            delete previousDependencies[dependencyId];
 
             const variable = this.variableService.getVariableById(variableId);
             if (variable == undefined) continue;
@@ -70,6 +84,12 @@ export class DashboardWidgetService {
             variable.type = updatedType;
             await this.variableService.updateVariable(variable);
         }
+
+        // Dependency is no longer returned by the definition, so we need to delete them
+        for (let [_, variableId] of Object.entries(previousDependencies)) {
+            await this.variableService.deleteVariableById(variableId);
+        }
+
     }
 
     private async deleteWidgetDependencies(widget: DashboardWidget) {
@@ -79,11 +99,15 @@ export class DashboardWidgetService {
         }
     }
 
-    async updateWidget(widget: DashboardWidget): Promise<void> {
+    async updateWidget(widget: DashboardWidget, settingsUpdated: boolean): Promise<void> {
         const previous = await this.collection.getWidgetById(widget.id);
         if (previous == undefined) return;
 
-        await this.updateWidgetDependencies(previous, widget);
+        // Only update dependencies if the settings changed, not when widgets are moved etc
+        if (settingsUpdated) {
+            await this.updateWidgetDependencies(previous, widget);
+        }
+
         await this.collection.updateWidget(widget);
         await this.observers.notifyObservers(EntityObserverType.UPDATED, widget);
     }

@@ -60,8 +60,8 @@ export class DashboardWidgetStore extends AsyncStore<DashboardWidget[]> {
         this.set(this.dashboardWidgetService.getWidgetsByDashboardId(dashboardId));
     }
 
-    async updateWidget(widget: DashboardWidget) {
-        await this.dashboardWidgetService.updateWidget(widget);
+    async updateWidget(widget: DashboardWidget, settingsUpdated: boolean) {
+        await this.dashboardWidgetService.updateWidget(widget, settingsUpdated);
     }
 
     async deleteWidgetById(id: string) {

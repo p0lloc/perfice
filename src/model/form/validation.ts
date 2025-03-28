@@ -57,6 +57,11 @@ export function parseAndValidateValue(valueSnapshot: any, question: FormQuestion
         return [null, displayError];
     }
 
+    return [convertValueToDisplay(value, question, dataTypeDef, displayTypeDef), null];
+}
+
+export function convertValueToDisplay(value: PrimitiveValue, question: FormQuestion, dataTypeDef: FormQuestionDataTypeDefinition<any, any>,
+                                      displayTypeDef: FormDisplayTypeDefinition<any>): PrimitiveValue {
     let displayValue = displayTypeDef.getDisplayValue(value, question.displaySettings, question.dataSettings);
     if (displayValue == null) {
         displayValue = dataTypeDef.getDisplayValue(dataTypeDef.serialize(value)) ?? pString("");
@@ -67,5 +72,5 @@ export function parseAndValidateValue(valueSnapshot: any, question: FormQuestion
         displayValue.value += ` ${question.unit}`;
     }
 
-    return [pDisplay(value, displayValue), null];
+    return pDisplay(value, displayValue);
 }

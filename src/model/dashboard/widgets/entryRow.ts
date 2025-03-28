@@ -43,10 +43,6 @@ export class DashboardEntryRowWidgetDefinition implements DashboardWidgetDefinit
     }
 
     updateDependencies(_dependencies: Record<string, string>, previousSettings: DashboardEntryRowWidgetSettings, settings: DashboardEntryRowWidgetSettings): Map<string, VariableTypeDef> {
-        // No settings changed, return empty map
-        if (previousSettings.formId == settings.formId
-            && previousSettings.questionId == settings.questionId) return new Map();
-
         return new Map([["list", this.createTypeDef(settings)]]);
     }
 

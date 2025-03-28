@@ -84,7 +84,7 @@
                 widget,
                 forms: await $forms,
                 onChange: (v: DashboardWidget) => {
-                    onWidgetUpdate($state.snapshot(v))
+                    onWidgetUpdate($state.snapshot(v), true)
                 },
                 onDelete: () => {
                     sidebar.close();
@@ -144,8 +144,8 @@
         });
     }
 
-    async function onWidgetUpdate(widget: DashboardWidget) {
-        await dashboardWidgets.updateWidget(widget);
+    async function onWidgetUpdate(widget: DashboardWidget, settingsUpdated: boolean) {
+        await dashboardWidgets.updateWidget(widget, settingsUpdated);
         grid.updateWidget(widget);
     }
 
@@ -197,7 +197,7 @@
     <div class="w-full" onclick={onBackgroundClick}>
         {#await $dashboardWidgets then widgets}
             <GridstackGrid {openFormModal} bind:this={grid} {onWidgetAdd} onWidgetDelete={onWidgetStartDelete}
-                           {onWidgetUpdate}
+                           onWidgetUpdate={(widget) => onWidgetUpdate(widget, false)}
                            {onWidgetSelect}
                            {widgets} edit={$editingDashboard}/>
         {/await}

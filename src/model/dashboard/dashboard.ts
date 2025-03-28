@@ -24,9 +24,22 @@ import {
     DashboardMetricWidgetDefinition,
     type DashboardMetricWidgetSettings
 } from "@perfice/model/dashboard/widgets/metric";
-import {DashboardTrackableWidgetDefinition} from "@perfice/model/dashboard/widgets/trackable";
-import {DashboardNewCorrelationsWidgetDefinition} from "@perfice/model/dashboard/widgets/newCorrelations";
-import {DashboardInsightsWidgetDefinition} from "@perfice/model/dashboard/widgets/insights";
+import {
+    DashboardTrackableWidgetDefinition,
+    type DashboardTrackableWidgetSettings
+} from "@perfice/model/dashboard/widgets/trackable";
+import {
+    DashboardNewCorrelationsWidgetDefinition,
+    type DashboardNewCorrelationsWidgetSettings
+} from "@perfice/model/dashboard/widgets/newCorrelations";
+import {
+    DashboardInsightsWidgetDefinition,
+    type DashboardInsightsWidgetSettings
+} from "@perfice/model/dashboard/widgets/insights";
+import {
+    DashboardChecklistWidgetDefinition,
+    type DashboardChecklistWidgetSettings
+} from "@perfice/model/dashboard/widgets/checklist";
 
 export interface Dashboard {
     id: string;
@@ -51,6 +64,7 @@ export enum DashboardWidgetType {
     TRACKABLE = "TRACKABLE",
     NEW_CORRELATIONS = "NEW_CORRELATIONS",
     INSIGHTS = "INSIGHTS",
+    CHECKLIST = "CHECKLIST",
 }
 
 export type DashboardWidget = {
@@ -68,6 +82,10 @@ export type DashboardWidgetSettings =
     | DS<DashboardWidgetType.GOAL, DashboardGoalWidgetSettings>
     | DS<DashboardWidgetType.TAGS, DashboardTagsWidgetSettings>
     | DS<DashboardWidgetType.METRIC, DashboardMetricWidgetSettings>
+    | DS<DashboardWidgetType.TRACKABLE, DashboardTrackableWidgetSettings>
+    | DS<DashboardWidgetType.NEW_CORRELATIONS, DashboardNewCorrelationsWidgetSettings>
+    | DS<DashboardWidgetType.INSIGHTS, DashboardInsightsWidgetSettings>
+    | DS<DashboardWidgetType.CHECKLIST, DashboardChecklistWidgetSettings>
     ;
 
 export interface DS<T extends DashboardWidgetType, V> {
@@ -102,6 +120,7 @@ definitions.set(DashboardWidgetType.METRIC, new DashboardMetricWidgetDefinition(
 definitions.set(DashboardWidgetType.TRACKABLE, new DashboardTrackableWidgetDefinition());
 definitions.set(DashboardWidgetType.NEW_CORRELATIONS, new DashboardNewCorrelationsWidgetDefinition());
 definitions.set(DashboardWidgetType.INSIGHTS, new DashboardInsightsWidgetDefinition());
+definitions.set(DashboardWidgetType.CHECKLIST, new DashboardChecklistWidgetDefinition());
 
 export function getDashboardWidgetDefinitions(): DashboardWidgetDefinition<DashboardWidgetType, any>[] {
     return Array.from(definitions.values());

@@ -16,7 +16,7 @@
 
     function onTagClicked(tag: Tag, entryToDelete: string | null) {
         if (entryToDelete == null) {
-            tags.logTag(tag, $tagDate);
+            tags.logTag(tag.id, $tagDate);
         } else {
             tags.unlogTagEntry(entryToDelete);
         }
