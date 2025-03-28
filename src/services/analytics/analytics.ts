@@ -39,6 +39,15 @@ const CATEGORICAL_DISPLAY_TYPES = [
     FormQuestionDisplayType.HIERARCHY,
 ]
 
+
+function isCategoricalQuestion(question: FormQuestion): boolean {
+    return CATEGORICAL_DISPLAY_TYPES.includes(question.displayType);
+}
+
+export function isAnalyticsSupportedQuestion(question: FormQuestion): boolean {
+    return isFormQuestionNumberRepresentable(question.dataType) || isCategoricalQuestion(question);
+}
+
 export interface HistoricalQuantitativeInsight {
     formId: string;
     questionId: string;
@@ -220,7 +229,7 @@ export class AnalyticsService {
 
             for (let [questionId, bag] of questionIds.entries()) {
                 if (bag.quantitative) {
-                    let useMean = settings.useMeanValue[questionId] ?? false;
+                    let useMean = settings.useMeanValue[questionId] ?? true;
                     let timestamps = new Map(bag.values
                         .entries()
                         .map(([timestamp, value]) => [timestamp, convertValue(value, useMean).value]));
@@ -341,7 +350,7 @@ export class AnalyticsService {
         let minValue: TimestampedValue<number> | null = null;
         let maxValue: TimestampedValue<number> | null = null;
 
-        let useMean = settings.useMeanValue[questionId] ?? false;
+        let useMean = settings.useMeanValue[questionId] ?? true;
         for (let [timestamp, value] of values.entries()) {
             let converted = convertValue(value, useMean);
 
@@ -426,7 +435,7 @@ export class AnalyticsService {
                 if (currentValue == null)
                     continue;
 
-                let useMeanValue = settings.useMeanValue[questionId] ?? false;
+                let useMeanValue = settings.useMeanValue[questionId] ?? true;
                 let currentNumericalValue = convertValue(currentValue, useMeanValue).value;
                 let average = byQuestion.value.average;
 
@@ -498,7 +507,7 @@ export class AnalyticsService {
             weekDays.set(i, {value: 0, count: 0});
         }
 
-        let useMeanValue = settings.useMeanValue[questionId] ?? false;
+        let useMeanValue = settings.useMeanValue[questionId] ?? true;
         for (let [timestamp, value] of values.entries()) {
             let date = new Date(timestamp);
             let weekDay = date.getDay();
@@ -811,9 +820,6 @@ export class AnalyticsService {
         return [forms, entries];
     }
 
-    private isCategoricalQuestion(question: FormQuestion): boolean {
-        return CATEGORICAL_DISPLAY_TYPES.includes(question.displayType);
-    }
 
     async constructRawValues(forms: Form[], entries: JournalEntry[], timeScope: SimpleTimeScopeType): Promise<[RawAnalyticsValues, Form[]]> {
 
@@ -835,7 +841,7 @@ export class AnalyticsService {
                         quantitative: true,
                         values: new Map()
                     });
-                } else if (this.isCategoricalQuestion(question)) {
+                } else if (isCategoricalQuestion(question)) {
                     map.set(question.id, {
                         quantitative: false,
                         values: new Map()

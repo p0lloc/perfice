@@ -9,7 +9,7 @@ import {
     AnalyticsService,
     type BasicAnalytics,
     type CategoricalWeekDayAnalytics,
-    convertValue, type CorrelationResult,
+    convertValue, type CorrelationResult, isAnalyticsSupportedQuestion,
     type QuantitativeWeekDayAnalytics,
     type ValueBag
 } from "@perfice/services/analytics/analytics";
@@ -98,11 +98,11 @@ function constructChartFromValues(bag: ValueBag, useMeanValue: boolean,
     }
 }
 
-function createPromise(id: string, rawQuestionId: string | null,
-                       timeScope: SimpleTimeScopeType,
-                       res: Promise<AnalyticsResult>,
-                       trackableService: TrackableService, formService: FormService, settingsService: AnalyticsSettingsService,
-                       analyticsService: AnalyticsService) {
+function createDetailedPromise(id: string, rawQuestionId: string | null,
+                               timeScope: SimpleTimeScopeType,
+                               res: Promise<AnalyticsResult>,
+                               trackableService: TrackableService, formService: FormService, settingsService: AnalyticsSettingsService,
+                               analyticsService: AnalyticsService) {
     return new Promise<TrackableDetailedAnalyticsResult>(
         async (resolve) => {
             let result = await res;
@@ -133,10 +133,23 @@ function createPromise(id: string, rawQuestionId: string | null,
             if (formQuestion == null) return;
 
             let bag = topValues.get(questionId);
-            if (bag == null)
-                return;
+            if (bag == null) {
+                // Trackable has incompatible question, try to find first compatible question
+                for (let question of form.questions) {
+                    bag = topValues.get(question.id);
+                    if (bag != null) {
+                        questionId = question.id;
+                        break;
+                    }
+                }
 
-            let useMeanValue = settings.useMeanValue[questionId] ?? false;
+                // No compatible question found, skip this trackable
+                if (bag == null) {
+                    return;
+                }
+            }
+
+            let useMeanValue = settings.useMeanValue[questionId] ?? true;
             let basicAnalytics = result.basicAnalytics
                 .get(timeScope)
                 ?.get(trackable.formId)
@@ -166,11 +179,14 @@ function createPromise(id: string, rawQuestionId: string | null,
 
             let correlations = result.correlations.get(timeScope) ?? new Map<string, CorrelationResult>();
 
+            // Only show questions in the UI that we can actually analyze
+            let supportedQuestions = form.questions.filter(q => isAnalyticsSupportedQuestion(q));
+
             resolve({
                 trackable,
                 weekDayAnalytics: transformedWeekDay,
                 basicAnalytics,
-                questions: form.questions,
+                questions: supportedQuestions,
                 correlations: createDetailedCorrelations(correlations, result, questionId, timeScope),
                 chart: constructChartFromValues(bag, useMeanValue, timeScope, formQuestion.dataType),
                 questionId,
@@ -194,7 +210,7 @@ export function TrackableDetailedAnalytics(id: string, rawQuestionId: string | n
             */
     // Use cached value from analytics store
     return derived([analytics], ([$res], set) => {
-        set(createPromise(id, rawQuestionId, timeScope, $res, trackableService,
+        set(createDetailedPromise(id, rawQuestionId, timeScope, $res, trackableService,
             formService, settingsService, analyticsService));
     });
 }
@@ -218,16 +234,30 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
                     let formData = valuesByTimeScope.get(trackable.formId);
                     if (formData == null) continue;
 
-                    let mainValues = formData.get(settings.questionId);
-                    if (mainValues == null) continue;
-
                     let form = result.forms.find(f => f.id == trackable.formId);
                     if (form == null) continue;
+
+                    let mainValues = formData.get(settings.questionId);
+                    if (mainValues == null) {
+                        // If trackable has incompatible question, still include it so that the user can update the question
+                        res.push({
+                            trackable,
+                            chart: {
+                                type: AnalyticsChartType.LINE,
+                                values: [],
+                                labelFormatter: (v: number) => "",
+                                labels: []
+                            },
+                            settings: settings,
+                            questions: form.questions
+                        });
+                        continue;
+                    }
 
                     let formQuestion = form.questions.find(q => q.id == settings.questionId);
                     if (formQuestion == null) continue;
 
-                    let useMeanValue = settings.useMeanValue[settings.questionId] ?? false;
+                    let useMeanValue = settings.useMeanValue[settings.questionId] ?? true;
 
                     res.push({
                         trackable,

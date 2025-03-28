@@ -15,8 +15,16 @@
     let modal: Modal;
 
     export function open(editSettings: AnalyticsSettings, editQuestions: FormQuestion[]) {
+        // Default to using mean value not set
+        editQuestions.forEach(q => {
+            if (editSettings.useMeanValue[q.id] == null) {
+                editSettings.useMeanValue[q.id] = true;
+            }
+        });
+
         settings = editSettings;
         questions = editQuestions;
+
         modal.open();
     }
 
