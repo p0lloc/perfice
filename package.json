@@ -34,6 +34,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@mateothegreat/svelte5-router": "^0.1.38",
+    "@nozbe/microfuzz": "^1.0.0",
     "chart.js": "^4.4.7",
     "dexie": "^4.0.10",
     "gridstack": "^11.5.0",
