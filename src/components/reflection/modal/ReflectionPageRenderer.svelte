@@ -20,17 +20,20 @@
 <div class="h-96 overflow-y-scroll scrollbar-hide">
     <div class="flex justify-between ">
         <div class="flex-1">
-            <div class="row-gap">
-                {#if page.icon != null}
-                    <Icon name={page.icon} class="text-2xl"/>
-                {/if}
-                <h2 class="text-2xl">{page.name}</h2>
+            <div class="flex gap-3 items-center">
+                <span class="w-14">
+                    {#if page.icon != null}
+                        <Icon name={page.icon} class="text-4xl text-green-500"/>
+                    {/if}
+                </span>
+                <div><h2 class="text-2xl">{page.name}</h2>
+                    {page.description}</div>
             </div>
-            {page.description}
         </div>
     </div>
+    <hr class="mt-3 mb-6">
 
-    <div class="mt-6 flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
         {#each page.widgets as widget(widget.id)}
             <ReflectionWidgetRenderer {widget}
                                       onChange={(state) => onStateChange(widget.id, {...states[widget.id], state})}

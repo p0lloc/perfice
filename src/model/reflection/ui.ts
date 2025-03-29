@@ -22,6 +22,7 @@ export type ReflectionSidebarAction =
 
 export interface ReflectionEditPageAction {
     page: ReflectionPage;
+    onChange: (page: ReflectionPage) => void;
 }
 
 export interface ReflectionEditWidgetAction {

@@ -9,7 +9,7 @@
     import ReflectionPageGroup from "@perfice/components/reflection/editor/ReflectionPageGroup.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {deleteIdentifiedInArray} from "@perfice/util/array";
+    import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
     import {ButtonColor} from "@perfice/model/ui/button";
     import Button from "@perfice/components/base/button/Button.svelte";
     import ReflectionEditorSidebar from "@perfice/components/reflection/editor/sidebar/ReflectionEditorSidebar.svelte";
@@ -55,7 +55,11 @@
         sidebar.open({
             type: ReflectionSidebarActionType.EDIT_PAGE,
             value: {
-                page
+                page: structuredClone($state.snapshot(page)),
+                onChange: (page) => {
+                    if (reflection == null) return;
+                    reflection.pages = updateIdentifiedInArray(reflection.pages, page)
+                }
             }
         });
     }
@@ -98,7 +102,6 @@
 </script>
 
 <ReflectionEditorSidebar bind:this={sidebar}/>
-<svelte:body onclick={closeSidebar}/>
 {#if reflection !== undefined}
     <MobileTopBar title={"Edit reflection"}>
         {#snippet leading()}
