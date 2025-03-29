@@ -5,7 +5,7 @@
     import {type CategoryList, UNCATEGORIZED_NAME} from "@perfice/util/category";
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import type {Tag, TagCategory} from "@perfice/model/tag/tag";
-    import TagCard from "@perfice/components/tag/TagCard.svelte";
+    import TagValueCard from "@perfice/components/tag/TagValueCard.svelte";
     import {tags} from "@perfice/app";
 
     let {category, date, weekStart, onTagClicked}: {
@@ -32,8 +32,8 @@
     <div
             class="w-full mt-4 flex flex-wrap gap-2 md:gap-2">
         {#each category.items as tag}
-            <TagCard tag={tag} onClick={(log) => onTagClicked(tag, log)} date={date}
-                     weekStart={weekStart}/>
+            <TagValueCard tag={tag} onClick={(log) => onTagClicked(tag, log)} date={date}
+                          weekStart={weekStart}/>
         {/each}
     </div>
 </div>

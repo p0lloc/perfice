@@ -1,6 +1,6 @@
 <script lang="ts">
     import ModalFooter from "./ModalFooter.svelte";
-    import { onDestroy, type Snippet } from "svelte";
+    import {onDestroy, type Snippet} from "svelte";
     import {
         type ModalFooterProps,
         ModalSize,
@@ -19,6 +19,7 @@
 
         header,
         actions,
+        customFooter,
         confirmText = "Save",
         cancelText = "Cancel",
         deleteText = "Delete",
@@ -33,6 +34,7 @@
         size?: ModalSize;
         header?: Snippet;
         actions?: Snippet;
+        customFooter?: Snippet;
         closeWithBackground?: boolean;
     } & ModalFooterProps &
         ModalActions = $props();
@@ -43,6 +45,7 @@
     const SIZE_CLASSES: Record<ModalSize, string> = {
         [ModalSize.SMALL]: "2xl:w-[20%] lg:w-[40%] md:w-[50%]",
         [ModalSize.MEDIUM]: "md:w-[40%]",
+        [ModalSize.LARGE]: "md:w-[50%]",
     };
 
     export function open() {
@@ -78,26 +81,26 @@
 {#if visible}
     <!-- svelte-ignore a11y_no_static_element_interactions (Needed for backdrop click to close modal, we also provide Close button for A11y) -->
     <div
-        class="modal-bg"
-        onmousedown={onBackgroundMousedown}
-        bind:this={modalBackgroundContainer}
+            class="modal-bg"
+            onmousedown={onBackgroundMousedown}
+            bind:this={modalBackgroundContainer}
     >
         <div
-            style:z-index={zIndex}
-            class="w-screen h-screen md:h-auto {SIZE_CLASSES[
+                style:z-index={zIndex}
+                class="w-screen h-screen md:h-auto {SIZE_CLASSES[
                 size
             ]} md:rounded-lg bg-white overflow-y-auto overflow-x-hidden md:max-h-[90%] text-black flex flex-col md:justify-between"
         >
             <MobileModalHeader
-                {title}
-                {type}
-                {onDelete}
-                {onConfirm}
-                onClose={close}
-                extraActions={actions}
+                    {title}
+                    {type}
+                    {onDelete}
+                    {onConfirm}
+                    onClose={close}
+                    extraActions={actions}
             />
             <div
-                class="py-4 px-6 border-b-gray-300 border-b hidden md:flex justify-between"
+                    class="py-4 px-6 border-b-gray-300 border-b hidden md:flex justify-between"
             >
                 <h2 class="text-2xl font-semibold">{title}</h2>
                 {@render actions?.()}
@@ -106,14 +109,15 @@
             <div class="p-4 md:p-6">
                 {@render children?.()}
             </div>
+            {@render customFooter?.()}
             <ModalFooter
-                {confirmText}
-                {cancelText}
-                {deleteText}
-                {type}
-                {onDelete}
-                {onConfirm}
-                onClose={close}
+                    {confirmText}
+                    {cancelText}
+                    {deleteText}
+                    {type}
+                    {onDelete}
+                    {onConfirm}
+                    onClose={close}
             />
         </div>
     </div>

@@ -12,8 +12,10 @@
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import GenericActionsCard from "@perfice/components/base/card/GenericActionsCard.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
+    import ReflectionModal from "@perfice/components/reflection/modal/ReflectionModal.svelte";
 
     let deleteReflectionModal: GenericDeleteModal<Reflection>;
+    let reflectionModal: ReflectionModal;
 
     reflections.load();
 
@@ -35,7 +37,7 @@
     }
 
     function onPlayReflection(reflection: Reflection) {
-
+        reflectionModal.open(reflection);
     }
 </script>
 
@@ -46,15 +48,19 @@
         </button>
     {/snippet}
 </MobileTopBar>
+
 <GenericDeleteModal subject="this reflection" onDelete={onDeleteReflection} bind:this={deleteReflectionModal}/>
+<ReflectionModal bind:this={reflectionModal}/>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
     {#await $reflections}
         Loading...
     {:then value}
         <Title title="Reflections" icon={faSun}/>
 
+
         <div class="flex flex-col gap-2 mt-4">
             {#each value as reflection(reflection.id)}
+                {setTimeout(() => onPlayReflection(reflection))}
                 <GenericActionsCard icon={faSun} text={reflection.name}>
                     {#snippet actions()}
                         <IconButton icon={faPlay} onClick={() => onPlayReflection(reflection)}/>

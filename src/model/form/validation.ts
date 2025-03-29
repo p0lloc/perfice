@@ -1,7 +1,7 @@
 import {pDisplay, pList, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import type {FormQuestion} from "@perfice/model/form/form";
-import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
-import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
+import {type FormQuestionDataTypeDefinition, questionDataTypeRegistry} from "@perfice/model/form/data";
+import {type FormDisplayTypeDefinition, questionDisplayTypeRegistry} from "@perfice/model/form/display";
 
 function deserializeMultiple(dataTypeDef: FormQuestionDataTypeDefinition<any, any>, multiple: any[]): PrimitiveValue | null {
     let result: PrimitiveValue[] = [];
@@ -58,6 +58,18 @@ export function parseAndValidateValue(valueSnapshot: any, question: FormQuestion
     }
 
     return [convertValueToDisplay(value, question, dataTypeDef, displayTypeDef), null];
+}
+
+export function convertAnswersToDisplay(answers: Record<string, PrimitiveValue>, questions: FormQuestion[]): Record<string, PrimitiveValue> {
+    return Object.fromEntries(Object.entries(answers)
+        .map(([k, v]) => {
+            let question = questions.find(q => q.id == k);
+            if (question == null) return [k, pDisplay(pString(""), pString(""))];
+
+            let dataTypeDef = questionDataTypeRegistry.getDefinition(question.dataType)!;
+            let displayTypeDef = questionDisplayTypeRegistry.getFieldByType(question.displayType)!;
+            return [k, convertValueToDisplay(v, question, dataTypeDef, displayTypeDef)];
+        }));
 }
 
 export function convertValueToDisplay(value: PrimitiveValue, question: FormQuestion, dataTypeDef: FormQuestionDataTypeDefinition<any, any>,

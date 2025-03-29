@@ -10,7 +10,7 @@
     import Fa from "svelte-fa";
     import type {ChecklistWidgetConditionResult} from "@perfice/stores/dashboard/widget/checklist";
     import {dateWithCurrentTime} from "@perfice/util/time/simple.js";
-    import {convertValueToDisplay} from "@perfice/model/form/validation";
+    import {convertAnswersToDisplay, convertValueToDisplay} from "@perfice/model/form/validation";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {pDisplay, type PrimitiveValue, pString} from "@perfice/model/primitive/primitive";
@@ -38,16 +38,7 @@
                     if (form == null) return;
 
                     // Convert all answers to display values
-                    let answers: Record<string, PrimitiveValue> = Object.fromEntries(
-                        Object.entries(condition.value.value.answers)
-                            .map(([k, v]) => {
-                                let question = form.questions.find(q => q.id == k);
-                                if (question == null) return [k, pDisplay(pString(""), pString(""))];
-
-                                let dataTypeDef = questionDataTypeRegistry.getDefinition(question.dataType)!;
-                                let displayTypeDef = questionDisplayTypeRegistry.getFieldByType(question.displayType)!;
-                                return [k, convertValueToDisplay(v, question, dataTypeDef, displayTypeDef)];
-                            }));
+                    let answers: Record<string, PrimitiveValue> = convertAnswersToDisplay(condition.value.value.answers, form.questions);
 
                     await journal.logEntry(form, answers,
                         form.format, dateWithCurrentTime($dashboardDate).getTime());

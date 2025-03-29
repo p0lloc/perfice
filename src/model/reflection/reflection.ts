@@ -1,5 +1,6 @@
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
 import type {ChecklistCondition} from "@perfice/model/dashboard/widgets/checklist";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export interface Reflection {
     id: string;
@@ -13,6 +14,48 @@ export interface ReflectionPage {
     icon: string | null;
     description: string;
     widgets: ReflectionWidget[];
+}
+
+export type ReflectionWidgetAnswerState = RWA<ReflectionWidgetType.FORM, ReflectionFormWidgetAnswerState>
+    | RWA<ReflectionWidgetType.TAGS, ReflectionTagsWidgetAnswerState>;
+
+export interface RWA<T extends ReflectionWidgetType, V> {
+    type: T;
+    state: V;
+}
+
+export function generateAnswerStates(widgets: ReflectionWidget[]): Record<string, ReflectionWidgetAnswerState> {
+    let res: Record<string, ReflectionWidgetAnswerState> = {};
+    for (let widget of widgets) {
+        switch (widget.type) {
+            case ReflectionWidgetType.FORM:
+                res[widget.id] = {
+                    type: ReflectionWidgetType.FORM,
+                    state: {
+                        answers: {}
+                    }
+                };
+                break;
+            case ReflectionWidgetType.TAGS:
+                res[widget.id] = {
+                    type: ReflectionWidgetType.TAGS,
+                    state: {
+                        tags: []
+                    }
+                };
+                break;
+        }
+    }
+
+    return res;
+}
+
+export interface ReflectionTagsWidgetAnswerState {
+    tags: string[];
+}
+
+export interface ReflectionFormWidgetAnswerState {
+    answers: Record<string, PrimitiveValue>;
 }
 
 export type ReflectionWidget = {

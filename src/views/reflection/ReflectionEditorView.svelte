@@ -45,8 +45,8 @@
         reflection.pages.push({
             id: crypto.randomUUID(),
             name: "New page",
-            icon: null,
-            description: "",
+            icon: "moon",
+            description: "lorem ipsum dolor sit amet",
             widgets: []
         });
     }

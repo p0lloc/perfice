@@ -39,7 +39,8 @@ export function shouldModalRenderDelete(e: ModalType) {
 
 export enum ModalSize {
     SMALL,
-    MEDIUM
+    MEDIUM,
+    LARGE
 }
 
 export interface ModalActions {

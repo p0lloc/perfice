@@ -3,12 +3,13 @@
     import {categorizedTags, tagCategories, tags, weekStart} from "@perfice/app";
     import {onMount} from "svelte";
     import {UNCATEGORIZED_NAME} from "@perfice/util/category";
-    import TagCard from "@perfice/components/tag/TagCard.svelte";
+    import TagValueCard from "@perfice/components/tag/TagValueCard.svelte";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import {faTags} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {type Tag, UNCATEGORIZED_TAG_CATEGORY_ID} from "@perfice/model/tag/tag";
+    import FilteredTagCategories from "@perfice/components/tag/FilteredTagCategories.svelte";
 
     let {settings}: {
         settings: DashboardTagsWidgetSettings,
@@ -39,20 +40,13 @@
                 <span>Tags</span>
             </div>
         </div>
-        <div class="flex flex-col gap-2 p-2">
-            {#each categories as category (category.category?.id)}
-                {#if settings.categories.length === 0 || settings.categories.includes(category.category?.id ?? UNCATEGORIZED_TAG_CATEGORY_ID)}
-                    <div>
-                        <p class="font-bold text-gray-600 text-lg mb-1">{category.category?.name ?? UNCATEGORIZED_NAME}</p>
-                        <div class="flex flex-wrap gap-1">
-                            {#each category.items as tag}
-                                <TagCard {tag} date={$dashboardDate} weekStart={$weekStart}
-                                         onClick={(e) => onTagClicked(tag, e)}/>
-                            {/each}
-                        </div>
-                    </div>
-                {/if}
-            {/each}
+        <div class="p-2">
+            <FilteredTagCategories categories={categories} visibleCategories={settings.categories}>
+                {#snippet item(tag)}
+                    <TagValueCard {tag} date={$dashboardDate} weekStart={$weekStart}
+                                  onClick={(e) => onTagClicked(tag, e)}/>
+                {/snippet}
+            </FilteredTagCategories>
         </div>
     {/await}
 </div>

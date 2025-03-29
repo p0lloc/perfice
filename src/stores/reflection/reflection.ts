@@ -1,6 +1,6 @@
 import type {ReflectionService} from "@perfice/services/reflection/reflection";
 import {AsyncStore} from "@perfice/stores/store";
-import type {Reflection} from "@perfice/model/reflection/reflection";
+import type {Reflection, ReflectionWidgetAnswerState} from "@perfice/model/reflection/reflection";
 import {resolvedPromise} from "@perfice/util/promise";
 
 export class ReflectionStore extends AsyncStore<Reflection[]> {
@@ -32,4 +32,7 @@ export class ReflectionStore extends AsyncStore<Reflection[]> {
         await this.reflectionService.deleteReflectionById(id);
     }
 
+    async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>) {
+        await this.reflectionService.logReflection(reflection, answers);
+    }
 }

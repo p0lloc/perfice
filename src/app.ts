@@ -101,7 +101,7 @@ const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
-const reflectionService = new ReflectionService(db.reflections);
+const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService);
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
