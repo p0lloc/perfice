@@ -68,6 +68,8 @@ import type {DashboardInsightsWidgetSettings} from "@perfice/model/dashboard/wid
 import {InsightsWidget} from "@perfice/stores/dashboard/widget/insights";
 import {ChecklistWidget} from "@perfice/stores/dashboard/widget/checklist";
 import type {DashboardChecklistWidgetSettings} from './model/dashboard/widgets/checklist';
+import {ReflectionService} from "@perfice/services/reflection/reflection";
+import {ReflectionStore} from "@perfice/stores/reflection/reflection";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -99,6 +101,8 @@ const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
+const reflectionService = new ReflectionService(db.reflections);
+
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
 analyticsHistoryService.load();
@@ -120,6 +124,7 @@ export const tags = new TagStore(tagService);
 export const groupedJournal = GroupedJournal();
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
+export const reflections = new ReflectionStore(reflectionService);
 
 export const dashboards = new DashboardStore(dashboardService);
 export const dashboardWidgets = new DashboardWidgetStore(dashboardWidgetService);

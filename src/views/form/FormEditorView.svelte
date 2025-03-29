@@ -36,6 +36,7 @@
     import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
+    import {onMount} from "svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -46,7 +47,7 @@
     let questionContainer: DragAndDropContainer;
     let sidebar: FormEditorSidebar;
 
-    $effect(() => {
+    onMount(() => {
         loadForm();
     });
 

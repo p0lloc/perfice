@@ -7,13 +7,17 @@
 
     let contextMenu: ContextMenu;
 
-    let {icon = faEllipsisV, buttons}: { icon?: IconDefinition, buttons: ContextMenuButton[] } = $props();
+    let {icon = faEllipsisV, buttons, class: className = ""}: {
+        icon?: IconDefinition,
+        buttons: ContextMenuButton[],
+        class?: string
+    } = $props();
 
     function onClick(e: MouseEvent & { currentTarget: HTMLButtonElement }) {
         contextMenu.openFromClick(e.target as HTMLElement, e.currentTarget);
     }
 </script>
-<IconButton onClick={onClick} {icon} />
+<IconButton onClick={onClick} {icon} class={className}/>
 
 <ContextMenu bind:this={contextMenu}>
     <ContextMenuButtons buttons={buttons}/>

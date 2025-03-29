@@ -8,7 +8,7 @@ import type {
     FormCollection,
     FormSnapshotCollection, FormTemplateCollection, GoalCollection,
     IndexCollection,
-    JournalCollection, TagCategoryCollection,
+    JournalCollection, ReflectionCollection, TagCategoryCollection,
     TagCollection, TagEntryCollection,
     TrackableCategoryCollection, TrackableCollection, VariableCollection
 } from "@perfice/db/collections";
@@ -27,6 +27,8 @@ import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import {DexieAnalyticsSettingsCollection} from "@perfice/db/dexie/analytics";
 import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
 import {DexieDashboardCollection, DexieDashboardWidgetCollection} from "@perfice/db/dexie/dashboard";
+import type {Reflection} from "@perfice/model/reflection/reflection";
+import {DexieReflectionCollection} from "@perfice/db/dexie/reflection";
 
 type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -44,11 +46,12 @@ type DexieDB = Dexie & {
     analyticsSettings: EntityTable<AnalyticsSettings, 'formId'>;
     dashboards: EntityTable<Dashboard, 'id'>;
     dashboardWidgets: EntityTable<DashboardWidget, 'id'>;
+    reflections: EntityTable<Reflection, 'id'>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(15).stores({
+    db.version(16).stores({
         "trackables": "id",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, [formId+timestamp], [timestamp+id]",
@@ -64,6 +67,7 @@ function loadDb(): DexieDB {
         "analyticsSettings": "formId",
         "dashboards": "id",
         "dashboardWidgets": "id, dashboardId",
+        "reflections": "id",
     });
 
     return db;
@@ -85,6 +89,7 @@ export interface Collections {
     analyticsSettings: AnalyticsSettingsCollection;
     dashboards: DashboardCollection;
     dashboardWidgets: DashboardWidgetCollection;
+    reflections: ReflectionCollection;
 }
 
 export function setupDb(): Collections {
@@ -109,6 +114,8 @@ export function setupDb(): Collections {
     const dashboardCollection = new DexieDashboardCollection(db.dashboards);
     const dashboardWidgetCollection = new DexieDashboardWidgetCollection(db.dashboardWidgets);
 
+    const reflectionCollection = new DexieReflectionCollection(db.reflections);
+
     return {
         entries: journalCollection,
         formSnapshots: formSnapshotCollection,
@@ -124,7 +131,8 @@ export function setupDb(): Collections {
         tagCategories: tagCategoryCollection,
         analyticsSettings: analyticsSettingsCollection,
         dashboards: dashboardCollection,
-        dashboardWidgets: dashboardWidgetCollection
+        dashboardWidgets: dashboardWidgetCollection,
+        reflections: reflectionCollection
     };
 }
 

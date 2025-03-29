@@ -1,16 +1,13 @@
 <script lang="ts">
-    import type {DashboardTagsWidgetSettings} from "@perfice/model/dashboard/widgets/tags";
-    import type {Form} from "@perfice/model/form/form";
-    import {tagCategories} from "@perfice/app";
-    import MultiSelectDropdownButton from "@perfice/components/base/dropdown/MultiSelectDropdownButton.svelte";
+    import type {ReflectionTagsWidgetSettings} from "@perfice/model/reflection/reflection";
     import {UNCATEGORIZED_TAG_CATEGORY_ID} from "@perfice/model/tag/tag";
     import {UNCATEGORIZED_NAME} from "@perfice/util/category";
+    import {tagCategories} from "@perfice/app";
+    import MultiSelectDropdownButton from "@perfice/components/base/dropdown/MultiSelectDropdownButton.svelte";
 
-    let {settings, onChange, forms}: {
-        settings: DashboardTagsWidgetSettings,
-        onChange: (settings: DashboardTagsWidgetSettings) => void,
-        forms: Form[],
-        dependencies: Record<string, string>
+    let {settings, onChange}: {
+        settings: ReflectionTagsWidgetSettings,
+        onChange: (settings: ReflectionTagsWidgetSettings) => void
     } = $props();
 
     let availableCategories = $derived.by(async () => [

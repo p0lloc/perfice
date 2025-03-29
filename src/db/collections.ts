@@ -7,6 +7,7 @@ import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
+import type {Reflection} from "@perfice/model/reflection/reflection";
 
 export interface TrackableCollection {
     count(): Promise<number>;
@@ -22,6 +23,18 @@ export interface TrackableCollection {
     deleteTrackableById(trackableId: string): Promise<void>;
 
     updateTrackables(items: Trackable[]): Promise<void>;
+}
+
+export interface ReflectionCollection {
+    getReflections(): Promise<Reflection[]>;
+
+    getReflectionById(id: string): Promise<Reflection | undefined>;
+
+    createReflection(reflection: Reflection): Promise<void>;
+
+    updateReflection(reflection: Reflection): Promise<void>;
+
+    deleteReflectionById(id: string): Promise<void>;
 }
 
 export interface TrackableCategoryCollection {

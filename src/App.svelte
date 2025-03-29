@@ -1,32 +1,36 @@
 <script lang="ts">
-    import { appReady, forms, journal, tags } from "./app";
-    import type { Route } from "@mateothegreat/svelte5-router";
-    import { Router } from "@mateothegreat/svelte5-router";
-    import TrackableView from "@perfice/views/TrackableView.svelte";
-    import FormEditorView from "@perfice/views/FormEditorView.svelte";
-    import { closeContextMenus } from "@perfice/model/ui/context-menu";
-    import JournalView from "@perfice/views/JournalView.svelte";
+    import {appReady, forms, journal, tags} from "./app";
+    import type {Route} from "@mateothegreat/svelte5-router";
+    import {Router} from "@mateothegreat/svelte5-router";
+    import TrackableView from "@perfice/views/trackable/TrackableView.svelte";
+    import FormEditorView from "@perfice/views/form/FormEditorView.svelte";
+    import {closeContextMenus} from "@perfice/model/ui/context-menu";
+    import JournalView from "@perfice/views/journal/JournalView.svelte";
     import NavigationSidebar from "@perfice/components/sidebar/NavigationSidebar.svelte";
-    import GoalView from "@perfice/views/GoalView.svelte";
-    import GoalEditorView from "@perfice/views/GoalEditorView.svelte";
-    import { routingNavigatorState } from "@perfice/model/ui/router.svelte";
-    import TagsView from "@perfice/views/TagsView.svelte";
-    import { clearClosables } from "./model/ui/modal";
-    import AnalyticsView from "@perfice/views/AnalyticsView.svelte";
-    import AnalyticsDetailView from "@perfice/views/AnalyticsDetailView.svelte";
-    import DashboardView from "@perfice/views/DashboardView.svelte";
+    import GoalView from "@perfice/views/goal/GoalView.svelte";
+    import GoalEditorView from "@perfice/views/goal/GoalEditorView.svelte";
+    import {routingNavigatorState} from "@perfice/model/ui/router.svelte";
+    import TagsView from "@perfice/views/tag/TagsView.svelte";
+    import {clearClosables} from "./model/ui/modal";
+    import AnalyticsView from "@perfice/views/analytics/AnalyticsView.svelte";
+    import AnalyticsDetailView from "@perfice/views/analytics/AnalyticsDetailView.svelte";
+    import DashboardView from "@perfice/views/dashboard/DashboardView.svelte";
     import QuickLogField from "@perfice/components/QuickLogField.svelte";
+    import ReflectionListView from "@perfice/views/reflection/ReflectionListView.svelte";
+    import ReflectionEditorView from "@perfice/views/reflection/ReflectionEditorView.svelte";
 
     const routes: Route[] = [
-        { path: "/forms/(?<formId>.*)", component: FormEditorView },
-        { path: "/goals/(?<goalId>.*)", component: GoalEditorView },
-        { path: "/tags", component: TagsView },
-        { path: "/journal", component: JournalView },
-        { path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView },
-        { path: "/analytics", component: AnalyticsView },
-        { path: "/goals", component: GoalView },
-        { path: "/trackables", component: TrackableView },
-        { path: "/", component: DashboardView },
+        {path: "/forms/(?<formId>.*)", component: FormEditorView},
+        {path: "/goals/(?<goalId>.*)", component: GoalEditorView},
+        {path: "/tags", component: TagsView},
+        {path: "/journal", component: JournalView},
+        {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
+        {path: "/analytics", component: AnalyticsView},
+        {path: "/goals", component: GoalView},
+        {path: "/trackables", component: TrackableView},
+        {path: "/reflections/(?<reflectionId>.*)", component: ReflectionEditorView},
+        {path: "/reflections", component: ReflectionListView},
+        {path: "/", component: DashboardView},
     ];
 
     function onBodyClick(e: MouseEvent) {
@@ -40,17 +44,17 @@
     }
 </script>
 
-<svelte:body onclick={onBodyClick} />
+<svelte:body onclick={onBodyClick}/>
 {#if $appReady}
     <div class="flex main-container">
-        <NavigationSidebar />
+        <NavigationSidebar/>
         <div class="flex-1">
-            <Router post={onRouterRoute} {routes} />
+            <Router post={onRouterRoute} {routes}/>
         </div>
     </div>
 {/if}
 
-<QuickLogField />
+<QuickLogField/>
 
 <style>
     .inp {

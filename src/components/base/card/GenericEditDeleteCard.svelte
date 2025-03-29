@@ -3,20 +3,19 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import GenericActionsCard from "@perfice/components/base/card/GenericActionsCard.svelte";
 
-    let {icon, text, onDelete, onEdit}: { icon?: IconDefinition, text: string, onDelete: () => void, onEdit: () => void } = $props();
+    let {icon, text, onDelete, onEdit}: {
+        icon?: IconDefinition,
+        text: string,
+        onDelete: () => void,
+        onEdit: () => void
+    } = $props();
 </script>
 
-<div class="border p-2 rounded-xl flex justify-between items-center">
-    <div class="row-gap">
-        {#if icon != null}
-            <Fa icon={icon}/>
-        {/if}
-
-        {text}
-    </div>
-    <div class="row-gap text-gray-500">
+<GenericActionsCard {icon} {text}>
+    {#snippet actions()}
         <IconButton icon={faPen} onClick={onEdit}/>
         <IconButton icon={faTrash} onClick={onDelete}/>
-    </div>
-</div>
+    {/snippet}
+</GenericActionsCard>
