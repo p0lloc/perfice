@@ -1,33 +1,33 @@
+import type {DashboardTableWidgetSettings} from "@perfice/model/dashboard/widgets/table";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {forms} from "@perfice/app";
 import {prettyPrintPrimitive, primitiveAsString, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-import type {DashboardTableWidgetSettings} from "@perfice/model/dashboard/widgets/table";
-import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
+import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
+import type {TableWidgetSettings} from "@perfice/model/table/table";
 
 export interface TableWidgetResult {
     name: string;
     icon: string;
-    groups: DashboardTableWidgetGroup[];
+    groups: TableWidgetGroup[];
 }
 
-export interface DashboardTableWidgetGroup {
+export interface TableWidgetGroup {
     group: string | null;
     name: string;
-    entries: DashboardTableWidgetEntry[];
+    entries: TableWidgetEntry[];
 }
 
-export interface DashboardTableWidgetEntry {
+export interface TableWidgetEntry {
     prefix: string;
     suffix: string;
 }
 
-export function TableWidget(dependencies: Record<string, string>, settings: DashboardTableWidgetSettings, date: Date,
+export function TableWidget(variableId: string, settings: TableWidgetSettings, date: Date,
                             weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<TableWidgetResult>> {
-    const variableId = dependencies["list"];
 
     let store = VariableValueStore(variableId,
         tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
@@ -40,7 +40,7 @@ export function TableWidget(dependencies: Record<string, string>, settings: Dash
             let resolved = await value;
             if (resolved.type != PrimitiveValueType.LIST) return;
 
-            let groups: DashboardTableWidgetGroup[] = [];
+            let groups: TableWidgetGroup[] = [];
             if (settings.groupBy == null) {
                 groups.push({
                     group: null,
@@ -56,7 +56,7 @@ export function TableWidget(dependencies: Record<string, string>, settings: Dash
                 let prefix = formatAnswersIntoRepresentation(answers, settings.prefix);
                 let suffix = formatAnswersIntoRepresentation(answers, settings.suffix);
 
-                let entry: DashboardTableWidgetEntry = {
+                let entry: TableWidgetEntry = {
                     prefix,
                     suffix,
                 }

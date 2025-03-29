@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type {DashboardTableWidgetEntry} from "@perfice/stores/dashboard/widget/table";
+    import type {TableWidgetEntry} from "@perfice/stores/table/table";
 
-    let {entry}: { entry: DashboardTableWidgetEntry } = $props();
+    let {entry}: { entry: TableWidgetEntry } = $props();
 </script>
 
-<div class="border-b w-full px-2 py-1 row-between">
+<div class="w-full px-2 py-1 row-between [&:not(:last-child)]:border-b">
     <p>
         {entry.prefix}
     </p>

@@ -8,10 +8,12 @@
     let {action}: { action: ReflectionEditPageAction } = $props();
 
     function onNameChange(e: { currentTarget: HTMLInputElement }) {
+        action.page.name = e.currentTarget.value;
         action.onChange({...action.page, name: e.currentTarget.value});
     }
 
     function onDescriptionChange(e: { currentTarget: HTMLTextAreaElement }) {
+        action.page.description = e.currentTarget.value;
         action.onChange({...action.page, description: e.currentTarget.value});
     }
 

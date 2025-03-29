@@ -1,10 +1,14 @@
 <script lang="ts">
-    import type {ReflectionTableWidgetSettings} from "@perfice/model/reflection/reflection";
 
-    let {settings, onChange}: {
+    import type {ReflectionTableWidgetSettings} from "@perfice/model/reflection/widgets/table";
+    import EditTableWidgetSettings from "@perfice/components/table/EditTableWidgetSettings.svelte";
+    import type {Form} from "@perfice/model/form/form";
+
+    let {settings, onChange, forms}: {
         settings: ReflectionTableWidgetSettings,
-        onChange: (settings: ReflectionTableWidgetSettings) => void
+        onChange: (settings: ReflectionTableWidgetSettings) => void,
+        forms: Form[],
     } = $props();
 </script>
 
-form
+<EditTableWidgetSettings {settings} {onChange} {forms}/>

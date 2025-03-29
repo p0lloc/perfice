@@ -56,7 +56,6 @@ import {EntryRowWidget} from "@perfice/stores/dashboard/widget/entryRow";
 import type {DashboardEntryRowWidgetSettings} from "@perfice/model/dashboard/widgets/entryRow";
 import type {DashboardChartWidgetSettings} from "@perfice/model/dashboard/widgets/chart";
 import {ChartWidget} from "@perfice/stores/dashboard/widget/chart";
-import {TableWidget} from "@perfice/stores/dashboard/widget/table";
 import type {DashboardTableWidgetSettings} from "@perfice/model/dashboard/widgets/table";
 import {GoalWidget} from "@perfice/stores/dashboard/widget/goal";
 import type {DashboardGoalWidgetSettings} from "@perfice/model/dashboard/widgets/goal";
@@ -70,6 +69,7 @@ import {ChecklistWidget} from "@perfice/stores/dashboard/widget/checklist";
 import type {DashboardChecklistWidgetSettings} from './model/dashboard/widgets/checklist';
 import {ReflectionService} from "@perfice/services/reflection/reflection";
 import {ReflectionStore} from "@perfice/stores/reflection/reflection";
+import {TableWidget} from "@perfice/stores/table/table";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -101,7 +101,7 @@ const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
-const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService);
+const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService);
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
@@ -156,9 +156,9 @@ export function checklistWidget(dependencies: Record<string, string>, settings: 
     return ChecklistWidget(dependencies, settings, date, weekStart, variableService, key);
 }
 
-export function tableWidget(dependencies: Record<string, string>, settings: DashboardTableWidgetSettings, date: Date,
+export function tableWidget(listVariableId: string, settings: DashboardTableWidgetSettings, date: Date,
                             weekStart: WeekStart, key: string,) {
-    return TableWidget(dependencies, settings, date, weekStart, key, variableService);
+    return TableWidget(listVariableId, settings, date, weekStart, key, variableService);
 }
 
 export function chartWidget(dependencies: Record<string, string>, settings: DashboardChartWidgetSettings, date: Date,

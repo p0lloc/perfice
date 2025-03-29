@@ -68,6 +68,7 @@
 
         page.widgets.push({
             id: crypto.randomUUID(),
+            dependencies: {},
             ...typeAndSettings
         });
     }

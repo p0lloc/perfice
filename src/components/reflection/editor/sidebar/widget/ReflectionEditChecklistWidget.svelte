@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type {ReflectionChecklistWidgetSettings} from "@perfice/model/reflection/reflection";
+
+    import type {ReflectionChecklistWidgetSettings} from "@perfice/model/reflection/widgets/checklist";
 
     let {settings, onChange}: {
         settings: ReflectionChecklistWidgetSettings,

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type {ReflectionFormWidgetSettings} from "@perfice/model/reflection/reflection";
     import type {Form} from "@perfice/model/form/form";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
+    import type {ReflectionFormWidgetSettings} from "@perfice/model/reflection/widgets/form";
 
     let {settings, onChange, forms}: {
         settings: ReflectionFormWidgetSettings,
