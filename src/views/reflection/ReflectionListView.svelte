@@ -57,10 +57,8 @@
     {:then value}
         <Title title="Reflections" icon={faSun}/>
 
-
         <div class="flex flex-col gap-2 mt-4">
             {#each value as reflection(reflection.id)}
-                {setTimeout(() => onPlayReflection(reflection))}
                 <GenericActionsCard icon={faSun} text={reflection.name}>
                     {#snippet actions()}
                         <IconButton icon={faPlay} onClick={() => onPlayReflection(reflection)}/>

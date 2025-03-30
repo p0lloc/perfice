@@ -3,7 +3,6 @@
         ReflectionTableWidgetAnswerState,
         ReflectionTagsWidgetAnswerState
     } from "@perfice/model/reflection/reflection";
-    import type {ReflectionTagsWidgetSettings} from "@perfice/model/reflection/widgets/tags";
     import TableWidget from "@perfice/components/table/TableWidget.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import type {ReflectionTableWidgetSettings} from "@perfice/model/reflection/widgets/table";
@@ -14,6 +13,11 @@
         dependencies: Record<string, string>,
         onChange: (state: ReflectionTagsWidgetAnswerState) => void
     } = $props();
+
+
+    export function validate(): boolean {
+        return true;
+    }
 
     function openFormModal(formId: string, answers?: Record<string, PrimitiveValue>) {
         // TODO: open inline form embed instead

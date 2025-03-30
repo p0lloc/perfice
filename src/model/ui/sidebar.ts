@@ -2,7 +2,7 @@ import {
     faBook,
     faBullseye, faHome,
     faLineChart,
-    faRuler, faSquarePlus,
+    faRuler, faSquarePlus, faSun,
     faTag,
     faTags,
     type IconDefinition
@@ -22,4 +22,5 @@ export const SIDEBAR_LINKS: SidebarLink[] = [
     {icon: faBullseye, path: "/goals", title: "Goals"},
     {icon: faTags, path: "/tags", title: "Tags"},
     {icon: faLineChart, path: "/analytics", title: "Analytics", showOnMobile: false},
+    {icon: faSun, path: "/reflections", title: "Reflections", showOnMobile: false},
 ];
