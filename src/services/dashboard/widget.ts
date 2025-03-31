@@ -6,6 +6,7 @@ import {
     DashboardWidgetType, getDashboardWidgetDefinition
 } from "@perfice/model/dashboard/dashboard";
 import type {VariableService} from "@perfice/services/variable/variable";
+import {updateDependencies} from "../variable/dependencies";
 
 export class DashboardWidgetService {
 
@@ -58,38 +59,7 @@ export class DashboardWidgetService {
         const definition = getDashboardWidgetDefinition(widget.type)!;
         const variableUpdates = definition.updateDependencies(widget.dependencies, previous.settings, widget.settings);
 
-        let previousDependencies = structuredClone(previous.dependencies);
-        for (let [dependencyId, updatedType] of variableUpdates.entries()) {
-            const variableId = widget.dependencies[dependencyId];
-            if (variableId == undefined) {
-                // Update returned a new variable, so we need to create it
-
-                let newId = crypto.randomUUID();
-                await this.variableService.createVariable({
-                    id: newId,
-                    name: "",
-                    type: updatedType,
-                })
-
-                widget.dependencies[dependencyId] = newId;
-                continue;
-            }
-
-            // Remove any dependencies that are still returned by the definition
-            delete previousDependencies[dependencyId];
-
-            const variable = this.variableService.getVariableById(variableId);
-            if (variable == undefined) continue;
-
-            variable.type = updatedType;
-            await this.variableService.updateVariable(variable);
-        }
-
-        // Dependency is no longer returned by the definition, so we need to delete them
-        for (let [_, variableId] of Object.entries(previousDependencies)) {
-            await this.variableService.deleteVariableById(variableId);
-        }
-
+        await updateDependencies(this.variableService, widget.dependencies, structuredClone(previous.dependencies), variableUpdates);
     }
 
     private async deleteWidgetDependencies(widget: DashboardWidget) {

@@ -11,6 +11,8 @@ import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {convertAnswersToDisplay} from "@perfice/model/form/validation";
 import type {TagService} from "../tag/tag";
 import type {VariableService} from "@perfice/services/variable/variable";
+import {updateDependencies} from "@perfice/services/variable/dependencies";
+import {ChecklistConditionType} from "@perfice/model/sharedWidgets/checklist/checklist";
 
 export class ReflectionService {
 
@@ -56,27 +58,44 @@ export class ReflectionService {
     }
 
     async updateReflection(reflection: Reflection): Promise<void> {
+        let previous = await this.reflectionCollection.getReflectionById(reflection.id);
+        if (previous == undefined) return;
+
         let widgets = reflection.pages.flatMap(p => p.widgets);
+        let previousWidgets = previous.pages.flatMap(p => p.widgets);
+
         for (let widget of widgets) {
             let definition = getReflectionWidgetDefinition(widget.type);
             if (definition == null) continue;
 
-            let dependencies = definition.updateDependencies(widget.dependencies, widget.settings, widget.settings);
-            for (let [dependencyId, updatedType] of dependencies) {
-                const variableId = widget.dependencies[dependencyId];
-                if (variableId == undefined) {
-                    // TODO: create new variable
-                    continue;
-                }
-                const variable = this.variableService.getVariableById(variableId);
-                if (variable == undefined) continue;
+            let previousWidget = previousWidgets.find(w => w.id == widget.id);
 
-                variable.type = updatedType;
-                await this.variableService.updateVariable(variable);
-                widget.dependencies[dependencyId] = variableId;
+            if (previousWidget == undefined) {
+                // This widget was created, so we need to create all dependencies
+                let dependencies = definition.createDependencies(widget.settings);
+                for (let [key, variable] of dependencies) {
+                    await this.variableService.createVariable(variable);
+                    widget.dependencies[key] = variable.id;
+                }
+            } else {
+                // Update dependencies
+                let variableUpdates = definition.updateDependencies(widget.dependencies,
+                    previousWidget.settings, widget.settings);
+
+                await updateDependencies(this.variableService, widget.dependencies,
+                    structuredClone(previousWidget.dependencies), variableUpdates);
+
+                previousWidgets = previousWidgets.filter(w => w.id != widget.id);
             }
         }
-        // TODO: delete variables that are no longer returned by the definition
+
+        for (let deletedWidget of previousWidgets) {
+            // Delete all dependencies of this widget
+            for (let dependencyId of Object.values(deletedWidget.dependencies)) {
+                await this.variableService.deleteVariableById(dependencyId);
+            }
+        }
+
         return this.reflectionCollection.updateReflection(reflection);
     }
 
@@ -119,6 +138,26 @@ export class ReflectionService {
                         await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
                     }
 
+                    break;
+                }
+                case ReflectionWidgetType.CHECKLIST: {
+                    const data = answerState.state.data;
+
+                    for (let value of data) {
+                        switch (value.type) {
+                            case ChecklistConditionType.FORM:
+                                let form = await this.formService.getFormById(value.data.formId);
+                                if (form == null) continue;
+
+                                let answers: Record<string, PrimitiveValue> = convertAnswersToDisplay(value.data.answers, form.questions);
+
+                                await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                                break;
+                            case ChecklistConditionType.TAG:
+                                await this.tagService.logTag(value.data.tagId, new Date());
+                                break;
+                        }
+                    }
                     break;
                 }
             }

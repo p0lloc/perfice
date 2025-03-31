@@ -2,7 +2,7 @@
     import type {DashboardTableWidgetSettings} from "@perfice/model/dashboard/widgets/table";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import TableWidget from "@perfice/components/table/TableWidget.svelte";
+    import TableWidget from "@perfice/components/sharedWidgets/table/TableWidget.svelte";
 
     let {dependencies, openFormModal, settings}: {
         settings: DashboardTableWidgetSettings,

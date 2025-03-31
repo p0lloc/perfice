@@ -1,21 +1,21 @@
 <script lang="ts">
     import {ModalSize, ModalType} from "@perfice/model/ui/modal.js";
     import Modal from "@perfice/components/base/modal/Modal.svelte";
-    import {
-        CHECKLIST_CONDITION_TYPES,
-        type ChecklistCondition,
-        ChecklistConditionType
-    } from "@perfice/model/dashboard/widgets/checklist";
-    import {faLayerGroup, faQuestionCircle, faTextHeight} from "@fortawesome/free-solid-svg-icons";
+    import {faLayerGroup, faTextHeight} from "@fortawesome/free-solid-svg-icons";
     import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import type {Form} from "@perfice/model/form/form";
     import type {Tag} from "@perfice/model/tag/tag";
     import EditFormChecklistCondition
-        from "@perfice/components/dashboard/sidebar/edit/types/checklist/EditFormChecklistCondition.svelte";
+        from "@perfice/components/sharedWidgets/checklist/EditFormChecklistCondition.svelte";
     import type {Component} from "svelte";
     import EditTagChecklistCondition
-        from "@perfice/components/dashboard/sidebar/edit/types/checklist/EditTagChecklistCondition.svelte";
+        from "@perfice/components/sharedWidgets/checklist/EditTagChecklistCondition.svelte";
+    import {
+        CHECKLIST_CONDITION_TYPES,
+        type ChecklistCondition,
+        ChecklistConditionType
+    } from "@perfice/model/sharedWidgets/checklist/checklist";
 
     let modal: Modal;
 

@@ -12,7 +12,7 @@ import {
 } from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-import type {TableWidgetSettings} from "@perfice/model/table/table";
+import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
 
 export interface TableWidgetResult {
     name: string;

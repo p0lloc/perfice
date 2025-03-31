@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TableWidget from "@perfice/components/table/TableWidget.svelte";
+    import TableWidget from "@perfice/components/sharedWidgets/table/TableWidget.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import type {
         ReflectionTableWidgetAnswerState,

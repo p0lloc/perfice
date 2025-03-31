@@ -1,5 +1,5 @@
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
-import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/model/table/table";
+import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
 import {
     type TextOrDynamic,
     type Variable,

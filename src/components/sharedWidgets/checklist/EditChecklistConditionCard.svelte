@@ -1,6 +1,6 @@
 <script lang="ts">
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
-    import type {ChecklistCondition} from "@perfice/model/dashboard/widgets/checklist";
+    import type {ChecklistCondition} from "@perfice/model/sharedWidgets/checklist/checklist";
 
     let {condition, onDelete, onEdit}: {
         condition: ChecklistCondition,

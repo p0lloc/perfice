@@ -5,7 +5,7 @@
     import Button from "@perfice/components/base/button/Button.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {faTimes} from "@fortawesome/free-solid-svg-icons";
-    import type {TableWidgetSettings} from "@perfice/model/table/table";
+    import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
 
     let {settings, onChange, forms}: {
         settings: TableWidgetSettings,

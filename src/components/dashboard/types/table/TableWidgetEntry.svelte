@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {TableWidgetEntry} from "@perfice/stores/table/table";
+    import type {TableWidgetEntry} from "@perfice/stores/sharedWidgets/table/table";
 
     let {entry}: { entry: TableWidgetEntry } = $props();
 </script>

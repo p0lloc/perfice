@@ -1,4 +1,4 @@
-import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/model/table/table";
+import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
 import {type ReflectionWidgetAnswerState, type ReflectionWidgetDefinition, ReflectionWidgetType} from "../reflection";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";

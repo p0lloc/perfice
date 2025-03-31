@@ -1,11 +1,11 @@
 <script lang="ts">
     import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
-    import type {ChecklistFormCondition} from "@perfice/model/dashboard/widgets/checklist";
     import {faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import type {Form} from "@perfice/model/form/form";
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
     import {extractAnswerValuesFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
+    import type {ChecklistFormCondition} from "@perfice/model/sharedWidgets/checklist/checklist";
 
     let {forms, value, onChange}: {
         forms: Form[],

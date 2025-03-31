@@ -6,7 +6,7 @@
     let {checked, name, onClick}: { checked: boolean, name: string, onClick: () => void } = $props();
 </script>
 
-<div class="flex gap-1 items-center border-b px-1">
+<div class="flex gap-1 items-center [&:not(:last-child)]:border-b px-1">
     <IconButton icon={checked ? faCheckCircle : regularCheckCircle}
                 {onClick}
                 class="text-xl {checked ? 'text-green-500' : 'text-gray-500'}"

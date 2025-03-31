@@ -65,12 +65,12 @@ import {TrackableWidget} from './stores/dashboard/widget/trackable';
 import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
 import type {DashboardInsightsWidgetSettings} from "@perfice/model/dashboard/widgets/insights";
 import {InsightsWidget} from "@perfice/stores/dashboard/widget/insights";
-import {ChecklistWidget} from "@perfice/stores/dashboard/widget/checklist";
 import type {DashboardChecklistWidgetSettings} from './model/dashboard/widgets/checklist';
 import {ReflectionService} from "@perfice/services/reflection/reflection";
 import {ReflectionStore} from "@perfice/stores/reflection/reflection";
-import {TableWidget} from "@perfice/stores/table/table";
+import {TableWidget} from "@perfice/stores/sharedWidgets/table/table";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {type ChecklistData, ChecklistWidget} from "@perfice/stores/sharedWidgets/checklist/checklist";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -153,8 +153,8 @@ export function entryRowWidget(dependencies: Record<string, string>, settings: D
 }
 
 export function checklistWidget(dependencies: Record<string, string>, settings: DashboardChecklistWidgetSettings, date: Date,
-                                weekStart: WeekStart, key: string,) {
-    return ChecklistWidget(dependencies, settings, date, weekStart, variableService, key);
+                                weekStart: WeekStart, key: string, extraData: ChecklistData[] = []) {
+    return ChecklistWidget(dependencies, settings, date, weekStart, variableService, key, extraData);
 }
 
 export function tableWidget(listVariableId: string, settings: DashboardTableWidgetSettings, date: Date,

@@ -6,8 +6,8 @@
     import {type PrimitiveValue, pString} from "@perfice/model/primitive/primitive";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
-    import type {TableWidgetGroup} from "@perfice/stores/table/table";
-    import type {TableWidgetSettings} from "@perfice/model/table/table";
+    import type {TableWidgetGroup} from "@perfice/stores/sharedWidgets/table/table";
+    import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
 
     let {openFormModal, settings, date, listVariableId, extraAnswers = []}: {
         settings: TableWidgetSettings,
