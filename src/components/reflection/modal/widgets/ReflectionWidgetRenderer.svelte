@@ -10,6 +10,8 @@
     import ReflectionTagsWidget from "@perfice/components/reflection/modal/widgets/ReflectionTagsWidget.svelte";
     import ReflectionTableWidget from "@perfice/components/reflection/modal/widgets/ReflectionTableWidget.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import ReflectionChecklistWidget
+        from "@perfice/components/reflection/modal/widgets/ReflectionChecklistWidget.svelte";
 
     let {widget, states, onChange, openNestedForm}: {
         widget: ReflectionWidget,
@@ -37,6 +39,7 @@
         [ReflectionWidgetType.FORM]: ReflectionFormWidget,
         [ReflectionWidgetType.TAGS]: ReflectionTagsWidget,
         [ReflectionWidgetType.TABLE]: ReflectionTableWidget,
+        [ReflectionWidgetType.CHECKLIST]: ReflectionChecklistWidget,
     }
 
     const RendererComponent = $derived(RENDERERS[widget.type]);

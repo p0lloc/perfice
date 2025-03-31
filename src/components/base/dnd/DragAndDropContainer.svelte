@@ -1,12 +1,13 @@
 <script lang="ts">
-    import {type DndEvent, dndzone, SOURCES, TRIGGERS} from "svelte-dnd-action";
+    import {type DndEvent, dndzone, dragHandleZone, SOURCES, TRIGGERS} from "svelte-dnd-action";
     import {longPress} from "@perfice/util/long-press";
     import type {Snippet} from "svelte";
 
-    let {items, item, class: className = '', disabled = false, onFinalize, zoneId = "dnd"}: {
+    let {items, item, class: className = '', disabled = false, onFinalize, zoneId = "dnd", dragHandles = false}: {
         items: any[],
         item: Snippet<[any]>,
         class?: string,
+        dragHandles?: boolean,
         disabled?: boolean,
         zoneId?: string,
 
@@ -52,16 +53,38 @@
     export function invalidateItems() {
         currentItems = items;
     }
+
+    let settings = $derived({
+        type: zoneId,
+        items: currentItems,
+        dragDisabled: dragDisabled || disabled,
+        dropTargetStyle: {},
+        transformDraggedElement
+    });
 </script>
 
-<div
-        use:dndzone="{{type: zoneId, items: currentItems, dragDisabled: dragDisabled || disabled, dropTargetStyle: {}, transformDraggedElement}}"
-        onconsider={onConsider}
-        onfinalize={onFinalized}
-        class="{className}">
-    {#each currentItems as trackable (trackable.id)}
+{#snippet loop(items)}
+    {#each items as trackable (trackable.id)}
         <div use:longPress onlong={onLongPress}>
             {@render item(trackable)}
         </div>
     {/each}
-</div>
+{/snippet}
+
+{#if dragHandles}
+    <div
+            use:dragHandleZone={settings}
+            onconsider={onConsider}
+            onfinalize={onFinalized}
+            class="{className}">
+        {@render loop(currentItems)}
+    </div>
+{:else}
+    <div
+            use:dndzone={settings}
+            onconsider={onConsider}
+            onfinalize={onFinalized}
+            class="{className}">
+        {@render loop(currentItems)}
+    </div>
+{/if}

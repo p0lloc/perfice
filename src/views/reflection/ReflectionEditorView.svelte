@@ -14,11 +14,13 @@
     import Button from "@perfice/components/base/button/Button.svelte";
     import ReflectionEditorSidebar from "@perfice/components/reflection/editor/sidebar/ReflectionEditorSidebar.svelte";
     import {goto} from "@mateothegreat/svelte5-router";
+    import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);
     let editing = $state(false);
     let sidebar: ReflectionEditorSidebar;
+    let dragContainer: DragAndDropContainer;
 
     onMount(() => {
         loadReflection();
@@ -49,6 +51,7 @@
             description: "lorem ipsum dolor sit amet",
             widgets: []
         });
+        dragContainer.invalidateItems();
     }
 
     function onEditPage(page: ReflectionPage) {
@@ -59,20 +62,16 @@
                 onChange: (page) => {
                     if (reflection == null) return;
                     reflection.pages = updateIdentifiedInArray(reflection.pages, page)
+                    dragContainer.invalidateItems();
                 }
             }
         });
     }
 
-    function closeSidebar(e: MouseEvent) {
-        let target = e.target as HTMLElement;
-        if (target.tagName == "BUTTON") return;
-        sidebar.close();
-    }
-
     function onDeletePage(page: ReflectionPage) {
         if (reflection == undefined) return;
         reflection.pages = deleteIdentifiedInArray(reflection.pages, page.id);
+        dragContainer.invalidateItems();
     }
 
     async function onEditWidget(widget: ReflectionWidget) {
@@ -99,6 +98,11 @@
             editing = true;
         }
     }
+
+    function onPagesReorder(pages: ReflectionPage[]) {
+        if (reflection == undefined) return;
+        reflection.pages = pages;
+    }
 </script>
 
 <ReflectionEditorSidebar bind:this={sidebar}/>
@@ -123,13 +127,16 @@
             <input type="text" bind:value={reflection.name} placeholder="Name"/>
         </div>
         <h3 class="label text-2xl mt-4">Pages</h3>
-        <div class="flex flex-col mt-2 gap-2">
-            {#each reflection.pages as page(page.id)}
+        <DragAndDropContainer bind:this={dragContainer} zoneId="reflection-pages" items={reflection.pages}
+                              class="flex flex-col mt-2 gap-2"
+                              dragHandles={true}
+                              onFinalize={onPagesReorder}>
+            {#snippet item(page)}
                 <ReflectionPageGroup onEdit={() => onEditPage(page)} onDelete={() => onDeletePage(page)}
                                      onEditWidget={(widget) => onEditWidget(widget)}
                                      {page}/>
-            {/each}
-        </div>
+            {/snippet}
+        </DragAndDropContainer>
         <HorizontalPlusButton onClick={createPage}></HorizontalPlusButton>
         <div class="hidden md:block mt-10">
             <Button onClick={save}>Save</Button>

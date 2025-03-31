@@ -72,7 +72,6 @@ export class ReflectionService {
                 if (variable == undefined) continue;
 
                 variable.type = updatedType;
-                console.log(variable);
                 await this.variableService.updateVariable(variable);
                 widget.dependencies[dependencyId] = variableId;
             }
