@@ -70,6 +70,7 @@ import type {DashboardChecklistWidgetSettings} from './model/dashboard/widgets/c
 import {ReflectionService} from "@perfice/services/reflection/reflection";
 import {ReflectionStore} from "@perfice/stores/reflection/reflection";
 import {TableWidget} from "@perfice/stores/table/table";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 const db = setupDb();
 const journalService = new JournalService(db.entries);
@@ -157,8 +158,8 @@ export function checklistWidget(dependencies: Record<string, string>, settings: 
 }
 
 export function tableWidget(listVariableId: string, settings: DashboardTableWidgetSettings, date: Date,
-                            weekStart: WeekStart, key: string,) {
-    return TableWidget(listVariableId, settings, date, weekStart, key, variableService);
+                            weekStart: WeekStart, key: string, extraAnswers: Record<string, PrimitiveValue>[] = []) {
+    return TableWidget(listVariableId, settings, date, weekStart, key, variableService, extraAnswers);
 }
 
 export function chartWidget(dependencies: Record<string, string>, settings: DashboardChartWidgetSettings, date: Date,

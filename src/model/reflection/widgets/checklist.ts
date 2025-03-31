@@ -1,12 +1,18 @@
 import type {ChecklistCondition} from "@perfice/model/dashboard/widgets/checklist";
 import {
+    type ReflectionWidgetAnswerState,
     type ReflectionWidgetDefinition,
     ReflectionWidgetType,
 } from "@perfice/model/reflection/reflection";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export interface ReflectionChecklistWidgetSettings {
     conditions: ChecklistCondition[];
+}
+
+
+export interface ReflectionChecklistWidgetAnswerState {
 }
 
 export class ReflectionChecklistWidgetDefinition implements ReflectionWidgetDefinition<ReflectionWidgetType.CHECKLIST, ReflectionChecklistWidgetSettings> {
@@ -29,4 +35,12 @@ export class ReflectionChecklistWidgetDefinition implements ReflectionWidgetDefi
 
         return new Map();
     }
+
+    createAnswerState(): ReflectionWidgetAnswerState {
+        return {
+            type: ReflectionWidgetType.CHECKLIST,
+            state: {}
+        };
+    }
+
 }

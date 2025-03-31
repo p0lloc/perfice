@@ -9,16 +9,17 @@
     import type {TableWidgetGroup} from "@perfice/stores/table/table";
     import type {TableWidgetSettings} from "@perfice/model/table/table";
 
-    let {openFormModal, settings, date, listVariableId}: {
+    let {openFormModal, settings, date, listVariableId, extraAnswers = []}: {
         settings: TableWidgetSettings,
         listVariableId: string,
         date: Date,
-        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void
+        openFormModal: (formId: string, answers?: Record<string, PrimitiveValue>) => void,
+        extraAnswers?: Record<string, PrimitiveValue>[]
     } = $props();
 
     // TODO: use proper key here
     let result = $derived(tableWidget(listVariableId, settings, date,
-        $weekStart, `${settings.formId}:${settings.groupBy}:${settings.prefix.length}`));
+        $weekStart, `${settings.formId}:${settings.groupBy}:${settings.prefix.length}`, extraAnswers));
 
     function onLogAny() {
         openFormModal(settings.formId);
@@ -47,7 +48,7 @@
             </div>
             <IconButton icon={faPlus} onClick={onLogAny}/>
         </div>
-        <div class="overflow-y-scroll scrollbar-hide w-full">
+        <div class="overflow-y-scroll scrollbar-hide w-full min-h-14">
             {#each value.groups as group}
                 {#if group.group != null}
                     <TableWidgetGroupHeader name={group.name} onLog={() => onLogGroup(group)}/>

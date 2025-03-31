@@ -1,4 +1,8 @@
-import {type ReflectionWidgetDefinition, ReflectionWidgetType} from "@perfice/model/reflection/reflection";
+import {
+    type ReflectionWidgetAnswerState,
+    type ReflectionWidgetDefinition,
+    ReflectionWidgetType
+} from "@perfice/model/reflection/reflection";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
 
 export interface ReflectionTagsWidgetSettings {
@@ -25,4 +29,18 @@ export class ReflectionTagsWidgetDefinition implements ReflectionWidgetDefinitio
 
         return new Map();
     }
+
+    createAnswerState(): ReflectionWidgetAnswerState {
+        return {
+            type: ReflectionWidgetType.TAGS,
+            state: {
+                tags: []
+            }
+        };
+    }
+
+}
+
+export interface ReflectionTagsWidgetAnswerState {
+    tags: string[];
 }

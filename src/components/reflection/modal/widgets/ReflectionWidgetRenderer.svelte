@@ -9,10 +9,14 @@
     import ReflectionFormWidget from "@perfice/components/reflection/modal/widgets/ReflectionFormWidget.svelte";
     import ReflectionTagsWidget from "@perfice/components/reflection/modal/widgets/ReflectionTagsWidget.svelte";
     import ReflectionTableWidget from "@perfice/components/reflection/modal/widgets/ReflectionTableWidget.svelte";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
-    let {widget, states, onChange}: {
+    let {widget, states, onChange, openNestedForm}: {
         widget: ReflectionWidget,
-        states: Record<string, ReflectionWidgetAnswerState>, onChange: (state: any) => void
+        states: Record<string, ReflectionWidgetAnswerState>, onChange: (state: any) => void,
+        openNestedForm: (formId: string,
+                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         answers?: Record<string, PrimitiveValue>) => void
     } = $props();
 
     let renderer: any;
@@ -25,7 +29,10 @@
         settings: any,
         state: any,
         dependencies: Record<string, string>,
-        onChange: (state: ReflectionWidgetAnswerState) => void
+        onChange: (state: any) => void,
+        openNestedForm: (formId: string,
+                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         answers?: Record<string, PrimitiveValue>) => void
     }>> = {
         [ReflectionWidgetType.FORM]: ReflectionFormWidget,
         [ReflectionWidgetType.TAGS]: ReflectionTagsWidget,
@@ -37,5 +44,5 @@
 
 <div>
     <RendererComponent settings={widget.settings} state={states[widget.id].state} bind:this={renderer} {onChange}
-                       dependencies={widget.dependencies}/>
+                       dependencies={widget.dependencies} {openNestedForm}/>
 </div>

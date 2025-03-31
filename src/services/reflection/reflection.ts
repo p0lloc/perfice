@@ -11,7 +11,6 @@ import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {convertAnswersToDisplay} from "@perfice/model/form/validation";
 import type {TagService} from "../tag/tag";
 import type {VariableService} from "@perfice/services/variable/variable";
-import {de} from "svelty-picker/i18n";
 
 export class ReflectionService {
 
@@ -89,8 +88,9 @@ export class ReflectionService {
     async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>) {
         let widgets = reflection.pages.flatMap(p => p.widgets);
         for (let [widgetId, answerState] of Object.entries(answers)) {
+            // TODO: this logic could be moved to the definitions themselves
             switch (answerState.type) {
-                case ReflectionWidgetType.FORM:
+                case ReflectionWidgetType.FORM: {
                     let widget = widgets.find(w => w.id == widgetId);
                     if (widget == null || widget.type != ReflectionWidgetType.FORM) continue;
 
@@ -101,12 +101,27 @@ export class ReflectionService {
 
                     await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
                     break;
-                case ReflectionWidgetType.TAGS:
+                }
+                case ReflectionWidgetType.TAGS: {
                     let tagIds = answerState.state.tags;
                     for (let tagId of tagIds) {
                         await this.tagService.logTag(tagId, new Date());
                     }
                     break;
+                }
+                case ReflectionWidgetType.TABLE: {
+                    let widget = widgets.find(w => w.id == widgetId);
+                    if (widget == null || widget.type != ReflectionWidgetType.TABLE) continue;
+
+                    let form = await this.formService.getFormById(widget.settings.formId);
+                    if (form == null) continue;
+
+                    for (let answers of answerState.state.answers) {
+                        await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                    }
+
+                    break;
+                }
             }
         }
     }

@@ -1,28 +1,38 @@
 <script lang="ts">
-    import type {
-        ReflectionTableWidgetAnswerState,
-        ReflectionTagsWidgetAnswerState
-    } from "@perfice/model/reflection/reflection";
     import TableWidget from "@perfice/components/table/TableWidget.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import type {ReflectionTableWidgetSettings} from "@perfice/model/reflection/widgets/table";
+    import type {
+        ReflectionTableWidgetAnswerState,
+        ReflectionTableWidgetSettings
+    } from "@perfice/model/reflection/widgets/table";
 
-    let {settings, state, onChange, dependencies}: {
+    let {settings, state: tableState, onChange, dependencies, openNestedForm}: {
         settings: ReflectionTableWidgetSettings,
         state: ReflectionTableWidgetAnswerState,
         dependencies: Record<string, string>,
-        onChange: (state: ReflectionTagsWidgetAnswerState) => void
+        onChange: (state: ReflectionTableWidgetAnswerState) => void,
+        openNestedForm: (formId: string,
+                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         answers?: Record<string, PrimitiveValue>) => void
     } = $props();
-
 
     export function validate(): boolean {
         return true;
     }
 
-    function openFormModal(formId: string, answers?: Record<string, PrimitiveValue>) {
-        // TODO: open inline form embed instead
-        console.log(formId, answers);
+    async function openFormModal(formId: string, formAnswers?: Record<string, PrimitiveValue>) {
+        openNestedForm(formId, onFormLog, formAnswers);
+    }
+
+    function onFormLog(answers: Record<string, PrimitiveValue>) {
+        onChange({
+            ...tableState,
+            answers: [...tableState.answers, answers]
+        })
     }
 </script>
 
-<TableWidget {settings} date={new Date()} {openFormModal} listVariableId={dependencies["list"]}/>
+
+<TableWidget {settings} date={new Date()} {openFormModal}
+             listVariableId={dependencies["list"]}
+             extraAnswers={tableState.answers}/>

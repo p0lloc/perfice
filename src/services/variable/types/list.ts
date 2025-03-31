@@ -25,6 +25,11 @@ export function extractValueFromDisplay(p: PrimitiveValue): PrimitiveValue {
     return p;
 }
 
+export function extractAnswerValuesFromDisplay(answers: Record<string, PrimitiveValue>) {
+    return Object.fromEntries(
+        Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
+}
+
 export function extractDisplayFromDisplay(p: PrimitiveValue): PrimitiveValue {
     if (p.type == PrimitiveValueType.DISPLAY && p.value.display != null) {
         return p.value.display;
@@ -79,7 +84,7 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
                 continue;
 
             let val = index.value.value;
-            if(shouldFilterOutEntry(entry, this.filters)){
+            if (shouldFilterOutEntry(entry, this.filters)) {
                 // Entry no longer matches filter, attempt to remove it from list
                 index.value.value = val.filter(v =>
                     v.type == PrimitiveValueType.JOURNAL_ENTRY && v.value.id != entry.id);
@@ -95,7 +100,7 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
                 }
 
                 // Entry went from being filtered to not filtered, add it to the list
-                if(!found) {
+                if (!found) {
                     index.value.value.push(pJournalEntry(entry.id, entry.timestamp,
                         extractFieldsFromAnswers(entry.answers, this.fields)));
                 }
@@ -114,7 +119,7 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
         if (entry.formId != this.formId) return [];
 
         // Don't create list entries for entries that should be filtered
-        if(shouldFilterOutEntry(entry, this.filters)) return [];
+        if (shouldFilterOutEntry(entry, this.filters)) return [];
 
         let actions: VariableIndexAction[] = [];
         for (let index of indices) {

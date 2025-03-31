@@ -4,7 +4,12 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {forms} from "@perfice/app";
-import {prettyPrintPrimitive, primitiveAsString, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {
+    prettyPrintPrimitive,
+    primitiveAsString,
+    type PrimitiveValue,
+    PrimitiveValueType
+} from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import type {TableWidgetSettings} from "@perfice/model/table/table";
@@ -26,8 +31,40 @@ export interface TableWidgetEntry {
     suffix: string;
 }
 
+function addTableWidgetFromAnswers(groups: TableWidgetGroup[], answers: Record<string, PrimitiveValue>, settings: TableWidgetSettings) {
+    let prefix = formatAnswersIntoRepresentation(answers, settings.prefix);
+    let suffix = formatAnswersIntoRepresentation(answers, settings.suffix);
+
+    let entry: TableWidgetEntry = {
+        prefix,
+        suffix,
+    }
+
+    if (settings.groupBy != null) {
+        let groupAnswer = answers[settings.groupBy];
+        if (groupAnswer == null) return;
+
+        let groupAnswerStr = primitiveAsString(extractValueFromDisplay(groupAnswer));
+
+        let existing = groups.find(g =>
+            g.group == groupAnswerStr);
+
+        if (existing == null) {
+            groups.push({
+                group: groupAnswerStr,
+                name: prettyPrintPrimitive(groupAnswer),
+                entries: [entry]
+            });
+        } else {
+            existing.entries.push(entry);
+        }
+    } else {
+        groups[0].entries.push(entry);
+    }
+}
+
 export function TableWidget(variableId: string, settings: TableWidgetSettings, date: Date,
-                            weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<TableWidgetResult>> {
+                            weekStart: WeekStart, key: string, variableService: VariableService, extraAnswers: Record<string, PrimitiveValue>[] = []): Readable<Promise<TableWidgetResult>> {
 
     let store = VariableValueStore(variableId,
         tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
@@ -49,40 +86,17 @@ export function TableWidget(variableId: string, settings: TableWidgetSettings, d
                 });
             }
 
+            // Add answers from actual journal entries
             for (let primitive of resolved.value) {
                 if (primitive.type != PrimitiveValueType.JOURNAL_ENTRY) continue;
 
                 let answers = primitive.value.value;
-                let prefix = formatAnswersIntoRepresentation(answers, settings.prefix);
-                let suffix = formatAnswersIntoRepresentation(answers, settings.suffix);
-
-                let entry: TableWidgetEntry = {
-                    prefix,
-                    suffix,
-                }
-
-                if (settings.groupBy != null) {
-                    let groupAnswer = answers[settings.groupBy];
-                    if (groupAnswer == null) continue;
-
-                    let groupAnswerStr = primitiveAsString(extractValueFromDisplay(groupAnswer));
-
-                    let existing = groups.find(g =>
-                        g.group == groupAnswerStr);
-
-                    if (existing == null) {
-                        groups.push({
-                            group: groupAnswerStr,
-                            name: prettyPrintPrimitive(groupAnswer),
-                            entries: [entry]
-                        });
-                    } else {
-                        existing.entries.push(entry);
-                    }
-                } else {
-                    groups[0].entries.push(entry);
-                }
+                addTableWidgetFromAnswers(groups, answers, settings);
             }
+
+            // Add any extra answers
+            extraAnswers.forEach(answers =>
+                addTableWidgetFromAnswers(groups, answers, settings));
 
             resolve({
                 name: form.name,

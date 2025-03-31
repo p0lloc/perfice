@@ -1,18 +1,21 @@
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
-import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {
+    type ReflectionFormWidgetAnswerState,
     ReflectionFormWidgetDefinition,
     type ReflectionFormWidgetSettings
 } from "@perfice/model/reflection/widgets/form";
 import {
+    type ReflectionTagsWidgetAnswerState,
     ReflectionTagsWidgetDefinition,
     type ReflectionTagsWidgetSettings
 } from "@perfice/model/reflection/widgets/tags";
 import {
+    type ReflectionTableWidgetAnswerState,
     ReflectionTableWidgetDefinition,
     type ReflectionTableWidgetSettings
 } from "@perfice/model/reflection/widgets/table";
 import {
+    type ReflectionChecklistWidgetAnswerState,
     ReflectionChecklistWidgetDefinition,
     type ReflectionChecklistWidgetSettings
 } from "@perfice/model/reflection/widgets/checklist";
@@ -33,8 +36,9 @@ export interface ReflectionPage {
 
 export type ReflectionWidgetAnswerState = RWA<ReflectionWidgetType.FORM, ReflectionFormWidgetAnswerState>
     | RWA<ReflectionWidgetType.TAGS, ReflectionTagsWidgetAnswerState>
-    | RWA<ReflectionWidgetType.TABLE, ReflectionTableWidgetAnswerState>;
-;
+    | RWA<ReflectionWidgetType.TABLE, ReflectionTableWidgetAnswerState>
+    | RWA<ReflectionWidgetType.CHECKLIST, ReflectionChecklistWidgetAnswerState>
+    ;
 
 export interface RWA<T extends ReflectionWidgetType, V> {
     type: T;
@@ -44,38 +48,14 @@ export interface RWA<T extends ReflectionWidgetType, V> {
 export function generateAnswerStates(widgets: ReflectionWidget[]): Record<string, ReflectionWidgetAnswerState> {
     let res: Record<string, ReflectionWidgetAnswerState> = {};
     for (let widget of widgets) {
-        switch (widget.type) {
-            case ReflectionWidgetType.FORM:
-                res[widget.id] = {
-                    type: ReflectionWidgetType.FORM,
-                    state: {
-                        answers: {}
-                    }
-                };
-                break;
-            case ReflectionWidgetType.TAGS:
-                res[widget.id] = {
-                    type: ReflectionWidgetType.TAGS,
-                    state: {
-                        tags: []
-                    }
-                };
-                break;
-        }
+
+        let definition = getReflectionWidgetDefinition(widget.type);
+        if (definition == null) continue;
+
+        res[widget.id] = definition.createAnswerState();
     }
 
     return res;
-}
-
-export interface ReflectionTagsWidgetAnswerState {
-    tags: string[];
-}
-
-export interface ReflectionTableWidgetAnswerState {
-}
-
-export interface ReflectionFormWidgetAnswerState {
-    answers: Record<string, PrimitiveValue>;
 }
 
 export type ReflectionWidget = {
@@ -110,6 +90,8 @@ export interface ReflectionWidgetDefinition<T extends ReflectionWidgetType, S> {
 
     // Returns the variable updates should occur when the settings change
     updateDependencies(dependencies: Record<string, string>, previousSettings: S, updatedSettings: S): Map<string, VariableTypeDef>;
+
+    createAnswerState(): ReflectionWidgetAnswerState;
 }
 
 const definitions: Map<ReflectionWidgetType, ReflectionWidgetDefinition<ReflectionWidgetType, any>> = new Map();

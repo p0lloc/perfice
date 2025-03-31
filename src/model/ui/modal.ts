@@ -27,7 +27,7 @@ export function onClosableClosed(closable: CloseCallback) {
  * Returns true if the modal should render the confirm button
  */
 export function shouldModalRenderConfirm(e: ModalType) {
-    return e != ModalType.CANCEL;
+    return e != ModalType.CANCEL && e != ModalType.NONE;
 }
 
 /**

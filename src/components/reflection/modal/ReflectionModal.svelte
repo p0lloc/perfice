@@ -11,7 +11,12 @@
     import Fa from "svelte-fa";
     import ReflectionPageButton from "@perfice/components/reflection/modal/ReflectionPageButton.svelte";
     import ReflectionPageRenderer from "@perfice/components/reflection/modal/ReflectionPageRenderer.svelte";
-    import {reflections} from "@perfice/app";
+    import {forms, reflections} from "@perfice/app";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import type {Form} from "@perfice/model/form/form";
+    import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
+    import {ButtonColor} from "@perfice/model/ui/button";
+    import Button from "@perfice/components/base/button/Button.svelte";
 
     let modal: Modal;
     let reflection = $state<Reflection>({} as Reflection);
@@ -21,6 +26,12 @@
     let pageRenderer: ReflectionPageRenderer;
 
     let currentPage = $derived(reflection.pages[currentPageNumber]);
+
+    let nestedFormEmbed: FormEmbed;
+    let nestedForm = $state<Form | null>(null);
+    let nestedFormAnswers = $state<Record<string, PrimitiveValue>>({});
+    let nestedFormCallback = $state<(answers: Record<string, PrimitiveValue>) => void>(() => {
+    });
 
     function validate(): boolean {
         return pageRenderer.validate();
@@ -46,8 +57,32 @@
         answerStates[id] = state;
     }
 
+    async function openNestedForm(formId: string,
+                                  onLog: (answers: Record<string, PrimitiveValue>) => void,
+                                  answers?: Record<string, PrimitiveValue>) {
+        let formById = await forms.getFormById(formId);
+        if (formById == null) return;
+
+        nestedForm = formById;
+        nestedFormAnswers = answers ?? {};
+        nestedFormCallback = onLog;
+    }
+
+    function logNestedForm() {
+        let answers = nestedFormEmbed.validateAndGetAnswers();
+        if (answers == null) return;
+
+        nestedFormCallback(answers);
+        cancelNestedForm();
+    }
+
+    function cancelNestedForm() {
+        nestedForm = null;
+    }
+
     export function open(activeReflection: Reflection) {
         reflection = activeReflection;
+        currentPageNumber = 0;
         answerStates = Object.fromEntries(reflection.pages.flatMap(p => Object.entries(generateAnswerStates(p.widgets))));
         modal.open();
     }
@@ -56,25 +91,34 @@
 <Modal size={ModalSize.LARGE} type={ModalType.NONE} title={reflection.name} bind:this={modal}
        onConfirm={confirm}>
 
-    <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage} states={answerStates}
-                            bind:this={pageRenderer}/>
+    {#if nestedForm != null}
+        <FormEmbed bind:this={nestedFormEmbed} questions={nestedForm.questions} answers={nestedFormAnswers}/>
+    {:else}
+        <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage} states={answerStates}
+                                bind:this={pageRenderer} {openNestedForm}/>
+    {/if}
 
     {#snippet customFooter()}
         <div class="w-full border-t justify-center items-center gap-2 py-2 fixed md:static bottom-0 flex">
-            <div class="w-16 flex-center">
-                <ReflectionPageButton left={true} onClick={previous}
-                                      end={currentPageNumber === 0}/>
-            </div>
-            <div class="bg-gray-100 rounded-xl w-48">
-                <div class="bg-green-500 w-[60%] p-2 rounded-xl"
-                     style:width={((currentPageNumber + 1) / reflection.pages.length) * 100 + "%"}>
-
+            {#if nestedForm != null}
+                <Button onClick={logNestedForm}>Log</Button>
+                <Button color={ButtonColor.RED} onClick={cancelNestedForm}>Cancel</Button>
+            {:else}
+                <div class="w-16 flex-center">
+                    <ReflectionPageButton left={true} onClick={previous}
+                                          end={currentPageNumber === 0}/>
                 </div>
-            </div>
-            <div class="w-16 flex-center">
-                <ReflectionPageButton left={false} onClick={next}
-                                      end={currentPageNumber === reflection.pages.length - 1}/>
-            </div>
+                <div class="bg-gray-100 rounded-xl w-48">
+                    <div class="bg-green-500 w-[60%] p-2 rounded-xl"
+                         style:width={((currentPageNumber + 1) / reflection.pages.length) * 100 + "%"}>
+
+                    </div>
+                </div>
+                <div class="w-16 flex-center">
+                    <ReflectionPageButton left={false} onClick={next}
+                                          end={currentPageNumber === reflection.pages.length - 1}/>
+                </div>
+            {/if}
         </div>
     {/snippet}
 </Modal>

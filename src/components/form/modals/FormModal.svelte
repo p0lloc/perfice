@@ -10,7 +10,7 @@
     import {forms, journal} from "@perfice/app";
     import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
     import type {FormTemplate} from "@perfice/model/form/form.js";
-    import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
+    import {extractAnswerValuesFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
     let form: Form = $state({} as Form);
@@ -47,8 +47,7 @@
     }
 
     function createOrUpdateTemplate(name: string, answers: Record<string, PrimitiveValue>) {
-        let extractedValues = Object.fromEntries(
-            Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
+        let extractedValues = extractAnswerValuesFromDisplay(answers);
 
         if (editingTemplate != null) {
             forms.updateFormTemplate($state.snapshot(editingTemplate), name, extractedValues);

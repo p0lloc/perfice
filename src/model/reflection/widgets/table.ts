@@ -1,6 +1,7 @@
 import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/model/table/table";
-import {ReflectionWidgetType, type ReflectionWidgetDefinition} from "../reflection";
+import {type ReflectionWidgetAnswerState, type ReflectionWidgetDefinition, ReflectionWidgetType} from "../reflection";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
+import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export interface ReflectionTableWidgetSettings extends TableWidgetSettings {
 }
@@ -32,4 +33,18 @@ export class ReflectionTableWidgetDefinition implements ReflectionWidgetDefiniti
 
         return new Map([["list", createTypeDefForTableWidget(settings)]]);
     }
+
+    createAnswerState(): ReflectionWidgetAnswerState {
+        return {
+            type: ReflectionWidgetType.TABLE,
+            state: {
+                answers: []
+            }
+        };
+    }
+
+}
+
+export interface ReflectionTableWidgetAnswerState {
+    answers: Record<string, PrimitiveValue>[];
 }

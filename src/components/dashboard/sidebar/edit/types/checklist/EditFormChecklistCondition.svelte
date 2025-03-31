@@ -5,7 +5,7 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import type {Form} from "@perfice/model/form/form";
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
-    import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
+    import {extractAnswerValuesFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
 
     let {forms, value, onChange}: {
         forms: Form[],
@@ -23,10 +23,7 @@
         let answers = embed.validateAndGetAnswers();
         if (answers == null) return;
 
-        let extractedValues = Object.fromEntries(
-            Object.entries(answers).map(([k, v]) => [k, extractValueFromDisplay(v)]));
-
-        onChange({...value, answers: extractedValues});
+        onChange({...value, answers: extractAnswerValuesFromDisplay(answers)});
     }
 
     const formDropdownItems = $derived(forms.map(v => {
