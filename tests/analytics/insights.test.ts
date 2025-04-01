@@ -44,6 +44,7 @@ test("insights with an outlier", async () => {
         {
             average: 11,
             current: 3,
+            diff: expect.closeTo(0.72727, 4),
             error: expect.closeTo(0.2727, 4),
             formId: "test_form",
             questionId: "test"

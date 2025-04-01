@@ -3,9 +3,9 @@ import {TrackableService} from "@perfice/services/trackable/trackable";
 import {VariableService} from "@perfice/services/variable/variable";
 import {setupDb} from "@perfice/db/dexie/db";
 import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
-import {SimpleTimeScopeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
+import {SimpleTimeScopeType, TimeRangeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {VariableGraph} from "@perfice/services/variable/graph";
-import {JournalEntryObserverType, JournalService} from "@perfice/services/journal/journal";
+import {BaseJournalService, JournalEntryObserverType} from "@perfice/services/journal/journal";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {JournalEntry, TagEntry} from './model/journal/journal';
 import {VariableValueStore} from "@perfice/stores/variable/value";
@@ -71,9 +71,12 @@ import {ReflectionStore} from "@perfice/stores/reflection/reflection";
 import {TableWidget} from "@perfice/stores/sharedWidgets/table/table";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type ChecklistData, ChecklistWidget} from "@perfice/stores/sharedWidgets/checklist/checklist";
+import {JournalSearchService} from "@perfice/services/journal/search";
+import {SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
+import {type TrackableSearchFilter, TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
 
 const db = setupDb();
-const journalService = new JournalService(db.entries);
+const journalService = new BaseJournalService(db.entries);
 const tagEntryService = new TagEntryService(db.tagEntries);
 const graph = new VariableGraph(db.indices, db.entries, db.tagEntries, WeekStart.MONDAY);
 
@@ -103,6 +106,74 @@ const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 
 const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService);
+
+const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
+    trackableService, tagService, formService);
+
+(async () => {
+    let search = await journalSearchService.searchAll({
+        id: "test",
+        entities: [
+            {
+                id: "test",
+                type: SearchEntityType.TRACKABLE,
+                mode: SearchEntityMode.INCLUDE,
+                value: {
+                    filters: [
+                        {
+                            type: TrackableSearchFilterType.ONE_OF,
+                            value: {
+                                values: ["913710c1-ada5-4ab4-a480-bd8fd3d8b493"]
+                            }
+                        },
+                    ] as TrackableSearchFilter[]
+                }
+            },
+            {
+                id: "test",
+                mode: SearchEntityMode.INCLUDE,
+                type: SearchEntityType.TRACKABLE,
+                value: {
+                    filters: [
+                        {
+                            type: TrackableSearchFilterType.ONE_OF,
+                            value: {
+                                values: ["b7c852c7-4810-490b-b524-70ab4d8efc76"]
+                            }
+                        }
+                    ] as TrackableSearchFilter[]
+                }
+            },
+            {
+                id: "test",
+                mode: SearchEntityMode.INCLUDE,
+                type: SearchEntityType.TAG,
+                value: {
+                    filters: []
+                }
+            },
+            {
+                id: "test",
+                mode: SearchEntityMode.MUST_MATCH,
+                type: SearchEntityType.FREE_TEXT,
+                value: {
+                    search: "chicken"
+                }
+            },
+            {
+                id: "date",
+                mode: SearchEntityMode.MUST_MATCH,
+                type: SearchEntityType.DATE,
+                value: {
+                    range: {
+                        type: TimeRangeType.ALL,
+                    }
+                }
+            }
+        ]
+    });
+    console.log(search);
+})();
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);

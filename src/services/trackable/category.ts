@@ -1,8 +1,12 @@
-import type { TrackableCategoryCollection } from "@perfice/db/collections";
-import type { TrackableCategory } from "../../model/trackable/trackable";
+import type {TrackableCategoryCollection} from "@perfice/db/collections";
+import type {TrackableCategory} from "../../model/trackable/trackable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 
-export class TrackableCategoryService {
+export interface TrackableCategoryEntityProvider {
+    getCategories(): Promise<TrackableCategory[]>;
+}
+
+export class TrackableCategoryService implements TrackableCategoryEntityProvider {
     private collection: TrackableCategoryCollection;
 
     private observers: EntityObservers<TrackableCategory>;
@@ -33,7 +37,7 @@ export class TrackableCategoryService {
 
     async deleteCategoryById(categoryId: string): Promise<void> {
         let category = await this.collection.getCategoryById(categoryId);
-        if(category == null) return;
+        if (category == null) return;
         await this.collection.deleteCategoryById(categoryId);
         await this.observers.notifyObservers(EntityObserverType.DELETED, category);
     }

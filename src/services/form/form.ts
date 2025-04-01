@@ -23,7 +23,11 @@ export interface FormService {
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void;
 }
 
-export class BaseFormService implements FormService {
+export interface FormEntityProvider {
+    getForms(): Promise<Form[]>;
+}
+
+export class BaseFormService implements FormService, FormEntityProvider {
 
     private formCollection: FormCollection;
     private snapshotCollection: FormSnapshotCollection;
@@ -93,7 +97,7 @@ export class BaseFormService implements FormService {
      * @param snapshot Whether we should check to create a new snapshot.
      */
     async updateForm(form: Form, snapshot: boolean = true): Promise<void> {
-        if(snapshot)
+        if (snapshot)
             await this.createSnapshotAndUpdateSnapshotId(form);
 
         await this.formCollection.updateForm(form);

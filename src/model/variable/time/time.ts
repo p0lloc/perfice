@@ -3,14 +3,14 @@ import {dateToEndOfTimeScope, dateToStartOfTimeScope} from "@perfice/util/time/s
 export type TimeRange = {
     type: TimeRangeType.ALL,
 } | {
-    type: TimeRangeType.BOTH,
+    type: TimeRangeType.BETWEEN,
     lower: number
     upper: number,
 } | {
-    type: TimeRangeType.LOWER,
+    type: TimeRangeType.AFTER,
     lower: number,
 } | {
-    type: TimeRangeType.UPPER,
+    type: TimeRangeType.BEFORE,
     upper: number
 } | {
     type: TimeRangeType.LIST,
@@ -28,11 +28,11 @@ export function isTimestampInRange(timestamp: number, range: TimeRange) {
     switch (range.type) {
         case TimeRangeType.ALL:
             return true;
-        case TimeRangeType.BOTH:
+        case TimeRangeType.BETWEEN:
             return timestamp >= range.lower && timestamp <= range.upper;
-        case TimeRangeType.UPPER:
+        case TimeRangeType.BEFORE:
             return timestamp <= range.upper;
-        case TimeRangeType.LOWER:
+        case TimeRangeType.AFTER:
             return timestamp >= range.lower;
         case TimeRangeType.LIST:
             return range.list.includes(timestamp);
@@ -64,15 +64,15 @@ export class RangeTimeScope implements TimeScopeDefinition {
         let end = this.end;
 
         if (start != null && end != null) {
-            return {type: TimeRangeType.BOTH, upper: end, lower: start};
+            return {type: TimeRangeType.BETWEEN, upper: end, lower: start};
         }
 
         if (start != null && end == null) {
-            return {type: TimeRangeType.LOWER, lower: start};
+            return {type: TimeRangeType.AFTER, lower: start};
         }
 
         if (start == null && end != null) {
-            return {type: TimeRangeType.UPPER, upper: end};
+            return {type: TimeRangeType.BEFORE, upper: end};
         }
 
         // If both of them are null for some reason, return an open range
@@ -125,7 +125,7 @@ export class SimpleTimeScope implements TimeScopeDefinition {
     convertToRange(): TimeRange {
         let end = dateToEndOfTimeScope(new Date(this.timestamp), this.type, this.weekStart).getTime();
         let start = dateToStartOfTimeScope(new Date(this.timestamp), this.type, this.weekStart).getTime();
-        return {type: TimeRangeType.BOTH, upper: end, lower: start};
+        return {type: TimeRangeType.BETWEEN, upper: end, lower: start};
     }
 
     getType(): SimpleTimeScopeType {
@@ -156,8 +156,8 @@ export function tForever(): TimeScope {
 
 export enum TimeRangeType {
     ALL,
-    BOTH,
-    UPPER,
-    LOWER,
+    BETWEEN,
+    BEFORE,
+    AFTER,
     LIST
 }

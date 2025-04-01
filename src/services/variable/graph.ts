@@ -155,7 +155,7 @@ export class VariableGraph {
             this.journalEntryDependent.set(variable.id, variable.type.value);
         }
 
-        if(isTagEntryDependent(variable.type.value)){
+        if (isTagEntryDependent(variable.type.value)) {
             this.tagEntryDependent.set(variable.id, variable.type.value);
         }
     }
@@ -258,7 +258,7 @@ export class VariableGraph {
         if (this.journalEntryDependent.size == 0) return;
 
         for (let [variableId, dependent] of this.filterEntryDependents(this.journalEntryDependent,
-                v => v.getFormDependencies().includes(entry.formId)).entries()) {
+            v => v.getFormDependencies().includes(entry.formId)).entries()) {
 
             await this.handleEntryAction(entry.timestamp, variableId,
                 (indices: VariableIndex[]) => dependent.onJournalEntryAction(entry, action, indices));
@@ -416,13 +416,13 @@ export class BaseVariableEvaluator implements VariableEvaluator {
             case TimeRangeType.ALL: {
                 return this.tagEntryCollection.getAllEntriesByTagId(tagId);
             }
-            case TimeRangeType.BOTH: {
+            case TimeRangeType.BETWEEN: {
                 return this.tagEntryCollection.getEntriesByTagIdAndTimeRange(tagId, action.lower, action.upper);
             }
-            case TimeRangeType.UPPER: {
+            case TimeRangeType.BEFORE: {
                 return this.tagEntryCollection.getEntriesByTagIdUntilTime(tagId, action.upper);
             }
-            case TimeRangeType.LOWER: {
+            case TimeRangeType.AFTER: {
                 return this.tagEntryCollection.getEntriesByTagIdFromTime(tagId, action.lower);
             }
             default:
@@ -436,13 +436,13 @@ export class BaseVariableEvaluator implements VariableEvaluator {
             case TimeRangeType.ALL: {
                 return this.journalCollection.getAllEntriesByFormId(formId);
             }
-            case TimeRangeType.BOTH: {
+            case TimeRangeType.BETWEEN: {
                 return this.journalCollection.getEntriesByFormIdAndTimeRange(formId, action.lower, action.upper);
             }
-            case TimeRangeType.UPPER: {
+            case TimeRangeType.BEFORE: {
                 return this.journalCollection.getEntriesByFormIdUntilTime(formId, action.upper);
             }
-            case TimeRangeType.LOWER: {
+            case TimeRangeType.AFTER: {
                 return this.journalCollection.getEntriesByFormIdFromTime(formId, action.lower);
             }
             default:

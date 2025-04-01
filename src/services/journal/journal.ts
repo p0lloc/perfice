@@ -1,5 +1,5 @@
 import type {JournalCollection} from "@perfice/db/collections";
-import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
+import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
@@ -19,7 +19,35 @@ export interface JournalEntryObserver {
     callback: JournalEntryObserverCallback;
 }
 
-export class JournalService {
+export interface JournalService {
+    getEntryById(id: string): Promise<JournalEntry | undefined>;
+
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
+
+    logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry>;
+
+    updateEntry(entry: JournalEntry, format: TextOrDynamic[]): Promise<void>;
+
+    deleteEntry(entry: JournalEntry): Promise<void>;
+
+    deleteEntryById(id: string): Promise<void>;
+
+    getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]>;
+
+    addEntryObserver(type: JournalEntryObserverType, callback: JournalEntryObserverCallback): void;
+
+    import(entries: JournalEntry[], overwrite: boolean): Promise<void>;
+
+    getAllEntries(): Promise<JournalEntry[]>;
+
+    getEntriesByFormId(formId: string): Promise<JournalEntry[]>;
+
+    getEntriesFromTime(lower: number): Promise<JournalEntry[]>;
+
+    getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]>;
+}
+
+export class BaseJournalService implements JournalService {
 
     private collection: JournalCollection;
     private observers: JournalEntryObserver[];

@@ -10,7 +10,11 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import type {EditTrackableTallySettings, EditTrackableValueSettings} from "@perfice/model/trackable/ui";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 
-export class TrackableService {
+export interface TrackableEntityProvider {
+    getTrackables(): Promise<Trackable[]>;
+}
+
+export class TrackableService implements TrackableEntityProvider {
     private collection: TrackableCollection;
     private variableService: VariableService;
     private formService: FormService;

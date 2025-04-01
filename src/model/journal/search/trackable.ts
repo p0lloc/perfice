@@ -1,30 +1,39 @@
 import {
     type ByAnswersFilter,
     type ByCategoryFilter,
-    type NotOneOfFilter,
     type OneOfFilter, type SearchDefinition, type SearchDependencies,
 } from "@perfice/model/journal/search/search";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
+import {shouldFilterOutEntry} from "@perfice/services/variable/filtering";
 
 export enum TrackableSearchFilterType {
     ONE_OF = "ONE_OF",
-    NOT_ONE_OF = "NOT_ONE_OF",
     BY_CATEGORY = "BY_CATEGORY",
     BY_ANSWERS = "BY_ANSWERS",
 }
 
 export class TrackableSearchDefinition implements SearchDefinition<TrackableSearch> {
-    includeJournalEntry(search: TrackableSearch, dependencies: SearchDependencies, entry: JournalEntry): boolean {
-
+    matchesJournalEntry(search: TrackableSearch, dependencies: SearchDependencies, entry: JournalEntry): boolean {
         for (let filter of search.filters) {
             switch (filter.type) {
                 case TrackableSearchFilterType.ONE_OF: {
-                    if (!filter.value.values.includes(entry.formId)) return false;
+                    let trackable = dependencies.trackables.get(entry.formId);
+                    if (trackable == null) return false;
+                    if (!filter.value.values.includes(trackable.id)) return false;
 
                     break;
                 }
-                case TrackableSearchFilterType.NOT_ONE_OF: {
-                    if (filter.value.values.includes(entry.formId)) return false;
+                case TrackableSearchFilterType.BY_CATEGORY: {
+                    let trackable = dependencies.trackables.get(entry.formId);
+                    if (trackable == null) return false;
+                    if (!filter.value.categories.includes(trackable.categoryId)) return false;
+
+                    break;
+                }
+                case TrackableSearchFilterType.BY_ANSWERS: {
+                    if (shouldFilterOutEntry(entry, filter.value.filters)) {
+                        return false;
+                    }
 
                     break;
                 }
@@ -34,13 +43,12 @@ export class TrackableSearchDefinition implements SearchDefinition<TrackableSear
         return true;
     }
 
-    includeTagEntry(search: TrackableSearch, dependencies: SearchDependencies, entry: TagEntry): boolean {
-        return true;
+    matchesTagEntry(search: TrackableSearch, dependencies: SearchDependencies, entry: TagEntry): boolean {
+        return false;
     }
 }
 
 export type TrackableSearchFilters = TSF<TrackableSearchFilterType.ONE_OF, OneOfFilter>
-    | TSF<TrackableSearchFilterType.NOT_ONE_OF, NotOneOfFilter>
     | TSF<TrackableSearchFilterType.BY_CATEGORY, ByCategoryFilter>
     | TSF<TrackableSearchFilterType.BY_ANSWERS, ByAnswersFilter>;
 

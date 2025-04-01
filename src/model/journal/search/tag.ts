@@ -1,19 +1,19 @@
 import type {
-    ByAnswersFilter,
     ByCategoryFilter,
-    NotOneOfFilter,
-    OneOfFilter
+    OneOfFilter,
+    SearchDefinition,
+    SearchDependencies
 } from "@perfice/model/journal/search/search";
+import type {JournalEntry, TagEntry} from "../journal";
 
 export enum TagSearchFilterType {
     ONE_OF = "ONE_OF",
-    NOT_ONE_OF = "NOT_ONE_OF",
     BY_CATEGORY = "BY_CATEGORY",
 }
 
 export type TagSearchFilters = TSF<TagSearchFilterType.ONE_OF, OneOfFilter>
-    | TSF<TagSearchFilterType.NOT_ONE_OF, NotOneOfFilter>
-    | TSF<TagSearchFilterType.BY_CATEGORY, ByCategoryFilter>;
+    | TSF<TagSearchFilterType.BY_CATEGORY,
+    ByCategoryFilter>;
 
 export type TagSearchFilter = {
     id: string;
@@ -26,4 +26,31 @@ export interface TSF<T extends TagSearchFilterType, V> {
 
 export interface TagSearch {
     filters: TagSearchFilter[];
+}
+
+export class TagSearchDefinition implements SearchDefinition<TagSearch> {
+    matchesJournalEntry(search: TagSearch, dependencies: SearchDependencies, entry: JournalEntry): boolean {
+        return false;
+    }
+
+    matchesTagEntry(search: TagSearch, dependencies: SearchDependencies, entry: TagEntry): boolean {
+        for (let filter of search.filters) {
+            switch (filter.type) {
+                case TagSearchFilterType.ONE_OF: {
+                    if (!filter.value.values.includes(entry.tagId)) return false;
+
+                    break;
+                }
+                case TagSearchFilterType.BY_CATEGORY: {
+                    let tag = dependencies.tags.get(entry.tagId);
+                    if (tag == null) return false;
+                    if (!filter.value.categories.includes(tag.categoryId)) return false;
+
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
 }

@@ -6,7 +6,7 @@ import {
     DummyTrackableCollection,
     DummyVariableCollection
 } from "../dummy-collections";
-import {JournalEntryObserverType, JournalService} from "../../src/services/journal/journal";
+import {BaseJournalService, JournalEntryObserverType, JournalService} from "../../src/services/journal/journal";
 import {VariableGraph} from "../../src/services/variable/graph";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {VariableService} from "../../src/services/variable/variable";
@@ -39,7 +39,7 @@ test("test basic edit + entry created", async () => {
     const journal = new DummyJournalCollection([]);
     const variables = new DummyVariableCollection();
 
-    const journalService = new JournalService(journal);
+    const journalService = new BaseJournalService(journal);
     const tagEntries = new DummyTagEntryCollection();
     const graph = new VariableGraph(indices, journal, tagEntries, WeekStart.MONDAY);
 
@@ -112,7 +112,7 @@ test("goal edit + entry created", async () => {
     const journal = new DummyJournalCollection([]);
     const variables = new DummyVariableCollection();
 
-    const journalService = new JournalService(journal);
+    const journalService = new BaseJournalService(journal);
     const tagEntries = new DummyTagEntryCollection();
     const graph = new VariableGraph(indices, journal, tagEntries, WeekStart.MONDAY);
 

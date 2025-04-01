@@ -6,7 +6,11 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {TagEntryService} from "@perfice/services/tag/entry";
 
-export class TagService {
+export interface TagEntityProvider {
+    getTags(): Promise<Tag[]>;
+}
+
+export class TagService implements TagEntityProvider {
     private tagCollection: TagCollection;
     private variableService: VariableService;
 
