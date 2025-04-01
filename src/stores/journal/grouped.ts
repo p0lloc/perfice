@@ -68,10 +68,49 @@ export interface IGroupedJournal extends Readable<Promise<JournalDay[]>> {
     nextPage(): Promise<void>;
 }
 
-export function GroupedJournal(): IGroupedJournal {
+const PAGE_SIZE = 20;
 
-    const PAGE_SIZE = 20;
-    let currentPage = new Date().getTime();
+export class PaginatedJournal {
+    private currentPage = new Date().getTime();
+
+    async load() {
+        // Load tags so we can display names in the UI
+        await tags.load();
+
+        this.currentPage = new Date().getTime();
+
+        await journal.init();
+        await tagEntries.init();
+        await this.nextPage();
+    }
+
+    async nextPage() {
+        let formEntries = await journal.nextPage(this.currentPage, PAGE_SIZE);
+        let taggedEntries = await tagEntries.nextPage(this.currentPage, PAGE_SIZE);
+
+        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1].timestamp : 0;
+        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1].timestamp : 0;
+
+        if (formEntries.length > 0 && taggedEntries.length > 0) {
+            // Entries might be uneven so only include up to the oldest entry even if there are more
+            if (oldestJournalEntry > oldestTagEntry) {
+                taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntry);
+                this.currentPage = oldestJournalEntry;
+            } else {
+                formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntry);
+                this.currentPage = oldestTagEntry;
+            }
+        } else {
+            // If one of them has no more entries, we still want to load the next page
+            this.currentPage = Math.max(oldestJournalEntry, oldestTagEntry);
+        }
+
+        journal.updateResolved(v => [...v, ...formEntries]);
+        tagEntries.updateResolved(v => [...v, ...taggedEntries]);
+    }
+}
+
+export function GroupedJournal(): Readable<Promise<JournalDay[]>> {
 
     let {subscribe} = derived<[JournalEntryStore, TagEntryStore, FormStore, TagStore], Promise<JournalDay[]>>([journal, tagEntries, forms, tags],
         ([$entries, $tagEntries, $forms, $tags], set) => {
@@ -154,45 +193,8 @@ export function GroupedJournal(): IGroupedJournal {
             ));
         });
 
-    async function load() {
-        // Load tags so we can display names in the UI
-        await tags.load();
-
-        currentPage = new Date().getTime();
-
-        await journal.init();
-        await tagEntries.init();
-        await nextPage();
-    }
-
-    async function nextPage() {
-        let formEntries = await journal.nextPage(currentPage, PAGE_SIZE);
-        let taggedEntries = await tagEntries.nextPage(currentPage, PAGE_SIZE);
-
-        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1].timestamp : 0;
-        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1].timestamp : 0;
-
-        if (formEntries.length > 0 && taggedEntries.length > 0) {
-            // Entries might be uneven so only include up to the oldest entry even if there are more
-            if (oldestJournalEntry > oldestTagEntry) {
-                taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntry);
-                currentPage = oldestJournalEntry;
-            } else {
-                formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntry);
-                currentPage = oldestTagEntry;
-            }
-        } else {
-            // If one of them has no more entries, we still want to load the next page
-            currentPage = Math.max(oldestJournalEntry, oldestTagEntry);
-        }
-
-        journal.updateResolved(v => [...v, ...formEntries]);
-        tagEntries.updateResolved(v => [...v, ...taggedEntries]);
-    }
 
     return {
         subscribe,
-        load,
-        nextPage
     };
 }

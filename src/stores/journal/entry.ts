@@ -1,7 +1,7 @@
 import {AsyncStore} from "@perfice/stores/store";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {JournalService} from "@perfice/services/journal/journal";
-import {resolvedPromise} from "@perfice/util/promise";
+import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 import {updateIdentifiedInArray} from "@perfice/util/array";
 import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
@@ -12,7 +12,7 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
     private journalService: JournalService;
 
     constructor(journalService: JournalService) {
-        super(resolvedPromise([]));
+        super(emptyPromise());
         this.journalService = journalService;
     }
 

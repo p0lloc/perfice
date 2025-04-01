@@ -18,11 +18,14 @@
     import QuickLogField from "@perfice/components/QuickLogField.svelte";
     import ReflectionListView from "@perfice/views/reflection/ReflectionListView.svelte";
     import ReflectionEditorView from "@perfice/views/reflection/ReflectionEditorView.svelte";
+    import JournalSearchView from "@perfice/views/journal/JournalSearchView.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
         {path: "/goals/(?<goalId>.*)", component: GoalEditorView},
         {path: "/tags", component: TagsView},
+        {path: "/journal/search", component: JournalSearchView},
+        {path: "/journal/(?<search>.*)", component: JournalView},
         {path: "/journal", component: JournalView},
         {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
         {path: "/analytics", component: AnalyticsView},

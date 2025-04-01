@@ -1,14 +1,14 @@
 import type {TagEntry} from "@perfice/model/journal/journal";
 import {AsyncStore} from "@perfice/stores/store";
 import type {TagEntryService} from "@perfice/services/tag/entry";
-import {resolvedPromise} from "@perfice/util/promise";
+import {emptyPromise} from "@perfice/util/promise";
 
 export class TagEntryStore extends AsyncStore<TagEntry[]> {
 
     private tagEntryService: TagEntryService;
 
     constructor(tagEntryService: TagEntryService) {
-        super(resolvedPromise([]));
+        super(emptyPromise());
         this.tagEntryService = tagEntryService;
     }
 

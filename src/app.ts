@@ -18,7 +18,7 @@ import {TrackableValueStore} from "@perfice/stores/trackable/value";
 import {BaseFormService} from "@perfice/services/form/form";
 import {FormStore} from "@perfice/stores/form/form";
 import {VariableStore} from "@perfice/stores/variable/variable";
-import {GroupedJournal} from "@perfice/stores/journal/grouped";
+import {GroupedJournal, PaginatedJournal} from "@perfice/stores/journal/grouped";
 import {GoalService} from "@perfice/services/goal/goal";
 import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
 import {GoalValueStore} from "@perfice/stores/goal/value";
@@ -72,8 +72,9 @@ import {TableWidget} from "@perfice/stores/sharedWidgets/table/table";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type ChecklistData, ChecklistWidget} from "@perfice/stores/sharedWidgets/checklist/checklist";
 import {JournalSearchService} from "@perfice/services/journal/search";
-import {SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
+import {type JournalSearch, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
 import {type TrackableSearchFilter, TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
+import {resolvedPromise} from "@perfice/util/promise";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -111,7 +112,7 @@ const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
     trackableService, tagService, formService);
 
 (async () => {
-    let search = await journalSearchService.searchAll({
+    console.log(btoa(JSON.stringify({
         id: "test",
         entities: [
             {
@@ -144,22 +145,7 @@ const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
                     ] as TrackableSearchFilter[]
                 }
             },
-            {
-                id: "test",
-                mode: SearchEntityMode.INCLUDE,
-                type: SearchEntityType.TAG,
-                value: {
-                    filters: []
-                }
-            },
-            {
-                id: "test",
-                mode: SearchEntityMode.MUST_MATCH,
-                type: SearchEntityType.FREE_TEXT,
-                value: {
-                    search: "chicken"
-                }
-            },
+
             {
                 id: "date",
                 mode: SearchEntityMode.MUST_MATCH,
@@ -171,8 +157,7 @@ const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
                 }
             }
         ]
-    });
-    console.log(search);
+    })));
 })();
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
@@ -194,6 +179,7 @@ export const categorizedTrackables = CategorizedTrackables();
 export const goals = new GoalStore(goalService);
 export const tags = new TagStore(tagService);
 export const groupedJournal = GroupedJournal();
+export const paginatedJournal = new PaginatedJournal();
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
 export const reflections = new ReflectionStore(reflectionService);
@@ -208,6 +194,12 @@ export const analyticsSettings = new AnalyticsSettingsStore(analyticsSettingsSer
 export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, new Date(), 60, 6);
 
 export const appReady = writable(false);
+
+export async function journalSearch(search: JournalSearch) {
+    let result = await journalSearchService.searchAll(search);
+    journal.set(resolvedPromise(result.journalEntries));
+    tagEntries.set(resolvedPromise(result.tagEntries));
+}
 
 // TODO: where do we actually want to put stores? we don't want to expose the services directly
 export function variableValue(id: string, timeContext: TimeScope, key: string) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {forms, groupedJournal, journal, tagEntries} from "@perfice/app";
+    import {forms, groupedJournal, journal, journalSearch, paginatedJournal, tagEntries} from "@perfice/app";
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
     import {
         jeForm,
@@ -11,7 +11,7 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBars, faBook, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faBars, faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -19,25 +19,41 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
     import {onMount} from "svelte";
+    import type {JournalSearch} from "@perfice/model/journal/search/search";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
     let deleteMultiModal: GenericDeleteModal<JournalEntity[]>;
+    let {params}: { params: Record<string, string> } = $props();
 
     let selectMode = $state(false);
+    let searched = $state(false);
     let selectedEntities = $state<JournalEntity[]>([]);
 
     // Padding between bottom and scroll end
     const SCROLL_SLACK = 300;
 
     async function load() {
-        await groupedJournal.load();
+        let searchData = params.search;
+        if (searchData != undefined) {
+            try {
+                let search: JournalSearch = JSON.parse(atob(searchData));
+                await journalSearch(search);
+                searched = true;
+            } catch (ex) {
+                alert("Incorrectly formatted search")
+            }
+        } else {
+            await paginatedJournal.load();
+        }
     }
 
     function onScroll() {
+        if (searched) return;
+
         let reachedBottom = (window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - SCROLL_SLACK;
         if (reachedBottom) {
-            groupedJournal.nextPage();
+            paginatedJournal.nextPage();
         }
     }
 
@@ -121,7 +137,7 @@
         Loading...
     {:then days}
         <div class="row-between items-center mb-8 md:flex hidden">
-            <Title title="Journal" icon={faBook}/>
+            <Title title={searched ? "Search result": "Journal"} icon={searched ? faSearch : faBook}/>
             <div class="row-gap">
                 {#if selectMode}
                     {selectedEntities.length} selected
