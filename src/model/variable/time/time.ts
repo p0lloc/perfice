@@ -88,6 +88,21 @@ export class RangeTimeScope implements TimeScopeDefinition {
     }
 }
 
+export function timeRangeToRangedTimeScope(range: TimeRange): RangeTimeScope {
+    switch (range.type) {
+        case TimeRangeType.ALL:
+            return new RangeTimeScope(null, null);
+        case TimeRangeType.BETWEEN:
+            return new RangeTimeScope(range.lower, range.upper);
+        case TimeRangeType.AFTER:
+            return new RangeTimeScope(range.lower, null);
+        case TimeRangeType.BEFORE:
+            return new RangeTimeScope(null, range.upper);
+        case TimeRangeType.LIST:
+            throw new Error("Not implemented");
+    }
+}
+
 export class ForeverTimeScope implements TimeScopeDefinition {
     convertToRange(): TimeRange {
         return {type: TimeRangeType.ALL};

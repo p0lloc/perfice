@@ -8,7 +8,7 @@ import type {
     FormCollection,
     FormSnapshotCollection, FormTemplateCollection, GoalCollection,
     IndexCollection,
-    JournalCollection, ReflectionCollection, TagCategoryCollection,
+    JournalCollection, ReflectionCollection, SavedSearchCollection, TagCategoryCollection,
     TagCollection, TagEntryCollection,
     TrackableCategoryCollection, TrackableCollection, VariableCollection
 } from "@perfice/db/collections";
@@ -29,6 +29,8 @@ import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboar
 import {DexieDashboardCollection, DexieDashboardWidgetCollection} from "@perfice/db/dexie/dashboard";
 import type {Reflection} from "@perfice/model/reflection/reflection";
 import {DexieReflectionCollection} from "@perfice/db/dexie/reflection";
+import type {JournalSearch} from "@perfice/model/journal/search/search";
+import {DexieSavedSearchCollection} from "@perfice/db/dexie/search";
 
 type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -47,11 +49,12 @@ type DexieDB = Dexie & {
     dashboards: EntityTable<Dashboard, 'id'>;
     dashboardWidgets: EntityTable<DashboardWidget, 'id'>;
     reflections: EntityTable<Reflection, 'id'>;
+    savedSearches: EntityTable<JournalSearch, 'id'>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(16).stores({
+    db.version(17).stores({
         "trackables": "id",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, [formId+timestamp], [timestamp+id]",
@@ -68,6 +71,7 @@ function loadDb(): DexieDB {
         "dashboards": "id",
         "dashboardWidgets": "id, dashboardId",
         "reflections": "id",
+        "savedSearches": "id"
     });
 
     return db;
@@ -90,6 +94,7 @@ export interface Collections {
     dashboards: DashboardCollection;
     dashboardWidgets: DashboardWidgetCollection;
     reflections: ReflectionCollection;
+    savedSearches: SavedSearchCollection;
 }
 
 export function setupDb(): Collections {
@@ -115,6 +120,7 @@ export function setupDb(): Collections {
     const dashboardWidgetCollection = new DexieDashboardWidgetCollection(db.dashboardWidgets);
 
     const reflectionCollection = new DexieReflectionCollection(db.reflections);
+    const savedSearchCollection = new DexieSavedSearchCollection(db.savedSearches);
 
     return {
         entries: journalCollection,
@@ -132,7 +138,8 @@ export function setupDb(): Collections {
         analyticsSettings: analyticsSettingsCollection,
         dashboards: dashboardCollection,
         dashboardWidgets: dashboardWidgetCollection,
-        reflections: reflectionCollection
+        reflections: reflectionCollection,
+        savedSearches: savedSearchCollection
     };
 }
 

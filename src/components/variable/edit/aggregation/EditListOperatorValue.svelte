@@ -32,7 +32,7 @@
             <IconButton icon={faTrash} onClick={() => onRemoveValue(v)} class="text-gray-500"/>
         </div>
     {/each}
-    <button class="border rounded-xl flex justify-center py-2 hover-feedback" onclick={add}>
+    <button class="border rounded-xl flex justify-center py-2 hover-feedback min-w-10" onclick={add}>
         <Fa icon={faPlus}/>
     </button>
 </div>

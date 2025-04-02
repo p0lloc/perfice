@@ -7,9 +7,19 @@ import type {Trackable} from "@perfice/model/trackable/trackable";
 import type {Tag} from "@perfice/model/tag/tag";
 import {type DateSearch, DateSearchDefinition} from "@perfice/model/journal/search/date";
 import type {JournalEntryFilter} from "@perfice/services/variable/filtering";
+import {TimeRangeType} from "@perfice/model/variable/time/time";
+import {
+    faCalendar, faCheck,
+    faFont,
+    faMinusCircle,
+    faPlusCircle,
+    faRuler,
+    faTags
+} from "@fortawesome/free-solid-svg-icons";
 
 export interface JournalSearch {
     id: string;
+    name: string;
     entities: SearchEntity[];
 }
 
@@ -25,6 +35,29 @@ export enum SearchEntityType {
     DATE = "DATE",
 }
 
+export const SEARCH_ENTITY_TYPES = [
+    {
+        id: SearchEntityType.TRACKABLE,
+        name: "Trackable",
+        icon: faRuler
+    },
+    {
+        id: SearchEntityType.TAG,
+        name: "Tag",
+        icon: faTags
+    },
+    {
+        id: SearchEntityType.FREE_TEXT,
+        name: "Free text",
+        icon: faFont
+    },
+    {
+        id: SearchEntityType.DATE,
+        name: "Date",
+        icon: faCalendar
+    },
+]
+
 export enum SearchEntityMode {
     INCLUDE = "INCLUDE",
     EXCLUDE = "EXCLUDE",
@@ -34,10 +67,74 @@ export enum SearchEntityMode {
     MUST_MATCH = "MUST_MATCH",
 }
 
+export const SEARCH_ENTITY_MODES = [
+    {
+        value: SearchEntityMode.INCLUDE,
+        name: "Include",
+        icon: faPlusCircle
+    },
+    {
+        value: SearchEntityMode.EXCLUDE,
+        name: "Exclude",
+        icon: faMinusCircle
+    },
+    {
+        value: SearchEntityMode.MUST_MATCH,
+        name: "Must match",
+        icon: faCheck
+    },
+]
+
 export type SearchEntity = {
     id: string;
     mode: SearchEntityMode;
 } & SearchEntities;
+
+export function createDefaultSearchEntity(type: SearchEntityType): SearchEntity {
+    let data: SearchEntities;
+    switch (type) {
+        case SearchEntityType.TRACKABLE:
+            data = {
+                type: SearchEntityType.TRACKABLE,
+                value: {
+                    filters: []
+                }
+            }
+            break;
+        case SearchEntityType.TAG:
+            data = {
+                type: SearchEntityType.TAG,
+                value: {
+                    filters: []
+                }
+            }
+            break;
+        case SearchEntityType.FREE_TEXT:
+            data = {
+                type: SearchEntityType.FREE_TEXT,
+                value: {
+                    search: ""
+                }
+            }
+            break;
+        case SearchEntityType.DATE:
+            data = {
+                type: SearchEntityType.DATE,
+                value: {
+                    range: {
+                        type: TimeRangeType.ALL,
+                    }
+                }
+            };
+            break;
+    }
+
+    return {
+        id: crypto.randomUUID(),
+        mode: SearchEntityMode.INCLUDE,
+        ...data
+    }
+}
 
 export interface SearchDependencies {
     forms: Form[];
@@ -86,4 +183,41 @@ searchDefinitions = {
 
 export function getSearchDefinition(type: SearchEntityType): SearchDefinition<any> {
     return searchDefinitions[type];
+}
+
+export const DEFAULT_SEARCH_ID = "default";
+
+export function createDefaultSearch(): JournalSearch {
+    return {
+        id: DEFAULT_SEARCH_ID,
+        name: "Search",
+        entities: [
+            {
+                id: crypto.randomUUID(),
+                type: SearchEntityType.TRACKABLE,
+                mode: SearchEntityMode.INCLUDE,
+                value: {
+                    filters: []
+                }
+            },
+            {
+                id: crypto.randomUUID(),
+                type: SearchEntityType.TAG,
+                mode: SearchEntityMode.INCLUDE,
+                value: {
+                    filters: []
+                }
+            },
+            {
+                id: crypto.randomUUID(),
+                type: SearchEntityType.DATE,
+                mode: SearchEntityMode.MUST_MATCH,
+                value: {
+                    range: {
+                        type: TimeRangeType.ALL,
+                    }
+                }
+            },
+        ]
+    }
 }

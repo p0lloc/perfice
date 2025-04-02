@@ -46,16 +46,22 @@
     <div class="rounded-xl">
         <div class="bg-gray-50 w-full p-2 flex justify-between items-center rounded-t-xl border text-gray-500">
             Filter
-            <IconButton icon={faTrash} onClick={onRemove} />
+            <IconButton icon={faTrash} onClick={onRemove}/>
         </div>
         <div class="flex md:flex-row flex-col gap-1 items-start border p-1 rounded-b-xl">
-            <DropdownButton class="flex-1" small={true} items={fields} value={filter.field} onChange={onFieldChange}/>
-            <DropdownButton small={true} items={FILTER_COMPARISON_OPERATORS} value={filter.operator}
+            <DropdownButton class="flex-1 md:w-auto w-full" small={true} items={fields} value={filter.field}
+                            onChange={onFieldChange}/>
+            <DropdownButton class="md:w-auto w-full" small={true} items={FILTER_COMPARISON_OPERATORS}
+                            value={filter.operator}
                             onChange={onOperatorChange}/>
-            {#if (filter.operator === FilterComparisonOperator.IN || filter.operator === FilterComparisonOperator.NOT_IN) && filter.value.type === PrimitiveValueType.LIST}
+            {#if (filter.operator === FilterComparisonOperator.IN || filter.operator === FilterComparisonOperator.NOT_IN)
+            && filter.value.type === PrimitiveValueType.LIST}
+
                 <EditListOperatorValue value={filter.value.value} onChange={onListValueChange}/>
             {:else}
-                <input type="text" class="input flex-1 min-w-0" value={prettyPrintPrimitive(filter.value)} onchange={onSingleValueChange}/>
+                <input type="text" class="input md:w-auto w-full flex-1 min-w-0"
+                       value={prettyPrintPrimitive(filter.value)}
+                       onchange={onSingleValueChange}/>
             {/if}
         </div>
     </div>

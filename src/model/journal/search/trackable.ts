@@ -5,6 +5,7 @@ import {
 } from "@perfice/model/journal/search/search";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {shouldFilterOutEntry} from "@perfice/services/variable/filtering";
+import {faCheck, faFilter, faFolder} from "@fortawesome/free-solid-svg-icons";
 
 export enum TrackableSearchFilterType {
     ONE_OF = "ONE_OF",
@@ -31,7 +32,7 @@ export class TrackableSearchDefinition implements SearchDefinition<TrackableSear
                     break;
                 }
                 case TrackableSearchFilterType.BY_ANSWERS: {
-                    if (shouldFilterOutEntry(entry, filter.value.filters)) {
+                    if (shouldFilterOutEntry(entry, filter.value.filters, false)) {
                         return false;
                     }
 
@@ -55,6 +56,60 @@ export type TrackableSearchFilters = TSF<TrackableSearchFilterType.ONE_OF, OneOf
 export type TrackableSearchFilter = {
     id: string;
 } & TrackableSearchFilters;
+
+export const TRACKABLE_SEARCH_FILTER_TYPES = [
+    {
+        value: TrackableSearchFilterType.ONE_OF,
+        name: "One of",
+        icon: faFilter
+    },
+    {
+        value: TrackableSearchFilterType.BY_CATEGORY,
+        name: "By category",
+        icon: faFolder
+    },
+    {
+        value: TrackableSearchFilterType.BY_ANSWERS,
+        name: "By answers",
+        icon: faCheck
+    }
+];
+
+export function createTrackableSearchFilter(type: TrackableSearchFilterType): TrackableSearchFilter {
+    let filter: TrackableSearchFilters;
+
+    switch (type) {
+        case TrackableSearchFilterType.ONE_OF:
+            filter = {
+                type: TrackableSearchFilterType.ONE_OF,
+                value: {
+                    values: []
+                }
+            };
+            break;
+        case TrackableSearchFilterType.BY_CATEGORY:
+            filter = {
+                type: TrackableSearchFilterType.BY_CATEGORY,
+                value: {
+                    categories: []
+                }
+            };
+            break;
+        case TrackableSearchFilterType.BY_ANSWERS:
+            filter = {
+                type: TrackableSearchFilterType.BY_ANSWERS,
+                value: {
+                    filters: []
+                }
+            };
+            break;
+    }
+
+    return {
+        id: crypto.randomUUID(),
+        ...filter
+    };
+}
 
 export interface TSF<T extends TrackableSearchFilterType, V> {
     type: T;

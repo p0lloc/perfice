@@ -6,9 +6,10 @@
     import {updateIdentifiedInArray} from "@perfice/util/array";
     import {FilterComparisonOperator, type JournalEntryFilter} from "@perfice/services/variable/filtering";
 
-    let {filters, onChange, fields}: {
+    let {filters, onChange, fields, addButton = false}: {
         filters: JournalEntryFilter[],
         onChange: (v: JournalEntryFilter[]) => void,
+        addButton?: boolean,
         fields: ({ value: string, name: string }[]) | undefined
     } = $props();
 
@@ -30,10 +31,12 @@
     }
 </script>
 
-<div class="row-gap">
-    Filters
-    <IconButton icon={faPlus} onClick={addFilter}/>
-</div>
+{#if addButton}
+    <div class="row-gap">
+        Filters
+        <IconButton icon={faPlus} onClick={addFilter}/>
+    </div>
+{/if}
 
 <div class="flex flex-col gap-2">
     {#each filters as filter}

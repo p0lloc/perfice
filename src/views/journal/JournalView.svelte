@@ -19,7 +19,9 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
     import {onMount} from "svelte";
-    import type {JournalSearch} from "@perfice/model/journal/search/search";
+    import type {SearchEntity} from "@perfice/model/journal/search/search";
+    import {goto} from "@mateothegreat/svelte5-router";
+    import Button from "@perfice/components/base/button/Button.svelte";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
@@ -37,10 +39,11 @@
         let searchData = params.search;
         if (searchData != undefined) {
             try {
-                let search: JournalSearch = JSON.parse(atob(searchData));
-                await journalSearch(search);
+                let search: SearchEntity[] = JSON.parse(atob(searchData));
+                await journalSearch.search(search);
                 searched = true;
             } catch (ex) {
+                console.log(ex)
                 alert("Incorrectly formatted search")
             }
         } else {
@@ -116,6 +119,12 @@
     function onEntityStartDelete(entity: JournalEntity) {
         deleteModal.open(entity);
     }
+
+    function goToSearch() {
+        goto("/journal/search");
+    }
+
+    let title = $derived(searched ? "Search result" : "Journal");
 </script>
 
 <svelte:window onwheel={onScroll}/>
@@ -124,11 +133,14 @@
 <GenericDeleteModal subject="{selectedEntities.length} entries" onDelete={onMultiEntryDelete}
                     bind:this={deleteMultiModal}/>
 
-<MobileTopBar title="Journal">
+<MobileTopBar title={title}>
     {#snippet leading()}
         <button class="icon-button" onclick={() => console.log("TODO")}>
             <Fa icon={faBars}/>
         </button>
+    {/snippet}
+    {#snippet actions()}
+        <IconButton icon={faSearch} onClick={goToSearch}/>
     {/snippet}
 </MobileTopBar>
 <FormModal bind:this={formModal}/>
@@ -137,17 +149,22 @@
         Loading...
     {:then days}
         <div class="row-between items-center mb-8 md:flex hidden">
-            <Title title={searched ? "Search result": "Journal"} icon={searched ? faSearch : faBook}/>
+            <Title title={title} icon={searched ? faSearch : faBook}/>
             <div class="row-gap">
-                {#if selectMode}
-                    {selectedEntities.length} selected
-                {:else}
-                    Select
-                {/if}
-                <input type="checkbox" bind:checked={selectMode}/>
-                {#if selectedEntities.length > 0}
-                    <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
-                {/if}
+                <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
+                    <Fa icon={faSearch}/>
+                </Button>
+                <div class="row-gap bg-white border p-2 rounded-md">
+                    {#if selectMode}
+                        {selectedEntities.length} selected
+                    {:else}
+                        Select
+                    {/if}
+                    <input type="checkbox" bind:checked={selectMode}/>
+                    {#if selectedEntities.length > 0}
+                        <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
+                    {/if}
+                </div>
             </div>
         </div>
         <div class="flex flex-col gap-4" id="mainContainer">

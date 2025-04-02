@@ -1,6 +1,11 @@
-import type { JournalEntry } from "@perfice/model/journal/journal";
-import { extractValueFromDisplay } from "./types/list";
-import {comparePrimitivesLoosely, primitiveAsNumber, PrimitiveValueType, type PrimitiveValue } from "@perfice/model/primitive/primitive";
+import type {JournalEntry} from "@perfice/model/journal/journal";
+import {extractValueFromDisplay} from "./types/list";
+import {
+    comparePrimitivesLoosely,
+    primitiveAsNumber,
+    PrimitiveValueType,
+    type PrimitiveValue
+} from "@perfice/model/primitive/primitive";
 
 
 export enum FilterComparisonOperator {
@@ -67,11 +72,17 @@ export function isNumberFilterMet(first: PrimitiveValue, filter: JournalEntryFil
     }
 }
 
-export function shouldFilterOutEntry(entry: JournalEntry, filters: JournalEntryFilter[]): boolean {
+export function shouldFilterOutEntry(entry: JournalEntry, filters: JournalEntryFilter[], filterOutMissing = true): boolean {
     for (let filter of filters) {
         let answer = entry.answers[filter.field];
-        // If answer is not present at all, filter it out
-        if (answer == undefined) return true;
+        if (answer == undefined) {
+            // If answer is not present at all, filter it out
+            if (filterOutMissing) {
+                return true;
+            } else {
+                continue;
+            }
+        }
 
         if (!isFilterMet(extractValueFromDisplay(answer), filter)) return true;
     }

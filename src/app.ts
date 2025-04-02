@@ -75,6 +75,7 @@ import {JournalSearchService} from "@perfice/services/journal/search";
 import {type JournalSearch, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
 import {type TrackableSearchFilter, TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
 import {resolvedPromise} from "@perfice/util/promise";
+import {JournalSearchStore} from "@perfice/stores/journal/search";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -109,7 +110,7 @@ const exportService = new EntryExportService(journalService, formService);
 const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService);
 
 const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
-    trackableService, tagService, formService);
+    trackableService, tagService, formService, db.savedSearches);
 
 (async () => {
     console.log(btoa(JSON.stringify({
@@ -195,11 +196,8 @@ export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsS
 
 export const appReady = writable(false);
 
-export async function journalSearch(search: JournalSearch) {
-    let result = await journalSearchService.searchAll(search);
-    journal.set(resolvedPromise(result.journalEntries));
-    tagEntries.set(resolvedPromise(result.tagEntries));
-}
+export const journalSearch = new JournalSearchStore(journalSearchService, formService, trackableService,
+    trackableCategoryService, tagService, tagCategoryService);
 
 // TODO: where do we actually want to put stores? we don't want to expose the services directly
 export function variableValue(id: string, timeContext: TimeScope, key: string) {

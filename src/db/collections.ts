@@ -8,6 +8,7 @@ import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
 import type {Reflection} from "@perfice/model/reflection/reflection";
+import type {JournalSearch} from "@perfice/model/journal/search/search";
 
 export interface TrackableCollection {
     count(): Promise<number>;
@@ -256,4 +257,14 @@ export interface DashboardWidgetCollection {
     updateWidget(widget: DashboardWidget): Promise<void>;
 
     deleteWidgetById(id: string): Promise<void>;
+}
+
+export interface SavedSearchCollection {
+    getSavedSearches(): Promise<JournalSearch[]>;
+
+    getSavedSearchById(id: string): Promise<JournalSearch | undefined>;
+
+    putSavedSearch(search: JournalSearch): Promise<void>;
+
+    deleteSavedSearchById(id: string): Promise<void>;
 }

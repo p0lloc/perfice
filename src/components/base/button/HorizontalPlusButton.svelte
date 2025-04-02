@@ -3,7 +3,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
-    let {onClick}: { onClick: () => void } = $props();
+    let {onClick}: { onClick: (e: MouseEvent & { currentTarget: HTMLButtonElement }) => void } = $props();
 </script>
 <button
         class="horizontal-add-button mt-4"

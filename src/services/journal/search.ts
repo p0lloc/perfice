@@ -1,9 +1,8 @@
-import type {JournalCollection, TagEntryCollection} from "@perfice/db/collections";
+import type {JournalCollection, SavedSearchCollection, TagEntryCollection} from "@perfice/db/collections";
 import type {TrackableEntityProvider} from "@perfice/services/trackable/trackable";
 import type {TagEntityProvider} from "@perfice/services/tag/tag";
 import {
-    getSearchDefinition,
-    type JournalSearch,
+    getSearchDefinition, type JournalSearch,
     type JournalSearchResult,
     type SearchDefinition,
     type SearchDependencies,
@@ -24,22 +23,38 @@ export class JournalSearchService {
     private tagEntityProvider: TagEntityProvider;
     private formEntityProvider: FormEntityProvider;
 
+    private savedSearchCollection: SavedSearchCollection;
+
     constructor(journalCollection: JournalCollection,
                 tagEntryCollection: TagEntryCollection,
                 trackableEntityProvider: TrackableEntityProvider,
                 tagEntityProvider: TagEntityProvider,
-                formEntityProvider: FormEntityProvider) {
+                formEntityProvider: FormEntityProvider,
+                savedSearchCollection: SavedSearchCollection) {
         this.journalCollection = journalCollection;
         this.tagEntryCollection = tagEntryCollection;
         this.trackableEntityProvider = trackableEntityProvider;
         this.tagEntityProvider = tagEntityProvider;
         this.formEntityProvider = formEntityProvider;
+        this.savedSearchCollection = savedSearchCollection;
     }
 
-    private async getNecessaryDependencies(search: JournalSearch): Promise<SearchDependencies> {
+    public async getSavedSearches(): Promise<JournalSearch[]> {
+        return this.savedSearchCollection.getSavedSearches();
+    }
+
+    getSavedSearchById(id: string): Promise<JournalSearch | undefined> {
+        return this.savedSearchCollection.getSavedSearchById(id);
+    }
+
+    public async putSavedSearch(search: JournalSearch): Promise<void> {
+        await this.savedSearchCollection.putSavedSearch(search);
+    }
+
+    private async getNecessaryDependencies(search: SearchEntity[]): Promise<SearchDependencies> {
         let includeTrackables = false;
         let includeTags = false;
-        for (let entity of search.entities) {
+        for (let entity of search) {
             switch (entity.type) {
                 case SearchEntityType.TRACKABLE:
                     includeTrackables = true;
@@ -103,7 +118,7 @@ export class JournalSearchService {
         }
     }
 
-    async searchAll(search: JournalSearch): Promise<JournalSearchResult> {
+    async searchAll(search: SearchEntity[]): Promise<JournalSearchResult> {
         let dependencies = await this.getNecessaryDependencies(search);
         let allJournalEntries = await this.journalCollection.getAllEntries();
         let allTagEntries = await this.tagEntryCollection.getAllEntries();
@@ -113,7 +128,7 @@ export class JournalSearchService {
 
         let includeSearchEntities: [SearchEntity, SearchDefinition<any>][] = [];
         let excludeSearchEntities: [SearchEntity, SearchDefinition<any>][] = [];
-        for (let entity of search.entities) {
+        for (let entity of search) {
             let definition = getSearchDefinition(entity.type);
             if (entity.mode != SearchEntityMode.EXCLUDE) {
                 includeSearchEntities.push([entity, definition]);

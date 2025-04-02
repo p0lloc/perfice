@@ -7,11 +7,12 @@
 
     let contextMenu: ContextMenu;
     let button: HTMLButtonElement;
-    let {value, items, small = false, class: className = '', onChange, disabled = false}: {
+    let {value, items, small = false, class: className = '', noneText = 'All', onChange, disabled = false}: {
         value: T[],
         items: DropdownMenuItem<T>[],
         class?: string,
         onChange?: (v: T[]) => void,
+        noneText?: string,
         small?: boolean,
         disabled?: boolean
     } = $props();
@@ -40,7 +41,7 @@
         {#if selectedItems.length > 0}
             {selectedItems.map(i => i.name).join(", ")}
         {:else}
-            <span class="text-gray-500">All</span>
+            <span class="text-gray-500">{noneText}</span>
         {/if}
     </div>
     <Fa icon={faChevronDown} class="text-xs pointer-events-none"/>

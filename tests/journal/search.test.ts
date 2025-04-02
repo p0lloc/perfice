@@ -18,8 +18,8 @@ export class DummyTrackableEntityProvider implements TrackableEntityProvider {
 
     private readonly trackables: Trackable[];
 
-    constructor(traackables: Trackable[] = []) {
-        this.trackables = traackables;
+    constructor(trackables: Trackable[] = []) {
+        this.trackables = trackables;
     }
 
     async getTrackables(): Promise<Trackable[]> {
@@ -141,9 +141,7 @@ function createMockSearchService() {
 test("search all trackables", async () => {
     let search = createMockSearchService();
 
-    expect(await search.searchAll({
-        id: "test",
-        entities: [
+    expect(await search.searchAll([
             {
                 id: "test",
                 include: true,
@@ -153,7 +151,7 @@ test("search all trackables", async () => {
                 }
             }
         ]
-    })).toEqual({
+    )).toEqual({
         journalEntries: [
             {
                 id: "test",
@@ -182,9 +180,7 @@ test("search all trackables", async () => {
 test("search all tags", async () => {
     let search = createMockSearchService();
 
-    expect(await search.searchAll({
-        id: "test",
-        entities: [
+    expect(await search.searchAll([
             {
                 id: "test",
                 include: true,
@@ -194,7 +190,7 @@ test("search all tags", async () => {
                 }
             }
         ]
-    })).toEqual({
+    )).toEqual({
         journalEntries: [],
         tagEntries: [
             {
@@ -209,9 +205,8 @@ test("search all tags", async () => {
 test("search by trackable category", async () => {
     let search = createMockSearchService();
 
-    expect(await search.searchAll({
-        id: "test",
-        entities: [
+    expect(await search.searchAll(
+        [
             {
                 id: "test",
                 include: true,
@@ -228,7 +223,7 @@ test("search by trackable category", async () => {
                 }
             }
         ]
-    })).toEqual({
+    )).toEqual({
         journalEntries: [
             {
                 id: "test2",
@@ -248,15 +243,20 @@ test("search by trackable category", async () => {
 test("search by answers", async () => {
     let search = createMockSearchService();
 
-    expect(await search.searchAll({
-        id: "test",
-        entities: [
+    expect(await search.searchAll(
+        [
             {
                 id: "test",
                 include: true,
                 type: SearchEntityType.TRACKABLE,
                 value: {
                     filters: [
+                        {
+                            type: TrackableSearchFilterType.ONE_OF,
+                            value: {
+                                values: ["test2"]
+                            }
+                        },
                         {
                             type: TrackableSearchFilterType.BY_ANSWERS,
                             value: {
@@ -274,7 +274,7 @@ test("search by answers", async () => {
                 }
             }
         ]
-    })).toEqual({
+    )).toEqual({
         journalEntries: [
             {
                 id: "test2",
