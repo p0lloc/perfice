@@ -1,5 +1,4 @@
-import type {SegmentedItem} from "@perfice/model/ui/segmented";
-import type {Trackable} from "@perfice/model/trackable/trackable";
+import type { SegmentedItem } from "@perfice/model/ui/segmented";
 
 export enum AnalyticsViewType {
     TRACKABLES,
@@ -8,9 +7,9 @@ export enum AnalyticsViewType {
 }
 
 export const ANALYTICS_SEGMENTED_ITEMS: SegmentedItem<AnalyticsViewType>[] = [
-    {name: "Trackables", value: AnalyticsViewType.TRACKABLES},
-    {name: "Tags", value: AnalyticsViewType.TAGS},
-    {name: "Correlations", value: AnalyticsViewType.CORRELATIONS},
+    { name: "Trackables", value: AnalyticsViewType.TRACKABLES },
+    { name: "Tags", value: AnalyticsViewType.TAGS },
+    { name: "Correlations", value: AnalyticsViewType.CORRELATIONS },
 ];
 
 export function getAnalyticsDetailsLink(type: string, id: string): string {

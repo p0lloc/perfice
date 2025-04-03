@@ -7,10 +7,11 @@
         type JournalSearch,
         SEARCH_ENTITY_TYPES,
         type SearchEntity,
+        SearchEntityMode,
         SearchEntityType,
     } from "@perfice/model/journal/search/search";
     import JournalSearchEntityCard from "@perfice/components/journal/search/JournalSearchEntityCard.svelte";
-    import {faBars, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
+    import {faBars, faExclamationTriangle, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {goto} from "@mateothegreat/svelte5-router";
@@ -93,6 +94,8 @@
             value: s.id
         })), {name: "Create new", value: "new", icon: faPlus, separated: true}];
     });
+
+    const noInclude = $derived(!search.entities.some(e => e.mode === SearchEntityMode.INCLUDE));
 </script>
 
 <MobileTopBar title="Search">
@@ -122,6 +125,12 @@
                         onChange={onEntityChange}
                 />
             {/each}
+            {#if noInclude}
+                <span class="text-red-500 flex items-center gap-2">
+                    <Fa icon={faExclamationTriangle}/>
+                    There are no included entities, the search result will be empty.
+                </span>
+            {/if}
             <HorizontalPlusButton onClick={startAddingQuestion}/>
         </div>
     {/await}
