@@ -51,7 +51,6 @@
     );
 </script>
 
-
 <div class="border">
     <div class="row-between px-4 py-2">
         <div class="row-gap flex-wrap">
@@ -64,6 +63,9 @@
         </div>
     </div>
     <div class="p-4">
+        {#if fields.length === 0}
+            <span class="text-red-500">There are no selected trackables, please narrow your search with another filter.</span>
+        {/if}
         <EditListFilters
                 {fields}
                 filters={filter.filters}
