@@ -136,6 +136,14 @@ export function comparePrimitives(first: PrimitiveValue, second: PrimitiveValue)
  * Compares two primitive values, but first converts the first value to the type of the second value.
  */
 export function comparePrimitivesLoosely(first: PrimitiveValue, second: PrimitiveValue): boolean {
+    if (first.type == PrimitiveValueType.LIST) {
+        // If the value is a list, check if any of the values in the list loosely match
+        // Otherwise, check if the whole list matches down below
+        if (first.value.some(v => comparePrimitivesLoosely(v, second))) {
+            return true;
+        }
+    }
+
     let valueConverted = primitiveAsType(first, second.type);
     return comparePrimitives(valueConverted, second);
 }
@@ -247,7 +255,6 @@ export function primitiveAsString(value: PrimitiveValue): string {
 
     return value.value?.toString() ?? "";
 }
-
 
 export function primitiveAsType(value: PrimitiveValue, type: PrimitiveValueType): PrimitiveValue {
     if (value.type == type) return value;

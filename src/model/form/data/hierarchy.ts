@@ -16,6 +16,8 @@ export interface HierarchyFormQuestionDataSettings {
     root: HierarchyOption;
 }
 
+export const HIERARCHY_ROOT_ID = "root";
+
 export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefinition<PrimitiveValue[], HierarchyFormQuestionDataSettings> {
     validate(value: PrimitiveValue[], settings: HierarchyFormQuestionDataSettings): string | null {
         return null;
@@ -24,7 +26,7 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
     getDefaultSettings(): HierarchyFormQuestionDataSettings {
         return {
             root: {
-                id: "root",
+                id: HIERARCHY_ROOT_ID,
                 value: pString("root"),
                 text: "",
                 color: "#ff0000",

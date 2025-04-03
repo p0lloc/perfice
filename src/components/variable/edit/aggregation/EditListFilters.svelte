@@ -5,12 +5,13 @@
     import EditListFilter from "@perfice/components/variable/edit/aggregation/EditListFilter.svelte";
     import {updateIdentifiedInArray} from "@perfice/util/array";
     import {FilterComparisonOperator, type JournalEntryFilter} from "@perfice/services/variable/filtering";
+    import type {FormQuestion} from "@perfice/model/form/form";
 
-    let {filters, onChange, fields, addButton = false}: {
+    let {filters, onChange, fields, addButton = true}: {
         filters: JournalEntryFilter[],
         onChange: (v: JournalEntryFilter[]) => void,
         addButton?: boolean,
-        fields: ({ value: string, name: string }[]) | undefined
+        fields: FormQuestion[]
     } = $props();
 
     function addFilter() {
@@ -40,6 +41,7 @@
 
 <div class="flex flex-col gap-2">
     {#each filters as filter}
-        <EditListFilter {fields} {filter} onChange={(v) => onFilterChange(v)} onRemove={() => onRemoveFilter(filter)}/>
+        <EditListFilter questions={fields} {filter} onChange={(v) => onFilterChange(v)}
+                        onRemove={() => onRemoveFilter(filter)}/>
     {/each}
 </div>

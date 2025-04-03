@@ -76,6 +76,7 @@ import {type JournalSearch, SearchEntityMode, SearchEntityType} from "@perfice/m
 import {type TrackableSearchFilter, TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
 import {resolvedPromise} from "@perfice/util/promise";
 import {JournalSearchStore} from "@perfice/stores/journal/search";
+import {CorrelationIgnoreService} from './services/analytics/ignore';
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -93,6 +94,7 @@ const formService = new BaseFormService(db.forms, db.formSnapshots);
 formService.initLazyDependencies(journalService);
 
 const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
+const ignoreService = new CorrelationIgnoreService();
 
 const trackableService = new TrackableService(db.trackables, variableService, formService, analyticsSettingsService);
 const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);
@@ -111,55 +113,6 @@ const reflectionService = new ReflectionService(db.reflections, formService, jou
 
 const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
     trackableService, tagService, formService, db.savedSearches);
-
-(async () => {
-    console.log(btoa(JSON.stringify({
-        id: "test",
-        entities: [
-            {
-                id: "test",
-                type: SearchEntityType.TRACKABLE,
-                mode: SearchEntityMode.INCLUDE,
-                value: {
-                    filters: [
-                        {
-                            type: TrackableSearchFilterType.ONE_OF,
-                            value: {
-                                values: ["913710c1-ada5-4ab4-a480-bd8fd3d8b493"]
-                            }
-                        },
-                    ] as TrackableSearchFilter[]
-                }
-            },
-            {
-                id: "test",
-                mode: SearchEntityMode.INCLUDE,
-                type: SearchEntityType.TRACKABLE,
-                value: {
-                    filters: [
-                        {
-                            type: TrackableSearchFilterType.ONE_OF,
-                            value: {
-                                values: ["b7c852c7-4810-490b-b524-70ab4d8efc76"]
-                            }
-                        }
-                    ] as TrackableSearchFilter[]
-                }
-            },
-
-            {
-                id: "date",
-                mode: SearchEntityMode.MUST_MATCH,
-                type: SearchEntityType.DATE,
-                value: {
-                    range: {
-                        type: TimeRangeType.ALL,
-                    }
-                }
-            }
-        ]
-    })));
-})();
 
 const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
 const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
@@ -192,7 +145,7 @@ export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);
 
 export const analyticsSettings = new AnalyticsSettingsStore(analyticsSettingsService);
-export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, new Date(), 60, 6);
+export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, ignoreService, new Date(), 60, 6);
 
 export const appReady = writable(false);
 

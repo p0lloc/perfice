@@ -52,7 +52,7 @@
     }
 
     let entityFormId = $derived(value.getFormId());
-    let questions = $derived(editState.forms.find(f => f.id == entityFormId)?.questions);
+    let questions = $derived(editState.forms.find(f => f.id == entityFormId)?.questions ?? []);
 
     let entities = $derived(editState.entities.map(v => {
         return {
@@ -81,5 +81,5 @@
             <DropdownButton items={dropdownQuestions} value={field} onChange={onFieldChange}/>
         {/if}
     </div>
-    <EditListFilters fields={dropdownQuestions} filters={filters} onChange={onFilterChange}/>
+    <EditListFilters fields={questions} filters={filters} onChange={onFilterChange}/>
 </div>

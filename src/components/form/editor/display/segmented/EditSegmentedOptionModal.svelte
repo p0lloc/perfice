@@ -2,10 +2,10 @@
     import Modal from "@perfice/components/base/modal/Modal.svelte";
     import {ModalSize, ModalType} from "@perfice/model/ui/modal";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
-    import {getHtmlInputFromQuestionType} from "@perfice/model/form/ui";
     import {type DataSettingValues, questionDataTypeRegistry} from "@perfice/model/form/data";
     import type {SegmentedOption} from "@perfice/model/form/display/segmented";
     import Button from "@perfice/components/base/button/Button.svelte";
+    import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
 
@@ -28,7 +28,7 @@
         } else {
             // Create a new option
             let defaultValue = dataDef.deserialize(dataDef.getDefaultValue(dataSettings));
-            if(defaultValue == null) return promise;
+            if (defaultValue == null) return promise;
 
             valueStr = dataDef.serialize(defaultValue);
             sameDisplayText = true;
@@ -50,13 +50,17 @@
         sameDisplayText = false;
     }
 
+    function onValueChange(v: PrimitiveValue) {
+        option.value = v;
+    }
+
     function onConfirm() {
         let value = dataDef.deserialize($state.snapshot(valueStr));
         if (value == null) return;
         option.value = value;
 
         // If using same display text, copy from the value
-        if(sameDisplayText){
+        if (sameDisplayText) {
             option.text = dataDef.serialize(value);
         }
 
@@ -70,7 +74,7 @@
     <div class="flex flex-col gap-4">
         <div class="row-between">
             <span class="label">Value</span>
-            <input type={getHtmlInputFromQuestionType(dataType)} class="border" bind:value={valueStr}/>
+            <PrimitiveVanillaInputField {dataType} value={option.value} onChange={onValueChange}/>
         </div>
         <div class="row-between">
             <span class="label">Text</span>

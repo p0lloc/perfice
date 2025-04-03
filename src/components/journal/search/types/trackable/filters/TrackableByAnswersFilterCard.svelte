@@ -40,12 +40,7 @@
         selectedTrackables
             .values()
             .flatMap(([_, form]) =>
-                form.questions.map((q) => {
-                    return {
-                        value: q.id,
-                        name: q.name,
-                    };
-                }),
+                form.questions
             )
             .toArray(),
     );
@@ -67,6 +62,7 @@
             <span class="text-red-500">There are no selected trackables, please narrow your search with another filter.</span>
         {/if}
         <EditListFilters
+                addButton={false}
                 {fields}
                 filters={filter.filters}
                 onChange={(v) => onChange({ ...filter, filters: v })}

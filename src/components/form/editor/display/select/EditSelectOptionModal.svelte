@@ -7,11 +7,12 @@
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
-    import {getHtmlInputFromQuestionType} from "@perfice/model/form/ui";
     import {
         type DataSettingValues,
         questionDataTypeRegistry
     } from "@perfice/model/form/data";
+    import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
 
@@ -72,13 +73,13 @@
         option.icon = icon;
     }
 
-    function onConfirm() {
-        let value = dataDef.deserialize($state.snapshot(valueStr));
-        if (value == null) return;
-        option.value = value;
+    function onValueChange(v: PrimitiveValue) {
+        option.value = v;
+    }
 
+    function onConfirm() {
         if (sameDisplayText) {
-            option.text = dataDef.serialize(value);
+            option.text = dataDef.serialize(option.value);
         }
 
         completer($state.snapshot(option));
@@ -91,7 +92,7 @@
     <div class="flex flex-col gap-4">
         <div class="row-between">
             <span class="label">Value</span>
-            <input type={getHtmlInputFromQuestionType(dataType)} class="border" bind:value={valueStr}/>
+            <PrimitiveVanillaInputField {dataType} value={option.value} onChange={onValueChange}/>
         </div>
         <div class="row-between">
             <span class="label">Text</span>

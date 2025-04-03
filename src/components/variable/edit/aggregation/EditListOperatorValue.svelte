@@ -1,7 +1,6 @@
 <script lang="ts">
     import {
         comparePrimitives,
-        prettyPrintPrimitive,
         type PrimitiveValue,
         pString
     } from "@perfice/model/primitive/primitive";
@@ -10,8 +9,14 @@
     import {faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {updateIndexInArray} from "@perfice/util/array";
+    import FormQuestionValueInput from "@perfice/components/form/valueInput/FormQuestionValueInput.svelte";
+    import type {FormQuestion} from "@perfice/model/form/form";
 
-    let {value, onChange}: { value: PrimitiveValue[], onChange: (v: PrimitiveValue[]) => void } = $props();
+    let {value, onChange, question}: {
+        value: PrimitiveValue[],
+        onChange: (v: PrimitiveValue[]) => void,
+        question: FormQuestion
+    } = $props();
 
     function add() {
         onChange([...value, pString("")]);
@@ -21,14 +26,15 @@
         onChange(value.filter(v2 => !comparePrimitives(v2, v)));
     }
 
-    function onChangeValue(i: number, e: { currentTarget: HTMLInputElement }) {
-        onChange(updateIndexInArray($state.snapshot(value), i, pString(e.currentTarget.value)));
+    function onChangeValue(i: number, e: PrimitiveValue) {
+        onChange(updateIndexInArray($state.snapshot(value), i, e));
     }
 </script>
-<div class="flex-1 flex flex-col gap-1 min-w-0">
+<div class="flex-1 flex flex-col gap-1 min-w-0 w-full md:w-auto">
     {#each value as v, i (i)}
         <div class="row-between">
-            <input type="text" class="min-w-0" value={prettyPrintPrimitive(v)} onchange={(e) => onChangeValue(i, e)}/>
+            <FormQuestionValueInput class="flex-1 min-w-0" small={true} {question} value={v}
+                                    onChange={(v) => onChangeValue(i, v)}/>
             <IconButton icon={faTrash} onClick={() => onRemoveValue(v)} class="text-gray-500"/>
         </div>
     {/each}

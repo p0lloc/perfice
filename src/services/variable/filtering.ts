@@ -3,8 +3,8 @@ import {extractValueFromDisplay} from "./types/list";
 import {
     comparePrimitivesLoosely,
     primitiveAsNumber,
-    PrimitiveValueType,
-    type PrimitiveValue
+    type PrimitiveValue,
+    PrimitiveValueType
 } from "@perfice/model/primitive/primitive";
 
 
@@ -84,7 +84,8 @@ export function shouldFilterOutEntry(entry: JournalEntry, filters: JournalEntryF
             }
         }
 
-        if (!isFilterMet(extractValueFromDisplay(answer), filter)) return true;
+        let extracted = extractValueFromDisplay(answer);
+        if (!isFilterMet(extracted, filter)) return true;
     }
     return false;
 }

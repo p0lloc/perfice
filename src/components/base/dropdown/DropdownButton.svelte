@@ -8,14 +8,24 @@
 
     let contextMenu: ContextMenu;
     let button: HTMLButtonElement;
-    let {value, items, small = false, class: className = '', noneText = '', onChange, disabled = false}: {
+    let {
+        value,
+        items,
+        small = false,
+        class: className = '',
+        noneText = '',
+        onChange,
+        disabled = false,
+        compareFunction = (a, b) => a == b
+    }: {
         value: T,
         items: DropdownMenuItem<T>[],
         class?: string,
         onChange?: (v: T) => void,
         noneText?: string,
         small?: boolean,
-        disabled?: boolean
+        disabled?: boolean,
+        compareFunction?: (a: T, b: T) => boolean
     } = $props();
 
     function getSelectedItemPosition() {
@@ -33,7 +43,7 @@
         onChange?.(e.value);
     }
 
-    let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => i.value == value));
+    let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => compareFunction(i.value, value)));
 </script>
 <button class="border min-h-8 min-w-6 bg-white rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
         onclick={open} bind:this={button}>
