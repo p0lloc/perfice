@@ -692,11 +692,13 @@ export class AnalyticsService {
                 // Skip if actually same key but first is just lagged
                 if (firstLag && this.stripLag(firstKey) == secondKey) continue;
 
-                // Skip if same key but reverse order
-                let existingKey = this.constructResultKey(secondKey, firstKey);
-                if (tried.has(existingKey)) continue;
+                let resultKey = this.constructResultKey(firstKey, secondKey);
 
-                tried.add(existingKey);
+                // Skip if same key but reverse order
+                let reverseOrderKey = this.constructResultKey(secondKey, firstKey);
+                if (tried.has(resultKey) || tried.has(reverseOrderKey)) continue;
+
+                tried.add(resultKey);
 
                 if (secondType == DatasetKeyType.WEEK_DAY && firstLag) {
                     // Week day and lag are not correlated
@@ -738,7 +740,7 @@ export class AnalyticsService {
                     continue;
 
                 let coefficient = this.pearsonCorrelation(matching.first, matching.second);
-                results.set(this.constructResultKey(firstKey, secondKey), {
+                results.set(resultKey, {
                     firstKeyType: firstType,
                     secondKeyType: secondType,
                     coefficient,
