@@ -678,6 +678,7 @@ export class AnalyticsService {
         }
 
         let results: Map<string, CorrelationResult> = new Map();
+        let tried: Set<string> = new Set();
         for (let [firstKey, firstDataset] of flattenedFormValues.entries()) {
             for (let [secondKey, secondDataset] of flattenedFormValues.entries()) {
                 // Skip if same key
@@ -693,7 +694,9 @@ export class AnalyticsService {
 
                 // Skip if same key but reverse order
                 let existingKey = this.constructResultKey(secondKey, firstKey);
-                if (results.has(existingKey)) continue;
+                if (tried.has(existingKey)) continue;
+
+                tried.add(existingKey);
 
                 if (secondType == DatasetKeyType.WEEK_DAY && firstLag) {
                     // Week day and lag are not correlated
