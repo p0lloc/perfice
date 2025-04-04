@@ -8,6 +8,7 @@
     import type {Tag} from "@perfice/model/tag/tag";
     import NewCorrelations from "@perfice/components/analytics/NewCorrelations.svelte";
     import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time.js";
+    import GenericEntityModal from "@perfice/components/base/modal/generic/GenericEntityModal.svelte";
 
     const KEY_FILTERS = [
         {
@@ -36,6 +37,7 @@
     })
 
     let newCorrelations = $derived(analytics.getNewestCorrelations(5, new Date().getTime()));
+    let ignoreConfirmationModal: GenericEntityModal<DetailCorrelation>;
 
     let confidence = $state(50);
     let search = $state('');
@@ -87,8 +89,16 @@
         result.sort((a, b) => Math.abs(b.value.coefficient) - Math.abs(a.value.coefficient));
         return result;
     }
+
+    function onCorrelationIgnored(correlation: DetailCorrelation) {
+        analytics.ignoreCorrelation(correlation.timeScope, correlation.key);
+    }
 </script>
 
+<GenericEntityModal title="Hide correlation" bind:this={ignoreConfirmationModal}
+                    message="Are you sure you want to hide this correlation?"
+                    confirmText="Hide" onConfirm={onCorrelationIgnored}
+></GenericEntityModal>
 <div class="row-gap justify-between flex-wrap">
     <input class="md:w-auto w-full" type="text" placeholder="Search..." bind:value={search}>
     <div class="row-gap flex-wrap">
@@ -115,7 +125,8 @@
         </div>
         <div class="grid-cols-1 md:grid-cols-4 grid gap-4 flex-1">
             {#each getCorrelationsToShow(result.correlations, keyFilter, search, result.forms, result.tags) as correlation}
-                <CorrelationCard {correlation} fullBar={true}/>
+                <CorrelationCard onIgnore={() => ignoreConfirmationModal.open(correlation)} {correlation}
+                                 fullBar={true} colActions={true}/>
             {/each}
         </div>
     </div>
@@ -123,6 +134,6 @@
 
 <style>
     .setting {
-        @apply flex items-center gap-2 px-2 py-1 border rounded;
+        @apply flex items-center gap-2 px-2 py-1 border rounded bg-white;
     }
 </style>

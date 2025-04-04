@@ -3,7 +3,7 @@ import {TrackableService} from "@perfice/services/trackable/trackable";
 import {VariableService} from "@perfice/services/variable/variable";
 import {setupDb} from "@perfice/db/dexie/db";
 import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
-import {SimpleTimeScopeType, TimeRangeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
+import {SimpleTimeScopeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {VariableGraph} from "@perfice/services/variable/graph";
 import {BaseJournalService, JournalEntryObserverType} from "@perfice/services/journal/journal";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
@@ -72,9 +72,6 @@ import {TableWidget} from "@perfice/stores/sharedWidgets/table/table";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type ChecklistData, ChecklistWidget} from "@perfice/stores/sharedWidgets/checklist/checklist";
 import {JournalSearchService} from "@perfice/services/journal/search";
-import {type JournalSearch, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
-import {type TrackableSearchFilter, TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
-import {resolvedPromise} from "@perfice/util/promise";
 import {JournalSearchStore} from "@perfice/stores/journal/search";
 import {CorrelationIgnoreService} from './services/analytics/ignore';
 
@@ -95,6 +92,7 @@ formService.initLazyDependencies(journalService);
 
 const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
 const ignoreService = new CorrelationIgnoreService();
+ignoreService.load();
 
 const trackableService = new TrackableService(db.trackables, variableService, formService, analyticsSettingsService);
 const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);

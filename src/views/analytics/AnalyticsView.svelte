@@ -43,7 +43,7 @@
     />
 </div>
 
-<div class="md:w-3/4 mx-auto md:mt-8 md:p-0 p-2 main-content">
+<div class="md:w-3/4 mx-auto md:mt-8 md:px-0 p-2 pb-20 main-content">
     <RendererComponent/>
 </div>
 

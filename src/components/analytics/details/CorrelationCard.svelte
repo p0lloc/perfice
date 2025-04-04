@@ -1,7 +1,7 @@
 <script lang="ts">
     import type {DetailCorrelation} from "@perfice/stores/analytics/analytics";
     import CorrelationBar from "@perfice/components/analytics/details/CorrelationBar.svelte";
-    import {faLineChart} from "@fortawesome/free-solid-svg-icons";
+    import {faEyeSlash, faLineChart, faThumbsDown} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import DualLineChart from "@perfice/components/chart/DualLineChart.svelte";
     import {normalizeNumberArray} from "@perfice/services/analytics/analytics.js";
@@ -11,11 +11,14 @@
 
     const LEGEND_LABEL_MAX_LENGTH = 8;
 
-    let {correlation, class: className = '', fullBar = false}: {
+    let {correlation, class: className = '', onIgnore, fullBar = false, colActions = false}: {
         correlation: DetailCorrelation,
         class?: string,
-        fullBar?: boolean
+        fullBar?: boolean,
+        colActions?: boolean,
+        onIgnore: () => void
     } = $props();
+
     let chartVisible = $state(false);
 
     function showChart() {
@@ -65,7 +68,10 @@
     <div>
         <div class="flex gap-2 justify-between items-start">
             <CorrelationMessage positive={correlation.value.coefficient > 0} display={correlation.display}/>
-            <IconButton onClick={showChart} icon={faLineChart} class="text-gray-400"/>
+            <div class="flex" class:flex-col={colActions}>
+                <IconButton onClick={showChart} icon={faLineChart} class="text-gray-400"/>
+                <IconButton onClick={onIgnore} icon={faEyeSlash} class="text-gray-400"/>
+            </div>
         </div>
         {#if chartVisible}
             <div class="h-36">

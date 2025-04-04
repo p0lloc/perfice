@@ -6,8 +6,12 @@
     import {convertResultKey} from "@perfice/services/analytics/display";
     import {formatDayDifference} from "@perfice/util/time/format";
     import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import GenericEntityModal from "@perfice/components/base/modal/generic/GenericEntityModal.svelte";
+    import {analytics} from "@perfice/app";
 
     let {newCorrelations, result}: { newCorrelations: AnalyticsHistoryEntry[], result: AnalyticsResult } = $props();
+
+    let ignoreConfirmationModal: GenericEntityModal<DetailCorrelation>;
 
     type NewCorrelation = DetailCorrelation & {
         timestamp: number;
@@ -36,11 +40,21 @@
 
         return out;
     });
+
+
+    function onCorrelationIgnored(correlation: DetailCorrelation) {
+        analytics.ignoreCorrelation(correlation.timeScope, correlation.key);
+    }
 </script>
 
+<GenericEntityModal message="Are you sure you want to hide this correlation?" title="Hide correlation"
+                    onConfirm={onCorrelationIgnored}
+                    bind:this={ignoreConfirmationModal}
+                    confirmText="Hide"/>
 {#each detailedCorrelations as correlation}
     <div>
-        <CorrelationCard fullBar={true} correlation={correlation}/>
+        <CorrelationCard onIgnore={() => ignoreConfirmationModal.open(correlation)} fullBar={true}
+                         correlation={correlation}/>
         <span class="text-right text-sm text-gray-400 flex justify-end">{formatDayDifference(new Date(), new Date(correlation.timestamp))}</span>
     </div>
 {/each}
