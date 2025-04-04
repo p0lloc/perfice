@@ -11,14 +11,13 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBars, faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
-    import {onMount} from "svelte";
     import type {SearchEntity} from "@perfice/model/journal/search/search";
     import {goto} from "@mateothegreat/svelte5-router";
     import Button from "@perfice/components/base/button/Button.svelte";
@@ -59,10 +58,6 @@
             paginatedJournal.nextPage();
         }
     }
-
-    onMount(() => {
-        load();
-    });
 
     async function onEntityClick(entity: JournalEntity) {
         if (selectMode) {
@@ -124,10 +119,11 @@
         goto("/journal/search");
     }
 
+    load();
     let title = $derived(searched ? "Search result" : "Journal");
 </script>
 
-<svelte:window onwheel={onScroll}/>
+<svelte:window onwheel={onScroll} ontouchmove={onScroll}/>
 
 <GenericDeleteModal subject="this entry" onDelete={deleteEntity} bind:this={deleteModal}/>
 <GenericDeleteModal subject="{selectedEntities.length} entries" onDelete={onMultiEntryDelete}
@@ -143,13 +139,13 @@
     {#await $groupedJournal}
         Loading...
     {:then days}
-        <div class="row-between items-center mb-8 md:flex hidden">
+        <div class="row-between items-center md:mb-8 mb-4 md:flex hidden">
             <Title title={title} icon={searched ? faSearch : faBook}/>
-            <div class="row-gap">
+            <div class="row-gap md:w-auto w-full flex justify-end">
                 <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
                     <Fa icon={faSearch}/>
                 </Button>
-                <div class="row-gap bg-white border p-2 rounded-md">
+                <div class="row-gap bg-white border px-2 rounded-md h-10">
                     {#if selectMode}
                         {selectedEntities.length} selected
                     {:else}
