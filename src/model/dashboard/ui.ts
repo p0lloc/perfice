@@ -1,14 +1,13 @@
 import type {
+    Dashboard,
     DashboardWidget,
     DashboardWidgetDisplaySettings,
     DashboardWidgetType
 } from "@perfice/model/dashboard/dashboard";
 import type {Form} from "@perfice/model/form/form";
-
-export interface DashboardWidgetAddEvent {
-    type: DashboardWidgetType;
-    display: DashboardWidgetDisplaySettings;
-}
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
+import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
 
 export enum DashboardSidebarActionType {
     ADD_WIDGET,
@@ -37,4 +36,36 @@ export interface SA<T extends DashboardSidebarActionType, V> {
 
 export interface DashboardWidgetRendererExports {
     onWidgetUpdated: (widget: DashboardWidget) => void;
+}
+
+export function popupButtonsForDashboards(values: Dashboard[], action: (value: string) => void): ContextMenuButton[] {
+    return [...values.map(v => {
+        return {
+            name: v.name,
+            icon: null,
+            action: () => action(v.id)
+        }
+    }),
+        {
+            name: "Create new",
+            icon: faPlus,
+            separated: true,
+            action: () => action("create"),
+        },
+    ];
+}
+
+export function dropdownButtonsForDashboards(values: Dashboard[]): DropdownMenuItem<string>[] {
+    return [...values.map(v => {
+        return {
+            value: v.id,
+            name: v.name
+        }
+    }),
+        {
+            value: "create",
+            name: "Create new",
+            icon: faPlus, separated: true
+        }
+    ];
 }

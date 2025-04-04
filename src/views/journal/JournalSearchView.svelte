@@ -98,13 +98,7 @@
     const noInclude = $derived(!search.entities.some(e => e.mode === SearchEntityMode.INCLUDE));
 </script>
 
-<MobileTopBar title="Search">
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
-</MobileTopBar>
+<MobileTopBar title="Search"/>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
     <div class="row-between">
         <Title title={"Search"} icon={faSearch}/>

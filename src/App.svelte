@@ -19,6 +19,7 @@
     import ReflectionListView from "@perfice/views/reflection/ReflectionListView.svelte";
     import ReflectionEditorView from "@perfice/views/reflection/ReflectionEditorView.svelte";
     import JournalSearchView from "@perfice/views/journal/JournalSearchView.svelte";
+    import MobileDrawer from "@perfice/components/sidebar/drawer/MobileDrawer.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
@@ -51,6 +52,7 @@
 {#if $appReady}
     <div class="flex main-container">
         <NavigationSidebar/>
+        <MobileDrawer/>
         <div class="flex-1">
             <Router post={onRouterRoute} {routes}/>
         </div>

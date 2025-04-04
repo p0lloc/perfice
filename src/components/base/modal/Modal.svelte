@@ -122,23 +122,3 @@
         </div>
     </div>
 {/if}
-
-<style>
-    .modal-bg {
-        position: fixed;
-        z-index: 1400;
-        left: 0;
-        top: 0;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-
-        background-color: rgb(0, 0, 0);
-        background-color: rgba(0, 0, 0, 0.4);
-    }
-</style>

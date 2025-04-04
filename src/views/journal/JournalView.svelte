@@ -134,11 +134,6 @@
                     bind:this={deleteMultiModal}/>
 
 <MobileTopBar title={title}>
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
     {#snippet actions()}
         <IconButton icon={faSearch} onClick={goToSearch}/>
     {/snippet}

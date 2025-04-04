@@ -31,13 +31,7 @@
     let RendererComponent = $derived(VIEWS[viewType]);
 </script>
 
-<MobileTopBar title="Analytics">
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
-</MobileTopBar>
+<MobileTopBar title="Analytics"/>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 md:border-none border-b">
     <Title title="Analytics" icon={faChartLine}/>
     <SegmentedControl

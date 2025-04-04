@@ -9,17 +9,21 @@
     import {dashboardDate, editingDashboard, selectedWidget} from "@perfice/stores/dashboard/dashboard";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import DashboardSidebar from "@perfice/components/dashboard/DashboardSidebar.svelte";
-    import {DashboardSidebarActionType} from "@perfice/model/dashboard/ui";
+    import {
+        DashboardSidebarActionType,
+        dropdownButtonsForDashboards,
+        popupButtonsForDashboards
+    } from "@perfice/model/dashboard/ui";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
     import CalendarScroll from "@perfice/components/base/calendarScroll/CalendarScroll.svelte";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
-    import {faBars, faCheck, faPen, faPlus} from "@fortawesome/free-solid-svg-icons";
+    import {faCheck, faChevronDown, faPen, faPlus} from "@fortawesome/free-solid-svg-icons";
     import {get} from "svelte/store";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
-    import Fa from "svelte-fa";
+    import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
 
     let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
 
@@ -49,6 +53,7 @@
     }
 
     async function onDashboardChange(dashboardId: string) {
+        console.log(dashboardId)
         if (dashboardId == "create") {
             let dashboard = await dashboards.createDashboard(prompt("Name") ?? "");
             currentDashboard = dashboard.id;
@@ -159,12 +164,13 @@
 <FormModal bind:this={formModal}/>
 
 <MobileTopBar title="Dashboard">
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
     {#snippet actions()}
+        {#await $dashboards then values}
+            {#if !$editingDashboard}
+                <PopupIconButton icon={faChevronDown}
+                                 buttons={popupButtonsForDashboards(values, (v) => onDashboardChange(v))}/>
+            {/if}
+        {/await}
         <IconButton icon={$editingDashboard ? faCheck : faPen} onClick={() => $editingDashboard = !$editingDashboard}/>
         {#if $editingDashboard}
             <IconButton icon={faPlus} onClick={openAddWidgetSidebar}/>
@@ -173,20 +179,17 @@
 </MobileTopBar>
 
 <div class="flex-1 h-screen overflow-y-scroll scrollbar-hide md:w-auto w-screen pb-32 px-2">
-    <div class="flex justify-end">
-        <div class="row-gap p-2 flex-wrap">
+    <div class="flex md:justify-end justify-center">
+        <div class="row-gap p-2 flex-wrap flex-1 md:flex-initial">
             <CalendarScroll value={$dashboardDate} onChange={(v) => $dashboardDate = v}/>
             <input type="checkbox" class="hidden md:block" bind:checked={$editingDashboard}>
             <button onclick={openAddWidgetSidebar} class="hidden md:block">+</button>
             {#await $dashboards then values}
                 <BindableDropdownButton
-                        class="min-w-64"
+                        class="min-w-64 hidden md:flex"
                         value={currentDashboard}
                         onChange={onDashboardChange}
-                        items={
-                [...values.map(v => {
-                    return {value: v.id, name: v.name}
-                }), {value: "create", name: "Create new", icon: faPlus, separated: true}]}/>
+                        items={dropdownButtonsForDashboards(values)}/>
             {/await}
         </div>
     </div>

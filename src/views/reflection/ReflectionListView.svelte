@@ -41,13 +41,7 @@
     }
 </script>
 
-<MobileTopBar title="Reflections">
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
-</MobileTopBar>
+<MobileTopBar title="Reflections"/>
 
 <GenericDeleteModal subject="this reflection" onDelete={onDeleteReflection} bind:this={deleteReflectionModal}/>
 <ReflectionModal bind:this={reflectionModal}/>

@@ -66,13 +66,7 @@
     trackables.load();
 </script>
 
-<MobileTopBar title="Trackables">
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
-</MobileTopBar>
+<MobileTopBar title="Trackables"/>
 
 <FormModal bind:this={formModal}/>
 <EditTrackableModal

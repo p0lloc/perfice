@@ -9,6 +9,7 @@
     import LineButton from "@perfice/components/base/button/LineButton.svelte";
     import {faTags} from "@fortawesome/free-solid-svg-icons";
     import {dateToMidnight} from "@perfice/util/time/simple";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
 
     function onDateChange(e: Date) {
         $tagDate = e;
@@ -34,6 +35,7 @@
     tagDate.set(dateToMidnight(new Date()));
 </script>
 
+<MobileTopBar title="Tags"/>
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar
             date={$tagDate}

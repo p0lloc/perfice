@@ -36,13 +36,7 @@
 
 
 <GenericDeleteModal subject="this goal" onDelete={onGoalDelete} bind:this={deleteGoalModal}/>
-<MobileTopBar title="Goals">
-    {#snippet leading()}
-        <button class="icon-button" onclick={() => console.log("TODO")}>
-            <Fa icon={faBars}/>
-        </button>
-    {/snippet}
-</MobileTopBar>
+<MobileTopBar title="Goals"/>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
     <TitleAndCalendar date={$goalDate} onDateChange={onDateChange} title="Goals" icon={faBullseye}/>
     {#await $goals}
