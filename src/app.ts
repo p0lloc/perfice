@@ -74,6 +74,8 @@ import {type ChecklistData, ChecklistWidget} from "@perfice/stores/sharedWidgets
 import {JournalSearchService} from "@perfice/services/journal/search";
 import {JournalSearchStore} from "@perfice/stores/journal/search";
 import {CorrelationIgnoreService} from './services/analytics/ignore';
+import {LocalNotifications, Weekday} from "@capacitor/local-notifications";
+import {NotificationService} from "@perfice/services/notification/notification";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -106,8 +108,9 @@ const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets, v
 const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
+const notificationService = new NotificationService(db.notifications);
 
-const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService);
+const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService, notificationService);
 
 const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
     trackableService, tagService, formService, db.savedSearches);
@@ -226,7 +229,32 @@ export function tagDetailedAnalytics(id: string, timeScope: SimpleTimeScopeType)
 (async () => {
     await variables.get();
     appReady.set(true);
+
+    let status = await LocalNotifications.requestPermissions();
+    if (status.display == "granted") {
+        let result = await LocalNotifications.schedule({
+            notifications: [
+                {
+                    title: 'Evening reflection',
+                    body: 'Reflect over your day 🌇',
+                    extra: "abc",
+                    id: 0,
+                    schedule: {
+                        on: {
+                            hour: 10,
+                            minute: 57,
+                            second: 0
+                        }
+                    }
+                }
+            ]
+        });
+    }
 })();
+
+LocalNotifications.addListener('localNotificationActionPerformed', async (data) => {
+    alert(data.notification.extra)
+});
 
 
 /**

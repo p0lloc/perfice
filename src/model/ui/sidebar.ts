@@ -1,6 +1,7 @@
 import {
+    faBell,
     faBook,
-    faBullseye, faHome,
+    faBullseye, faClock, faHome,
     faLineChart,
     faRuler, faSquarePlus, faSun,
     faTag,

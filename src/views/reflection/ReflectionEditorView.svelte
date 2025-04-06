@@ -15,9 +15,13 @@
     import ReflectionEditorSidebar from "@perfice/components/reflection/editor/sidebar/ReflectionEditorSidebar.svelte";
     import {goto} from "@mateothegreat/svelte5-router";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
+    import type {StoredNotification} from "@perfice/model/notification/notification";
+    import EditReflectionNotifications
+        from "@perfice/components/reflection/editor/notifications/EditReflectionNotifications.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);
+    let notifications = $state<StoredNotification[]>([]);
     let editing = $state(false);
     let sidebar: ReflectionEditorSidebar;
     let dragContainer: DragAndDropContainer;
@@ -92,9 +96,11 @@
                 name: "New reflection",
                 pages: []
             };
+            notifications = [];
             editing = false;
         } else {
             reflection = await reflections.fetchReflectionById(reflectionId);
+            notifications = await reflections.getNotificationsForReflection(reflectionId);
             editing = true;
         }
     }
@@ -126,6 +132,13 @@
             <h3 class="label">Name</h3>
             <input type="text" bind:value={reflection.name} placeholder="Name"/>
         </div>
+        {#if editing}
+            <div class="mt-4">
+                <EditReflectionNotifications {notifications}
+                                             entityId={reflection.id}
+                                             onChange={(v) => notifications = v}/>
+            </div>
+        {/if}
         <h3 class="label text-2xl mt-4">Pages</h3>
         <DragAndDropContainer bind:this={dragContainer} zoneId="reflection-pages" items={reflection.pages}
                               class="flex flex-col mt-2 gap-2"

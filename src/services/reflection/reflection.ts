@@ -13,6 +13,8 @@ import type {TagService} from "../tag/tag";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {updateDependencies} from "@perfice/services/variable/dependencies";
 import {ChecklistConditionType} from "@perfice/model/sharedWidgets/checklist/checklist";
+import type {NotificationService} from "../notification/notification";
+import {NotificationType, type StoredNotification} from "@perfice/model/notification/notification";
 
 export class ReflectionService {
 
@@ -22,14 +24,16 @@ export class ReflectionService {
     private journalService: JournalService;
     private tagService: TagService;
     private variableService: VariableService;
+    private notificationService: NotificationService;
 
     constructor(reflectionCollection: ReflectionCollection, formService: FormService,
-                journalService: JournalService, tagService: TagService, variableService: VariableService) {
+                journalService: JournalService, tagService: TagService, variableService: VariableService, notificationService: NotificationService) {
         this.reflectionCollection = reflectionCollection;
         this.formService = formService;
         this.journalService = journalService;
         this.tagService = tagService;
         this.variableService = variableService;
+        this.notificationService = notificationService;
     }
 
     async getReflections(): Promise<Reflection[]> {
@@ -99,6 +103,19 @@ export class ReflectionService {
         return this.reflectionCollection.updateReflection(reflection);
     }
 
+    async getNotificationsForReflection(reflectionId: string): Promise<StoredNotification[]> {
+        return this.notificationService.getNotificationsByEntityId(reflectionId);
+    }
+
+    async createNotificationForReflection(reflectionId: string, hour: number,
+                                          minutes: number, weekDay: number | null): Promise<StoredNotification> {
+        return await this.notificationService.createNotification(
+            NotificationType.REFLECTION,
+            reflectionId,
+            hour, minutes, weekDay
+        );
+    }
+
     async deleteReflectionById(id: string): Promise<void> {
         return this.reflectionCollection.deleteReflectionById(id);
     }
@@ -162,5 +179,13 @@ export class ReflectionService {
                 }
             }
         }
+    }
+
+    async deleteNotification(id: string) {
+        await this.notificationService.deleteNotificationById(id);
+    }
+
+    async updateNotification(notification: StoredNotification) {
+        await this.notificationService.updateNotification(notification);
     }
 }

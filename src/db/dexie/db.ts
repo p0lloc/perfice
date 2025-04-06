@@ -8,7 +8,7 @@ import type {
     FormCollection,
     FormSnapshotCollection, FormTemplateCollection, GoalCollection,
     IndexCollection,
-    JournalCollection, ReflectionCollection, SavedSearchCollection, TagCategoryCollection,
+    JournalCollection, NotificationCollection, ReflectionCollection, SavedSearchCollection, TagCategoryCollection,
     TagCollection, TagEntryCollection,
     TrackableCategoryCollection, TrackableCollection, VariableCollection
 } from "@perfice/db/collections";
@@ -31,6 +31,8 @@ import type {Reflection} from "@perfice/model/reflection/reflection";
 import {DexieReflectionCollection} from "@perfice/db/dexie/reflection";
 import type {JournalSearch} from "@perfice/model/journal/search/search";
 import {DexieSavedSearchCollection} from "@perfice/db/dexie/search";
+import {DexieNotificationCollection} from "@perfice/db/dexie/notification";
+import type {StoredNotification} from "@perfice/model/notification/notification";
 
 type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -50,11 +52,12 @@ type DexieDB = Dexie & {
     dashboardWidgets: EntityTable<DashboardWidget, 'id'>;
     reflections: EntityTable<Reflection, 'id'>;
     savedSearches: EntityTable<JournalSearch, 'id'>;
+    notifications: EntityTable<StoredNotification, 'id'>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(17).stores({
+    db.version(18).stores({
         "trackables": "id",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, [formId+timestamp], [timestamp+id]",
@@ -71,7 +74,8 @@ function loadDb(): DexieDB {
         "dashboards": "id",
         "dashboardWidgets": "id, dashboardId",
         "reflections": "id",
-        "savedSearches": "id"
+        "savedSearches": "id",
+        "notifications": "id, entityId"
     });
 
     return db;
@@ -95,6 +99,7 @@ export interface Collections {
     dashboardWidgets: DashboardWidgetCollection;
     reflections: ReflectionCollection;
     savedSearches: SavedSearchCollection;
+    notifications: NotificationCollection;
 }
 
 export function setupDb(): Collections {
@@ -121,6 +126,7 @@ export function setupDb(): Collections {
 
     const reflectionCollection = new DexieReflectionCollection(db.reflections);
     const savedSearchCollection = new DexieSavedSearchCollection(db.savedSearches);
+    const notificationCollection = new DexieNotificationCollection(db.notifications);
 
     return {
         entries: journalCollection,
@@ -139,7 +145,8 @@ export function setupDb(): Collections {
         dashboards: dashboardCollection,
         dashboardWidgets: dashboardWidgetCollection,
         reflections: reflectionCollection,
-        savedSearches: savedSearchCollection
+        savedSearches: savedSearchCollection,
+        notifications: notificationCollection
     };
 }
 

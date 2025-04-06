@@ -33,6 +33,16 @@ export function getWeekNumber(date: Date): number {
     return 1 + Math.ceil((firstThursday - target.getTime()) / 604800000);
 }
 
+export function localHhMmToUtc(hours: number, minutes: number): [number, number] {
+    let date = new Date(1970, 0, 0, hours, minutes);
+    return [date.getUTCHours(), date.getUTCMinutes()];
+}
+
+export function utcHhMmToLocal(hours: number, minutes: number): [number, number] {
+    let date = new Date(Date.UTC(1970, 0, 0, hours, minutes));
+    return [date.getHours(), date.getMinutes()];
+}
+
 export function isSameDay(first: Date, second: Date): boolean {
     return first.getFullYear() == second.getFullYear()
         && first.getMonth() == second.getMonth()

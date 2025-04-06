@@ -9,6 +9,7 @@ import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
 import type {Reflection} from "@perfice/model/reflection/reflection";
 import type {JournalSearch} from "@perfice/model/journal/search/search";
+import type {StoredNotification} from "@perfice/model/notification/notification";
 
 export interface TrackableCollection {
     count(): Promise<number>;
@@ -267,4 +268,20 @@ export interface SavedSearchCollection {
     putSavedSearch(search: JournalSearch): Promise<void>;
 
     deleteSavedSearchById(id: string): Promise<void>;
+}
+
+export interface NotificationCollection {
+    getNotifications(): Promise<StoredNotification[]>;
+
+    getNotificationById(id: string): Promise<StoredNotification | undefined>;
+
+    getNotificationsByEntityId(entityId: string): Promise<StoredNotification[]>;
+
+    createNotification(notification: StoredNotification): Promise<void>;
+
+    updateNotification(notification: StoredNotification): Promise<void>;
+
+    deleteNotificationById(id: string): Promise<void>;
+
+    deleteNotificationsByEntityId(entityId: string): Promise<void>;
 }
