@@ -3,6 +3,8 @@ import {AsyncStore} from "@perfice/stores/store";
 import type {Reflection, ReflectionWidgetAnswerState} from "@perfice/model/reflection/reflection";
 import {resolvedPromise} from "@perfice/util/promise";
 import type {StoredNotification} from "@perfice/model/notification/notification";
+import {publishToEventStore} from "@perfice/util/event";
+import {openReflectionEvents} from "@perfice/model/reflection/ui";
 
 export class ReflectionStore extends AsyncStore<Reflection[]> {
 
@@ -52,5 +54,12 @@ export class ReflectionStore extends AsyncStore<Reflection[]> {
 
     async updateNotification(notification: StoredNotification) {
         await this.reflectionService.updateNotification(notification);
+    }
+
+    async onNotificationClicked(entityId: string) {
+        let reflection = await this.reflectionService.getReflectionById(entityId);
+        if (reflection == null) return;
+
+        publishToEventStore(openReflectionEvents, reflection);
     }
 }

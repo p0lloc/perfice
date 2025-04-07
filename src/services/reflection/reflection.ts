@@ -107,11 +107,16 @@ export class ReflectionService {
         return this.notificationService.getNotificationsByEntityId(reflectionId);
     }
 
-    async createNotificationForReflection(reflectionId: string, hour: number,
-                                          minutes: number, weekDay: number | null): Promise<StoredNotification> {
+    async createNotificationForReflection(reflectionId: string,
+                                          hour: number, minutes: number, weekDay: number | null): Promise<StoredNotification> {
+        let reflection = await this.getReflectionById(reflectionId);
+        if (reflection == undefined) throw new Error("Reflection not found");
+
         return await this.notificationService.createNotification(
             NotificationType.REFLECTION,
             reflectionId,
+            reflection.name,
+            "Reflect on your day",
             hour, minutes, weekDay
         );
     }

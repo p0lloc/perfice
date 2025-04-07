@@ -2,7 +2,7 @@
     import {
         getCurrentRoute,
         routingNavigatorState,
-    } from "@perfice/model/ui/router.svelte";
+    } from "@perfice/model/ui/router.js";
     import {SIDEBAR_LINKS} from "@perfice/model/ui/sidebar";
     import SidebarButton from "@perfice/components/sidebar/SidebarButton.svelte";
 </script>
@@ -16,7 +16,7 @@
         {#each SIDEBAR_LINKS as link}
             <SidebarButton
                     {link}
-                    active={link.path === getCurrentRoute(routingNavigatorState)}
+                    active={link.path === getCurrentRoute($routingNavigatorState)}
             />
         {/each}
     </div>

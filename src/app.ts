@@ -22,7 +22,7 @@ import {GroupedJournal, PaginatedJournal} from "@perfice/stores/journal/grouped"
 import {GoalService} from "@perfice/services/goal/goal";
 import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
 import {GoalValueStore} from "@perfice/stores/goal/value";
-import {routingNavigatorState} from './model/ui/router.svelte';
+import {routingNavigatorState} from './model/ui/router.js';
 import {goto} from '@mateothegreat/svelte5-router';
 import {Capacitor} from '@capacitor/core';
 import {VariableEditProvider} from "@perfice/stores/variable/edit";
@@ -76,6 +76,8 @@ import {JournalSearchStore} from "@perfice/stores/journal/search";
 import {CorrelationIgnoreService} from './services/analytics/ignore';
 import {LocalNotifications, Weekday} from "@capacitor/local-notifications";
 import {NotificationService} from "@perfice/services/notification/notification";
+import {setupServiceWorker} from "@perfice/swSetup";
+import {NotificationType} from "@perfice/model/notification/notification";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -108,7 +110,7 @@ const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets, v
 const tagCategoryService = new TagCategoryService(db.tagCategories);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
-const notificationService = new NotificationService(db.notifications);
+const notificationService = new NotificationService(db.notifications, WeekStart.MONDAY);
 
 const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService, notificationService);
 
@@ -138,6 +140,10 @@ export const paginatedJournal = new PaginatedJournal();
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
 export const reflections = new ReflectionStore(reflectionService);
+
+notificationService.addNotificationClickedListener(NotificationType.REFLECTION, async (entityId) => {
+    await reflections.onNotificationClicked(entityId);
+});
 
 export const dashboards = new DashboardStore(dashboardService);
 export const dashboardWidgets = new DashboardWidgetStore(dashboardWidgetService);
@@ -228,32 +234,13 @@ export function tagDetailedAnalytics(id: string, timeScope: SimpleTimeScopeType)
 
 (async () => {
     await variables.get();
+    setupServiceWorker();
     appReady.set(true);
-
-    let status = await LocalNotifications.requestPermissions();
-    if (status.display == "granted") {
-        let result = await LocalNotifications.schedule({
-            notifications: [
-                {
-                    title: 'Evening reflection',
-                    body: 'Reflect over your day 🌇',
-                    extra: "abc",
-                    id: 0,
-                    schedule: {
-                        on: {
-                            hour: 10,
-                            minute: 57,
-                            second: 0
-                        }
-                    }
-                }
-            ]
-        });
-    }
+    await notificationService.scheduleStoredNotifications();
 })();
 
 LocalNotifications.addListener('localNotificationActionPerformed', async (data) => {
-    alert(data.notification.extra)
+    await notificationService.onNotificationClicked(data.notification.extra);
 });
 
 

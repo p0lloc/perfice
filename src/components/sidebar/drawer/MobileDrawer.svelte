@@ -3,7 +3,7 @@
     import {closeDrawer, drawerOpen} from "@perfice/stores/ui/drawer";
     import {SIDEBAR_LINKS} from "@perfice/model/ui/sidebar";
     import DrawerButton from "@perfice/components/sidebar/drawer/DrawerButton.svelte";
-    import {getCurrentRoute, routingNavigatorState} from "@perfice/model/ui/router.svelte";
+    import {getCurrentRoute, routingNavigatorState} from "@perfice/model/ui/router.js";
 
     function onBodyClick() {
         closeDrawer();
@@ -30,7 +30,7 @@
     >
         {#each SIDEBAR_LINKS as link}
             <DrawerButton {link}
-                          active={link.path === getCurrentRoute(routingNavigatorState)}
+                          active={link.path === getCurrentRoute($routingNavigatorState)}
             />
         {/each}
     </div>

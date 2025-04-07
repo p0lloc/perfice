@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {appReady, forms, journal, tags} from "./app";
+    import {appReady} from "./app";
     import type {Route} from "@mateothegreat/svelte5-router";
     import {Router} from "@mateothegreat/svelte5-router";
     import TrackableView from "@perfice/views/trackable/TrackableView.svelte";
@@ -9,7 +9,7 @@
     import NavigationSidebar from "@perfice/components/sidebar/NavigationSidebar.svelte";
     import GoalView from "@perfice/views/goal/GoalView.svelte";
     import GoalEditorView from "@perfice/views/goal/GoalEditorView.svelte";
-    import {routingNavigatorState} from "@perfice/model/ui/router.svelte";
+    import {routingNavigatorState} from "@perfice/model/ui/router.js";
     import TagsView from "@perfice/views/tag/TagsView.svelte";
     import {clearClosables} from "./model/ui/modal";
     import AnalyticsView from "@perfice/views/analytics/AnalyticsView.svelte";
@@ -20,6 +20,7 @@
     import ReflectionEditorView from "@perfice/views/reflection/ReflectionEditorView.svelte";
     import JournalSearchView from "@perfice/views/journal/JournalSearchView.svelte";
     import MobileDrawer from "@perfice/components/sidebar/drawer/MobileDrawer.svelte";
+    import GlobalReflectionModal from "@perfice/components/reflection/GlobalReflectionModal.svelte";
 
     const routes: Route[] = [
         {path: "/forms/(?<formId>.*)", component: FormEditorView},
@@ -43,13 +44,14 @@
 
     function onRouterRoute(r: Route) {
         clearClosables(); // Any overlays like modals don't matter if we move to a new route
-        routingNavigatorState.push(r.path.toString());
+        routingNavigatorState.update(v => [...v, r.path.toString()]);
         return r;
     }
 </script>
 
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
+    <GlobalReflectionModal/>
     <div class="flex main-container">
         <NavigationSidebar/>
         <MobileDrawer/>

@@ -3,6 +3,7 @@
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
     import {NOTIFICATION_WEEKDAYS, type StoredNotification} from "@perfice/model/notification/notification";
     import {formatTimestampHHMM} from "@perfice/util/time/format";
+    import {utcHhMmToLocal} from "@perfice/util/time/simple";
 
     let {notification, onEdit, onDelete}: {
         notification: StoredNotification,
@@ -11,7 +12,8 @@
     } = $props();
 
     let weekDayTitle = $derived(NOTIFICATION_WEEKDAYS.find(v => v.value == notification.weekDay)?.name ?? "");
-    let timeTitle = $derived(formatTimestampHHMM((notification.hour * 60 + notification.minutes) * 60 * 1000));
+    let [localHour, localMinutes] = $derived(utcHhMmToLocal(notification.hour, notification.minutes));
+    let timeTitle = $derived(`${localHour.toString().padStart(2, "0")}:${localMinutes.toString().padStart(2, "0")}`);
     let title = $derived(`${weekDayTitle} ${timeTitle}`);
 </script>
 

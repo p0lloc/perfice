@@ -6,7 +6,7 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {NOTIFICATION_WEEKDAYS, type StoredNotification} from "@perfice/model/notification/notification";
     import TimePicker from "@perfice/components/base/timePicker/TimePicker.svelte";
-    import {localHhMmToUtc} from "@perfice/util/time/simple";
+    import {localHhMmToUtc, utcHhMmToLocal} from "@perfice/util/time/simple";
 
     let modal: Modal;
 
@@ -36,10 +36,7 @@
         notification.minutes = utcMinutes;
     }
 
-    let [localHour, localMinutes] = $derived.by(() => {
-        let date = new Date(Date.UTC(1970, 0, 0, notification.hour, notification.minutes));
-        return [date.getHours(), date.getMinutes()]
-    });
+    let [localHour, localMinutes] = $derived(utcHhMmToLocal(notification.hour, notification.minutes));
 </script>
 
 <Modal type={ModalType.CONFIRM_CANCEL}

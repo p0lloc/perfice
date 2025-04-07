@@ -7,12 +7,13 @@
     import Fa from "svelte-fa";
     import type {Reflection} from "@perfice/model/reflection/reflection";
     import {goto} from "@mateothegreat/svelte5-router";
-    import {NEW_REFLECTION_ROUTE} from "@perfice/model/reflection/ui";
+    import {NEW_REFLECTION_ROUTE, openReflectionEvents} from "@perfice/model/reflection/ui";
     import HorizontalPlusButton from "@perfice/components/base/button/HorizontalPlusButton.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import GenericActionsCard from "@perfice/components/base/card/GenericActionsCard.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import ReflectionModal from "@perfice/components/reflection/modal/ReflectionModal.svelte";
+    import {publishToEventStore} from "@perfice/util/event";
 
     let deleteReflectionModal: GenericDeleteModal<Reflection>;
     let reflectionModal: ReflectionModal;
@@ -37,14 +38,13 @@
     }
 
     function onPlayReflection(reflection: Reflection) {
-        reflectionModal.open(reflection);
+        publishToEventStore(openReflectionEvents, reflection);
     }
 </script>
 
 <MobileTopBar title="Reflections"/>
 
 <GenericDeleteModal subject="this reflection" onDelete={onDeleteReflection} bind:this={deleteReflectionModal}/>
-<ReflectionModal bind:this={reflectionModal}/>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
     {#await $reflections}
         Loading...

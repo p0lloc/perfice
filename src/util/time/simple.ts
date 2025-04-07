@@ -34,12 +34,15 @@ export function getWeekNumber(date: Date): number {
 }
 
 export function localHhMmToUtc(hours: number, minutes: number): [number, number] {
-    let date = new Date(1970, 0, 0, hours, minutes);
+    let date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
     return [date.getUTCHours(), date.getUTCMinutes()];
 }
 
 export function utcHhMmToLocal(hours: number, minutes: number): [number, number] {
-    let date = new Date(Date.UTC(1970, 0, 0, hours, minutes));
+    let current = new Date();
+    let date = new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth(), current.getUTCDate(), hours, minutes));
     return [date.getHours(), date.getMinutes()];
 }
 

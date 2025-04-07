@@ -45,6 +45,9 @@ export interface StoredNotification {
     nativeId: number;
     entityId: string;
 
+    title: string;
+    body: string;
+
     hour: number;
     minutes: number;
     weekDay: number | null;
