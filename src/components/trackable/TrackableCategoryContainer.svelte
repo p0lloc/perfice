@@ -10,17 +10,19 @@
 
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
 
-    let {category, date, weekStart, onReorder, onEdit, onLog}: {
+    let {category, date, weekStart, onReorder, onEdit, onLog, onCreate}: {
         category: CategoryList<TrackableCategory, Trackable>,
         date: Date,
         weekStart: WeekStart,
         onReorder: (items: Trackable[]) => void,
+        onCreate: (categoryId: string | null) => void,
         onEdit: (t: Trackable) => void
         onLog: (t: Trackable) => void
     } = $props();
 
     async function createTrackable() {
-        await trackables.createTrackable(prompt("Name?") ?? "", category.category?.id ?? null);
+        onCreate(category.category?.id ?? null);
+        //await trackables.createTrackable(prompt("Name?") ?? "", category.category?.id ?? null);
     }
 
     function onFinalize(items: Trackable[]) {

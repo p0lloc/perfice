@@ -98,14 +98,17 @@ export class FormQuestionDataTypeRegistry {
 }
 
 export const questionDataTypeRegistry = new FormQuestionDataTypeRegistry();
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.NUMBER, new NumberFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.TEXT, new TextFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.DATE, new DateFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.TIME_ELAPSED, new TimeElapsedFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.DATE_TIME, new DateTimeFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.TIME_OF_DAY, new TimeOfDayFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.BOOLEAN, new BooleanFormQuestionDataType());
-questionDataTypeRegistry.registerDataType(FormQuestionDataType.HIERARCHY, new HierarchyFormQuestionDataType());
+
+export function registerDataTypes() {
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.NUMBER, new NumberFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.TEXT, new TextFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.DATE, new DateFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.TIME_ELAPSED, new TimeElapsedFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.DATE_TIME, new DateTimeFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.TIME_OF_DAY, new TimeOfDayFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.BOOLEAN, new BooleanFormQuestionDataType());
+    questionDataTypeRegistry.registerDataType(FormQuestionDataType.HIERARCHY, new HierarchyFormQuestionDataType());
+}
 
 //questionDataTypeRegistry.registerDataType(FormQuestionDataType.RICH_TEXT, new RichTextFormQuestionDataType());
 

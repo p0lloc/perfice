@@ -1,14 +1,25 @@
 import type {TrackableCollection} from "@perfice/db/collections";
 import {type VariableService} from "@perfice/services/variable/variable";
-import {type Trackable, TrackableCardType, type TrackableCategory} from "@perfice/model/trackable/trackable";
-import {type TextOrDynamic, type Variable, VariableTypeName} from "@perfice/model/variable/variable";
+import {
+    type Trackable,
+    type TrackableCardSettings,
+    TrackableCardType,
+    type TrackableCategory
+} from "@perfice/model/trackable/trackable";
+import {
+    type TextOrDynamic,
+    type Variable,
+    type VariableTypeDef,
+    VariableTypeName
+} from "@perfice/model/variable/variable";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import type {FormService} from "@perfice/services/form/form";
-import {FormQuestionDataType, FormQuestionDisplayType, type Form} from "@perfice/model/form/form";
+import {type Form} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
-import type {EditTrackableTallySettings, EditTrackableValueSettings} from "@perfice/model/trackable/ui";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
+import {parseTrackableSuggestion, type TrackableSuggestion} from "@perfice/model/trackable/suggestions";
+import {list} from "postcss";
 
 export interface TrackableEntityProvider {
     getTrackables(): Promise<Trackable[]>;
@@ -39,6 +50,59 @@ export class TrackableService implements TrackableEntityProvider {
         return this.collection.getTrackables();
     }
 
+    async createTrackableFromSuggestion(suggestion: TrackableSuggestion, categoryId: string | null = null): Promise<void> {
+        let [trackable, form] = parseTrackableSuggestion(suggestion);
+        await this.formService.createForm(form);
+        await this.createTrackable(suggestion.name, suggestion.icon, form, trackable, categoryId);
+    }
+
+    async createTrackable(name: string, icon: string, form: Form, card: TrackableCardSettings,
+                          categoryId: string | null = null): Promise<void> {
+
+        let trackableCount = await this.collection.count();
+        let cardSettings: TrackableCardSettings = {
+            cardSettings: card.cardSettings,
+            cardType: card.cardType
+        } as TrackableCardSettings;
+
+        const trackableId = crypto.randomUUID();
+        const dependencies: Record<string, string> = {
+            value: `t_${trackableId}_list`,
+            aggregate: `t_${trackableId}_aggregate`
+        }
+
+        let trackable: Trackable = {
+            id: trackableId,
+            name,
+            icon,
+            order: trackableCount, // Place the trackable at the end of the list
+            formId: form.id,
+            categoryId: categoryId,
+            ...cardSettings,
+            dependencies
+        };
+
+        await this.analyticsSettingsService.createAnalyticsSettingsFromForm(form.id, form.questions);
+
+        let listVariable: Variable = {
+            id: dependencies["value"],
+            type: this.createListVariableTypeDef(form.id, card),
+            name: ""
+        }
+
+        let aggregateVariable: Variable = {
+            id: dependencies["aggregate"],
+            type: this.createAggregateVariableTypeDef(card, dependencies),
+            name: ""
+        }
+
+        await this.variableService.createVariable(listVariable);
+        await this.variableService.createVariable(aggregateVariable);
+        await this.collection.createTrackable(trackable);
+        await this.observers.notifyObservers(EntityObserverType.CREATED, trackable);
+    }
+
+    /*
     async createTrackable(name: string, categoryId: string | null = null): Promise<void> {
         let trackableCount = await this.collection.count();
         let trackable: Trackable = {
@@ -118,15 +182,30 @@ export class TrackableService implements TrackableEntityProvider {
         await this.variableService.createVariable(aggregateVariable);
         await this.collection.createTrackable(trackable);
         await this.observers.notifyObservers(EntityObserverType.CREATED, trackable);
-    }
+    }*/
 
     async updateTrackable(trackable: Trackable) {
         let previous = await this.getTrackableById(trackable.id);
         if (previous == null) return;
 
         await this.updateTrackableForm(previous, trackable);
+        await this.updateTrackableVariables(trackable);
         await this.collection.updateTrackable(trackable);
         await this.observers.notifyObservers(EntityObserverType.UPDATED, trackable);
+    }
+
+    async updateTrackableVariables(trackable: Trackable) {
+        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
+        if (listVariable == null) return;
+
+        let aggregateVariable = this.variableService.getVariableById(trackable.dependencies["aggregate"]);
+        if (aggregateVariable == null) return;
+
+        listVariable.type = this.createListVariableTypeDef(trackable.formId, trackable);
+        aggregateVariable.type = this.createAggregateVariableTypeDef(trackable, trackable.dependencies);
+
+        await this.variableService.updateVariable(listVariable);
+        await this.variableService.updateVariable(aggregateVariable);
     }
 
     private async updateTrackableForm(previous: Trackable, trackable: Trackable) {
@@ -160,6 +239,18 @@ export class TrackableService implements TrackableEntityProvider {
         this.observers.removeObserver(type, callback);
     }
 
+    private extractFieldsFromRepresentation(representation: TextOrDynamic[]): Record<string, boolean> {
+        let fields: Record<string, boolean> = {};
+        for (let part of representation) {
+            if (!part.dynamic) continue;
+
+            fields[part.value] = true;
+        }
+
+        return fields;
+    }
+
+    /*
     async updateTrackableChartSettings(trackable: Trackable, aggregateType: AggregateType, field: string, color: string) {
         let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
         if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
@@ -187,18 +278,6 @@ export class TrackableService implements TrackableEntityProvider {
         await this.variableService.updateVariable(listVariable);
         await this.variableService.updateVariable(chartVariable);
     }
-
-    private extractFieldsFromRepresentation(representation: TextOrDynamic[]): Record<string, boolean> {
-        let fields: Record<string, boolean> = {};
-        for (let part of representation) {
-            if (!part.dynamic) continue;
-
-            fields[part.value] = true;
-        }
-
-        return fields;
-    }
-
     async updateTrackableValueSettings(trackable: Trackable, cardSettings: EditTrackableValueSettings) {
         let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
         if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
@@ -211,17 +290,6 @@ export class TrackableService implements TrackableEntityProvider {
 
         await this.variableService.updateVariable(listVariable);
         trackable.cardSettings = cardSettings;
-    }
-
-    async reorderTrackables(category: TrackableCategory | null, trackables: Trackable[]) {
-        for (let i = 0; i < trackables.length; i++) {
-            trackables[i].order = i;
-
-            // Category might have changed, update it
-            trackables[i].categoryId = category?.id ?? null;
-        }
-
-        await this.collection.updateTrackables(trackables);
     }
 
     async updateTrackableTallySettings(trackable: Trackable, cardSettings: EditTrackableTallySettings) {
@@ -238,5 +306,68 @@ export class TrackableService implements TrackableEntityProvider {
 
         await this.variableService.updateVariable(listVariable);
         trackable.cardSettings = cardSettings;
+    }*/
+
+    async reorderTrackables(category: TrackableCategory | null, trackables: Trackable[]) {
+        for (let i = 0; i < trackables.length; i++) {
+            trackables[i].order = i;
+
+            // Category might have changed, update it
+            trackables[i].categoryId = category?.id ?? null;
+        }
+
+        await this.collection.updateTrackables(trackables);
     }
+
+
+    private createListVariableTypeDef(formId: string, card: TrackableCardSettings): VariableTypeDef {
+        switch (card.cardType) {
+            case TrackableCardType.CHART: {
+                let cardSettings = card.cardSettings;
+                return {
+                    type: VariableTypeName.LIST,
+                    value: new ListVariableType(formId, {
+                        [cardSettings.field]: false
+                    }, [])
+                }
+            }
+            case TrackableCardType.TALLY: {
+                let cardSettings = card.cardSettings;
+                return {
+                    type: VariableTypeName.LIST,
+                    value: new ListVariableType(formId, {
+                        [cardSettings.field]: false
+                    }, [])
+                }
+            }
+            case TrackableCardType.VALUE: {
+                let cardSettings = card.cardSettings;
+                let fields = this.extractFieldsFromRepresentation(cardSettings.representation);
+                return {
+                    type: VariableTypeName.LIST,
+                    value: new ListVariableType(formId, fields, [])
+                }
+            }
+        }
+    }
+
+    private createAggregateVariableTypeDef(card: TrackableCardSettings, dependencies: Record<string, string>): VariableTypeDef {
+        let listVariableId = dependencies["value"];
+        switch (card.cardType) {
+            case TrackableCardType.CHART: {
+                let cardSettings = card.cardSettings;
+                return {
+                    type: VariableTypeName.AGGREGATE,
+                    value: new AggregateVariableType(cardSettings.aggregateType, listVariableId, cardSettings.field)
+                }
+            }
+            default: {
+                return {
+                    type: VariableTypeName.AGGREGATE,
+                    value: new AggregateVariableType(AggregateType.SUM, listVariableId, "")
+                }
+            }
+        }
+    }
+
 }

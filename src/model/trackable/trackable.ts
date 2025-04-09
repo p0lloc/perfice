@@ -1,4 +1,5 @@
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
+import type {AggregateType} from "@perfice/services/variable/types/aggregate";
 
 export enum TrackableCardType {
     CHART = "CHART",
@@ -22,12 +23,18 @@ export type TrackableCardSettings =
     | CS<TrackableCardType.VALUE, TrackableValueSettings>
     | CS<TrackableCardType.TALLY, TrackableTallySettings>;
 
+export interface CS<K extends TrackableCardType, V> {
+    cardType: K;
+    cardSettings: V;
+}
 
 export interface TrackableTallySettings {
-    // Question id is determined from the variable
+    field: string;
 }
 
 export interface TrackableChartSettings {
+    aggregateType: AggregateType;
+    field: string;
     color: string;
 }
 
@@ -43,19 +50,17 @@ export type TrackableValueSettings = {
 export type TrackableValueSettingValues = TV<TrackableValueType.LATEST, LatestTrackableValueSettings>
     | TV<TrackableValueType.TABLE, TableTrackableValueSettings>;
 
-export interface LatestTrackableValueSettings {}
+export interface LatestTrackableValueSettings {
+}
 
-export interface TableTrackableValueSettings {}
+export interface TableTrackableValueSettings {
+}
 
 export interface TV<K extends TrackableValueType, V> {
     type: K;
     settings: V;
 }
 
-export interface CS<K extends TrackableCardType, V> {
-    cardType: K;
-    cardSettings: V;
-}
 
 export interface TrackableCategory {
     id: string;

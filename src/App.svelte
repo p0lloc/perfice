@@ -9,7 +9,7 @@
     import NavigationSidebar from "@perfice/components/sidebar/NavigationSidebar.svelte";
     import GoalView from "@perfice/views/goal/GoalView.svelte";
     import GoalEditorView from "@perfice/views/goal/GoalEditorView.svelte";
-    import {routingNavigatorState} from "@perfice/model/ui/router.js";
+    import {routingNavigatorState} from "@perfice/model/ui/router.svelte.js";
     import TagsView from "@perfice/views/tag/TagsView.svelte";
     import {clearClosables} from "./model/ui/modal";
     import AnalyticsView from "@perfice/views/analytics/AnalyticsView.svelte";
@@ -44,7 +44,7 @@
 
     function onRouterRoute(r: Route) {
         clearClosables(); // Any overlays like modals don't matter if we move to a new route
-        routingNavigatorState.update(v => [...v, r.path.toString()]);
+        routingNavigatorState.push(r.path.toString());
         return r;
     }
 </script>

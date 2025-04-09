@@ -22,7 +22,7 @@ import {GroupedJournal, PaginatedJournal} from "@perfice/stores/journal/grouped"
 import {GoalService} from "@perfice/services/goal/goal";
 import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
 import {GoalValueStore} from "@perfice/stores/goal/value";
-import {routingNavigatorState} from './model/ui/router.js';
+import {routingNavigatorState} from './model/ui/router.svelte.js';
 import {goto} from '@mateothegreat/svelte5-router';
 import {Capacitor} from '@capacitor/core';
 import {VariableEditProvider} from "@perfice/stores/variable/edit";
@@ -78,6 +78,7 @@ import {LocalNotifications, Weekday} from "@capacitor/local-notifications";
 import {NotificationService} from "@perfice/services/notification/notification";
 import {setupServiceWorker} from "@perfice/swSetup";
 import {NotificationType} from "@perfice/model/notification/notification";
+import {registerDataTypes} from "@perfice/model/form/data";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -231,6 +232,8 @@ export function trackableDetailedAnalytics(id: string, questionId: string | null
 export function tagDetailedAnalytics(id: string, timeScope: SimpleTimeScopeType) {
     return TagDetailedAnalytics(id, timeScope, analyticsService);
 }
+
+registerDataTypes();
 
 (async () => {
     await variables.get();

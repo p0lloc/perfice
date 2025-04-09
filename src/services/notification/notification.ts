@@ -1,9 +1,9 @@
-import type {NotificationCollection} from "@perfice/db/collections";
-import {NotificationType, type StoredNotification} from "@perfice/model/notification/notification";
-import type {WeekStart} from "@perfice/model/variable/time/time";
-import {Capacitor} from "@capacitor/core";
-import {NativeNotificationScheduler} from "@perfice/services/notification/native";
-import {WebNotificationScheduler} from "@perfice/services/notification/web";
+import type { NotificationCollection } from "@perfice/db/collections";
+import { NotificationType, type StoredNotification } from "@perfice/model/notification/notification";
+import type { WeekStart } from "@perfice/model/variable/time/time";
+import { Capacitor } from "@capacitor/core";
+import { NativeNotificationScheduler } from "@perfice/services/notification/native";
+import { WebNotificationScheduler } from "@perfice/services/notification/web";
 
 export interface NotificationScheduler {
     scheduleStoredNotifications(notifications: StoredNotification[]): Promise<void>;
@@ -55,7 +55,7 @@ export class NotificationService {
     }
 
     async createNotification(type: NotificationType, entityId: string, title: string, body: string,
-                             hour: number, minutes: number, weekDay: number | null): Promise<StoredNotification> {
+        hour: number, minutes: number, weekDay: number | null): Promise<StoredNotification> {
 
         let entity: StoredNotification = {
             id: crypto.randomUUID(),

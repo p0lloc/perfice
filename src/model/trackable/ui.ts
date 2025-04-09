@@ -1,15 +1,13 @@
 import type {Form, FormQuestion} from "../form/form";
 import {
-    type CS,
-    type Trackable,
+    type Trackable, type TrackableCardSettings,
     TrackableCardType,
     type TrackableCategory,
-    type TrackableValueSettings,
     TrackableValueType,
 } from "./trackable";
 import {AggregateType} from "@perfice/services/variable/types/aggregate";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
-import {type DisplayValue, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 
 export enum TrackableEditViewType {
     GENERAL = "GENERAL",
@@ -20,26 +18,15 @@ export interface EditTrackableState {
     trackable: Trackable;
     categories: TrackableCategory[];
     form: Form;
-    cardState: EditTrackableCardState;
 }
 
-export type EditTrackableCardState =
-    CS<TrackableCardType.CHART, EditTrackableChartSettings>
-    | CS<TrackableCardType.VALUE, EditTrackableValueSettings>
-    | CS<TrackableCardType.TALLY, EditTrackableTallySettings>;
-
-export interface EditTrackableChartSettings {
-    aggregateType: AggregateType;
-    field: string;
-    color: string;
-}
 
 export const TRACKABLE_VALUE_TYPES = [
     {value: TrackableValueType.TABLE, name: "Table"},
     {value: TrackableValueType.LATEST, name: "Latest"},
 ];
 
-export function getDefaultTrackableCardState(cardType: TrackableCardType, availableQuestions: FormQuestion[]): EditTrackableCardState {
+export function getDefaultTrackableCardState(cardType: TrackableCardType, availableQuestions: FormQuestion[]): TrackableCardSettings {
     switch (cardType) {
         case TrackableCardType.CHART:
             return {
@@ -68,16 +55,11 @@ export function getDefaultTrackableCardState(cardType: TrackableCardType, availa
             return {
                 cardType: TrackableCardType.TALLY,
                 cardSettings: {
-                    questionId: availableQuestions.length > 0 ? availableQuestions[0].id : ""
+                    field: availableQuestions.length > 0 ? availableQuestions[0].id : ""
                 }
             };
     }
 }
-
-export type EditTrackableValueSettings = TrackableValueSettings;
-export type EditTrackableTallySettings = {
-    questionId: string;
-};
 
 export function formatAnswersIntoRepresentation(answers: Record<string, PrimitiveValue>, representation: TextOrDynamic[]): string {
     let result: string = "";
@@ -87,7 +69,7 @@ export function formatAnswersIntoRepresentation(answers: Record<string, Primitiv
             if (answerValue == null) return "Missing value";
 
             let display;
-            if(answerValue.type == PrimitiveValueType.DISPLAY) {
+            if (answerValue.type == PrimitiveValueType.DISPLAY) {
                 let displayValue = answerValue.value;
                 display = displayValue.display?.value ?? displayValue.value;
             } else {

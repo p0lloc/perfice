@@ -6,7 +6,7 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import {faBars, faRuler} from "@fortawesome/free-solid-svg-icons";
+    import {faRuler} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
@@ -14,11 +14,14 @@
     import {subscribeToEventStore} from "@perfice/util/event.js";
     import EntryImportResultModal from "@perfice/components/import/EntryImportResultModal.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
-    import {onMount} from "svelte";
     import {dateToMidnight} from "@perfice/util/time/simple.js";
+    import CreateTrackableModal from "@perfice/components/trackable/modals/create/CreateTrackableModal.svelte";
+    import {onMount} from "svelte";
+    import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
+    let createTrackableModal: CreateTrackableModal;
     let importResultModal: EntryImportResultModal;
     let deleteTrackableModal: GenericDeleteModal<Trackable>;
 
@@ -56,6 +59,14 @@
         trackables.deleteTrackable(trackable);
     }
 
+    function onCreateTrackable(categoryId: string | null) {
+        createTrackableModal.open(categoryId);
+    }
+
+    function onSuggestionSelected(categoryId: string | null, suggestion: TrackableSuggestion) {
+        trackables.createTrackableFromSuggestion(suggestion, categoryId);
+    }
+
     $effect(() =>
         subscribeToEventStore($entryImportEvents, entryImportEvents, (e) =>
             importResultModal.open(e),
@@ -73,6 +84,7 @@
         onStartDelete={onStartDeleteTrackable}
         bind:this={editTrackableModal}
 />
+<CreateTrackableModal bind:this={createTrackableModal} onSelect={onSuggestionSelected}/>
 <GenericDeleteModal
         subject="this trackable"
         onDelete={onDeleteTrackable}
@@ -91,6 +103,7 @@
     <TrackableList
             date={$trackableDate}
             weekStart={$weekStart}
+            onCreate={onCreateTrackable}
             onEdit={onEditTrackable}
             onLog={onLogTrackable}
     />

@@ -12,7 +12,7 @@ import {
     faBicycle,
     faBook,
     faBowlRice,
-    faBrain,
+    faBrain, faBullseye,
     faCandyCane,
     faCar,
     faCircle,
@@ -57,6 +57,7 @@ import {
     faTemperatureHalf,
     faWeightScale,
     faWineGlass,
+    faYinYang,
     type IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -135,5 +136,7 @@ export const ICONS: Record<string, IconDefinition> = {
     "chicken": faDrumstickBite,
     "bacon": faBacon,
     "cow": faCow,
+    "yin_yang": faYinYang,
+    "bullseye": faBullseye,
 }
 

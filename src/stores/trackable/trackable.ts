@@ -4,13 +4,13 @@ import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
-import type {EditTrackableCardState, EditTrackableState} from "@perfice/model/trackable/ui";
+import type {EditTrackableState} from "@perfice/model/trackable/ui";
 import {forms, journal, trackableCategories, variables} from "@perfice/app";
 import {EntityObserverType} from "@perfice/services/observer";
-import {VariableTypeName} from "@perfice/model/variable/variable";
 import {type JournalEntryValue, pDisplay, pNumber, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {resolvedPromise} from "@perfice/util/promise";
+import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -35,8 +35,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         this.set(this.trackableService.getTrackables());
     }
 
-    async createTrackable(name: string, categoryId: string | null = null): Promise<void> {
-        await this.trackableService.createTrackable(name, categoryId);
+    async createTrackableFromSuggestion(suggestion: TrackableSuggestion, categoryId: string | null) {
+        await this.trackableService.createTrackableFromSuggestion(suggestion, categoryId);
     }
 
     async updateTrackable(trackable: Trackable): Promise<void> {
@@ -56,21 +56,6 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
     }
 
     async updateTrackableFromState(editState: EditTrackableState) {
-        let cardState = editState.cardState;
-        editState.trackable.cardType = cardState.cardType;
-        switch (cardState.cardType) {
-            case TrackableCardType.CHART:
-                await this.trackableService.updateTrackableChartSettings(editState.trackable,
-                    cardState.cardSettings.aggregateType, cardState.cardSettings.field, cardState.cardSettings.color);
-                break;
-            case TrackableCardType.VALUE:
-                await this.trackableService.updateTrackableValueSettings(editState.trackable, cardState.cardSettings);
-                break;
-            case TrackableCardType.TALLY:
-                await this.trackableService.updateTrackableTallySettings(editState.trackable, cardState.cardSettings);
-                break;
-        }
-
         await this.updateTrackable(editState.trackable);
     }
 
@@ -81,6 +66,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
 
         let categories = await trackableCategories.get();
 
+        /*
         let cardState: EditTrackableCardState;
         switch (trackable.cardType) {
             case TrackableCardType.CHART: {
@@ -131,27 +117,19 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
                 };
                 break;
             }
-        }
+        }*/
 
         return {
             trackable,
             categories,
             form,
-            cardState
         }
     }
 
     private async getTallyTrackableQuestion(trackable: Trackable): Promise<string | null> {
-        let listVariable = await variables.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null) return null;
+        if (trackable.cardType != TrackableCardType.TALLY) return null;
 
-        let type = listVariable.type;
-        if (type.type != VariableTypeName.LIST) return null;
-
-        let fieldIds = Object.keys(type.value.getFields());
-        if (fieldIds.length != 1) return null;
-
-        return fieldIds[0];
+        return trackable.cardSettings.field;
     }
 
     async deleteTrackable(trackable: Trackable) {

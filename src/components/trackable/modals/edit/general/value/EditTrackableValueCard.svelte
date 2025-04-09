@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {type EditTrackableValueSettings, TRACKABLE_VALUE_TYPES} from "@perfice/model/trackable/ui";
+    import {TRACKABLE_VALUE_TYPES} from "@perfice/model/trackable/ui";
     import type {FormQuestion} from "@perfice/model/form/form";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
@@ -10,12 +10,12 @@
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
-    import type {TrackableValueType} from "@perfice/model/trackable/trackable";
+    import type {TrackableValueSettings, TrackableValueType} from "@perfice/model/trackable/trackable";
 
     let {cardSettings, availableQuestions, onChange}: {
-        cardSettings: EditTrackableValueSettings,
+        cardSettings: TrackableValueSettings,
         availableQuestions: FormQuestion[],
-        onChange: (v: EditTrackableValueSettings) => void
+        onChange: (v: TrackableValueSettings) => void
     } = $props();
 
     let editMultiple = $state(false);

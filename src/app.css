@@ -18,8 +18,10 @@
 
 /* For IE, Edge and Firefox */
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .icon-button {
@@ -45,6 +47,7 @@ select {
 .flex-center {
     @apply flex justify-center items-center;
 }
+
 .flex-col-center {
     @apply flex flex-col justify-center items-center;
 }
@@ -54,7 +57,7 @@ select {
 }
 
 .input {
-    @apply block disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5 bg-gray-50 text-gray-900 border border-gray-300  text-sm rounded-lg;
+    @apply block disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5 bg-gray-50 text-gray-900 border border-gray-300 text-sm rounded-lg;
 }
 
 input[type="checkbox"] {
@@ -87,7 +90,9 @@ input[type="color"]::-webkit-color-swatch {
 }
 
 
-input[type="text"], input[type="number"], textarea {
+input[type="text"],
+input[type="number"],
+textarea {
     @apply border py-1 px-2 rounded-md;
 }
 

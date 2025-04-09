@@ -4,21 +4,23 @@
     import Fa from "svelte-fa";
     import type {Snippet} from "svelte";
 
-    let {icon, title, description, class: className = '', suffix}: {
+    let {icon, title, description, class: className = '', iconClass = 'w-8', suffix}: {
         icon?: IconDefinition,
         title: string,
         description: string,
+        iconClass?: string,
         class?: string,
         suffix?: Snippet
     } = $props();
 </script>
 
 <div class="border p-4 flex justify-between gap-4 w-full rounded-xl {className} bg-white">
-    <div class="flex items-center gap-2"><span class="w-8">
-        {#if icon != null}
-            <Fa icon={icon} size="2.0x"/>
-        {/if}
-    </span>
+    <div class="flex items-center gap-2">
+        <span class={iconClass}>
+            {#if icon != null}
+                <Fa icon={icon} size="2.0x"/>
+            {/if}
+        </span>
         <div class="text-left">
             <h2 class="text-xl font-bold">{title}</h2>
             <p>{description}</p>

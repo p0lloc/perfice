@@ -6,9 +6,10 @@
     import LineButton from "@perfice/components/base/button/LineButton.svelte";
     import type {CategoryList} from "@perfice/util/category";
 
-    let {date, weekStart, onEdit, onLog}: {
+    let {date, weekStart, onEdit, onLog, onCreate}: {
         date: Date,
         weekStart: WeekStart,
+        onCreate: (categoryId: string | null) => void,
         onEdit: (t: Trackable) => void,
         onLog: (t: Trackable) => void
     } = $props();
@@ -29,7 +30,7 @@
         {#each categories as category (category.category?.id)}
             {#if category.items.length > 0 || (categories.length > 0 && categories[0].items.length === 0)}
                 <TrackableCategoryContainer {date} category={category} {weekStart}
-                                            {onEdit} {onLog}
+                                            {onEdit} {onLog} {onCreate}
                                             onReorder={(items) => onReorder(category, items)}/>
             {/if}
         {/each}

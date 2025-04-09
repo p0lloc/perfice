@@ -44,7 +44,7 @@
 
     const SIZE_CLASSES: Record<ModalSize, string> = {
         [ModalSize.SMALL]: "2xl:w-[20%] lg:w-[40%] md:w-[50%]",
-        [ModalSize.MEDIUM]: "md:w-[40%]",
+        [ModalSize.MEDIUM]: "2xl:w-[40%] md:w-[60%] ",
         [ModalSize.LARGE]: "md:w-[50%]",
     };
 

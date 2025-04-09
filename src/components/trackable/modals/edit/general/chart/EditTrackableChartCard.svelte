@@ -1,13 +1,13 @@
 <script lang="ts">
     import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
     import {faBrush, faCalculator, faQuestion} from "@fortawesome/free-solid-svg-icons";
-    import type {EditTrackableChartSettings} from "@perfice/model/trackable/ui";
     import type {FormQuestion} from "@perfice/model/form/form";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {AggregateType} from "@perfice/services/variable/types/aggregate";
+    import type {TrackableChartSettings} from "@perfice/model/trackable/trackable";
 
     let {cardSettings, availableQuestions, onChange}: {
-        cardSettings: EditTrackableChartSettings,
+        cardSettings: TrackableChartSettings,
         availableQuestions: FormQuestion[]
         onChange: (settings: any) => void
     } = $props();
@@ -24,7 +24,7 @@
         }
     }));
 
-    function onColorChange(e: Event & {currentTarget: HTMLInputElement}) {
+    function onColorChange(e: Event & { currentTarget: HTMLInputElement }) {
         onChange({
             ...cardSettings,
             color: e.currentTarget.value

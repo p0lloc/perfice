@@ -14,7 +14,7 @@
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import type {Tag} from "@perfice/model/tag/tag";
     import DynamicInput from "@perfice/components/base/dynamic/DynamicInput.svelte";
-    import {getCurrentRoute, routingNavigatorState} from "@perfice/model/ui/router";
+    import {getCurrentRoute, routingNavigatorState} from "@perfice/model/ui/router.svelte";
 
     function hierarchyOptionToInputOption(
         option: HierarchyOption,
@@ -172,7 +172,7 @@
 
     const VISIBLE_ROUTES = ["/", "/trackables", "/tags", "/goals"];
 
-    let visible = $derived(VISIBLE_ROUTES.includes(getCurrentRoute($routingNavigatorState)));
+    let visible = $derived(VISIBLE_ROUTES.includes(getCurrentRoute(routingNavigatorState)));
 </script>
 
 {#if visible}

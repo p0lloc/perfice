@@ -26,5 +26,5 @@
     <EditTrackableCategory categories={editState.categories} categoryId={editState.trackable.categoryId}
                            onChange={onCategoryChange}/>
 
-    <EditTrackableCard bind:cardState={editState.cardState} availableQuestions={editState.form.questions}/>
+    <EditTrackableCard bind:editState availableQuestions={editState.form.questions}/>
 </div>
