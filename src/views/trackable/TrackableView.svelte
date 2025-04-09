@@ -18,6 +18,7 @@
     import CreateTrackableModal from "@perfice/components/trackable/modals/create/CreateTrackableModal.svelte";
     import {onMount} from "svelte";
     import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
+    import type {FormQuestionDataType} from "@perfice/model/form/form";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
@@ -67,6 +68,10 @@
         trackables.createTrackableFromSuggestion(suggestion, categoryId);
     }
 
+    function onSingleValue(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) {
+        trackables.createSingleValueTrackable({categoryId: categoryId, name: name, icon: icon, type: type});
+    }
+
     $effect(() =>
         subscribeToEventStore($entryImportEvents, entryImportEvents, (e) =>
             importResultModal.open(e),
@@ -84,7 +89,7 @@
         onStartDelete={onStartDeleteTrackable}
         bind:this={editTrackableModal}
 />
-<CreateTrackableModal bind:this={createTrackableModal} onSelect={onSuggestionSelected}/>
+<CreateTrackableModal bind:this={createTrackableModal} onSelectSuggestion={onSuggestionSelected} onSingleValue={onSingleValue}/>
 <GenericDeleteModal
         subject="this trackable"
         onDelete={onDeleteTrackable}

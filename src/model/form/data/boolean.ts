@@ -1,6 +1,7 @@
 import type {FormQuestionDataSettings, FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pBoolean, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
+import {faCheck, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface BooleanFormQuestionDataSettings {
 }
@@ -20,6 +21,14 @@ export class BooleanFormQuestionDataType implements FormQuestionDataTypeDefiniti
 
     getPrimitiveType(): PrimitiveValueType {
         return PrimitiveValueType.BOOLEAN;
+    }
+
+    getName(): string {
+        return "True/false";
+    }
+
+    getIcon(): IconDefinition {
+        return faCheck;
     }
 
     serialize(value: PrimitiveValue) {

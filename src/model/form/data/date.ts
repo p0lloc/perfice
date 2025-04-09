@@ -2,6 +2,7 @@ import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNull, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
 import {formatDateYYYYMMDD} from "@perfice/util/time/format";
+import {faCalendar, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DateFormQuestionDataSettings {
 }
@@ -19,6 +20,14 @@ export class DateFormQuestionDataType implements FormQuestionDataTypeDefinition<
     getDefaultValue(): string {
         // TODO: do we want to pass in date to getDefaultValue so we can show past dates if user is logging for one of them?
         return formatDateYYYYMMDD(new Date());
+    }
+
+    getName(): string {
+        return "Date";
+    }
+
+    getIcon(): IconDefinition {
+        return faCalendar;
     }
 
     getPrimitiveType(): PrimitiveValueType {

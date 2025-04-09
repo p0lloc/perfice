@@ -24,7 +24,7 @@
 </script>
 
 <TitledCard
-        class=""
+        class="bg-white"
         title="Avg"
         icon={faArrowDown}
         description={formatValueAsDataType(analytics.average, dataType)}
@@ -38,7 +38,6 @@
 {/snippet}
 
 <CardButton
-        class="rounded-xl"
         title="Max"
         onClick={showMax}
         icon={faArrowUp}
@@ -49,7 +48,6 @@
     {/snippet}
 </CardButton>
 <CardButton
-        class="rounded-xl"
         title="Min"
         onClick={showMin}
         icon={faArrowDown}

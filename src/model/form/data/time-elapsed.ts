@@ -2,6 +2,7 @@ import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
 import {formatTimeElapsed, formatTimestampHHMM} from "@perfice/util/time/format";
+import {faStopwatch, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface TimeElapsedFormQuestionDataSettings {
 }
@@ -22,6 +23,14 @@ export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefi
 
     getDefaultValue(): number {
         return 0;
+    }
+
+    getName(): string {
+        return "Time elapsed";
+    }
+
+    getIcon(): IconDefinition {
+        return faStopwatch;
     }
 
     getPrimitiveType(): PrimitiveValueType {

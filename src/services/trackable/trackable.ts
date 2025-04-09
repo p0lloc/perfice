@@ -4,7 +4,7 @@ import {
     type Trackable,
     type TrackableCardSettings,
     TrackableCardType,
-    type TrackableCategory
+    type TrackableCategory, TrackableValueType
 } from "@perfice/model/trackable/trackable";
 import {
     type TextOrDynamic,
@@ -15,11 +15,11 @@ import {
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import type {FormService} from "@perfice/services/form/form";
-import {type Form} from "@perfice/model/form/form";
+import {type Form, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 import {parseTrackableSuggestion, type TrackableSuggestion} from "@perfice/model/trackable/suggestions";
-import {list} from "postcss";
+import {questionDataTypeRegistry} from "@perfice/model/form/data";
 
 export interface TrackableEntityProvider {
     getTrackables(): Promise<Trackable[]>;
@@ -54,6 +54,41 @@ export class TrackableService implements TrackableEntityProvider {
         let [trackable, form] = parseTrackableSuggestion(suggestion);
         await this.formService.createForm(form);
         await this.createTrackable(suggestion.name, suggestion.icon, form, trackable, categoryId);
+    }
+
+    async createSingleValueTrackable(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) {
+        const mainQuestionId = crypto.randomUUID();
+
+        let dataSettings = {
+            dataType: type,
+            dataSettings: questionDataTypeRegistry.getDefaultValue(type)
+        }
+
+        let form: Form = {
+            id: crypto.randomUUID(),
+            name,
+            icon,
+            snapshotId: crypto.randomUUID(),
+            format: [
+                {
+                    dynamic: true,
+                    value: mainQuestionId
+                }
+            ],
+            questions: [
+                {
+                    id: mainQuestionId,
+                    name: name,
+                    unit: null,
+                    displayType: FormQuestionDisplayType.INPUT,
+                    displaySettings: {},
+                    ...dataSettings
+                }
+            ]
+        }
+
+        await this.formService.createForm(form);
+        await this.createTrackable(name, icon, form, this.createSingleValueCardSettings(type, mainQuestionId), categoryId);
     }
 
     async createTrackable(name: string, icon: string, form: Form, card: TrackableCardSettings,
@@ -370,4 +405,32 @@ export class TrackableService implements TrackableEntityProvider {
         }
     }
 
+    private createSingleValueCardSettings(type: FormQuestionDataType, mainQuestionId: string): TrackableCardSettings {
+        switch(type){
+            case FormQuestionDataType.NUMBER:
+            case FormQuestionDataType.TIME_ELAPSED:
+                return {
+                    cardType: TrackableCardType.CHART,
+                    cardSettings: {
+                        aggregateType: AggregateType.SUM,
+                        field: mainQuestionId,
+                        color: "#ff0000"
+                    }
+                }
+            default:
+                return {
+                    cardType: TrackableCardType.VALUE,
+                    cardSettings: {
+                        representation: [
+                            {
+                                dynamic: true,
+                                value: mainQuestionId
+                            }
+                        ],
+                        type: TrackableValueType.TABLE,
+                        settings: {}
+                    }
+                }
+        }
+    }
 }

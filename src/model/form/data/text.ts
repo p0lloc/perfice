@@ -1,6 +1,7 @@
 import type {FormQuestionDataTypeDefinition} from "../data";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
+import {faFont, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface TextFormQuestionDataSettings {
     minLength: number | null;
@@ -18,6 +19,14 @@ export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<
 
     getDefaultValue(): string {
         return "";
+    }
+
+    getName(): string {
+        return "Text";
+    }
+
+    getIcon(): IconDefinition {
+        return faFont;
     }
 
     deserialize(value: string): PrimitiveValue {

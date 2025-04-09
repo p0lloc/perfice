@@ -2,6 +2,7 @@ import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {numberToMaxDecimals} from "@perfice/util/math";
+import {faHashtag, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface NumberFormQuestionDataSettings {
     min: number | null;
@@ -19,6 +20,14 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
         }
 
         return null;
+    }
+
+    getName(): string {
+        return "Number";
+    }
+
+    getIcon(): IconDefinition {
+        return faHashtag;
     }
 
     getDefaultSettings(): NumberFormQuestionDataSettings {

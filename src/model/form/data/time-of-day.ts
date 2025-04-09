@@ -2,6 +2,7 @@ import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {formatTimestampHHMM} from "@perfice/util/time/format";
+import {faCalendar, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface TimeOfDayFormQuestionDataSettings {
 }
@@ -21,6 +22,14 @@ export class TimeOfDayFormQuestionDataType implements FormQuestionDataTypeDefini
 
     getPrimitiveType(): PrimitiveValueType {
         return PrimitiveValueType.NUMBER;
+    }
+
+    getName(): string {
+        return "Time of day";
+    }
+
+    getIcon(): IconDefinition {
+        return faCalendar;
     }
 
     serialize(value: PrimitiveValue) {

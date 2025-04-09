@@ -10,6 +10,7 @@ import {type TimeElapsedFormQuestionDataSettings, TimeElapsedFormQuestionDataTyp
 import {type TimeOfDayFormQuestionDataSettings, TimeOfDayFormQuestionDataType} from "./data/time-of-day";
 import {prettyPrintPrimitive, type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
 import type {ExportedPrimitive} from "@perfice/services/export/export";
+import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export type FormQuestionDataSettings =
     DataDef<FormQuestionDataType.TEXT, TextFormQuestionDataSettings>
@@ -59,6 +60,10 @@ export interface FormQuestionDataTypeDefinition<V, S> {
     // Returns a list of display types that can be used to display this data
     getSupportedDisplayTypes(): FormQuestionDisplayType[];
 
+    getName(): string;
+
+    getIcon(): IconDefinition;
+
     export(value: PrimitiveValue): ExportedPrimitive | null;
 
     import(value: ExportedPrimitive): PrimitiveValue | null;
@@ -94,6 +99,10 @@ export class FormQuestionDataTypeRegistry {
         }
 
         return null;
+    }
+
+    getDefinitions(): [string, FormQuestionDataTypeDefinition<any, any>][] {
+        return this.types.entries().toArray();
     }
 }
 

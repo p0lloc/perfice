@@ -2,6 +2,7 @@ import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pList, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
 import {type ExportedPrimitive, exportPrimitive, importPrimitive} from "@perfice/services/export/export";
+import {faFolderTree, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface HierarchyOption {
     id: string;
@@ -96,6 +97,14 @@ export class HierarchyFormQuestionDataType implements FormQuestionDataTypeDefini
                 ]
             }
         };
+    }
+
+    getName(): string {
+        return "Hierarchy";
+    }
+
+    getIcon(): IconDefinition {
+        return faFolderTree;
     }
 
     getDefaultValue(settings: HierarchyFormQuestionDataSettings): PrimitiveValue[] {
