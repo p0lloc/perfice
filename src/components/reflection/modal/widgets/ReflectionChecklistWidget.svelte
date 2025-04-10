@@ -4,9 +4,8 @@
         ReflectionChecklistWidgetSettings
     } from "@perfice/model/reflection/widgets/checklist";
     import ChecklistWidget from "@perfice/components/sharedWidgets/checklist/ChecklistWidget.svelte";
-    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import type {ChecklistData} from "@perfice/stores/sharedWidgets/checklist/checklist";
-    import type {ChecklistConditionType} from "@perfice/model/sharedWidgets/checklist/checklist";
+    import {updateIdentifiedInArray} from "@perfice/util/array";
 
     let {settings, state: checklistState, onChange, dependencies}: {
         settings: ReflectionChecklistWidgetSettings,
@@ -19,22 +18,24 @@
         return true;
     }
 
-    async function onCheck(data: ChecklistData) {
-        onChange({
-            ...checklistState,
-            data: [...checklistState.data, data]
-        });
-    }
-
-    async function onUncheck(type: ChecklistConditionType, entryId: string) {
-        onChange({
-            ...checklistState,
-            data: checklistState.data.filter(v => v.type != type || v.data.entryId != entryId)
-        })
+    async function updateOrAddData(data: ChecklistData) {
+        let existing = checklistState.data.find(v => v.id == data.id);
+        if(existing != null){
+            onChange({
+                ...checklistState,
+                data: updateIdentifiedInArray(checklistState.data, data)
+            })
+        } else {
+            onChange({
+                ...checklistState,
+                data: [...checklistState.data, data]
+            })
+        }
     }
 
 </script>
 
+{JSON.stringify(checklistState)}
 <ChecklistWidget date={new Date()} {settings} {dependencies}
-                 extraData={$state.snapshot(checklistState.data)} {onCheck}
-                 {onUncheck}/>
+                 extraData={$state.snapshot(checklistState.data)} onUncheck={updateOrAddData}
+                 onCheck={updateOrAddData}/>

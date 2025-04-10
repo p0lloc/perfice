@@ -27,6 +27,10 @@
 
     function onSettingsChange(settings: any) {
         action.widget.settings = settings;
+        action.onChange({
+            ...action.widget,
+            settings
+        });
     }
 
     const RendererComponent = $derived(RENDERERS[action.widget.type]);

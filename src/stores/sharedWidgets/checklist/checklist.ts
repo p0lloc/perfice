@@ -9,12 +9,7 @@ import {
     type ChecklistTagCondition,
     type ChecklistWidgetSettings
 } from "@perfice/model/sharedWidgets/checklist/checklist";
-import {
-    comparePrimitives,
-    type PrimitiveValue,
-    PrimitiveValueType
-} from "@perfice/model/primitive/primitive";
-import {en} from "svelty-picker/i18n";
+import {comparePrimitives, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 
 
 export interface ChecklistWidgetResult {
@@ -24,10 +19,15 @@ export interface ChecklistWidgetResult {
 export interface ChecklistWidgetConditionResult {
     id: string;
     name: string;
-    entryId: string | null;
+    data: ChecklistData | undefined;
 }
 
 export type ChecklistData = {
+    id: string;
+    unchecked: boolean;
+} & ChecklistDataType;
+
+export type ChecklistDataType = {
     type: ChecklistConditionType.FORM,
     data: ChecklistFormData
 } | {
@@ -61,11 +61,13 @@ function getConditionDataFromResults(condition: ChecklistCondition, dependencies
                 if (primitive.type != PrimitiveValueType.JOURNAL_ENTRY) continue;
 
                 result.push({
+                    id: primitive.value.id,
                     type: ChecklistConditionType.FORM,
+                    unchecked: false,
                     data: {
                         entryId: primitive.value.id,
                         formId: formCondition.formId,
-                        answers: primitive.value.value
+                        answers: primitive.value.value,
                     }
                 });
             }
@@ -81,10 +83,12 @@ function getConditionDataFromResults(condition: ChecklistCondition, dependencies
             if (first.type != PrimitiveValueType.TAG_ENTRY) return [];
 
             result.push({
+                id: first.value.id,
                 type: ChecklistConditionType.TAG,
+                unchecked: false,
                 data: {
                     entryId: first.value.id,
-                    tagId: tagCondition.tagId
+                    tagId: tagCondition.tagId,
                 }
             });
             break;
@@ -93,12 +97,12 @@ function getConditionDataFromResults(condition: ChecklistCondition, dependencies
     return result;
 }
 
-function getCheckedEntryId(condition: ChecklistCondition, data: ChecklistData[]): string | null {
+function getMatchingChecklistData(condition: ChecklistCondition, data: ChecklistData[]): ChecklistData | undefined {
     switch (condition.value.type) {
         case ChecklistConditionType.FORM: {
             let formCondition: ChecklistFormCondition = condition.value.value;
 
-            let matching = data.find(v => {
+            return data.find(v => {
                 if (v.type != ChecklistConditionType.FORM) return false;
                 let entryAnswers = v.data.answers;
 
@@ -110,19 +114,14 @@ function getCheckedEntryId(condition: ChecklistCondition, data: ChecklistData[])
                     return comparePrimitives(entryAnswer, value);
                 });
             });
-
-            // Should always be JournalEntryValue from above check
-            return matching != null ? (matching.data as ChecklistFormData).entryId : null;
         }
 
         case ChecklistConditionType.TAG: {
             let tagCondition: ChecklistTagCondition = condition.value.value;
-            let matching = data.find(v => {
+            return data.find(v => {
                 if (v.type != ChecklistConditionType.TAG) return false;
                 return v.data.tagId == tagCondition.tagId;
             });
-
-            return matching != null ? (matching.data as ChecklistTagData).entryId : null;
         }
     }
 }
@@ -143,12 +142,12 @@ export function ChecklistWidget(dependencies: Record<string, string>, settings: 
             let conditions: ChecklistWidgetConditionResult[] = [];
             for (let condition of settings.conditions) {
                 let data = [...extraData, ...getConditionDataFromResults(condition, dependencies, results, variableIds)];
-                let entryId: string | null = getCheckedEntryId(condition, data);
+                let matchingData: ChecklistData | undefined = getMatchingChecklistData(condition, data);
 
                 conditions.push({
                     id: condition.id,
                     name: condition.name,
-                    entryId
+                    data: matchingData
                 });
             }
 

@@ -36,6 +36,7 @@ export interface ReflectionEditPageAction {
 export interface ReflectionEditWidgetAction {
     widget: ReflectionWidget;
     forms: Form[];
+    onChange: (widget: ReflectionWidget) => void;
 }
 
 export interface RSA<T extends ReflectionSidebarActionType, V> {

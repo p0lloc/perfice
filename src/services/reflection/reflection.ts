@@ -23,7 +23,7 @@ export class ReflectionService {
     private formService: FormService;
     private journalService: JournalService;
     private tagService: TagService;
-    private variableService: VariableService;
+    private readonly variableService: VariableService;
     private notificationService: NotificationService;
 
     constructor(reflectionCollection: ReflectionCollection, formService: FormService,
@@ -168,15 +168,23 @@ export class ReflectionService {
                     for (let value of data) {
                         switch (value.type) {
                             case ChecklistConditionType.FORM:
-                                let form = await this.formService.getFormById(value.data.formId);
-                                if (form == null) continue;
+                                if(value.unchecked){
+                                    await this.journalService.deleteEntryById(value.id);
+                                } else {
+                                    let form = await this.formService.getFormById(value.data.formId);
+                                    if (form == null) continue;
 
-                                let answers: Record<string, PrimitiveValue> = convertAnswersToDisplay(value.data.answers, form.questions);
+                                    let answers: Record<string, PrimitiveValue> = convertAnswersToDisplay(value.data.answers, form.questions);
 
-                                await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                                    await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                                }
                                 break;
                             case ChecklistConditionType.TAG:
-                                await this.tagService.logTag(value.data.tagId, new Date());
+                                if(value.unchecked){
+                                    await this.tagService.unlogTagEntry(value.id);
+                                } else {
+                                    await this.tagService.logTag(value.data.tagId, new Date());
+                                }
                                 break;
                         }
                     }

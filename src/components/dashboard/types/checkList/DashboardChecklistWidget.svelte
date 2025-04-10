@@ -34,13 +34,13 @@
         }
     }
 
-    async function onUncheck(type: ChecklistConditionType, entryId: string) {
-        switch (type) {
+    async function onUncheck(data: ChecklistData) {
+        switch (data.type) {
             case ChecklistConditionType.FORM:
-                await journal.deleteEntryById(entryId);
+                await journal.deleteEntryById(data.id);
                 break;
             case ChecklistConditionType.TAG:
-                await tags.unlogTagEntry(entryId);
+                await tags.unlogTagEntry(data.id);
                 break;
         }
     }

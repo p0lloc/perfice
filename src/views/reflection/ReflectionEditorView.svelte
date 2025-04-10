@@ -83,7 +83,18 @@
             type: ReflectionSidebarActionType.EDIT_WIDGET,
             value: {
                 widget,
-                forms: await forms.get()
+                forms: await forms.get(),
+                onChange: (widget) => {
+                    if (reflection == null) return;
+                    let page = reflection.pages.find(p => p.widgets.some(w => w.id == widget.id));
+                    if (page == null) return;
+
+                    reflection.pages = updateIdentifiedInArray(reflection.pages, {
+                        ...page,
+                        widgets: updateIdentifiedInArray(page.widgets, widget)
+                    })
+                    dragContainer.invalidateItems();
+                }
             }
         });
     }
