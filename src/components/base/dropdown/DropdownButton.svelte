@@ -13,7 +13,7 @@
         items,
         small = false,
         class: className = '',
-        noneText = '',
+        noneText = 'Select value',
         onChange,
         disabled = false,
         compareFunction = (a, b) => a == b
