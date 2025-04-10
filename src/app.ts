@@ -240,12 +240,17 @@ registerDataTypes();
     setupServiceWorker();
     appReady.set(true);
     await notificationService.scheduleStoredNotifications();
+    onAppOpened();
 })();
 
 LocalNotifications.addListener('localNotificationActionPerformed', async (data) => {
     await notificationService.onNotificationClicked(data.notification.extra);
 });
 
+function onAppOpened(){
+    // Give precedence to any reflections opened by notifications
+    setTimeout(() => reflections.onAppOpened(), 500);
+}
 
 /**
  * Goes to the previous route (or closes the opened modal).
@@ -276,3 +281,8 @@ export async function back() {
 }
 
 CapacitorApp.addListener("backButton", back);
+CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+    if(!isActive) return;
+
+    onAppOpened();
+});

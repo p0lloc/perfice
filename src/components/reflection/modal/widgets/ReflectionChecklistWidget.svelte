@@ -35,7 +35,6 @@
 
 </script>
 
-{JSON.stringify(checklistState)}
 <ChecklistWidget date={new Date()} {settings} {dependencies}
                  extraData={$state.snapshot(checklistState.data)} onUncheck={updateOrAddData}
                  onCheck={updateOrAddData}/>

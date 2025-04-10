@@ -1,6 +1,11 @@
 <script lang="ts">
     import {onMount} from "svelte";
-    import type {Reflection, ReflectionPage, ReflectionWidget} from "@perfice/model/reflection/reflection";
+    import {
+        type Reflection, REFLECTION_AUTO_OPEN_TYPES,
+        ReflectionAutoOpenType,
+        type ReflectionPage,
+        type ReflectionWidget
+    } from "@perfice/model/reflection/reflection";
     import {forms, reflections} from "@perfice/app";
     import {NEW_REFLECTION_ROUTE, ReflectionSidebarActionType} from "@perfice/model/reflection/ui";
     import {faArrowLeft, faCheck} from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +23,7 @@
     import type {StoredNotification} from "@perfice/model/notification/notification";
     import EditReflectionNotifications
         from "@perfice/components/reflection/editor/notifications/EditReflectionNotifications.svelte";
+    import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);
@@ -105,7 +111,8 @@
             reflection = {
                 id: crypto.randomUUID(),
                 name: "New reflection",
-                pages: []
+                pages: [],
+                openType: ReflectionAutoOpenType.DISABLE
             };
             notifications = [];
             editing = false;
@@ -114,6 +121,11 @@
             notifications = await reflections.getNotificationsForReflection(reflectionId);
             editing = true;
         }
+    }
+
+    function onAutoOpenChange(v: ReflectionAutoOpenType) {
+        if (reflection == undefined) return;
+        reflection.openType = v;
     }
 
     function onPagesReorder(pages: ReflectionPage[]) {
@@ -142,6 +154,10 @@
         <div class="flex md:flex-col justify-between gap-2 md:mt-8 items-center md:items-start">
             <h3 class="label">Name</h3>
             <input type="text" bind:value={reflection.name} placeholder="Name"/>
+        </div>
+        <div class="flex md:flex-col justify-between gap-2 mt-4 items-center md:items-start">
+            <h3 class="label">Auto open</h3>
+            <DropdownButton value={reflection.openType} items={REFLECTION_AUTO_OPEN_TYPES} onChange={onAutoOpenChange}/>
         </div>
         {#if editing}
             <div class="mt-4">

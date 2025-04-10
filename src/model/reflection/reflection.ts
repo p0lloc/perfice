@@ -23,8 +23,19 @@ import {
 export interface Reflection {
     id: string;
     name: string;
+    openType: ReflectionAutoOpenType;
     pages: ReflectionPage[];
 }
+
+export enum ReflectionAutoOpenType {
+    DISABLE = "DISABLE",
+    DAILY = "DAILY",
+}
+
+export const REFLECTION_AUTO_OPEN_TYPES = [
+    {name: "Disabled", value: ReflectionAutoOpenType.DISABLE},
+    {name: "Daily", value: ReflectionAutoOpenType.DAILY},
+];
 
 export interface ReflectionPage {
     id: string;

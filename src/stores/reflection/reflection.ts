@@ -1,14 +1,22 @@
 import type {ReflectionService} from "@perfice/services/reflection/reflection";
 import {AsyncStore} from "@perfice/stores/store";
-import type {Reflection, ReflectionWidgetAnswerState} from "@perfice/model/reflection/reflection";
+import {
+    type Reflection,
+    ReflectionAutoOpenType,
+    type ReflectionWidgetAnswerState
+} from "@perfice/model/reflection/reflection";
 import {resolvedPromise} from "@perfice/util/promise";
 import type {StoredNotification} from "@perfice/model/notification/notification";
 import {publishToEventStore} from "@perfice/util/event";
 import {openReflectionEvents} from "@perfice/model/reflection/ui";
+import {isSameDay} from "@perfice/util/time/simple";
+
+const REFLECTION_LAST_OPEN_KEY = "last_reflection_auto_open";
 
 export class ReflectionStore extends AsyncStore<Reflection[]> {
 
     private reflectionService: ReflectionService;
+    private lastOpen: number = 0;
 
     constructor(reflectionService: ReflectionService) {
         super(resolvedPromise([]));
@@ -60,6 +68,32 @@ export class ReflectionStore extends AsyncStore<Reflection[]> {
         let reflection = await this.reflectionService.getReflectionById(entityId);
         if (reflection == null) return;
 
+        this.openReflection(reflection);
+    }
+
+    private openReflection(reflection: Reflection) {
+        if(Date.now() - this.lastOpen < 1000 * 10) return;
         publishToEventStore(openReflectionEvents, reflection);
+        this.lastOpen = Date.now();
+    }
+
+    private getLastAutoOpen(): number {
+        let lastOpen = localStorage.getItem(REFLECTION_LAST_OPEN_KEY);
+        if (lastOpen == null) return 0;
+        let lastOpenNumber = parseInt(lastOpen);
+
+        if(isNaN(lastOpenNumber)) return 0;
+        return lastOpenNumber;
+    }
+
+    async onAppOpened() {
+        if(isSameDay(new Date(), new Date(this.getLastAutoOpen()))) return;
+
+        let reflections = await this.reflectionService.getReflections();
+        let autoOpenReflection = reflections.find(r => r.openType == ReflectionAutoOpenType.DAILY);
+        if (autoOpenReflection == null) return;
+
+        this.openReflection(autoOpenReflection);
+        localStorage.setItem(REFLECTION_LAST_OPEN_KEY, Date.now().toString());
     }
 }
