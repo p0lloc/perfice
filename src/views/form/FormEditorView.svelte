@@ -100,6 +100,12 @@
             });
             editDisplayFormat.invalidateItems();
         }
+
+        let newQuestion = form.questions.find(q => q.id == question.id);
+        if(newQuestion == null) return;
+
+        // Necessary to use the stateful value inside the array
+        editQuestion(newQuestion);
     }
 
     function editQuestion(q: FormQuestion) {

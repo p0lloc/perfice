@@ -30,7 +30,7 @@
         let displayDef = questionDisplayTypeRegistry.getFieldByType(currentQuestion.displayType)!;
         if (displayDef != null) {
             // Transform the display settings to the new data type
-            currentQuestion.displaySettings = displayDef.onDataTypeChanged(currentQuestion.displaySettings, type);
+            currentQuestion.displaySettings = displayDef.onDataTypeChanged(currentQuestion.displaySettings, type, definition.getPrimitiveType());
         }
     }
 

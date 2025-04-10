@@ -2,10 +2,11 @@ import {
     PrimitiveValueType,
     pString,
     type PrimitiveValue,
-    prettyPrintPrimitive
+    prettyPrintPrimitive, primitiveAsType
 } from "@perfice/model/primitive/primitive";
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import {faBorderAll, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import type {FormQuestionDataType} from "@perfice/model/form/form";
 
 export interface SelectOption {
     id: string;
@@ -53,9 +54,13 @@ export class SelectFieldDefinition implements FormDisplayTypeDefinition<SelectFo
         return {options: [], grid: null, multiple: false};
     }
 
-    onDataTypeChanged(s: SelectFormQuestionSettings, dataType: string): SelectFormQuestionSettings {
-        alert("on data type changed");
-        return s;
+    onDataTypeChanged(s: SelectFormQuestionSettings, dataType: FormQuestionDataType, primitiveType: PrimitiveValueType): SelectFormQuestionSettings {
+        return {
+            ...s,
+            options: s.options.map(o => {
+                return {...o, value: primitiveAsType(o.value, primitiveType)}
+            })
+        };
     }
 
     getName(): string {

@@ -39,7 +39,7 @@ export interface FormDisplayTypeDefinition<S> {
     getDisplayValue(value: PrimitiveValue, displaySettings: S, dataSettings: any): PrimitiveValue | null;
 
     // Allows the display settings to be changed when the data type changes
-    onDataTypeChanged(s: S, dataType: string): S;
+    onDataTypeChanged(s: S, dataType: string, primitiveType: PrimitiveValueType): S;
 
     getName(): string;
 

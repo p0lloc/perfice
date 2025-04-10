@@ -14,7 +14,7 @@
     }
 </script>
 
-<div class="overflow-visible z-[200]">
+<div class="overflow-visible">
     <IconPicker {right} bind:this={iconPicker}/>
     <button bind:this={button} onclick={open}
             class="min-w-10 bg-gray-50 border-gray-300 border min-h-10 flex justify-center items-center icon-button">

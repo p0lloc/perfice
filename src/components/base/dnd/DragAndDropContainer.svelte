@@ -3,7 +3,7 @@
     import {longPress} from "@perfice/util/long-press";
     import type {Snippet} from "svelte";
 
-    let {items, item, class: className = '', disabled = false, onFinalize, zoneId = "dnd", dragHandles = false}: {
+    let {items = $bindable(), item, class: className = '', disabled = false, onFinalize, zoneId = "dnd", dragHandles = false}: {
         items: any[],
         item: Snippet<[any, number]>,
         class?: string,
@@ -15,11 +15,11 @@
     } = $props();
 
     let dragDisabled = $state(true);
-    let currentItems = $state(items);
+    //let currentItems = $state(items);
 
 
     function onConsider(e: CustomEvent<DndEvent>) {
-        currentItems = e.detail.items;
+        items = e.detail.items;
 
         if (e.detail.info.source === SOURCES.KEYBOARD && e.detail.info.trigger === TRIGGERS.DRAG_STOPPED) {
             dragDisabled = true;
@@ -28,7 +28,7 @@
     }
 
     function onFinalized(e: CustomEvent<DndEvent>) {
-        currentItems = e.detail.items;
+        items = e.detail.items;
         onFinalize($state.snapshot(e.detail.items));
 
         if (e.detail.info.source === SOURCES.POINTER) {
@@ -51,12 +51,12 @@
      * Invalidates the current items and uses the passed in items instead.
      */
     export function invalidateItems() {
-        currentItems = items;
+        //items = items;
     }
 
     let settings = $derived({
         type: zoneId,
-        items: currentItems,
+        items,
         dragDisabled: dragDisabled || disabled,
         dropTargetStyle: {},
         transformDraggedElement
@@ -77,7 +77,7 @@
             onconsider={onConsider}
             onfinalize={onFinalized}
             class="{className}">
-        {@render loop(currentItems)}
+        {@render loop(items)}
     </div>
 {:else}
     <div
@@ -85,6 +85,6 @@
             onconsider={onConsider}
             onfinalize={onFinalized}
             class="{className}">
-        {@render loop(currentItems)}
+        {@render loop(items)}
     </div>
 {/if}

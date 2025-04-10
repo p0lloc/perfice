@@ -53,7 +53,6 @@
     }
 
     async function onDashboardChange(dashboardId: string) {
-        console.log(dashboardId)
         if (dashboardId == "create") {
             let dashboard = await dashboards.createDashboard(prompt("Name") ?? "");
             currentDashboard = dashboard.id;

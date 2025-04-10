@@ -1,5 +1,5 @@
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
-import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {primitiveAsType, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {faCircleDot, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface SegmentedOption {
@@ -31,9 +31,13 @@ export class SegmentedFieldDefinition implements FormDisplayTypeDefinition<Segme
         return null;
     }
 
-
-    onDataTypeChanged(s: SegmentedFormQuestionSettings, dataType: string): SegmentedFormQuestionSettings {
-        return s;
+    onDataTypeChanged(s: SegmentedFormQuestionSettings, dataType: string, primitiveType: PrimitiveValueType): SegmentedFormQuestionSettings {
+        return {
+            ...s,
+            options: s.options.map(o => {
+                return {...o, value: primitiveAsType(o.value, primitiveType)}
+            })
+        };
     }
 
     getName(): string {

@@ -261,7 +261,8 @@ export function primitiveAsType(value: PrimitiveValue, type: PrimitiveValueType)
     if (value.type == type) return value;
 
     if (type == PrimitiveValueType.NUMBER) {
-        return pNumber(primitiveAsNumber(value));
+        let v = pNumber(primitiveAsNumber(value));
+        return v;
     }
 
     if (type == PrimitiveValueType.STRING) {
