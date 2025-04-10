@@ -20,7 +20,7 @@
         faPlusCircle,
         faQuestionCircle,
     } from "@fortawesome/free-solid-svg-icons";
-    import {NEW_FORM_ROUTE, QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
+    import {NEW_FORM_ROUTE} from "@perfice/model/form/ui";
     import FormEditorSidebar from "@perfice/components/form/editor/sidebar/FormEditorSidebar.svelte";
     import {
         type FormQuestionDataSettings,
@@ -174,6 +174,14 @@
         form.questions = items;
     }
 
+    let displayTypeButtons = questionDisplayTypeRegistry.getRegisteredDisplayTypes().map(([type, t]) => {
+        return {
+            name: t.getName(),
+            icon: t.getIcon(),
+            action: () => createQuestion(type as FormQuestionDisplayType),
+        };
+    })
+
     onMount(() => loadForm());
 </script>
 
@@ -269,14 +277,7 @@
         <div class="md:w-96"></div>
 
         <ContextMenu bind:this={contextMenu}>
-            <ContextMenuButtons
-                    buttons={QUESTION_DISPLAY_TYPES.map((t) => {
-                    return {
-                        name: t.name,
-                        icon: t.icon,
-                        action: () => createQuestion(t.type),
-                    };
-                })}
+            <ContextMenuButtons buttons={displayTypeButtons}
             />
         </ContextMenu>
     </div>

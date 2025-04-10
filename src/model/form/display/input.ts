@@ -1,3 +1,4 @@
+import {faKeyboard, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import {prettyPrintPrimitive, pString, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 
@@ -23,5 +24,13 @@ export class InputFieldDefinition implements FormDisplayTypeDefinition<InputForm
 
     onDataTypeChanged(s: InputFormQuestionSettings, dataType: string): InputFormQuestionSettings {
         return s;
+    }
+
+    getName(): string {
+        return "Input";
+    }
+
+    getIcon(): IconDefinition {
+        return faKeyboard;
     }
 }

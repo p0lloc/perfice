@@ -6,6 +6,7 @@ import {RangeFieldDefinition, type RangeFormQuestionSettings} from "@perfice/mod
 import {SegmentedFieldDefinition, type SegmentedFormQuestionSettings} from "@perfice/model/form/display/segmented";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {RichInputFieldDefinition, type RichInputFormQuestionSettings} from "@perfice/model/form/display/rich-input";
+import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export type FormQuestionDisplaySettings =
     DisplayDef<FormQuestionDisplayType.INPUT, InputFormQuestionSettings>
@@ -39,6 +40,10 @@ export interface FormDisplayTypeDefinition<S> {
 
     // Allows the display settings to be changed when the data type changes
     onDataTypeChanged(s: S, dataType: string): S;
+
+    getName(): string;
+
+    getIcon(): IconDefinition;
 }
 
 
@@ -51,6 +56,10 @@ export class FormQuestionDisplayTypeRegistry {
 
     getFieldByType(type: string): FormDisplayTypeDefinition<any> | undefined {
         return this.displayTypes.get(type);
+    }
+
+    getRegisteredDisplayTypes(): [string, FormDisplayTypeDefinition<any>][] {
+        return this.displayTypes.entries().toArray();
     }
 }
 

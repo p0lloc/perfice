@@ -1,5 +1,6 @@
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {faFont, faRulerHorizontal, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface RichInputFormQuestionSettings {
 }
@@ -23,6 +24,14 @@ export class RichInputFieldDefinition implements FormDisplayTypeDefinition<RichI
 
     onDataTypeChanged(s: RichInputFormQuestionSettings, dataType: string): RichInputFormQuestionSettings {
         return s;
+    }
+
+    getName(): string {
+        return "Rich input";
+    }
+
+    getIcon(): IconDefinition {
+        return faFont;
     }
 
 }

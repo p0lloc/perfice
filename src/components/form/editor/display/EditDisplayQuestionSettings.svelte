@@ -1,19 +1,11 @@
 <script lang="ts">
-
     import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
-    import {type FormFieldProps, QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
     import {faLayerGroup} from "@fortawesome/free-solid-svg-icons";
     import SidebarDropdownHeader from "@perfice/components/form/editor/sidebar/SidebarDropdownHeader.svelte";
     import type {Component} from "svelte";
-    import InputFormField from "@perfice/components/form/fields/input/InputFormField.svelte";
-    import RangeFormField from "@perfice/components/form/fields/range/RangeFormField.svelte";
-    import SegmentedFormField from "@perfice/components/form/fields/segmented/SegmentedFormField.svelte";
-    import SelectFormField from "@perfice/components/form/fields/select/SelectFormField.svelte";
-    import HierarchyFormField from "@perfice/components/form/fields/hierarchy/HierarchyFormField.svelte";
-    import RichInputFormField from "@perfice/components/form/fields/richInput/RichInputFormField.svelte";
     import EditSelectQuestionSettings
         from "@perfice/components/form/editor/display/select/EditSelectQuestionSettings.svelte";
     import EditSegmentedQuestionSettings
@@ -37,14 +29,14 @@
     }
 
     function getDisplayDropdownItems(dataTypeDef: FormQuestionDataTypeDefinition<any, any>): DropdownMenuItem<FormQuestionDisplayType>[] {
-        return QUESTION_DISPLAY_TYPES
-            .filter(d => dataTypeDef.getSupportedDisplayTypes().includes(d.type)) // Only include supported display types for this data type
-            .map(d => {
+        return questionDisplayTypeRegistry.getRegisteredDisplayTypes()
+            .filter(([type]) => dataTypeDef.getSupportedDisplayTypes().includes(type as FormQuestionDisplayType)) // Only include supported display types for this data type
+            .map(([type, d]) => {
                 return {
-                    name: d.name,
-                    icon: d.icon,
-                    value: d.type,
-                    action: () => changeDisplayType(d.type),
+                    name: d.getName(),
+                    icon: d.getIcon(),
+                    value: type as FormQuestionDisplayType,
+                    action: () => changeDisplayType(type as FormQuestionDisplayType),
                 }
             })
     }

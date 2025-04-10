@@ -5,6 +5,7 @@ import {
     prettyPrintPrimitive
 } from "@perfice/model/primitive/primitive";
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
+import {faBorderAll, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface SelectOption {
     id: string;
@@ -55,5 +56,13 @@ export class SelectFieldDefinition implements FormDisplayTypeDefinition<SelectFo
     onDataTypeChanged(s: SelectFormQuestionSettings, dataType: string): SelectFormQuestionSettings {
         alert("on data type changed");
         return s;
+    }
+
+    getName(): string {
+        return "Select";
+    }
+
+    getIcon(): IconDefinition {
+        return faBorderAll;
     }
 }

@@ -1,8 +1,7 @@
 <script lang="ts">
     import {type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
-    import {type DataSettingValues, questionDataTypeRegistry} from "@perfice/model/form/data";
+    import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
-    import {QUESTION_DATA_TYPES} from "@perfice/model/form/ui";
     import SidebarDropdownHeader from "@perfice/components/form/editor/sidebar/SidebarDropdownHeader.svelte";
     import {faLayerGroup} from "@fortawesome/free-solid-svg-icons";
     import type {Component} from "svelte";
@@ -36,12 +35,12 @@
     }
 
     function getDataDropdownItems(): DropdownMenuItem<FormQuestionDataType>[] {
-        return QUESTION_DATA_TYPES.map(d => {
+        return questionDataTypeRegistry.getDefinitions().map(([type, d]) => {
             return {
-                name: d.name,
-                icon: d.icon,
-                value: d.type,
-                action: () => changeDataType(d.type),
+                name: d.getName(),
+                icon: d.getIcon(),
+                value: type as FormQuestionDataType,
+                action: () => changeDataType(type as FormQuestionDataType),
             }
         })
     }

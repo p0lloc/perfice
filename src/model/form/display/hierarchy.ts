@@ -1,6 +1,7 @@
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import {comparePrimitives, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import type {HierarchyFormQuestionDataSettings} from "@perfice/model/form/data/hierarchy";
+import {faCircleDot, faFolderTree, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface HierarchyFormDisplaySettings {
     onlyLeafOption: boolean;
@@ -46,4 +47,14 @@ export class HierarchyFieldDefinition implements FormDisplayTypeDefinition<Hiera
     onDataTypeChanged(s: HierarchyFormDisplaySettings, dataType: string): HierarchyFormDisplaySettings {
         return s;
     }
+
+
+    getName(): string {
+        return "Hierarchy";
+    }
+
+    getIcon(): IconDefinition {
+        return faFolderTree;
+    }
+
 }
