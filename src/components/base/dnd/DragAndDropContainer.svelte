@@ -5,7 +5,7 @@
 
     let {items, item, class: className = '', disabled = false, onFinalize, zoneId = "dnd", dragHandles = false}: {
         items: any[],
-        item: Snippet<[any]>,
+        item: Snippet<[any, number]>,
         class?: string,
         dragHandles?: boolean,
         disabled?: boolean,
@@ -64,9 +64,9 @@
 </script>
 
 {#snippet loop(items)}
-    {#each items as trackable (trackable.id)}
+    {#each items as trackable, i (trackable.id)}
         <div use:longPress onlong={onLongPress}>
-            {@render item(trackable)}
+            {@render item(trackable, i)}
         </div>
     {/each}
 {/snippet}

@@ -8,5 +8,5 @@
     }
 </script>
 
-<input class="border" {disabled} value={value} onchange={onInputChange}
+<input class="border bg-white" {disabled} value={value} onchange={onInputChange}
        type={getHtmlInputFromQuestionType(dataType)}/>

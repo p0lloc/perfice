@@ -29,6 +29,12 @@
         questionDataTypeRegistry.getDefaultValue(question.dataType)!,
     );
 
+    function onDeleteClick(e: MouseEvent){
+        // Prevent the click from bubbling to the parent so it would open the sidebar again
+        e.stopPropagation();
+        onDelete();
+    }
+
     let emptyName = $derived(question.name == "");
 </script>
 
@@ -43,12 +49,12 @@
     <button
             class="absolute right-0 top-0 pointer-feedback:text-red-600 text-gray-500"
             class:md:invisible={!selected}
-            onclick={onDelete}
+            onclick={onDeleteClick}
     >
         <Fa icon={faTrash}/>
     </button>
     <p class="text-xl font-bold mb-2" class:text-gray-400={emptyName}>
-        {!emptyName ? question.name : "New question"}
+        {!emptyName ? question.name : "<Empty name>"}
     </p>
     <FormFieldRenderer
             dataSettings={question}

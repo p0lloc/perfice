@@ -4,7 +4,8 @@ import {
     type Trackable,
     type TrackableCardSettings,
     TrackableCardType,
-    type TrackableCategory, TrackableValueType
+    type TrackableCategory,
+    TrackableValueType
 } from "@perfice/model/trackable/trackable";
 import {
     type TextOrDynamic,
@@ -89,6 +90,17 @@ export class TrackableService implements TrackableEntityProvider {
 
         await this.formService.createForm(form);
         await this.createTrackable(name, icon, form, this.createSingleValueCardSettings(type, mainQuestionId), categoryId);
+    }
+
+    async createTrackableFromForm(form: Form, categoryId: string | null) {
+        await this.createTrackable(form.name, form.icon, form, {
+            cardType: TrackableCardType.VALUE,
+            cardSettings: {
+                representation: form.format,
+                type: TrackableValueType.TABLE,
+                settings: {}
+            }
+        }, categoryId);
     }
 
     async createTrackable(name: string, icon: string, form: Form, card: TrackableCardSettings,
@@ -433,4 +445,5 @@ export class TrackableService implements TrackableEntityProvider {
                 }
         }
     }
+
 }

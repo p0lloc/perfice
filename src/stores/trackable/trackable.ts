@@ -11,7 +11,7 @@ import {type JournalEntryValue, pDisplay, pNumber, PrimitiveValueType} from "@pe
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {resolvedPromise} from "@perfice/util/promise";
 import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
-import type {FormQuestionDataType} from "@perfice/model/form/form";
+import type {Form, FormQuestionDataType} from "@perfice/model/form/form";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -58,6 +58,10 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
 
     async updateTrackableFromState(editState: EditTrackableState) {
         await this.updateTrackable(editState.trackable);
+    }
+
+    async onTrackableFromFormCreated(form: Form, categoryId: string | null) {
+        await this.trackableService.createTrackableFromForm(form, categoryId);
     }
 
     async getEditTrackableState(rawTrackable: Trackable): Promise<EditTrackableState | null> {

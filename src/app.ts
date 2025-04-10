@@ -79,6 +79,8 @@ import {NotificationService} from "@perfice/services/notification/notification";
 import {setupServiceWorker} from "@perfice/swSetup";
 import {NotificationType} from "@perfice/model/notification/notification";
 import {registerDataTypes} from "@perfice/model/form/data";
+import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
+import {en} from "svelty-picker/i18n";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -141,6 +143,14 @@ export const paginatedJournal = new PaginatedJournal();
 export const categorizedTags = CategorizedTags();
 export const variableEditProvider = new VariableEditProvider(variableService, formService, trackableService);
 export const reflections = new ReflectionStore(reflectionService);
+
+forms.addEntityFormCreateListener((entityType, form) => {
+    if (!entityType.startsWith(TRACKABLE_FORM_ENTITY_TYPE)) return;
+
+    let parts = entityType.split(TRACKABLE_FORM_CATEGORY_DELIM);
+    trackables.onTrackableFromFormCreated(form, parts.length == 2 ? parts[1] : null);
+    goto("/trackables");
+})
 
 notificationService.addNotificationClickedListener(NotificationType.REFLECTION, async (entityId) => {
     await reflections.onNotificationClicked(entityId);
@@ -247,7 +257,7 @@ LocalNotifications.addListener('localNotificationActionPerformed', async (data) 
     await notificationService.onNotificationClicked(data.notification.extra);
 });
 
-function onAppOpened(){
+function onAppOpened() {
     // Give precedence to any reflections opened by notifications
     setTimeout(() => reflections.onAppOpened(), 500);
 }
@@ -281,8 +291,8 @@ export async function back() {
 }
 
 CapacitorApp.addListener("backButton", back);
-CapacitorApp.addListener('appStateChange', ({ isActive }) => {
-    if(!isActive) return;
+CapacitorApp.addListener('appStateChange', ({isActive}) => {
+    if (!isActive) return;
 
     onAppOpened();
 });

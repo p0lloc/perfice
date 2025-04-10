@@ -1,15 +1,20 @@
 import {AsyncStore} from "@perfice/stores/store";
 import type {FormService} from "@perfice/services/form/form";
-import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
+import type {Form, FormQuestion, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import { EntityObserverType } from "@perfice/services/observer";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import type {FormTemplateService} from "@perfice/services/form/template";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import type {TextOrDynamic} from "@perfice/model/variable/variable";
+
+export type EntityFormCreateListener = (entityType: string, form: Form) => void;
 
 export class FormStore extends AsyncStore<Form[]> {
 
     private formService: FormService;
     private formTemplateService: FormTemplateService;
+
+    private entityCreateListeners: EntityFormCreateListener[] = [];
 
     constructor(formService: FormService, formTemplateService: FormTemplateService) {
         super(formService.getForms());
@@ -55,5 +60,23 @@ export class FormStore extends AsyncStore<Form[]> {
 
     async updateFormTemplate(template: FormTemplate, templateName: string, answers: Record<string, PrimitiveValue>) {
         await this.formTemplateService.updateTemplate(template, templateName, answers);
+    }
+
+    async createForm(entityType: string, name: string, icon: string, questions: FormQuestion[], format: TextOrDynamic[]) {
+        let form: Form = {
+            id: crypto.randomUUID(),
+            name,
+            icon,
+            questions,
+            snapshotId: crypto.randomUUID(),
+            format
+        }
+
+        await this.formService.createForm(form);
+        this.entityCreateListeners.forEach(listener => listener(entityType, form));
+    }
+
+    addEntityFormCreateListener(listener: EntityFormCreateListener) {
+        this.entityCreateListeners.push(listener);
     }
 }

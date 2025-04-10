@@ -10,6 +10,9 @@
     import CreateSingleValueTrackable
         from "@perfice/components/trackable/modals/create/CreateSingleValueTrackable.svelte";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
+    import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
+    import {NEW_FORM_ROUTE} from "@perfice/model/form/ui";
+    import {goto} from "@mateothegreat/svelte5-router";
 
     let modal: Modal;
 
@@ -39,6 +42,14 @@
         singleValue = true;
     }
 
+    function createForm(){
+        let route = `/forms/${NEW_FORM_ROUTE}:${TRACKABLE_FORM_ENTITY_TYPE}`;
+        if(categoryId != null)
+            route += `${TRACKABLE_FORM_CATEGORY_DELIM}${categoryId}`;
+
+        goto(route);
+    }
+
     function onSelected(categoryId: string | null, suggestion: TrackableSuggestion) {
         onSelectSuggestion(categoryId, suggestion);
         modal.close();
@@ -56,7 +67,7 @@
                             onClick={createSingleValue}/>
                 <CardButton iconClass="w-14" icon={faListOl} title="Form"
                             description="A form with multiple questions tracked together"
-                            onClick={() => {}}/>
+                            onClick={createForm}/>
             </div>
             <hr class="my-4">
             <div class="row-gap text-2xl mt-8">

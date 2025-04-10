@@ -35,7 +35,7 @@
 
 
 {#if display.grid != null}
-    <div class="grid gap-2 select-grid"
+    <div class="grid gap-2 select-grid bg-white"
          style:--width="{Math.min(display.grid.itemsPerRow / 4, 1) * 75}%"
          class:select-grid-border={display.grid.border}
          style:grid-template-columns="repeat({display.grid.itemsPerRow}, minmax(0, 1fr))">

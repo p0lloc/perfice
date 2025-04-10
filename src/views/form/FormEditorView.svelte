@@ -15,12 +15,12 @@
     import Fa from "svelte-fa";
     import {
         faArrowLeft,
-        faCheck,
+        faCheck, faFont,
         faHeading,
         faPlusCircle,
         faQuestionCircle,
     } from "@fortawesome/free-solid-svg-icons";
-    import {QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
+    import {NEW_FORM_ROUTE, QUESTION_DISPLAY_TYPES} from "@perfice/model/form/ui";
     import FormEditorSidebar from "@perfice/components/form/editor/sidebar/FormEditorSidebar.svelte";
     import {
         type FormQuestionDataSettings,
@@ -37,19 +37,25 @@
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import {onMount} from "svelte";
+    import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
 
+    let creating = $state<string | null>(null);
+    let createName = $state<string>("");
+    let createIcon = $state<string>("");
+
     let currentQuestion = $state<FormQuestion | null>(null);
     let contextMenu = $state<ContextMenu | undefined>();
 
+    // svelte-ignore non_reactive_update From bind:this
     let questionContainer: DragAndDropContainer;
+    // svelte-ignore non_reactive_update From bind:this
     let sidebar: FormEditorSidebar;
+    // svelte-ignore non_reactive_update From bind:this
+    let editDisplayFormat: EditTextOrDynamic<FormQuestion>;
 
-    onMount(() => {
-        loadForm();
-    });
 
     function createQuestion(type: FormQuestionDisplayType) {
         if (form == null) return;
@@ -85,6 +91,15 @@
         };
 
         form.questions.push(question);
+
+        if(form.format.length == 0){
+            // If format is empty, add the new question to be shown there
+            form.format.push({
+                dynamic: true,
+                value: question.id
+            });
+            editDisplayFormat.invalidateItems();
+        }
     }
 
     function editQuestion(q: FormQuestion) {
@@ -96,15 +111,25 @@
         if (form == undefined) return;
         form.questions = form.questions.filter((q) => q.id !== question.id);
         questionContainer.invalidateItems();
-        if (question == currentQuestion) {
+
+        form.format = form.format.filter(v => !v.dynamic || v.value != question.id);
+        editDisplayFormat.invalidateItems();
+
+        if (question.id == currentQuestion?.id) {
             sidebar.close();
         }
     }
 
     async function save() {
         if (form == undefined) return;
-        await forms.updateForm($state.snapshot(form));
-        back();
+
+        let snapshot = $state.snapshot(form);
+        if(creating == null) {
+            await forms.updateForm(snapshot);
+            back();
+        } else {
+            await forms.createForm(creating, createName, createIcon, snapshot.questions, snapshot.format);
+        }
     }
 
     function onFormatChange(v: TextOrDynamic[]) {
@@ -120,7 +145,22 @@
         let formId = params.formId;
         if (formId == undefined) return;
 
-        form = await forms.getFormById(formId);
+        if (formId.startsWith(NEW_FORM_ROUTE)) {
+            let parts = formId.split(":");
+            if (parts.length != 2) return;
+
+            creating = parts[1];
+            form = {
+                id: crypto.randomUUID(),
+                name: "",
+                icon: "",
+                snapshotId: crypto.randomUUID(),
+                questions: [],
+                format: []
+            }
+        } else {
+            form = await forms.getFormById(formId);
+        }
     }
 
     function startAddingQuestion(
@@ -133,10 +173,12 @@
         if (form == undefined) return;
         form.questions = items;
     }
+
+    onMount(() => loadForm());
 </script>
 
 {#if form !== undefined}
-    <MobileTopBar title={form.name}>
+    <MobileTopBar title={creating != null ? "Create form": form.name}>
         {#snippet leading()}
             <button class="icon-button" onclick={back}>
                 <Fa icon={faArrowLeft}/>
@@ -156,8 +198,42 @@
     <div class="flex justify-between">
         <div class="p-2 flex-1 flex">
             <div class="mx-auto w-full lg:w-1/2 md:w-3/4 md:mt-8 main-content">
-                <h2 class="text-3xl font-bold">{form.name}</h2>
+                <div class="bg-white hidden md:flex gap-2 border rounded-xl p-4 mb-8 fixed right-40 top-10">
+                    <Button onClick={save}>Save</Button>
+                    <Button color={ButtonColor.RED} onClick={back}>
+                        Cancel
+                    </Button>
+                </div>
 
+                {#if creating != null}
+                    <div class="row-gap text-2xl text-gray-500 mt-4">
+                        <Fa icon={faFont}/>
+                        <p>Name & icon</p></div>
+                    <div class="row-gap w-full mt-2">
+                        <input id="first_name" bind:value={createName} placeholder="Name" type="text"
+                               class="input flex-1">
+                        <IconPickerButton right={true} icon={createIcon} onChange={(i) => createIcon = i}/>
+                    </div>
+                {/if}
+
+                <div class="mb-4 mt-4">
+                    <div class="row-gap text-2xl text-gray-500">
+                        <Fa icon={faHeading}/>
+                        <h2>Display format</h2>
+                    </div>
+                    <p class="text-xs mb-4">Decides which values to show in the journal</p>
+
+                    <EditTextOrDynamic
+                            bind:this={editDisplayFormat}
+                            value={form.format}
+                            availableDynamic={form.questions}
+                            onChange={onFormatChange}
+                            getDynamicId={(v) => v.id}
+                            getDynamicText={(v) => v.name}
+                    />
+                </div>
+
+                <hr class="my-8"/>
                 <div
                         class="row-gap items-center text-2xl text-gray-500 mt-8 mb-4"
                 >
@@ -187,30 +263,6 @@
                 >
                     <Fa icon={faPlusCircle} class="pointer-events-none"/>
                 </button>
-
-                <hr class="my-8"/>
-
-                <div class="mb-4">
-                    <div class="row-gap text-2xl text-gray-500">
-                        <Fa icon={faHeading}/>
-                        <h2>Display format</h2>
-                    </div>
-                    <p class="text-xs">Decides which values to show in the journal</p></div>
-
-                <EditTextOrDynamic
-                        value={form.format}
-                        availableDynamic={form.questions}
-                        onChange={onFormatChange}
-                        getDynamicId={(v) => v.id}
-                        getDynamicText={(v) => v.name}
-                />
-
-                <div class="hidden md:block mt-10">
-                    <Button onClick={save}>Save</Button>
-                    <Button color={ButtonColor.RED} onClick={back}>
-                        Cancel
-                    </Button>
-                </div>
             </div>
         </div>
 

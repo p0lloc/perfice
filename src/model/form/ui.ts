@@ -7,6 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {faFont} from "@fortawesome/free-solid-svg-icons/faFont";
 
+export const NEW_FORM_ROUTE = "new";
+
 export interface FormFieldProps {
     displaySettings: FormQuestionDisplaySettingsValue;
     dataType: FormQuestionDataType;
