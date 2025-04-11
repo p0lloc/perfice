@@ -4,7 +4,7 @@ import {AsyncStore} from "@perfice/stores/store";
 import {resolvedPromise} from "@perfice/util/promise";
 import {EntityObserverType} from "@perfice/services/observer";
 import type {TagService} from "@perfice/services/tag/tag";
-import type {Tag} from "@perfice/model/tag/tag";
+import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
 export function TagDate(): Writable<Date> {
@@ -55,6 +55,14 @@ export class TagStore extends AsyncStore<Tag[]> {
     async getTagById(id: string): Promise<Tag | undefined> {
         let tags = await this.get();
         return tags.find(t => t.id == id);
+    }
+
+    async updateTag(tag: Tag) {
+         await this.tagService.updateTag(tag);
+    }
+
+    async deleteTag(tag: Tag) {
+        await this.tagService.deleteTagById(tag.id);
     }
 
 }
