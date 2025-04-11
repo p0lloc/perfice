@@ -1,4 +1,4 @@
-import type {FormQuestionDataSettings, FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
+import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pBoolean, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
 import {faCheck, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
@@ -39,7 +39,16 @@ export class BooleanFormQuestionDataType implements FormQuestionDataTypeDefiniti
         return false;
     }
 
-    deserialize(value: boolean): PrimitiveValue | null {
+    deserialize(value: any): PrimitiveValue | null {
+        if(typeof value == "string") {
+            if(value == "true") {
+                return pBoolean(true);
+            }
+            if(value == "false") {
+                return pBoolean(false);
+            }
+        }
+
         return pBoolean(value);
     }
 
