@@ -35,6 +35,12 @@
             }
 
             let selfRect = container.getBoundingClientRect();
+
+            // Make sure we aren't rendering outside the screen on the bottom
+            if(selfRect.y + selfRect.height > window.innerHeight){
+                top = _relativeY - selfRect.height;
+            }
+
             // Make sure we aren't rendering outside the screen on the left
             // If we are, render on the left of the relative element
             if (left - selfRect.width >= 0) {
