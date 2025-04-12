@@ -10,8 +10,17 @@
     import {forms, journal} from "@perfice/app";
     import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
     import type {FormTemplate} from "@perfice/model/form/form.js";
-    import {extractAnswerValuesFromDisplay, extractValueFromDisplay} from "@perfice/services/variable/types/list";
+    import {extractAnswerValuesFromDisplay} from "@perfice/services/variable/types/list";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
+    // noinspection ES6UnusedImports
+    import Fa from "svelte-fa";
+    import {faCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import IconButton from "@perfice/components/base/button/IconButton.svelte";
+
+    let {largeLogButton = true, onDelete}: {
+        largeLogButton?: boolean,
+        onDelete?: (entry: JournalEntry) => void
+    } = $props();
 
     let form: Form = $state({} as Form);
     let questions: FormQuestion[] = $state([]);
@@ -40,6 +49,8 @@
         answers = existingAnswers ?? getDefaultAnswers(form.questions);
         currentTemplateName = null;
         modal.open();
+
+        setTimeout(() => embed.focus()); // Give embed time to mount
     }
 
     function close() {
@@ -114,6 +125,12 @@
         answers = template.answers;
         embed.invalidateValues();
     }
+
+    function onDeleteClicked() {
+        if (editEntry == null) return;
+        close();
+        onDelete?.(editEntry);
+    }
 </script>
 
 <Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm}>
@@ -124,9 +141,23 @@
         {/if}
         <hr class="my-4"/>
     {/if}
+
     <FormEmbed bind:this={embed} questions={questions} answers={answers}/>
+
+    {#if largeLogButton}
+        <button onclick={confirm} class="md:hidden fixed bottom-0 w-screen h-20 bg-green-500 flex-center
+    pointer-feedback:bg-green-600 text-white left-0">
+
+            <Fa icon={faCheck} size="2.0x"/>
+        </button>
+    {/if}
+
     {#snippet actions()}
-        <FormTemplateButton {templates} onNew={onNewTemplate}
-                            onTemplateSelected={onTemplateSelected} onEditTemplate={onEditTemplate}/>
+        {#if editEntry != null}
+            <IconButton icon={faTrash} onClick={onDeleteClicked}/>
+        {:else}
+            <FormTemplateButton {templates} onNew={onNewTemplate}
+                                onTemplateSelected={onTemplateSelected} onEditTemplate={onEditTemplate}/>
+        {/if}
     {/snippet}
 </Modal>

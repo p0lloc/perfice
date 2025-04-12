@@ -1,10 +1,11 @@
 <script lang="ts">
     import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import type {FormQuestion} from "@perfice/model/form/form";
-    import FormField from "@perfice/components/form/fields/ValidatedFormField.svelte";
+    import ValidatedFormField from "@perfice/components/form/fields/ValidatedFormField.svelte";
+    import {shouldAutoFocusNext} from "@perfice/model/form/ui";
 
     let {questions, answers}: { questions: FormQuestion[], answers: Record<string, PrimitiveValue> } = $props();
-    let fields: Record<string, FormField> = $state({});
+    let fields: Record<string, ValidatedFormField> = $state({});
 
     export function validateAndGetAnswers(): Record<string, PrimitiveValue> | null {
         let result: Record<string, PrimitiveValue> = {};
@@ -27,6 +28,28 @@
         return result;
     }
 
+    export function focus(){
+        if(questions.length == 0) return;
+        focusField(questions[0].id);
+    }
+
+    export function focusField(id: string){
+        let field = fields[id];
+        if(field == null) return;
+
+        field.focus();
+    }
+
+    function onFieldChanged(question: FormQuestion){
+        if(!shouldAutoFocusNext(question)) return;
+
+        let index = questions.findIndex(q => q.id == question.id);
+        if(index == -1 || index == questions.length - 1) return;
+
+        // Focus the next field
+        focusField(questions[index + 1].id);
+    }
+
     /**
      * Invalidates all fields to use the value passed in "answers".
      */
@@ -38,9 +61,10 @@
 
 {#each questions as question(question.id)}
     <div class="field">
-        <FormField bind:this={fields[question.id]} disabled={false}
-                   value={answers[question.id] ?? pNull()}
-                   question={$state.snapshot(question)}/>
+        <ValidatedFormField bind:this={fields[question.id]} disabled={false}
+                            value={answers[question.id] ?? pNull()}
+                            onUpdated={() => onFieldChanged(question)}
+                            question={$state.snapshot(question)}/>
     </div>
 {/each}
 

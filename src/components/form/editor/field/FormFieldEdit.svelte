@@ -8,7 +8,7 @@
     import {getDefaultPrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {
-        question,
+        question = $bindable(),
         selected,
         onClick,
         onDelete,

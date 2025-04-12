@@ -11,6 +11,8 @@
 
     let {dataSettings, disabled, value, onChange, dataType}: FormFieldProps = $props();
 
+    let renderer: any;
+
     function renderInput(type: FormQuestionDataType): Component<InputFieldProps> {
         switch (type) {
             case FormQuestionDataType.TEXT:
@@ -31,7 +33,11 @@
         }
     }
 
+    export function focus(){
+        renderer.focus();
+    }
+
     let RenderComponent = $derived(renderInput(dataType));
 </script>
 
-<RenderComponent {disabled} {value} {onChange} dataType={dataType}/>
+<RenderComponent bind:this={renderer} {disabled} {value} {onChange} dataType={dataType}/>

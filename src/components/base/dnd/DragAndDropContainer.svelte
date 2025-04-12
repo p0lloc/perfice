@@ -59,6 +59,7 @@
         items,
         dragDisabled: dragDisabled || disabled,
         dropTargetStyle: {},
+        morphDisabled: true,
         transformDraggedElement
     });
 </script>

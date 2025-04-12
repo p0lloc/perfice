@@ -15,7 +15,8 @@
     import Fa from "svelte-fa";
     import {
         faArrowLeft,
-        faCheck, faFont,
+        faCheck,
+        faFont,
         faHeading,
         faPlusCircle,
         faQuestionCircle,
@@ -27,10 +28,7 @@
         type FormQuestionDataTypeDefinition,
         questionDataTypeRegistry,
     } from "@perfice/model/form/data";
-    import {
-        type FormQuestionDisplaySettings,
-        questionDisplayTypeRegistry,
-    } from "@perfice/model/form/display";
+    import {type FormQuestionDisplaySettings, questionDisplayTypeRegistry,} from "@perfice/model/form/display";
     import {goto} from "@mateothegreat/svelte5-router";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
@@ -178,6 +176,12 @@
     function onReorderQuestions(items: FormQuestion[]) {
         if (form == undefined) return;
         form.questions = items;
+
+        currentQuestion = form.questions.find(q => q.id == currentQuestion?.id) ?? null;
+
+        if(currentQuestion != null){
+            sidebar.open(currentQuestion);
+        }
     }
 
     let displayTypeButtons = questionDisplayTypeRegistry.getRegisteredDisplayTypes().map(([type, t]) => {
@@ -261,9 +265,9 @@
                         items={form.questions}
                         class="flex flex-col gap-4"
                 >
-                    {#snippet item(question)}
+                    {#snippet item(question, i)}
                         <FormFieldEdit
-                                {question}
+                                bind:question={form.questions[i]}
                                 selected={currentQuestion?.id === question.id}
                                 onClick={() => editQuestion(question)}
                                 onDelete={() => deleteQuestion(question)}

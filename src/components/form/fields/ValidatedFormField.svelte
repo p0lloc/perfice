@@ -1,25 +1,23 @@
 <script lang="ts">
-    import type {FormQuestion} from "@perfice/model/form/form";
-    import {
-        pDisplay,
-        type PrimitiveValue,
-        PrimitiveValueType,
-        pString
-    } from "@perfice/model/primitive/primitive";
+    import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
+    import {type PrimitiveValue, PrimitiveValueType,} from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import FormFieldRenderer from "@perfice/components/form/fields/FormFieldRenderer.svelte";
     import {parseAndValidateValue} from "@perfice/model/form/validation";
 
-    let {question, disabled, value}: {
+    let {question, disabled, value, onUpdated}: {
         question: FormQuestion,
         disabled: boolean,
         value: PrimitiveValue,
+        onUpdated: () => void
     } = $props();
 
     let errorMessage = $state("");
     let displayTypeDef = questionDisplayTypeRegistry.getFieldByType(question.displayType)!;
     let dataTypeDef = questionDataTypeRegistry.getDefinition(question.dataType)!;
+
+    let renderer: FormFieldRenderer;
 
     function serializeValue(value: PrimitiveValue) {
         if (value.type == PrimitiveValueType.NULL) {
@@ -48,6 +46,10 @@
         return value;
     }
 
+    export function focus(){
+        renderer.focus();
+    }
+
     /**
      * Uses the value passed as a prop.
      * Necessary since the component keeps its own state, we need to re-serialize the value when it changes
@@ -58,6 +60,7 @@
 
     function onRendererUpdateValue(v: any) {
         serializedValue = v;
+        onUpdated();
     }
 
     let unitFormatted = $derived(question.unit != null ? ` (${question.unit})` : "");
@@ -67,5 +70,6 @@
 <FormFieldRenderer dataSettings={question} value={serializedValue} {disabled}
                    onChange={onRendererUpdateValue}
                    displayType={question.displayType}
+                   bind:this={renderer}
                    displaySettings={question}/>
 <p class="text-red-500">{errorMessage}</p>

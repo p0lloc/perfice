@@ -20,7 +20,7 @@
     <div class="flex items-center gap-2">
         <button
                 onclick={onDeleteClick}
-                class="hidden group-hover:block hover:text-red-800"
+                class="hidden md:group-hover:block hover:text-red-800"
         >
             <Fa icon={faTrash}/>
         </button>

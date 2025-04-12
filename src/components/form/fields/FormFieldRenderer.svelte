@@ -20,6 +20,12 @@
         onChange: (v: any) => void
     } = $props();
 
+    let renderer: any;
+
+    export function focus(){
+        renderer.focus?.();
+    }
+
     const FIELD_RENDERERS: Record<FormQuestionDisplayType, Component<FormFieldProps>> = {
         [FormQuestionDisplayType.INPUT]: InputFormField,
         [FormQuestionDisplayType.RANGE]: RangeFormField,
@@ -32,4 +38,5 @@
     const RendererComponent = $derived(FIELD_RENDERERS[displayType]);
 </script>
 <RendererComponent {value} {onChange} {disabled} dataSettings={dataSettings.dataSettings}
+                   bind:this={renderer}
                    displaySettings={displaySettings.displaySettings} dataType={dataSettings.dataType}/>
