@@ -9,7 +9,12 @@ import {
     TrackableValueType
 } from "@perfice/model/trackable/trackable";
 import type {Form} from "@perfice/model/form/form";
-import {type FormSuggestion, parseFormSuggestion, updateTextOrDynamicAssigned} from "@perfice/model/form/suggestions";
+import {
+    type FormSuggestion,
+    parseFormSuggestion,
+    serializeFormToSuggestion,
+    updateTextOrDynamicAssigned
+} from "@perfice/model/form/suggestions";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
 export interface TrackableSuggestionGroup {
@@ -106,4 +111,49 @@ export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trac
     }
 
     return [trackable, form];
+}
+
+export function serializeTrackableToSuggestion(trackable: Trackable, form: Form): TrackableSuggestion {
+    let serializedForm = serializeFormToSuggestion(form);
+    return {
+        name: trackable.name,
+        icon: trackable.icon,
+        form: serializedForm,
+        ...serializeCardSettingsToSuggestion(trackable)
+    }
+}
+
+export function serializeCardSettingsToSuggestion(trackable: Trackable): TrackableSuggestionCardSettings {
+    switch (trackable.cardType) {
+        case TrackableCardType.CHART: {
+            let cardSettings = trackable.cardSettings;
+            return {
+                cardType: TrackableCardType.CHART,
+                cardSettings: {
+                    aggregateType: cardSettings.aggregateType,
+                    field: cardSettings.field,
+                    color: cardSettings.color
+                }
+            }
+        }
+        case TrackableCardType.VALUE: {
+            let cardSettings = trackable.cardSettings;
+            return {
+                cardType: TrackableCardType.VALUE,
+                cardSettings: {
+                    representation: cardSettings.representation,
+                    type: cardSettings.type,
+                    settings: cardSettings.settings
+                }
+            }
+        }
+        case TrackableCardType.TALLY: {
+            return {
+                cardType: TrackableCardType.TALLY,
+                cardSettings: {
+                    field: trackable.cardSettings.field
+                }
+            }
+        }
+    }
 }

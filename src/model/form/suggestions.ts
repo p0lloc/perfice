@@ -13,6 +13,116 @@ export interface FormSuggestion {
     questions: FormQuestionSuggestion[];
 }
 
+export function serializeFormToSuggestion(form: Form): FormSuggestion {
+    return {
+        format: form.format,
+        questions: form.questions.map(q => serializeFormQuestionToSuggestion(q))
+    }
+}
+
+export function serializeFormQuestionToSuggestion(question: FormQuestion): FormQuestionSuggestion {
+    return {
+        id: question.id,
+        name: question.name,
+        unit: question.unit ?? undefined,
+        ...serializeDataSettings(question),
+        ...serializeDisplaySettings(question)
+    }
+}
+
+function serializeDisplaySettings(question: FormQuestion): FormQuestionSuggestionDisplaySettings {
+    switch (question.displayType) {
+        case FormQuestionDisplayType.SELECT: {
+            let displaySettings = question.displaySettings;
+            return {
+                displayType: FormQuestionDisplayType.SELECT,
+                displaySettings: {
+                    options: displaySettings.options.map(o => {
+                        return {
+                            text: o.text,
+                            value: o.value.value as string | number,
+                            icon: o.icon ?? undefined,
+                            iconAndText: o.iconAndText
+                        }
+                    }),
+                    multiple: displaySettings.multiple,
+                    grid: displaySettings.grid ?? undefined
+                }
+            }
+        }
+
+        case FormQuestionDisplayType.SEGMENTED: {
+            let displaySettings = question.displaySettings;
+            return {
+                displayType: FormQuestionDisplayType.SEGMENTED,
+                displaySettings: {
+                    options: displaySettings.options.map(o => {
+                        return {
+                            text: o.text,
+                            value: o.value.value as string | number,
+                        }
+                    })
+                }
+            }
+        }
+
+        case FormQuestionDisplayType.RANGE:{
+            let displaySettings = question.displaySettings;
+            return {
+                displayType: FormQuestionDisplayType.RANGE,
+                displaySettings: {
+                    step: displaySettings.step
+                }
+            }
+        }
+        default: {
+            return {
+                displayType: question.displayType,
+                displaySettings: {}
+            } as FormQuestionSuggestionDisplaySettings
+        }
+    }
+}
+
+function serializeHierarchyOption(option: HierarchyOption): HierarchySuggestionOption {
+    return {
+        value: option.value.value as string | number,
+        text: option.text,
+        color: option.color,
+        gridSize: option.gridSize,
+        children: option.children.map(c => serializeHierarchyOption(c))
+    }
+}
+
+function serializeDataSettings(question: FormQuestion): FormQuestionSuggestionDataSettings {
+    switch (question.dataType) {
+        case FormQuestionDataType.HIERARCHY: {
+            let dataSettings = question.dataSettings;
+            return {
+                dataType: FormQuestionDataType.HIERARCHY,
+                dataSettings: {
+                    root: serializeHierarchyOption(dataSettings.root)
+                }
+            }
+        }
+        case FormQuestionDataType.NUMBER: {
+            return {
+                dataType: FormQuestionDataType.NUMBER,
+                dataSettings: {
+                    min: question.dataSettings.min ?? undefined,
+                    max: question.dataSettings.max ?? undefined
+                }
+            }
+        }
+        default: {
+            return {
+                dataType: question.dataType,
+                dataSettings: {}
+            }
+        }
+    }
+}
+
 export function updateTextOrDynamicAssigned(textOrDynamic: TextOrDynamic[], assignedQuestions: Map<string, string>): TextOrDynamic[] {
     // Replace dynamic values with assigned question ids
     return textOrDynamic.map(t => {
@@ -295,7 +405,6 @@ export interface SegmentedSuggestionDisplaySettings {
 }
 
 export interface SegmentedItemSuggestion {
-    name: string;
     text: string;
     value: string | number;
 }

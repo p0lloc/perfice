@@ -177,7 +177,131 @@
       },
       {
         "name": "Food",
-        "icon": "fish"
+        "icon": "fish",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "what"
+            },
+            {
+              "value": " ",
+              "dynamic": false
+            },
+            {
+              "value": "calories",
+              "dynamic": true
+            }
+          ],
+          "questions": [
+            {
+              "id": "meal_type",
+              "name": "Meal type",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SEGMENTED",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Breakfast",
+                    "value": "Breakfast"
+                  },
+                  {
+                    "text": "Lunch",
+                    "value": "Lunch"
+                  },
+                  {
+                    "text": "Dinner",
+                    "value": "Dinner"
+                  },
+                  {
+                    "text": "Snack",
+                    "value": "Snack"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "what",
+              "name": "What did you eat?",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Rice",
+                    "value": "Rice",
+                    "icon": "rice",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Fish",
+                    "value": "Fish",
+                    "icon": "fish",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Meat",
+                    "value": "Meat",
+                    "icon": "cow",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Chicken",
+                    "value": "Chicken",
+                    "icon": "chicken",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Bacon",
+                    "value": "Bacon",
+                    "icon": "bacon",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Burger",
+                    "value": "Burger",
+                    "icon": "hamburger",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": true,
+                "grid": {
+                  "itemsPerRow": 4,
+                  "border": true
+                }
+              }
+            },
+            {
+              "id": "calories",
+              "name": "Calories",
+              "unit": "kcal",
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "value": "meal_type",
+              "dynamic": true
+            },
+            {
+              "value": " - ",
+              "dynamic": false
+            },
+            {
+              "value": "what",
+              "dynamic": true
+            }
+          ],
+          "type": "TABLE"
+        }
       },
       {
         "name": "Medicine",

@@ -10,9 +10,12 @@
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import {ExportFileType} from "@perfice/services/export/export";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
+    import {serializeTrackableToSuggestion} from "@perfice/model/trackable/suggestions";
 
     let {editState, close}: { editState: EditTrackableState, close: () => void } = $props();
     let fileType = $state(ExportFileType.JSON);
+
+    let dev = import.meta.env.DEV;
 
     function onFileChange(files: FileList) {
         imports.importFile(files[0], editState.trackable.formId);
@@ -30,6 +33,10 @@
                     await exports.exportJson(editState.trackable.formId));
                 break;
         }
+    }
+
+    function exportSuggestion() {
+        console.log(JSON.stringify(serializeTrackableToSuggestion(editState.trackable, editState.form)))
     }
 
     const FILE_TYPES: SegmentedItem<ExportFileType>[] = [
@@ -50,6 +57,10 @@
         Export
     </Button>
 </div>
+
+{#if dev}
+    <Button class="mt-8" onClick={exportSuggestion}>Export suggestion</Button>
+{/if}
 
 <style>
     h3 {
