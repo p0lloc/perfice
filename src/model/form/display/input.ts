@@ -1,6 +1,6 @@
 import {faKeyboard, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
-import {prettyPrintPrimitive, pString, type PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
 
 export interface InputFormQuestionSettings {
 }

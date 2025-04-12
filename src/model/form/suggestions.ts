@@ -277,12 +277,6 @@ export function parseSegmentedItem(v: SegmentedItemSuggestion): SegmentedOption 
 
 export function parseDisplaySettings(v: FormQuestionSuggestionDisplaySettings): FormQuestionDisplaySettings {
     switch (v.displayType) {
-        case FormQuestionDisplayType.INPUT: {
-            return {
-                displayType: FormQuestionDisplayType.INPUT,
-                displaySettings: {}
-            }
-        }
         case FormQuestionDisplayType.SELECT: {
             return {
                 displayType: FormQuestionDisplayType.SELECT,
@@ -323,6 +317,12 @@ export function parseDisplaySettings(v: FormQuestionSuggestionDisplaySettings): 
                 displaySettings: {}
             }
         }
+        default: {
+            return {
+                displayType: v.displayType,
+                displaySettings: {}
+            }
+        }
     }
 }
 
@@ -346,6 +346,7 @@ export type FormQuestionSuggestionDataSettings =
 export type FormQuestionSuggestionDisplaySettings =
     SuggestionDisplayDef<FormQuestionDisplayType.SELECT, SelectSuggestionDisplaySettings>
     | SuggestionDisplayDef<FormQuestionDisplayType.INPUT, EmptySuggestionDisplaySettings>
+    | SuggestionDisplayDef<FormQuestionDisplayType.TEXT_AREA, EmptySuggestionDisplaySettings>
     | SuggestionDisplayDef<FormQuestionDisplayType.HIERARCHY, EmptySuggestionDisplaySettings>
     | SuggestionDisplayDef<FormQuestionDisplayType.RANGE, RangeFormQuestionSettings>
     | SuggestionDisplayDef<FormQuestionDisplayType.SEGMENTED, SegmentedSuggestionDisplaySettings>

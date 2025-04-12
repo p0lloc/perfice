@@ -10,6 +10,7 @@
     import SelectFormField from "@perfice/components/form/fields/select/SelectFormField.svelte";
     import HierarchyFormField from "@perfice/components/form/fields/hierarchy/HierarchyFormField.svelte";
     import RichInputFormField from "@perfice/components/form/fields/richInput/RichInputFormField.svelte";
+    import TextAreaFormField from "@perfice/components/form/fields/textArea/TextAreaFormField.svelte";
 
     let {displayType, value, onChange, disabled, dataSettings, displaySettings}: {
         dataSettings: FormQuestionDataSettings,
@@ -28,6 +29,7 @@
 
     const FIELD_RENDERERS: Record<FormQuestionDisplayType, Component<FormFieldProps>> = {
         [FormQuestionDisplayType.INPUT]: InputFormField,
+        [FormQuestionDisplayType.TEXT_AREA]: TextAreaFormField,
         [FormQuestionDisplayType.RANGE]: RangeFormField,
         [FormQuestionDisplayType.SEGMENTED]: SegmentedFormField,
         [FormQuestionDisplayType.SELECT]: SelectFormField,

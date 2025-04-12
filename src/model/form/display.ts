@@ -4,9 +4,10 @@ import {SelectFieldDefinition, type SelectFormQuestionSettings} from "./display/
 import {HierarchyFieldDefinition, type HierarchyFormDisplaySettings} from "./display/hierarchy";
 import {RangeFieldDefinition, type RangeFormQuestionSettings} from "@perfice/model/form/display/range";
 import {SegmentedFieldDefinition, type SegmentedFormQuestionSettings} from "@perfice/model/form/display/segmented";
-import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {RichInputFieldDefinition, type RichInputFormQuestionSettings} from "@perfice/model/form/display/rich-input";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {TextAreaFieldDefinition, type TextAreaFormQuestionSettings} from "@perfice/model/form/display/text-area";
 
 export type FormQuestionDisplaySettings =
     DisplayDef<FormQuestionDisplayType.INPUT, InputFormQuestionSettings>
@@ -15,6 +16,7 @@ export type FormQuestionDisplaySettings =
     | DisplayDef<FormQuestionDisplayType.HIERARCHY, HierarchyFormDisplaySettings>
     | DisplayDef<FormQuestionDisplayType.SEGMENTED, SegmentedFormQuestionSettings>
     | DisplayDef<FormQuestionDisplayType.RICH_INPUT, RichInputFormQuestionSettings>
+    | DisplayDef<FormQuestionDisplayType.TEXT_AREA, TextAreaFormQuestionSettings>
 
     ;
 
@@ -69,4 +71,5 @@ questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.INPUT, new Inp
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.HIERARCHY, new HierarchyFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.SEGMENTED, new SegmentedFieldDefinition());
 questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RANGE, new RangeFieldDefinition());
+questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.TEXT_AREA, new TextAreaFieldDefinition());
 //questionDisplayTypeRegistry.registerField(FormQuestionDisplayType.RICH_INPUT, new RichInputFieldDefinition());

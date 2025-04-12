@@ -26,6 +26,7 @@ export enum FormQuestionDisplayType {
     RANGE = "RANGE",
     SEGMENTED = "SEGMENTED",
     RICH_INPUT = "RICH_INPUT",
+    TEXT_AREA = "TEXT_AREA",
 }
 
 export interface Form {
