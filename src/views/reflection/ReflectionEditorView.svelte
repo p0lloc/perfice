@@ -61,7 +61,7 @@
             id: crypto.randomUUID(),
             name: "New page",
             icon: "moon",
-            description: "lorem ipsum dolor sit amet",
+            description: "",
             widgets: []
         });
         dragContainer.invalidateItems();

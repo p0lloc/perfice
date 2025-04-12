@@ -4,14 +4,17 @@ import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {forms} from "@perfice/app";
 import {
+    pDisplay,
     prettyPrintPrimitive,
     primitiveAsString,
     type PrimitiveValue,
-    PrimitiveValueType
+    PrimitiveValueType,
+    pString
 } from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
+import {formatDateLongTermOrHHMM} from "@perfice/util/time/format";
 
 export interface TableWidgetResult {
     name: string;
@@ -30,7 +33,7 @@ export interface TableWidgetEntry {
     suffix: string;
 }
 
-function addTableWidgetFromAnswers(groups: TableWidgetGroup[], answers: Record<string, PrimitiveValue>, settings: TableWidgetSettings) {
+function addTableWidgetEntryFromAnswers(groups: TableWidgetGroup[], answers: Record<string, PrimitiveValue>, settings: TableWidgetSettings) {
     let prefix = formatAnswersIntoRepresentation(answers, settings.prefix);
     let suffix = formatAnswersIntoRepresentation(answers, settings.suffix);
 
@@ -62,6 +65,11 @@ function addTableWidgetFromAnswers(groups: TableWidgetGroup[], answers: Record<s
     }
 }
 
+export function formatTimestampForTable(timestamp: number, date: Date): PrimitiveValue {
+    let formatted = formatDateLongTermOrHHMM(new Date(timestamp), date);
+    return pDisplay(pString(formatted), pString(formatted));
+}
+
 export function TableWidget(variableId: string, settings: TableWidgetSettings, date: Date,
                             weekStart: WeekStart, key: string, variableService: VariableService,
                             extraAnswers: Record<string, PrimitiveValue>[] = []): Readable<Promise<TableWidgetResult>> {
@@ -90,13 +98,16 @@ export function TableWidget(variableId: string, settings: TableWidgetSettings, d
             for (let primitive of resolved.value) {
                 if (primitive.type != PrimitiveValueType.JOURNAL_ENTRY) continue;
 
-                let answers = primitive.value.value;
-                addTableWidgetFromAnswers(groups, answers, settings);
+                let answers = {
+                    ...primitive.value.value, timestamp:
+                        formatTimestampForTable(primitive.value.timestamp, date)
+                };
+                addTableWidgetEntryFromAnswers(groups, answers, settings);
             }
 
             // Add any extra answers
             extraAnswers.forEach(answers =>
-                addTableWidgetFromAnswers(groups, answers, settings));
+                addTableWidgetEntryFromAnswers(groups, answers, settings));
 
             resolve({
                 name: form.name,

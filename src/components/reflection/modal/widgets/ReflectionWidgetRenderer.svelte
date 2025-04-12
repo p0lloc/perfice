@@ -18,7 +18,7 @@
         widget: ReflectionWidget,
         states: Record<string, ReflectionWidgetAnswerState>, onChange: (state: any) => void,
         openNestedForm: (formId: string,
-                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         onLog: (answers: Record<string, PrimitiveValue>, timestamp: number) => void,
                          timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     } = $props();
@@ -35,7 +35,7 @@
         dependencies: Record<string, string>,
         onChange: (state: any) => void,
         openNestedForm: (formId: string,
-                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         onLog: (answers: Record<string, PrimitiveValue>, timestamp: number) => void,
                          timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     }>> = {

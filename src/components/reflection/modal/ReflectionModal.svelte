@@ -34,7 +34,7 @@
     let nestedFormEmbed: FormEmbed;
     let nestedForm = $state<Form | null>(null);
     let nestedFormAnswers = $state<Record<string, PrimitiveValue>>({});
-    let nestedFormCallback = $state<(answers: Record<string, PrimitiveValue>) => void>(() => {
+    let nestedFormCallback = $state<(answers: Record<string, PrimitiveValue>, timestamp: number) => void>(() => {
     });
     let nestedFormTimeScope = $state(SimpleTimeScopeType.DAILY);
 
@@ -65,12 +65,13 @@
     }
 
     async function openNestedForm(formId: string,
-                                  onLog: (answers: Record<string, PrimitiveValue>) => void,
+                                  onLog: (answers: Record<string, PrimitiveValue>, timestamp: number) => void,
                                   timeScope: SimpleTimeScopeType,
                                   answers?: Record<string, PrimitiveValue>) {
         let formById = await forms.getFormById(formId);
         if (formById == null) return;
 
+        date = new Date();
         nestedForm = formById;
         nestedFormAnswers = answers ?? {};
         nestedFormCallback = onLog;
@@ -81,7 +82,7 @@
         let answers = nestedFormEmbed.validateAndGetAnswers();
         if (answers == null) return;
 
-        nestedFormCallback(answers);
+        nestedFormCallback(answers, date.getTime());
         cancelNestedForm();
     }
 
@@ -91,7 +92,6 @@
 
     export function open(activeReflection: Reflection) {
         reflection = activeReflection;
-        date = new Date();
         currentPageNumber = 0;
         nestedForm = null;
         answerStates = Object.fromEntries(reflection.pages.flatMap(p => Object.entries(generateAnswerStates(p.widgets))));

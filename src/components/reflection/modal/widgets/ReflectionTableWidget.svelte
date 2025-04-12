@@ -6,6 +6,7 @@
         ReflectionTableWidgetSettings
     } from "@perfice/model/reflection/widgets/table";
     import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {formatTimestampForTable} from "@perfice/stores/sharedWidgets/table/table";
 
     let {settings, state: tableState, onChange, dependencies, openNestedForm}: {
         settings: ReflectionTableWidgetSettings,
@@ -13,7 +14,7 @@
         dependencies: Record<string, string>,
         onChange: (state: ReflectionTableWidgetAnswerState) => void,
         openNestedForm: (formId: string,
-                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         onLog: (answers: Record<string, PrimitiveValue>, timestamp: number) => void,
                          timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     } = $props();
@@ -26,10 +27,14 @@
         openNestedForm(formId, onFormLog, settings.timeScope, formAnswers);
     }
 
-    function onFormLog(answers: Record<string, PrimitiveValue>) {
+    function onFormLog(answers: Record<string, PrimitiveValue>, timestamp: number) {
         onChange({
             ...tableState,
-            answers: [...tableState.answers, answers]
+            answers: [...tableState.answers, {
+                ...answers,
+                timestamp:
+                    formatTimestampForTable(timestamp, new Date())
+            }]
         })
     }
 </script>

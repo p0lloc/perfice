@@ -61,6 +61,16 @@
             formId,
         });
     }
+
+    let availableDynamic = $derived(selectedForm != null ? [...selectedForm.questions.map(q => {
+        return {
+            value: q.id,
+            name: q.name
+        }
+    }), ...[{
+        value: "timestamp",
+        name: "Timestamp"
+    }]] : []);
 </script>
 
 <div class="row-between">
@@ -93,9 +103,9 @@
         <p class="mb-2 text-lg">Prefix</p>
         <EditTextOrDynamic
                 value={settings.prefix}
-                availableDynamic={selectedForm.questions}
+                availableDynamic={availableDynamic}
                 onChange={(e) => onChange({...settings, prefix: e})}
-                getDynamicId={(v) => v.id}
+                getDynamicId={(v) => v.value}
                 getDynamicText={(v) => v.name}
         />
 
@@ -105,9 +115,9 @@
         <p class="mb-2 text-lg">Suffix</p>
         <EditTextOrDynamic
                 value={settings.suffix}
-                availableDynamic={selectedForm.questions}
+                availableDynamic={availableDynamic}
                 onChange={(e) => onChange({...settings, suffix: e})}
-                getDynamicId={(v) => v.id}
+                getDynamicId={(v) => v.value}
                 getDynamicText={(v) => v.name}
         />
     </div>

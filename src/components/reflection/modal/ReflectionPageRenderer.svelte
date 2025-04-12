@@ -10,7 +10,7 @@
         states: Record<string, ReflectionWidgetAnswerState>,
         onStateChange: (id: string, state: ReflectionWidgetAnswerState) => void,
         openNestedForm: (formId: string,
-                         onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         onLog: (answers: Record<string, PrimitiveValue>, timestamp: number) => void,
                          timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     } = $props();

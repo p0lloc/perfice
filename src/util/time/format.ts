@@ -1,4 +1,5 @@
-import {getDaysDifference, isSameDay} from "@perfice/util/time/simple";
+import {dateToWeekStart, getDaysDifference, isSameDay} from "@perfice/util/time/simple";
+import {WeekStart} from "@perfice/model/variable/time/time";
 
 export const WEEK_DAYS_SHORT = [
     "Sun",
@@ -69,7 +70,6 @@ export function formatTimestampHHMM(timestamp: number) {
     return formatDateHHMM(new Date(timestamp));
 }
 
-
 export function formatTimeElapsed(minutes: number) {
     let hours = Math.floor(minutes / 60);
     minutes = Math.floor(minutes % 60);
@@ -85,8 +85,14 @@ export function formatDateHHMM(date: Date) {
     return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
 }
 
-export function formatDateLongTerm(date: Date) {
-    return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
+export function formatDateLongTerm(date: Date, currentDate: Date) {
+    let weekStart = dateToWeekStart(currentDate, WeekStart.MONDAY); // TODO: don't hardcode week start
+    let prefix;
+    if(date.getTime() > weekStart.getTime()){
+        return WEEK_DAYS_SHORT[date.getDay()];
+    } else {
+        return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`
+    }
 }
 
 export function formatDateLongTermOrHHMM(date: Date, currentDate: Date) {
@@ -94,5 +100,5 @@ export function formatDateLongTermOrHHMM(date: Date, currentDate: Date) {
         return formatTimestampHHMM(date.getTime());
     }
 
-    return `${formatDateLongTerm(date)} ${formatDateHHMM(date)}`;
+    return `${formatDateLongTerm(date, currentDate)} ${formatDateHHMM(date)}`;
 }
