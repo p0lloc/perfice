@@ -1,12 +1,7 @@
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
-import {
-    type TextOrDynamic,
-    type Variable,
-    type VariableTypeDef,
-    VariableTypeName
-} from "@perfice/model/variable/variable";
-import {ListVariableType} from "@perfice/services/variable/types/list";
+import {type Variable, type VariableTypeDef} from "@perfice/model/variable/variable";
+import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface DashboardTableWidgetSettings extends TableWidgetSettings {
 }
@@ -28,6 +23,7 @@ export class DashboardTableWidgetDefinition implements DashboardWidgetDefinition
         return {
             formId: "",
             prefix: [],
+            timeScope: SimpleTimeScopeType.DAILY,
             suffix: [],
             groupBy: null
         };

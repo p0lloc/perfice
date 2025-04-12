@@ -157,7 +157,7 @@ export class ReflectionService {
         await this.observers.notifyObservers(EntityObserverType.DELETED, reflection);
     }
 
-    async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>) {
+    async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>, date: Date) {
         let widgets = reflection.pages.flatMap(p => p.widgets);
         for (let [widgetId, answerState] of Object.entries(answers)) {
             // TODO: this logic could be moved to the definitions themselves
@@ -171,13 +171,13 @@ export class ReflectionService {
 
                     let answers: Record<string, PrimitiveValue> = convertAnswersToDisplay(answerState.state.answers, form.questions);
 
-                    await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                    await this.journalService.logEntry(form, answers, form.format, date.getTime());
                     break;
                 }
                 case ReflectionWidgetType.TAGS: {
                     let tagIds = answerState.state.tags;
                     for (let tagId of tagIds) {
-                        await this.tagService.logTag(tagId, new Date());
+                        await this.tagService.logTag(tagId, date);
                     }
                     break;
                 }
@@ -189,7 +189,7 @@ export class ReflectionService {
                     if (form == null) continue;
 
                     for (let answers of answerState.state.answers) {
-                        await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                        await this.journalService.logEntry(form, answers, form.format, date.getTime());
                     }
 
                     break;
@@ -208,14 +208,14 @@ export class ReflectionService {
 
                                     let answers: Record<string, PrimitiveValue> = convertAnswersToDisplay(value.data.answers, form.questions);
 
-                                    await this.journalService.logEntry(form, answers, form.format, new Date().getTime());
+                                    await this.journalService.logEntry(form, answers, form.format, date.getTime());
                                 }
                                 break;
                             case ChecklistConditionType.TAG:
                                 if(value.unchecked){
                                     await this.tagService.unlogTagEntry(value.id);
                                 } else {
-                                    await this.tagService.logTag(value.data.tagId, new Date());
+                                    await this.tagService.logTag(value.data.tagId, date);
                                 }
                                 break;
                         }

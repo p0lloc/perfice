@@ -80,7 +80,6 @@ import {setupServiceWorker} from "@perfice/swSetup";
 import {NotificationType} from "@perfice/model/notification/notification";
 import {registerDataTypes} from "@perfice/model/form/data";
 import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
-import {en} from "svelty-picker/i18n";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -190,7 +189,8 @@ export function checklistWidget(dependencies: Record<string, string>, settings: 
 }
 
 export function tableWidget(listVariableId: string, settings: DashboardTableWidgetSettings, date: Date,
-                            weekStart: WeekStart, key: string, extraAnswers: Record<string, PrimitiveValue>[] = []) {
+                            weekStart: WeekStart, key: string,
+                            extraAnswers: Record<string, PrimitiveValue>[] = []) {
     return TableWidget(listVariableId, settings, date, weekStart, key, variableService, extraAnswers);
 }
 

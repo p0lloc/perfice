@@ -19,6 +19,7 @@ import {
     ReflectionChecklistWidgetDefinition,
     type ReflectionChecklistWidgetSettings
 } from "@perfice/model/reflection/widgets/checklist";
+import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface Reflection {
     id: string;

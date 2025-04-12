@@ -1,4 +1,3 @@
-import type {DashboardTableWidgetSettings} from "@perfice/model/dashboard/widgets/table";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
@@ -64,10 +63,11 @@ function addTableWidgetFromAnswers(groups: TableWidgetGroup[], answers: Record<s
 }
 
 export function TableWidget(variableId: string, settings: TableWidgetSettings, date: Date,
-                            weekStart: WeekStart, key: string, variableService: VariableService, extraAnswers: Record<string, PrimitiveValue>[] = []): Readable<Promise<TableWidgetResult>> {
+                            weekStart: WeekStart, key: string, variableService: VariableService,
+                            extraAnswers: Record<string, PrimitiveValue>[] = []): Readable<Promise<TableWidgetResult>> {
 
     let store = VariableValueStore(variableId,
-        tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
+        tSimple(settings.timeScope ?? SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
 
     return derived(store, (value, set) => {
         set(new Promise(async (resolve) => {

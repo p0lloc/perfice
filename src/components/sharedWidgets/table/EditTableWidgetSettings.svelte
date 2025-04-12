@@ -6,6 +6,8 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {faTimes} from "@fortawesome/free-solid-svg-icons";
     import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
+    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
+    import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
     let {settings, onChange, forms}: {
         settings: TableWidgetSettings,
@@ -43,6 +45,13 @@
         });
     }
 
+    function onTimeScopeChange(v: SimpleTimeScopeType) {
+        onChange({
+            ...settings,
+            timeScope: v
+        });
+    }
+
     function onFormChange(formId: string) {
         let form = forms.find(f => f.id == formId);
         if (form == null) return;
@@ -58,6 +67,11 @@
     Form
     <BindableDropdownButton value={settings.formId} items={availableForms}
                             onChange={onFormChange}/>
+</div>
+<div class="row-between mt-2">
+    Time scope
+    <BindableDropdownButton value={settings.timeScope} items={SIMPLE_TIME_SCOPE_TYPES}
+                            onChange={onTimeScopeChange}/>
 </div>
 
 <div class="row-between mt-2">

@@ -10,6 +10,9 @@
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
     import {tags} from "@perfice/app";
     import type {ChecklistCondition, ChecklistWidgetSettings} from "@perfice/model/sharedWidgets/checklist/checklist";
+    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
+    import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
+    import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
     let {settings, onChange, forms}: {
         settings: ChecklistWidgetSettings,
@@ -47,13 +50,22 @@
         dragContainer.invalidateItems();
     }
 
+    function onTimeScopeChange(v: SimpleTimeScopeType) {
+        onChange({...settings, timeScope: v});
+    }
+
     function onReorderFinalize(items: ChecklistCondition[]) {
         onChange({...settings, conditions: items});
     }
 </script>
 
 <EditChecklistConditionModal bind:this={editModal}/>
-<div class="row-gap mt-4">
+<div class="row-between mt-2">
+    <span class="text-gray-500 font-bold">Time scope</span>
+    <BindableDropdownButton value={settings.timeScope} items={SIMPLE_TIME_SCOPE_TYPES}
+                            onChange={onTimeScopeChange}/>
+</div>
+<div class="row-gap mt-2">
     <h2 class="text-xl text-gray-500 font-bold">Items</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>

@@ -1,7 +1,8 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {
-        type Reflection, REFLECTION_AUTO_OPEN_TYPES,
+        type Reflection,
+        REFLECTION_AUTO_OPEN_TYPES,
         ReflectionAutoOpenType,
         type ReflectionPage,
         type ReflectionWidget
@@ -24,6 +25,8 @@
     import EditReflectionNotifications
         from "@perfice/components/reflection/editor/notifications/EditReflectionNotifications.svelte";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
+    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
 
     let {params}: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);
@@ -112,7 +115,7 @@
                 id: crypto.randomUUID(),
                 name: "New reflection",
                 pages: [],
-                openType: ReflectionAutoOpenType.DISABLE
+                openType: ReflectionAutoOpenType.DISABLE,
             };
             notifications = [];
             editing = false;
@@ -155,7 +158,7 @@
             <h3 class="label">Name</h3>
             <input type="text" bind:value={reflection.name} placeholder="Name"/>
         </div>
-        <div class="flex md:flex-col justify-between gap-2 mt-4 items-center md:items-start">
+        <div class="label-icon mt-4">
             <h3 class="label">Auto open</h3>
             <DropdownButton value={reflection.openType} items={REFLECTION_AUTO_OPEN_TYPES} onChange={onAutoOpenChange}/>
         </div>
@@ -193,5 +196,9 @@
 <style>
     .label {
         @apply text-lg md:text-2xl font-bold text-gray-700;
+    }
+
+    .label-icon {
+        @apply flex md:flex-col justify-between gap-2 items-center md:items-start;
     }
 </style>

@@ -132,9 +132,8 @@ export function ChecklistWidget(dependencies: Record<string, string>, settings: 
     let variableIds = Object.values(dependencies);
     let stores = variableIds.map(v => {
         return VariableValueStore(v,
-            tSimple(SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
-    })
-
+            tSimple(settings.timeScope ?? SimpleTimeScopeType.DAILY, weekStart, date.getTime()), variableService, key, false);
+    });
 
     return derived(stores, (value, set) => {
         set(new Promise(async (resolve) => {

@@ -5,6 +5,7 @@
         ReflectionTableWidgetAnswerState,
         ReflectionTableWidgetSettings
     } from "@perfice/model/reflection/widgets/table";
+    import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
     let {settings, state: tableState, onChange, dependencies, openNestedForm}: {
         settings: ReflectionTableWidgetSettings,
@@ -13,6 +14,7 @@
         onChange: (state: ReflectionTableWidgetAnswerState) => void,
         openNestedForm: (formId: string,
                          onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     } = $props();
 
@@ -21,7 +23,7 @@
     }
 
     async function openFormModal(formId: string, formAnswers?: Record<string, PrimitiveValue>) {
-        openNestedForm(formId, onFormLog, formAnswers);
+        openNestedForm(formId, onFormLog, settings.timeScope, formAnswers);
     }
 
     function onFormLog(answers: Record<string, PrimitiveValue>) {
@@ -31,7 +33,6 @@
         })
     }
 </script>
-
 
 <TableWidget {settings} date={new Date()} {openFormModal}
              listVariableId={dependencies["list"]}

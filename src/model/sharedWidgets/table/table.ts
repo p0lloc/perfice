@@ -1,10 +1,12 @@
 import {type TextOrDynamic, type VariableTypeDef, VariableTypeName} from "@perfice/model/variable/variable";
 import {ListVariableType} from "@perfice/services/variable/types/list";
+import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface TableWidgetSettings {
     formId: string;
     prefix: TextOrDynamic[];
     suffix: TextOrDynamic[];
+    timeScope: SimpleTimeScopeType;
     // Question id to optionally group by
     groupBy: string | null;
 }

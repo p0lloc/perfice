@@ -3,6 +3,7 @@
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import ReflectionWidgetRenderer from "@perfice/components/reflection/modal/widgets/ReflectionWidgetRenderer.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
     let {page, states, onStateChange, openNestedForm}: {
         page: ReflectionPage,
@@ -10,6 +11,7 @@
         onStateChange: (id: string, state: ReflectionWidgetAnswerState) => void,
         openNestedForm: (formId: string,
                          onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     } = $props();
 

@@ -3,9 +3,11 @@ import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type VariableTypeDef, VariableTypeName} from "@perfice/model/variable/variable";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
+import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface ChecklistWidgetSettings {
     conditions: ChecklistCondition[];
+    timeScope: SimpleTimeScopeType;
 }
 
 export enum ChecklistConditionType {

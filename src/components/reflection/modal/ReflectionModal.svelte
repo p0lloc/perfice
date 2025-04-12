@@ -17,6 +17,10 @@
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
     import Button from "@perfice/components/base/button/Button.svelte";
+    import DatePicker from "@perfice/components/base/datePicker/DatePicker.svelte";
+    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {faCalendar} from "@fortawesome/free-solid-svg-icons";
+    import {formatDateYYYYMMDDHHMMSS} from "@perfice/util/time/format";
 
     let modal: Modal;
     let reflection = $state<Reflection>({} as Reflection);
@@ -32,6 +36,9 @@
     let nestedFormAnswers = $state<Record<string, PrimitiveValue>>({});
     let nestedFormCallback = $state<(answers: Record<string, PrimitiveValue>) => void>(() => {
     });
+    let nestedFormTimeScope = $state(SimpleTimeScopeType.DAILY);
+
+    let date = $state(new Date());
 
     function validate(): boolean {
         return pageRenderer.validate();
@@ -46,7 +53,7 @@
         if (!validate()) return;
 
         if (currentPageNumber == reflection.pages.length - 1) {
-            reflections.logReflection($state.snapshot(reflection), $state.snapshot(answerStates));
+            reflections.logReflection($state.snapshot(reflection), $state.snapshot(answerStates), date);
             modal.close();
         } else {
             currentPageNumber++;
@@ -59,6 +66,7 @@
 
     async function openNestedForm(formId: string,
                                   onLog: (answers: Record<string, PrimitiveValue>) => void,
+                                  timeScope: SimpleTimeScopeType,
                                   answers?: Record<string, PrimitiveValue>) {
         let formById = await forms.getFormById(formId);
         if (formById == null) return;
@@ -66,6 +74,7 @@
         nestedForm = formById;
         nestedFormAnswers = answers ?? {};
         nestedFormCallback = onLog;
+        nestedFormTimeScope = timeScope;
     }
 
     function logNestedForm() {
@@ -82,7 +91,9 @@
 
     export function open(activeReflection: Reflection) {
         reflection = activeReflection;
+        date = new Date();
         currentPageNumber = 0;
+        nestedForm = null;
         answerStates = Object.fromEntries(reflection.pages.flatMap(p => Object.entries(generateAnswerStates(p.widgets))));
         modal.open();
     }
@@ -92,9 +103,17 @@
        onConfirm={confirm}>
 
     {#if nestedForm != null}
+        {#if nestedFormTimeScope !== SimpleTimeScopeType.DAILY}
+            <div class="flex justify-end mb-4 gap-2 items-center text-gray-500">
+                <Fa icon={faCalendar}/>
+                <DatePicker value={formatDateYYYYMMDDHHMMSS(date)} time={true}
+                            onChange={(v) => date = new Date(v)} disabled={false}/>
+            </div>
+        {/if}
         <FormEmbed bind:this={nestedFormEmbed} questions={nestedForm.questions} answers={nestedFormAnswers}/>
     {:else}
-        <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage} states={answerStates}
+        <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage}
+                                states={answerStates}
                                 bind:this={pageRenderer} {openNestedForm}/>
     {/if}
 

@@ -3,6 +3,7 @@ import {type Variable, type VariableTypeDef} from "@perfice/model/variable/varia
 import {
     type ChecklistWidgetSettings, createChecklistDependencies
 } from "@perfice/model/sharedWidgets/checklist/checklist";
+import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface DashboardChecklistWidgetSettings extends ChecklistWidgetSettings {
 }
@@ -22,7 +23,8 @@ export class DashboardChecklistWidgetDefinition implements DashboardWidgetDefini
 
     getDefaultSettings(): DashboardChecklistWidgetSettings {
         return {
-            conditions: []
+            conditions: [],
+            timeScope: SimpleTimeScopeType.DAILY
         };
     }
 

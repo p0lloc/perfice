@@ -9,6 +9,7 @@ import {
     createChecklistDependencies
 } from "@perfice/model/sharedWidgets/checklist/checklist";
 import type {ChecklistData} from "@perfice/stores/sharedWidgets/checklist/checklist";
+import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface ReflectionChecklistWidgetSettings extends ChecklistWidgetSettings {
 }
@@ -24,7 +25,8 @@ export class ReflectionChecklistWidgetDefinition implements ReflectionWidgetDefi
 
     getDefaultSettings(): ReflectionChecklistWidgetSettings {
         return {
-            conditions: []
+            conditions: [],
+            timeScope: SimpleTimeScopeType.DAILY
         };
     }
 

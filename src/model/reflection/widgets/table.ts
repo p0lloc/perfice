@@ -2,6 +2,7 @@ import {createTypeDefForTableWidget, type TableWidgetSettings} from "@perfice/mo
 import {type ReflectionWidgetAnswerState, type ReflectionWidgetDefinition, ReflectionWidgetType} from "../reflection";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
 export interface ReflectionTableWidgetSettings extends TableWidgetSettings {
 }
@@ -16,6 +17,7 @@ export class ReflectionTableWidgetDefinition implements ReflectionWidgetDefiniti
             formId: "",
             prefix: [],
             suffix: [],
+            timeScope: SimpleTimeScopeType.DAILY,
             groupBy: null
         };
     }

@@ -57,8 +57,8 @@ export class ReflectionStore extends AsyncStore<Reflection[]> {
         await this.reflectionService.deleteReflectionById(id);
     }
 
-    async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>) {
-        await this.reflectionService.logReflection(reflection, answers);
+    async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>, date: Date) {
+        await this.reflectionService.logReflection(reflection, answers, date);
     }
 
     async deleteNotification(id: string) {

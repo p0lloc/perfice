@@ -12,12 +12,14 @@
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import ReflectionChecklistWidget
         from "@perfice/components/reflection/modal/widgets/ReflectionChecklistWidget.svelte";
+    import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 
     let {widget, states, onChange, openNestedForm}: {
         widget: ReflectionWidget,
         states: Record<string, ReflectionWidgetAnswerState>, onChange: (state: any) => void,
         openNestedForm: (formId: string,
                          onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     } = $props();
 
@@ -34,6 +36,7 @@
         onChange: (state: any) => void,
         openNestedForm: (formId: string,
                          onLog: (answers: Record<string, PrimitiveValue>) => void,
+                         timeScope: SimpleTimeScopeType,
                          answers?: Record<string, PrimitiveValue>) => void
     }>> = {
         [ReflectionWidgetType.FORM]: ReflectionFormWidget,
