@@ -20,10 +20,10 @@
         <div>
             <Icon name={value.icon} class="text-3xl w-8"/>
         </div>
-        <div class="w-full">
+        <div class="flex-1 min-w-0">
             <div class="row-between w-full">
-                <h2 class="text-xl text-gray-600 font-bold">{value.name}</h2>
-                <p class="text-xs text-gray-400">{value.timeScope}</p>
+                <h2 class="text-xl text-gray-600 font-bold overflow-hidden text-ellipsis">{value.name}</h2>
+                <p class="text-xs text-gray-400 overflow-hidden">{value.timeScope}</p>
             </div>
             <p class="text-lg">{value.value}</p>
         </div>

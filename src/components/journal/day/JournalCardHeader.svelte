@@ -14,7 +14,7 @@
     }
 </script>
 
-<div class="w-full flex justify-between items-center overflow-hidden text-ellipsis ">
+<div class="w-full flex justify-between items-center overflow-hidden text-ellipsis">
     {@render children()}
 
     <div class="flex items-center gap-2">
