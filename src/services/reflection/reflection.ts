@@ -15,6 +15,8 @@ import {updateDependencies} from "@perfice/services/variable/dependencies";
 import {ChecklistConditionType} from "@perfice/model/sharedWidgets/checklist/checklist";
 import type {NotificationService} from "../notification/notification";
 import {NotificationType, type StoredNotification} from "@perfice/model/notification/notification";
+import {type EntityObserverCallback, EntityObservers} from "../observer";
+import {EntityObserverType} from "@perfice/services/observer";
 
 export class ReflectionService {
 
@@ -26,6 +28,8 @@ export class ReflectionService {
     private readonly variableService: VariableService;
     private notificationService: NotificationService;
 
+    private observers: EntityObservers<Reflection>;
+
     constructor(reflectionCollection: ReflectionCollection, formService: FormService,
                 journalService: JournalService, tagService: TagService, variableService: VariableService, notificationService: NotificationService) {
         this.reflectionCollection = reflectionCollection;
@@ -34,6 +38,7 @@ export class ReflectionService {
         this.tagService = tagService;
         this.variableService = variableService;
         this.notificationService = notificationService;
+        this.observers = new EntityObservers();
     }
 
     async getReflections(): Promise<Reflection[]> {
@@ -58,12 +63,36 @@ export class ReflectionService {
             }
         }
 
+        await this.observers.notifyObservers(EntityObserverType.CREATED, reflection);
         return this.reflectionCollection.createReflection(reflection);
     }
 
     async updateReflection(reflection: Reflection): Promise<void> {
         let previous = await this.reflectionCollection.getReflectionById(reflection.id);
         if (previous == undefined) return;
+
+        await this.updateNotifications(previous, reflection);
+        await this.updateWidgetDependencies(previous, reflection);
+        await this.observers.notifyObservers(EntityObserverType.UPDATED, reflection);
+        return this.reflectionCollection.updateReflection(reflection);
+    }
+
+    private async updateNotifications(previous: Reflection, reflection: Reflection) {
+        // Don't update notifications if the name didn't change
+        if(previous.name == reflection.name) return;
+
+        let notifications = await this.notificationService.getNotificationsByEntityId(reflection.id);
+
+        // Update notifications to match new reflection name
+        for(let notification of notifications) {
+            await this.notificationService.updateNotification({
+                ...notification,
+                title: reflection.name,
+            });
+        }
+    }
+
+    private async updateWidgetDependencies(previous: Reflection, reflection: Reflection) {
 
         let widgets = reflection.pages.flatMap(p => p.widgets);
         let previousWidgets = previous.pages.flatMap(p => p.widgets);
@@ -99,8 +128,6 @@ export class ReflectionService {
                 await this.variableService.deleteVariableById(dependencyId);
             }
         }
-
-        return this.reflectionCollection.updateReflection(reflection);
     }
 
     async getNotificationsForReflection(reflectionId: string): Promise<StoredNotification[]> {
@@ -122,7 +149,12 @@ export class ReflectionService {
     }
 
     async deleteReflectionById(id: string): Promise<void> {
-        return this.reflectionCollection.deleteReflectionById(id);
+        let reflection = await this.reflectionCollection.getReflectionById(id);
+        if (reflection == null) return;
+
+        await this.notificationService.deleteNotificationsByEntityId(id);
+        await this.reflectionCollection.deleteReflectionById(id);
+        await this.observers.notifyObservers(EntityObserverType.DELETED, reflection);
     }
 
     async logReflection(reflection: Reflection, answers: Record<string, ReflectionWidgetAnswerState>) {
@@ -201,4 +233,13 @@ export class ReflectionService {
     async updateNotification(notification: StoredNotification) {
         await this.notificationService.updateNotification(notification);
     }
+
+    addObserver(type: EntityObserverType, callback: EntityObserverCallback<Reflection>) {
+        this.observers.addObserver(type, callback);
+    }
+
+    removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Reflection>) {
+        this.observers.removeObserver(type, callback);
+    }
+
 }

@@ -10,6 +10,8 @@ import type {StoredNotification} from "@perfice/model/notification/notification"
 import {publishToEventStore} from "@perfice/util/event";
 import {openReflectionEvents} from "@perfice/model/reflection/ui";
 import {isSameDay} from "@perfice/util/time/simple";
+import {EntityObserverType} from "@perfice/services/observer";
+import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 
 const REFLECTION_LAST_OPEN_KEY = "last_reflection_auto_open";
 
@@ -21,6 +23,9 @@ export class ReflectionStore extends AsyncStore<Reflection[]> {
     constructor(reflectionService: ReflectionService) {
         super(resolvedPromise([]));
         this.reflectionService = reflectionService;
+        this.reflectionService.addObserver(EntityObserverType.CREATED, async (reflection) => await this.onReflectionCreated(reflection));
+        this.reflectionService.addObserver(EntityObserverType.UPDATED, async (reflection) => await this.onReflectionUpdated(reflection));
+        this.reflectionService.addObserver(EntityObserverType.DELETED, async (reflection) => await this.onReflectionDeleted(reflection));
     }
 
     load() {
@@ -96,4 +101,17 @@ export class ReflectionStore extends AsyncStore<Reflection[]> {
         this.openReflection(autoOpenReflection);
         localStorage.setItem(REFLECTION_LAST_OPEN_KEY, Date.now().toString());
     }
+
+    private async onReflectionCreated(reflection: Reflection) {
+        this.updateResolved(v => [...v, reflection]);
+    }
+
+    private async onReflectionUpdated(reflection: Reflection) {
+        this.updateResolved(v => updateIdentifiedInArray(v, reflection));
+    }
+
+    private async onReflectionDeleted(reflection: Reflection) {
+        this.updateResolved(v => deleteIdentifiedInArray(v, reflection.id));
+    }
+
 }

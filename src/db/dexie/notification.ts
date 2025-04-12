@@ -29,7 +29,7 @@ export class DexieNotificationCollection implements NotificationCollection {
         await this.table.delete(id);
     }
 
-    async getNotificationsByEntityId(entityId: string): Promise<StoredNotification[] | undefined> {
+    async getNotificationsByEntityId(entityId: string): Promise<StoredNotification[]> {
         return this.table.where("entityId").equals(entityId).toArray();
     }
 

@@ -76,9 +76,15 @@ export class NativeNotificationScheduler implements NotificationScheduler {
             nativeNotification.schedule?.on?.weekday == shouldBe.weekday;
     }
 
+    private titleAndBodyMatch(notification: StoredNotification, nativeNotification: PendingLocalNotificationSchema) {
+        return notification.title == nativeNotification.title &&
+            notification.body == nativeNotification.body;
+    }
+
     private doesNotificationMatch(notification: StoredNotification, nativeNotification: PendingLocalNotificationSchema) {
-        return notification.nativeId == nativeNotification.id &&
-            this.scheduleMatches(notification, nativeNotification);
+        return notification.nativeId == nativeNotification.id
+            && this.scheduleMatches(notification, nativeNotification)
+            && this.titleAndBodyMatch(notification, nativeNotification);
     }
 
 }

@@ -75,11 +75,23 @@ export class NotificationService {
     }
 
     async deleteNotificationsByEntityId(entityId: string): Promise<void> {
-        return this.notificationCollection.deleteNotificationsByEntityId(entityId);
+        let notifications = await this.notificationCollection.getNotificationsByEntityId(entityId);
+        if (notifications == null) return;
+
+        // Unschedule all notifications
+        for (let notification of notifications) {
+            await this.scheduler.unscheduleNotification(notification.nativeId);
+        }
+
+        await this.notificationCollection.deleteNotificationsByEntityId(entityId);
     }
 
     async deleteNotificationById(id: string) {
+        let notification = await this.notificationCollection.getNotificationById(id);
+        if (notification == null) return;
+
         await this.notificationCollection.deleteNotificationById(id);
+        await this.scheduler.unscheduleNotification(notification.nativeId);
     }
 
     async updateNotification(notification: StoredNotification) {
