@@ -21,6 +21,7 @@
     import type {SearchEntity} from "@perfice/model/journal/search/search";
     import {goto} from "@mateothegreat/svelte5-router";
     import Button from "@perfice/components/base/button/Button.svelte";
+    import {onMount} from "svelte";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
@@ -122,6 +123,10 @@
     function goToSearch() {
         goto("/journal/search");
     }
+
+    // Scroll might already be at bottom, give time for the initial page load to finish
+    // Then check if we're at the bottom and load more
+    onMount(() => setTimeout(() => onScroll(), 500));
 
     load();
     let title = $derived(searched ? "Search result" : "Journal");

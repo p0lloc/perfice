@@ -72,6 +72,7 @@ const PAGE_SIZE = 20;
 
 export class PaginatedJournal {
     private currentPage = new Date().getTime();
+    private loading = false;
 
     async load() {
         // Load tags so we can display names in the UI
@@ -85,6 +86,11 @@ export class PaginatedJournal {
     }
 
     async nextPage() {
+        // Prevent multiple loading requests from scrolling too quickly
+        if(this.loading) return;
+
+        this.loading = true;
+
         let formEntries = await journal.nextPage(this.currentPage, PAGE_SIZE);
         let taggedEntries = await tagEntries.nextPage(this.currentPage, PAGE_SIZE);
 
@@ -107,6 +113,7 @@ export class PaginatedJournal {
 
         journal.updateResolved(v => [...v, ...formEntries]);
         tagEntries.updateResolved(v => [...v, ...taggedEntries]);
+        this.loading = false;
     }
 }
 
@@ -192,7 +199,6 @@ export function GroupedJournal(): Readable<Promise<JournalDay[]>> {
                 }
             ));
         });
-
 
     return {
         subscribe,
