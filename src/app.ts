@@ -74,7 +74,7 @@ import {type ChecklistData, ChecklistWidget} from "@perfice/stores/sharedWidgets
 import {JournalSearchService} from "@perfice/services/journal/search";
 import {JournalSearchStore} from "@perfice/stores/journal/search";
 import {CorrelationIgnoreService} from './services/analytics/ignore';
-import {LocalNotifications, Weekday} from "@capacitor/local-notifications";
+import {LocalNotifications} from "@capacitor/local-notifications";
 import {NotificationService} from "@perfice/services/notification/notification";
 import {setupServiceWorker} from "@perfice/swSetup";
 import {NotificationType} from "@perfice/model/notification/notification";
@@ -110,7 +110,7 @@ const formTemplateService = new FormTemplateService(db.formTemplates);
 const dashboardService = new DashboardService(db.dashboards);
 const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets, variableService);
 
-const tagCategoryService = new TagCategoryService(db.tagCategories);
+const tagCategoryService = new TagCategoryService(db.tagCategories, tagService);
 const importService = new EntryImportService(journalService);
 const exportService = new EntryExportService(journalService, formService);
 const notificationService = new NotificationService(db.notifications, WeekStart.MONDAY);

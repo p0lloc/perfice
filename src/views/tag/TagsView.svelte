@@ -72,8 +72,10 @@
 {#await $tagCategories then categories}
     <EditTagModal bind:this={editTagModal} onSave={onTagSaved} onDelete={onStartTagDelete} categories={categories}/>
 {/await}
+
 <GenericDeleteModal bind:this={deleteTagModal} onDelete={onTagDeleted} subject="this tag"/>
 <GenericDeleteModal bind:this={deleteTagCategoryModal} onDelete={onTagCategoryDeleted} subject="this category and all associated tags"/>
+
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar
             date={$tagDate}

@@ -87,4 +87,7 @@ export class TagService implements TagEntityProvider {
         await this.tagEntryService.deleteEntryById(entryId);
     }
 
+    async deleteTagsByCategoryId(categoryId: string) {
+        await this.tagCollection.deleteTagsByCategoryId(categoryId);
+    }
 }

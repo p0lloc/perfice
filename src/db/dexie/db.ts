@@ -57,7 +57,7 @@ type DexieDB = Dexie & {
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(18).stores({
+    db.version(19).stores({
         "trackables": "id",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, [formId+timestamp], [timestamp+id]",
@@ -67,7 +67,7 @@ function loadDb(): DexieDB {
         "forms": "id",
         "formSnapshots": "id, formId",
         "goals": "id, variableId",
-        "tags": "id",
+        "tags": "id, categoryId",
         "tagEntries": "id, tagId, timestamp, [tagId+timestamp], [timestamp+id]",
         "formTemplates": "id, formId",
         "analyticsSettings": "formId",

@@ -181,6 +181,8 @@ export interface TagCollection {
     updateTag(tag: Tag): Promise<void>;
 
     deleteTagById(id: string): Promise<void>;
+
+    deleteTagsByCategoryId(categoryId: string): Promise<void>;
 }
 
 export interface TagEntryCollection {

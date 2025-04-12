@@ -1,6 +1,7 @@
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {TagCategory} from "@perfice/model/tag/tag";
 import type {TagCategoryCollection} from "@perfice/db/collections";
+import type {TagService} from "@perfice/services/tag/tag";
 
 export interface TagCategoryEntityProvider {
     getCategories(): Promise<TagCategory[]>;
@@ -8,11 +9,13 @@ export interface TagCategoryEntityProvider {
 
 export class TagCategoryService implements TagCategoryEntityProvider {
     private collection: TagCategoryCollection;
+    private tagService: TagService;
 
     private observers: EntityObservers<TagCategory>;
 
-    constructor(collection: TagCategoryCollection) {
+    constructor(collection: TagCategoryCollection, tagService: TagService) {
         this.collection = collection;
+        this.tagService = tagService;
         this.observers = new EntityObservers();
     }
 
@@ -38,7 +41,9 @@ export class TagCategoryService implements TagCategoryEntityProvider {
     async deleteCategoryById(categoryId: string): Promise<void> {
         let category = await this.collection.getCategoryById(categoryId);
         if (category == null) return;
+
         await this.collection.deleteCategoryById(categoryId);
+        await this.tagService.deleteTagsByCategoryId(categoryId);
         await this.observers.notifyObservers(EntityObserverType.DELETED, category);
     }
 

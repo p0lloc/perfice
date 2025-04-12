@@ -106,6 +106,10 @@ export class DexieTagCollection implements TagCollection {
     async deleteTagById(id: string): Promise<void> {
         await this.table.delete(id);
     }
+
+    async deleteTagsByCategoryId(categoryId: string): Promise<void> {
+        await this.table.where("categoryId").equals(categoryId).delete();
+    }
 }
 
 export class DexieTagCategoryCollection implements TagCategoryCollection {
