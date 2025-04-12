@@ -1,8 +1,8 @@
-import type {
-    ByCategoryFilter,
-    OneOfFilter,
-    SearchDefinition,
-    SearchDependencies
+import {
+    type ByCategoryFilter,
+    type OneOfFilter,
+    type SearchDefinition,
+    type SearchDependencies, SearchEntityMode
 } from "@perfice/model/journal/search/search";
 import type {JournalEntry, TagEntry} from "../journal";
 import {faFilter, faFolder} from "@fortawesome/free-solid-svg-icons";
@@ -95,5 +95,9 @@ export class TagSearchDefinition implements SearchDefinition<TagSearch> {
         }
 
         return true;
+    }
+
+    getDefaultSearchMode(): SearchEntityMode {
+        return SearchEntityMode.INCLUDE;
     }
 }

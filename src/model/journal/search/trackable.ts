@@ -1,7 +1,7 @@
 import {
     type ByAnswersFilter,
     type ByCategoryFilter,
-    type OneOfFilter, type SearchDefinition, type SearchDependencies,
+    type OneOfFilter, type SearchDefinition, type SearchDependencies, SearchEntityMode,
 } from "@perfice/model/journal/search/search";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {shouldFilterOutEntry} from "@perfice/services/variable/filtering";
@@ -46,6 +46,9 @@ export class TrackableSearchDefinition implements SearchDefinition<TrackableSear
 
     matchesTagEntry(search: TrackableSearch, dependencies: SearchDependencies, entry: TagEntry): boolean {
         return false;
+    }
+    getDefaultSearchMode(): SearchEntityMode {
+        return SearchEntityMode.INCLUDE;
     }
 }
 

@@ -91,6 +91,9 @@ export type SearchEntity = {
 } & SearchEntities;
 
 export function createDefaultSearchEntity(type: SearchEntityType): SearchEntity {
+
+    let definition = getSearchDefinition(type);
+
     let data: SearchEntities;
     switch (type) {
         case SearchEntityType.TRACKABLE:
@@ -131,7 +134,7 @@ export function createDefaultSearchEntity(type: SearchEntityType): SearchEntity 
 
     return {
         id: crypto.randomUUID(),
-        mode: SearchEntityMode.INCLUDE,
+        mode: definition.getDefaultSearchMode(),
         ...data
     }
 }
@@ -154,6 +157,8 @@ export interface SearchDefinition<S> {
     matchesJournalEntry(search: S, dependencies: SearchDependencies, entry: JournalEntry): boolean;
 
     matchesTagEntry(search: S, dependencies: SearchDependencies, entry: TagEntry): boolean;
+
+    getDefaultSearchMode(): SearchEntityMode;
 }
 
 export interface SE<T extends SearchEntityType, V> {

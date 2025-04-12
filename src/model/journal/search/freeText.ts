@@ -1,4 +1,4 @@
-import type {SearchDefinition, SearchDependencies} from "@perfice/model/journal/search/search";
+import {type SearchDefinition, type SearchDependencies, SearchEntityMode} from "@perfice/model/journal/search/search";
 import type {JournalEntry, TagEntry} from "../journal";
 import {primitiveAsString} from "@perfice/model/primitive/primitive";
 
@@ -21,5 +21,9 @@ export class FreeTextSearchDefinition implements SearchDefinition<FreeTextSearch
         if (tag == null) return false;
 
         return tag.name.toLowerCase().includes(search.search);
+    }
+
+    getDefaultSearchMode(): SearchEntityMode {
+        return SearchEntityMode.MUST_MATCH;
     }
 }
