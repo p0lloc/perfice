@@ -38,6 +38,7 @@
     "@nozbe/microfuzz": "^1.0.0",
     "chart.js": "^4.4.7",
     "dexie": "^4.0.10",
+    "es-iterator-helpers": "^1.2.1",
     "gridstack": "^11.5.0",
     "papaparse": "^5.5.2",
     "svelte-dnd-action": "^0.9.57",

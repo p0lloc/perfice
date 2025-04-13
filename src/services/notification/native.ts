@@ -36,7 +36,9 @@ export class NativeNotificationScheduler implements NotificationScheduler {
 
     async scheduleNotification(notification: StoredNotification) {
         let on = this.createScheduleForNotification(notification);
-        alert("schedule " + JSON.stringify(on));
+        let result = await LocalNotifications.requestPermissions();
+        if(result.display != "granted") return;
+
         await LocalNotifications.schedule({
             notifications: [
                 {
