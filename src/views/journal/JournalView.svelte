@@ -22,6 +22,7 @@
     import {goto} from "@mateothegreat/svelte5-router";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {onMount} from "svelte";
+    import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
@@ -29,7 +30,7 @@
     let {params}: { params: Record<string, string> } = $props();
 
     let selectMode = $state(false);
-    let searched = $state(false);
+    let currentSearch = $state<SearchEntity[] | null>(null);
     let selectedEntities = $state<JournalEntity[]>([]);
 
     // Padding between bottom and scroll end
@@ -38,21 +39,15 @@
     async function load() {
         let searchData = params.search;
         if (searchData != undefined) {
-            try {
-                let search: SearchEntity[] = JSON.parse(atob(searchData));
-                await journalSearch.search(search);
-                searched = true;
-            } catch (ex) {
-                console.log(ex)
-                alert("Incorrectly formatted search")
-            }
+            currentSearch = parseSearchFromUrl(searchData);
+            await journalSearch.search(currentSearch);
         } else {
             await paginatedJournal.load();
         }
     }
 
     function onScroll() {
-        if (searched) return;
+        if (currentSearch != null) return;
 
         let reachedBottom = (window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - SCROLL_SLACK;
         if (reachedBottom) {
@@ -121,6 +116,11 @@
     }
 
     function goToSearch() {
+        if(currentSearch != null){
+            goto(`/journal/search/${constructSearchParam(currentSearch)}`);
+            return;
+        }
+
         goto("/journal/search");
     }
 
@@ -129,7 +129,7 @@
     onMount(() => setTimeout(() => onScroll(), 500));
 
     load();
-    let title = $derived(searched ? "Search result" : "Journal");
+    let title = $derived(currentSearch != null ? "Search result" : "Journal");
 </script>
 
 <svelte:window onwheel={onScroll} ontouchmove={onScroll}/>
@@ -149,7 +149,7 @@
         Loading...
     {:then days}
         <div class="row-between items-center md:mb-8 mb-4 md:flex hidden">
-            <Title title={title} icon={searched ? faSearch : faBook}/>
+            <Title title={title} icon={currentSearch != null ? faSearch : faBook}/>
             <div class="row-gap md:w-auto w-full flex justify-end">
                 <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
                     <Fa icon={faSearch}/>

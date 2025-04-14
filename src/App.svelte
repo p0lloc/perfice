@@ -26,6 +26,7 @@
         { path: "/forms/(?<formId>.*)", component: FormEditorView },
         { path: "/goals/(?<goalId>.*)", component: GoalEditorView },
         { path: "/tags", component: TagsView },
+        { path: "/journal/search/(?<search>.*)", component: JournalSearchView },
         { path: "/journal/search", component: JournalSearchView },
         { path: "/journal/(?<search>.*)", component: JournalView },
         { path: "/journal", component: JournalView },

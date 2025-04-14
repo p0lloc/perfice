@@ -9,6 +9,20 @@ import type {TrackableCategoryEntityProvider} from "@perfice/services/trackable/
 import type {JournalSearchUiDependencies} from "@perfice/model/journal/search/ui";
 import type {FormEntityProvider} from "@perfice/services/form/form";
 
+export function parseSearchFromUrl(param: string): SearchEntity[] {
+    try {
+        return JSON.parse(atob(param));
+    } catch (ex) {
+        console.log(ex)
+        alert("Incorrectly formatted search")
+        return [];
+    }
+}
+
+export function constructSearchParam(search: SearchEntity[]): string {
+    return btoa(JSON.stringify(search));
+}
+
 export class JournalSearchStore {
 
     private searchService: JournalSearchService;

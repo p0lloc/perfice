@@ -11,7 +11,7 @@
         SearchEntityType,
     } from "@perfice/model/journal/search/search";
     import JournalSearchEntityCard from "@perfice/components/journal/search/JournalSearchEntityCard.svelte";
-    import {faBars, faExclamationTriangle, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
+    import {faExclamationTriangle, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {goto} from "@mateothegreat/svelte5-router";
@@ -26,14 +26,21 @@
     import Fa from "svelte-fa";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {emptyPromise, resolvedUpdatePromise} from "@perfice/util/promise";
+    import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
 
     let search = $state<JournalSearch>({} as JournalSearch);
     let dependencies = $state({} as Promise<JournalSearchUiDependencies>);
     let savedSearches = $state<Promise<JournalSearch[]>>(emptyPromise());
+    let {params}: { params: Record<string, string> } = $props();
     let addEntityContextMenu: ContextMenu;
 
     onMount(() => {
-        search = createDefaultSearch();
+        let searchData = params.search;
+        if (searchData != undefined) {
+            search = {id: DEFAULT_SEARCH_ID, name: "Search", entities: parseSearchFromUrl(searchData)};
+        } else {
+            search = createDefaultSearch();
+        }
     });
 
     loadDependencies();
@@ -48,7 +55,7 @@
     }
 
     function onSearch() {
-        let encoded = btoa(JSON.stringify(search.entities));
+        let encoded = constructSearchParam(search.entities);
         goto(`/journal/${encoded}`);
     }
 
