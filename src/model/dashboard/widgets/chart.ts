@@ -3,7 +3,7 @@ import {type Variable, type VariableTypeDef, VariableTypeName} from "@perfice/mo
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-import {faBarChart, faBars, faLineChart, faPieChart} from "@fortawesome/free-solid-svg-icons";
+import {faBarChart, faBars, faLineChart, faPieChart, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export enum DashboardChartWidgetType {
     LINE = "line",
@@ -42,6 +42,14 @@ export interface DashboardChartWidgetSettings {
 export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.CHART, DashboardChartWidgetSettings> {
     getType(): DashboardWidgetType.CHART {
         return DashboardWidgetType.CHART;
+    }
+
+    getName(): string {
+        return "Chart";
+    }
+
+    getIcon(): IconDefinition {
+        return faLineChart;
     }
 
     getMinHeight(): number | undefined {

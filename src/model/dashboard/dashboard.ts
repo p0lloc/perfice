@@ -40,6 +40,7 @@ import {
     DashboardChecklistWidgetDefinition,
     type DashboardChecklistWidgetSettings
 } from "@perfice/model/dashboard/widgets/checklist";
+import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface Dashboard {
     id: string;
@@ -107,6 +108,10 @@ export interface DashboardWidgetDefinition<T extends DashboardWidgetType, S> {
 
     // Returns the variable updates should occur when the settings change
     updateDependencies(dependencies: Record<string, string>, previousSettings: S, updatedSettings: S): Map<string, VariableTypeDef>;
+
+    getName(): string;
+
+    getIcon(): IconDefinition;
 }
 
 const definitions: Map<DashboardWidgetType, DashboardWidgetDefinition<DashboardWidgetType, any>> = new Map();

@@ -1,5 +1,6 @@
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import {type Variable, type VariableTypeDef} from "@perfice/model/variable/variable";
+import {faSun, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DashboardWelcomeWidgetSettings {
 
@@ -8,6 +9,14 @@ export interface DashboardWelcomeWidgetSettings {
 export class DashboardWelcomeWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.WELCOME, DashboardWelcomeWidgetSettings> {
     getType(): DashboardWidgetType.WELCOME {
         return DashboardWidgetType.WELCOME;
+    }
+
+    getName(): string {
+        return "Welcome";
+    }
+
+    getIcon(): IconDefinition {
+        return faSun;
     }
 
     getMinHeight(): number | undefined {

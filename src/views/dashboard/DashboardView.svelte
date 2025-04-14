@@ -137,12 +137,15 @@
     function openAddWidgetSidebar() {
         sidebar.open({
             type: DashboardSidebarActionType.ADD_WIDGET, value: {
-                onClick: async (type: DashboardWidgetType) => {
+                onClick: async (type: DashboardWidgetType, disableEdit: boolean) => {
                     let display = await findBottommostWidget();
                     let widget = await dashboardWidgets.createWidget(currentDashboard, type, display);
 
                     grid.addWidget(widget);
                     sidebar.close();
+
+                    if(disableEdit)
+                        $editingDashboard = false;
                 }
             }
         });

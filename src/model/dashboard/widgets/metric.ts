@@ -3,6 +3,7 @@ import {type Variable, type VariableTypeDef, VariableTypeName} from "@perfice/mo
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import {faHashtag, faTags, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DashboardMetricWidgetSettings {
     timeScope: SimpleTimeScopeType;
@@ -11,6 +12,14 @@ export interface DashboardMetricWidgetSettings {
 export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.METRIC, DashboardMetricWidgetSettings> {
     getType(): DashboardWidgetType.METRIC {
         return DashboardWidgetType.METRIC;
+    }
+
+    getName(): string {
+        return "Metric";
+    }
+
+    getIcon(): IconDefinition {
+        return faHashtag;
     }
 
     getMinHeight(): number | undefined {

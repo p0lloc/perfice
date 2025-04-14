@@ -1,5 +1,6 @@
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
+import {faHashtag, faSquarePlus, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DashboardTrackableWidgetSettings {
     trackableId: string;
@@ -8,6 +9,14 @@ export interface DashboardTrackableWidgetSettings {
 export class DashboardTrackableWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.TRACKABLE, DashboardTrackableWidgetSettings> {
     getType(): DashboardWidgetType.TRACKABLE {
         return DashboardWidgetType.TRACKABLE;
+    }
+
+    getName(): string {
+        return "Trackable";
+    }
+
+    getIcon(): IconDefinition {
+        return faSquarePlus;
     }
 
     getMinHeight(): number | undefined {

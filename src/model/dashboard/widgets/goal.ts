@@ -1,5 +1,6 @@
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
+import {faBullseye, faTable, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DashboardGoalWidgetSettings {
     goalVariableId: string;
@@ -8,6 +9,14 @@ export interface DashboardGoalWidgetSettings {
 export class DashboardGoalWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.GOAL, DashboardGoalWidgetSettings> {
     getType(): DashboardWidgetType.GOAL {
         return DashboardWidgetType.GOAL;
+    }
+
+    getName(): string {
+        return "Goal";
+    }
+
+    getIcon(): IconDefinition {
+        return faBullseye;
     }
 
     getMinHeight(): number | undefined {

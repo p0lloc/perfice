@@ -5,10 +5,13 @@
         type DashboardWidgetDefinition,
         DashboardWidgetType
     } from "@perfice/model/dashboard/dashboard";
+    // noinspection ES6UnusedImports
+    import Fa from "svelte-fa";
 
     let element: HTMLElement;
-    let {definition, onClick}: {
+    let {definition, onClick, mobile}: {
         definition: DashboardWidgetDefinition<DashboardWidgetType, any>,
+        mobile: boolean,
         onClick: () => void
     } = $props();
 
@@ -19,6 +22,9 @@
     }
 
     onMount(() => {
+        if(mobile)
+            return;
+
         GridStack.setupDragIn([element], {
             appendTo: "body",
         });
@@ -34,7 +40,8 @@
         data-widget-type={definition.getType()}
         bind:this={element}
 >
-    <div class="drag-card border flex-center bg-white w-full h-32">
-        {definition.getType()}
+    <div class="drag-card border flex-col items-center justify-center flex gap-2 bg-white w-full h-32 rounded-xl">
+        <Fa icon={definition.getIcon()} size="2.0x" />
+        <span>{definition.getName()}</span>
     </div>
 </div>

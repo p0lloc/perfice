@@ -4,6 +4,7 @@ import {
     type ChecklistWidgetSettings, createChecklistDependencies
 } from "@perfice/model/sharedWidgets/checklist/checklist";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import {faCheckCircle, faMagnifyingGlass, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DashboardChecklistWidgetSettings extends ChecklistWidgetSettings {
 }
@@ -11,6 +12,15 @@ export interface DashboardChecklistWidgetSettings extends ChecklistWidgetSetting
 export class DashboardChecklistWidgetDefinition implements DashboardWidgetDefinition<DashboardWidgetType.CHECKLIST, DashboardChecklistWidgetSettings> {
     getType(): DashboardWidgetType.CHECKLIST {
         return DashboardWidgetType.CHECKLIST;
+    }
+
+
+    getName(): string {
+        return "Checklist";
+    }
+
+    getIcon(): IconDefinition {
+        return faCheckCircle;
     }
 
     getMinHeight(): number | undefined {

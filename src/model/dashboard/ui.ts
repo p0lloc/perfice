@@ -1,7 +1,6 @@
 import type {
     Dashboard,
     DashboardWidget,
-    DashboardWidgetDisplaySettings,
     DashboardWidgetType
 } from "@perfice/model/dashboard/dashboard";
 import type {Form} from "@perfice/model/form/form";
@@ -19,7 +18,7 @@ export type DashboardSidebarAction =
     | SA<DashboardSidebarActionType.EDIT_WIDGET, DashboardEditWidgetAction>;
 
 export interface DashboardAddWidgetAction {
-    onClick: (definition: DashboardWidgetType) => void;
+    onClick: (definition: DashboardWidgetType, disableEdit: boolean) => void;
 }
 
 export interface DashboardEditWidgetAction {
