@@ -73,7 +73,7 @@ input[type="checkbox"] {
 }
 
 .hover-feedback {
-    @apply pointer-feedback:bg-gray-200;
+    @apply pointer-feedback:bg-gray-100;
 }
 
 input[type="color"]::-moz-color-swatch {

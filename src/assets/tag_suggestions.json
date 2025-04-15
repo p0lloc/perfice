@@ -1,0 +1,177 @@
+[
+  {
+    "name": "General",
+    "suggestions": [
+      {
+        "name": "Productive"
+      },
+      {
+        "name": "Social"
+      },
+      {
+        "name": "Focused"
+      },
+      {
+        "name": "Relaxed"
+      },
+      {
+        "name": "Tired"
+      },
+      {
+        "name": "Creative"
+      },
+      {
+        "name": "Bored"
+      },
+      {
+        "name": "Inspired"
+      },
+      {
+        "name": "Stressed"
+      },
+      {
+        "name": "Chill"
+      }
+    ]
+  },
+  {
+    "name": "Lifestyle",
+    "suggestions": [
+      {
+        "name": "Sleepy"
+      },
+      {
+        "name": "Well-Rested"
+      },
+      {
+        "name": "Energized"
+      },
+      {
+        "name": "Lazy"
+      },
+      {
+        "name": "Healthy"
+      },
+      {
+        "name": "Sick"
+      },
+      {
+        "name": "Hungry"
+      },
+      {
+        "name": "Full"
+      },
+      {
+        "name": "Overindulged"
+      },
+      {
+        "name": "Balanced"
+      }
+    ]
+  },
+  {
+    "name": "Work & Study",
+    "suggestions": [
+      {
+        "name": "Deep Work"
+      },
+      {
+        "name": "Meetings"
+      },
+      {
+        "name": "Deadlines"
+      },
+      {
+        "name": "Procrastinating"
+      },
+      {
+        "name": "Learning"
+      },
+      {
+        "name": "Mentoring"
+      },
+      {
+        "name": "Coding"
+      },
+      {
+        "name": "Writing"
+      },
+      {
+        "name": "Reading"
+      },
+      {
+        "name": "Breakthrough"
+      }
+    ]
+  },
+  {
+    "name": "Emotional",
+    "suggestions": [
+      {
+        "name": "Happy"
+      },
+      {
+        "name": "Anxious"
+      },
+      {
+        "name": "Calm"
+      },
+      {
+        "name": "Grateful"
+      },
+      {
+        "name": "Moody"
+      },
+      {
+        "name": "Excited"
+      },
+      {
+        "name": "Sad"
+      },
+      {
+        "name": "Irritated"
+      },
+      {
+        "name": "Peaceful"
+      },
+      {
+        "name": "Confident"
+      }
+    ]
+  },
+  {
+    "name": "Social & Fun",
+    "suggestions": [
+      {
+        "name": "Hanging Out"
+      },
+      {
+        "name": "Party"
+      },
+      {
+        "name": "Games"
+      },
+      {
+        "name": "Traveling"
+      },
+      {
+        "name": "Date"
+      },
+      {
+        "name": "Movie Night"
+      },
+      {
+        "name": "Phone Call"
+      },
+      {
+        "name": "Family Time"
+      },
+      {
+        "name": "Volunteering"
+      },
+      {
+        "name": "Alone Time"
+      }
+    ]
+  }
+]

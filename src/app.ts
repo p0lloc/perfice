@@ -80,6 +80,7 @@ import {setupServiceWorker} from "@perfice/swSetup";
 import {NotificationType} from "@perfice/model/notification/notification";
 import {registerDataTypes} from "@perfice/model/form/data";
 import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
+import {OnboardingStore} from "@perfice/stores/onboarding/onboarding";
 
 const db = setupDb();
 const journalService = new BaseJournalService(db.entries);
@@ -160,6 +161,7 @@ export const dashboardWidgets = new DashboardWidgetStore(dashboardWidgetService)
 
 export const imports = new EntryImportStore(importService);
 export const exports = new EntryExportStore(exportService);
+export const onboarding = new OnboardingStore();
 
 export const analyticsSettings = new AnalyticsSettingsStore(analyticsSettingsService);
 export const analytics = new AnalyticsStore(analyticsService, analyticsSettingsService, analyticsHistoryService, ignoreService, new Date(), 60, 6);
@@ -248,6 +250,7 @@ registerDataTypes();
 (async () => {
     await variables.get();
     setupServiceWorker();
+    onboarding.onboardNewUser();
     appReady.set(true);
     await notificationService.scheduleStoredNotifications();
     onAppOpened();
