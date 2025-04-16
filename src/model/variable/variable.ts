@@ -5,8 +5,9 @@ import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import type {TimeScope} from "@perfice/model/variable/time/time";
 import {type GoalVariableType} from "@perfice/services/variable/types/goal";
 import type {CalculationVariableType} from "@perfice/services/variable/types/calculation";
-import type { TagVariableType } from "@perfice/services/variable/types/tag";
+import type {TagVariableType} from "@perfice/services/variable/types/tag";
 import type {LatestVariableType} from "@perfice/services/variable/types/latest";
+import type {GroupVariableType} from "@perfice/services/variable/types/group";
 
 export interface StoredVariable {
     id: string;
@@ -34,7 +35,8 @@ export enum VariableTypeName {
     GOAL = "GOAL",
     CALCULATION = "CALCULATION",
     TAG = "TAG",
-    LATEST = "LATEST"
+    LATEST = "LATEST",
+    GROUP = "GROUP"
 }
 
 export interface VT<T extends VariableTypeName, V extends VariableType> {
@@ -69,6 +71,7 @@ export type VariableTypeDef =
     | VT<VariableTypeName.CALCULATION, CalculationVariableType>
     | VT<VariableTypeName.TAG, TagVariableType>
     | VT<VariableTypeName.LATEST, LatestVariableType>
+    | VT<VariableTypeName.GROUP, GroupVariableType>
     ;
 
 

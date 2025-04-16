@@ -1,10 +1,5 @@
 import type {JournalEntry} from "@perfice/model/journal/journal";
-import {
-    pJournalEntry,
-    pList,
-    type PrimitiveValue,
-    PrimitiveValueType,
-} from "@perfice/model/primitive/primitive";
+import {pJournalEntry, pList, type PrimitiveValue, PrimitiveValueType,} from "@perfice/model/primitive/primitive";
 import {
     type VariableEvaluator,
     type VariableIndex,
@@ -12,8 +7,10 @@ import {
     VariableTypeName
 } from "@perfice/model/variable/variable";
 import {
+    EntryAction,
+    type JournalEntryDependent,
+    type VariableIndexAction,
     VariableIndexActionType,
-    type VariableIndexAction, type JournalEntryDependent, EntryAction,
 } from "@perfice/services/variable/graph";
 import {type JournalEntryFilter, shouldFilterOutEntry} from "@perfice/services/variable/filtering";
 
@@ -78,13 +75,15 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
     async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
         if (entry.formId != this.formId) return [];
 
+        let filterOut = shouldFilterOutEntry(entry, this.filters);
+
         let actions: VariableIndexAction[] = [];
         for (let index of indices) {
             if (index.value.type != PrimitiveValueType.LIST)
                 continue;
 
             let val = index.value.value;
-            if (shouldFilterOutEntry(entry, this.filters)) {
+            if (filterOut) {
                 // Entry no longer matches filter, attempt to remove it from list
                 index.value.value = val.filter(v =>
                     v.type == PrimitiveValueType.JOURNAL_ENTRY && v.value.id != entry.id);
@@ -188,12 +187,12 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
         return this.formId;
     }
 
-    getFields(): Record<string, boolean> {
-        return this.fields;
-    }
-
     getType(): VariableTypeName {
         return VariableTypeName.LIST;
+    }
+
+    getFields(): Record<string, boolean> {
+        return this.fields;
     }
 
     getFilters(): JournalEntryFilter[] {

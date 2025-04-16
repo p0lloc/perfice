@@ -2,9 +2,11 @@ import {type VariableType, VariableTypeName} from "@perfice/model/variable/varia
 import {AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {
-    ComparisonGoalCondition, type GoalCondition,
+    ComparisonGoalCondition,
+    type GoalCondition,
     GoalConditionType,
-    type GoalConditionValue, GoalMetGoalCondition,
+    type GoalConditionValue,
+    GoalMetGoalCondition,
     GoalVariableType
 } from "@perfice/services/variable/types/goal";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
@@ -12,6 +14,7 @@ import {WeekStart} from "@perfice/model/variable/time/time";
 import {CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
 import {LatestVariableType} from "@perfice/services/variable/types/latest";
+import {GroupVariableType} from "@perfice/services/variable/types/group";
 
 export const GOAL_CONDITION_DESERIALIZERS:
     Record<string, (value: any) => GoalConditionValue> = {
@@ -94,6 +97,12 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<VariableTypeName, (value: any) 
         value.fields,
         value.filters
     ),
+    [VariableTypeName.GROUP]: (value: any) => new GroupVariableType(
+        value.formId,
+        value.fields,
+        value.groupBy,
+        value.filters
+    ),
 };
 
 export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: VariableType) => object> = {
@@ -138,6 +147,15 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
             formId: listType.getFormId(),
             fields: listType.getFields(),
             filters: listType.getFilters(),
+        }
+    },
+    [VariableTypeName.GROUP]: (value: VariableType) => {
+        let groupType = value as GroupVariableType;
+        return {
+            formId: groupType.getFormId(),
+            fields: groupType.getFields(),
+            groupBy: groupType.getGroupBy(),
+            filters: groupType.getFilters(),
         }
     },
 }

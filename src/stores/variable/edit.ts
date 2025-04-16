@@ -14,6 +14,7 @@ import {CalculationOperator, CalculationVariableType} from "@perfice/services/va
 import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
 import {LatestVariableType} from "@perfice/services/variable/types/latest";
+import {GroupVariableType} from "@perfice/services/variable/types/group";
 
 export enum VariableChangeType {
     CREATE,
@@ -112,6 +113,17 @@ export class VariableEditProvider {
                         type: {
                             type: VariableTypeName.LATEST,
                             value: new LatestVariableType("", {}, [])
+                        }
+                    }
+                };
+            case VariableTypeName.GROUP:
+                return {
+                    variable: {
+                        id: crypto.randomUUID(),
+                        name: "Group",
+                        type: {
+                            type: VariableTypeName.GROUP,
+                            value: new GroupVariableType("", {}, "", [])
                         }
                     }
                 };
