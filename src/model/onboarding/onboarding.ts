@@ -75,14 +75,14 @@ export const ONBOARDING: OnboardingPage[] = [
         pageType: OnboardingPageType.IMAGE,
         title: "Goals",
         description: "Set goals and stay accountable",
-        desktopImage: "trackables-onboarding.png",
+        desktopImage: "goals-onboarding.png",
         mobileImage: "goals-onboarding-mobile.png"
     },
     {
         pageType: OnboardingPageType.IMAGE,
         title: "Tags",
         description: "Tag your daily experiences with one tap",
-        desktopImage: "trackables-onboarding.png",
+        desktopImage: "tags-onboarding.png",
         mobileImage: "tags-onboarding-mobile.png"
     },
     {
@@ -105,7 +105,7 @@ export const ONBOARDING: OnboardingPage[] = [
         pageType: OnboardingPageType.IMAGE,
         title: "Analytics",
         description: "See what makes a difference",
-        desktopImage: "trackables-onboarding.png",
+        desktopImage: "analytics-onboarding.png",
         mobileImage: "analytics-onboarding-mobile.png"
     },
 ]

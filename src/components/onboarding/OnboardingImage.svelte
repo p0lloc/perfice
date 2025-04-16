@@ -5,8 +5,8 @@
 </script>
 
 <div class="bg-gray-300 rounded-xl w-full h-[60vh] md:h-[50vh] border-2 shadow-md">
-    <img src={page.desktopImage} alt="Onboarding" class="rounded-xl object-cover w-full h-full hidden"/>
-    <img src={page.mobileImage} alt="Onboarding" class="rounded-xl object-cover w-full h-full md:hidden"/>
+    <img src={page.desktopImage} alt="Onboarding" class="image hidden md:block"/>
+    <img src={page.mobileImage} alt="Onboarding" class="image md:hidden"/>
 </div>
 <div class="flex-col flex justify-between mt-4">
     <div class="md:text-center">
@@ -14,3 +14,9 @@
         <p class="md:text-3xl text-2xl text-gray-500 mt-2">{page.description}</p>
     </div>
 </div>
+
+<style>
+    .image {
+        @apply rounded-xl object-cover w-full h-full;
+    }
+</style>

@@ -9,9 +9,7 @@ export const ONBOARDING_ROUTE = "/onboarding";
 export class OnboardingStore {
 
     onboardNewUser() {
-        if (localStorage.getItem(ONBOARDING_KEY) != null) {
-            goto(FINISH_ROUTE);
-        } else {
+        if (localStorage.getItem(ONBOARDING_KEY) == null) {
             goto(ONBOARDING_ROUTE);
         }
     }
