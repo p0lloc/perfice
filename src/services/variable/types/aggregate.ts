@@ -1,9 +1,5 @@
-import {
-    type VariableEvaluator,
-    type VariableType,
-    VariableTypeName
-} from "@perfice/model/variable/variable";
-import {pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {type VariableEvaluator, type VariableType, VariableTypeName} from "@perfice/model/variable/variable";
+import {pMap, pNumber, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 
 export enum AggregateType {
@@ -60,13 +56,7 @@ export class AggregateVariableType implements VariableType {
         return result;
     }
 
-
-    async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
-        let value = await evaluator.evaluateVariable(this.listVariableId);
-        if (value.type != PrimitiveValueType.LIST)
-            return pNumber(0.0);
-
-        let list = value.value;
+    private evaluateList(list: PrimitiveValue[]): PrimitiveValue {
         if (list.length == 0)
             return pNumber(0.0);
 
@@ -87,6 +77,26 @@ export class AggregateVariableType implements VariableType {
                 let sum = sumNumbers(numbers);
                 return pNumber(sum / numbers.length);
             }
+        }
+    }
+
+    async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
+        let value = await evaluator.evaluateVariable(this.listVariableId);
+
+        switch (value.type) {
+            case PrimitiveValueType.LIST:
+                return this.evaluateList(value.value);
+            case PrimitiveValueType.MAP:
+                let result: Record<string, PrimitiveValue> = {};
+                for (let [key, val] of Object.entries(value.value)) {
+                    if (val.type != PrimitiveValueType.LIST) continue;
+
+                    result[key] = this.evaluateList(val.value);
+                }
+
+                return pMap(result);
+            default:
+                return pNumber(0.0);
         }
     }
 

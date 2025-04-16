@@ -8,6 +8,7 @@ import {GroupVariableType} from "../../src/services/variable/types/group";
 import {mockEntry} from "../common";
 import {JournalEntry} from "../../src/model/journal/journal";
 import {FilterComparisonOperator} from "../../src/services/variable/filtering";
+import {AggregateType, AggregateVariableType} from "../../src/services/variable/types/aggregate";
 
 test("empty group variable", async () => {
     const index = new DummyIndexCollection();
@@ -72,6 +73,91 @@ test("simple single group variable", async () => {
             "ok": pList([
                 pJournalEntry("entry_three", 0, {"ok": pNumber(10.0)})
             ])
+        }));
+})
+
+
+test("sum aggregated group variable", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0), "bro": pString("test")}),
+            mockEntry("entry_two", "ok", {"ok": pNumber(13.0), "bro": pString("test")}),
+            mockEntry("entry_three", "ok", {"ok": pNumber(10.0), "bro": pString("ok")}),
+        ]
+    );
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
+    let variable: Variable = {
+        name: "test",
+        id: "test",
+        type: {
+            type: VariableTypeName.GROUP,
+            value: new GroupVariableType("ok", {ok: false}, "bro", [])
+        }
+    }
+    graph.onVariableCreated(variable);
+
+    let aggregateVariable: Variable = {
+        name: "aggregate",
+        id: "aggregate",
+        type: {
+            type: VariableTypeName.GROUP,
+            value: new AggregateVariableType(AggregateType.SUM, "test", "ok")
+        }
+    }
+    graph.onVariableCreated(aggregateVariable);
+
+    let val = await graph.evaluateVariable(aggregateVariable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(
+        pMap({
+            "test": pNumber(23.0),
+            "ok": pNumber(10.0),
+        }));
+})
+
+
+test("mean aggregated group variable", async () => {
+    const index = new DummyIndexCollection();
+    const journal = new DummyJournalCollection(
+        [
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0), "bro": pString("test")}),
+            mockEntry("entry_two", "ok", {"ok": pNumber(30.0), "bro": pString("test")}),
+            mockEntry("entry_three", "ok", {"ok": pNumber(10.0), "bro": pString("ok")}),
+            mockEntry("entry_four", "ok", {"ok": pNumber(90.0), "bro": pString("ok")}),
+        ]
+    );
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
+    let variable: Variable = {
+        name: "test",
+        id: "test",
+        type: {
+            type: VariableTypeName.GROUP,
+            value: new GroupVariableType("ok", {ok: false}, "bro", [])
+        }
+    }
+    graph.onVariableCreated(variable);
+
+    let aggregateVariable: Variable = {
+        name: "aggregate",
+        id: "aggregate",
+        type: {
+            type: VariableTypeName.GROUP,
+            value: new AggregateVariableType(AggregateType.MEAN, "test", "ok")
+        }
+    }
+    graph.onVariableCreated(aggregateVariable);
+
+    let val = await graph.evaluateVariable(aggregateVariable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(
+        pMap({
+            "test": pNumber(20.0),
+            "ok": pNumber(50.0),
         }));
 })
 
