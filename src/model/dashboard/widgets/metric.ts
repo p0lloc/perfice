@@ -4,8 +4,13 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {faHashtag, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import type {JournalEntryFilter} from "@perfice/services/variable/filtering";
 
 export interface DashboardMetricWidgetSettings {
+    aggregateType: AggregateType;
+    formId: string;
+    field: string;
+    filters: JournalEntryFilter[];
     timeScope: SimpleTimeScopeType;
 }
 
@@ -32,7 +37,11 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
 
     getDefaultSettings(): DashboardMetricWidgetSettings {
         return {
-            timeScope: SimpleTimeScopeType.DAILY
+            timeScope: SimpleTimeScopeType.DAILY,
+            formId: "",
+            field: "",
+            aggregateType: AggregateType.SUM,
+            filters: [],
         };
     }
 
@@ -47,7 +56,7 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
                     name: "Metric",
                     type: {
                         type: VariableTypeName.LIST,
-                        value: new ListVariableType("", {}, [])
+                        value: new ListVariableType(settings.formId, {[settings.field]: true}, settings.filters)
                     }
                 }
             ],
@@ -59,7 +68,7 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
                     name: "Metric",
                     type: {
                         type: VariableTypeName.AGGREGATE,
-                        value: new AggregateVariableType(AggregateType.MEAN, listVariableId, "metric")
+                        value: new AggregateVariableType(settings.aggregateType, listVariableId, settings.field)
                     }
                 }
             ]

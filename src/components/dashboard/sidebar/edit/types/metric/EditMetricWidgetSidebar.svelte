@@ -3,11 +3,12 @@
     import type {Form} from "@perfice/model/form/form";
     import {onMount} from "svelte";
     import {variableEditProvider} from "@perfice/app";
-    import EditVariable from "@perfice/components/variable/edit/EditVariable.svelte";
-    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
+    import {AGGREGATE_TYPES, SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
+    import EditListFilters from "@perfice/components/variable/edit/aggregation/EditListFilters.svelte";
+    import type {AggregateType} from "@perfice/services/variable/types/aggregate";
 
-    let {dependencies, settings, onChange}: {
+    let {settings, onChange, forms}: {
         settings: DashboardMetricWidgetSettings,
         onChange: (settings: DashboardMetricWidgetSettings) => void,
         forms: Form[],
@@ -15,6 +16,34 @@
     } = $props();
 
     let loaded = $state(false);
+
+    let selectedForm = $derived<Form | undefined>(forms.find(f => f.id == settings.formId));
+    let availableForms = $derived(forms.map(v => {
+        return {value: v.id, name: v.name}
+    }));
+
+    let availableQuestions = $derived(selectedForm?.questions.map(v => {
+        return {value: v.id, name: v.name}
+    }) ?? []);
+
+    function onFormChange(formId: string) {
+        let form = forms.find(f => f.id == formId);
+        if (form == null) return;
+
+        onChange({
+            ...settings,
+            formId,
+            field: form.questions.length > 0 ? form.questions[0].id : ""
+        });
+    }
+
+    function onFieldChange(field: string) {
+        onChange({...settings, field});
+    }
+
+    function onAggregateTypeChange(type: AggregateType) {
+        onChange({...settings, aggregateType: type});
+    }
 
     onMount(() => {
         variableEditProvider.newEdit(true);
@@ -24,7 +53,25 @@
 
 {#if loaded}
     <div class="mt-4">
-        <EditVariable useDisplayValues={true} editName={false} variableId={dependencies["variable"]} onEdit={() => {}}/>
+        <div class="row-between">
+            Type
+            <BindableDropdownButton value={settings.aggregateType} items={AGGREGATE_TYPES}
+                                    onChange={onAggregateTypeChange}/>
+        </div>
+        <div class="row-between mt-2">
+            Form
+            <BindableDropdownButton value={settings.formId} items={availableForms}
+                                    onChange={onFormChange}/>
+        </div>
+        <div class="row-between mt-2">
+            Question
+            <BindableDropdownButton value={settings.field} items={availableQuestions}
+                                    onChange={onFieldChange}/>
+        </div>
+        {#if selectedForm != null}
+            <EditListFilters fields={selectedForm.questions} filters={settings.filters}
+                             onChange={(v) => onChange({...settings, filters: v})}/>
+        {/if}
     </div>
     <div class="row-between mt-2">
         Time scope

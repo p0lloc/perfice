@@ -34,7 +34,7 @@
                     path.pop();
                 }
 
-                addOption(question.dataSettings.root, []);
+                addOption($state.snapshot(question.dataSettings.root), []);
                 return options;
             }
             case FormQuestionDisplayType.SEGMENTED: {
