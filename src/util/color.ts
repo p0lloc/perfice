@@ -37,6 +37,7 @@ export function categoryToCssRgb(str: string) {
     let g = (hash >> 8) & 255;  // Extract green
     let b = hash & 255;         // Extract blue
 
+
     // Adjust brightness to keep colors from being too dark
     let adjust = (val: number) => Math.floor(50 + (val % 206)); // Keep in range [100, 255]
 

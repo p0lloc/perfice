@@ -1,24 +1,18 @@
+import type {Variable} from "@perfice/model/variable/variable";
 import type {VariableService} from "@perfice/services/variable/variable";
-import type {VariableTypeDef} from "@perfice/model/variable/variable";
 
 export async function updateDependencies(
     variableService: VariableService,
     dependencies: Record<string, string>,
-    previousDependencies: Record<string, string>, variableUpdates: Map<string, VariableTypeDef>) {
+    previousDependencies: Record<string, string>,
+    variableUpdates: Map<string, Variable>) {
 
-    for (let [dependencyId, updatedType] of variableUpdates.entries()) {
-        const variableId = dependencies[dependencyId];
+    for (let [dependencyId, newVariable] of variableUpdates.entries()) {
+        const variableId = previousDependencies[dependencyId];
         if (variableId == undefined) {
             // Update returned a new variable, so we need to create it
-
-            let newId = crypto.randomUUID();
-            await variableService.createVariable({
-                id: newId,
-                name: "",
-                type: updatedType,
-            })
-
-            dependencies[dependencyId] = newId;
+            await variableService.createVariable(newVariable);
+            dependencies[dependencyId] = newVariable.id;
             continue;
         }
 
@@ -26,14 +20,18 @@ export async function updateDependencies(
         delete previousDependencies[dependencyId];
 
         const variable = variableService.getVariableById(variableId);
-        if (variable == undefined) continue;
+        if (variable == undefined) {
+            continue;
+        }
 
-        variable.type = updatedType;
+        // We ignore if the id of the variable changed
+        variable.type = newVariable.type;
         await variableService.updateVariable(variable);
     }
 
     // Dependency is no longer returned by the definition, so we need to delete them
-    for (let [_, variableId] of Object.entries(previousDependencies)) {
+    for (let [dependencyId, variableId] of Object.entries(previousDependencies)) {
         await variableService.deleteVariableById(variableId);
+        delete dependencies[dependencyId];
     }
 }

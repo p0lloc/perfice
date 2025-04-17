@@ -1,6 +1,7 @@
 <script lang="ts">
     import CanvasChartRenderer from "@perfice/components/chart/CanvasChartRenderer.svelte";
     import type {ChartConfiguration, ChartType, DefaultDataPoint} from "chart.js";
+    import {categoryToCssRgb} from "@perfice/util/color";
 
     const {
         type,
@@ -10,6 +11,7 @@
         hideGrid = false,
         minimal = true,
         legend = true,
+        randomColor = false,
         fillColor = "#9BD0F5",
         borderColor = "#36A2EB",
         dataSetLabel = "Data",
@@ -18,6 +20,7 @@
         type: ChartType,
         dataPoints: number[],
         labels: string[],
+        randomColor?: boolean,
         hideLabels?: boolean,
         hideGrid?: boolean,
         minimal?: boolean,
@@ -35,8 +38,8 @@
                 label: dataSetLabel,
                 data: dataPoints,
                 fill: true,
-                borderColor: borderColor,
-                backgroundColor: fillColor,
+                borderColor: randomColor ? undefined : borderColor,
+                backgroundColor: randomColor ? labels.map((v: string) => categoryToCssRgb(v)) : fillColor,
                 tension: 0.5,
                 borderWidth: 2,
                 pointRadius: minimal ? 0 : undefined,

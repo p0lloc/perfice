@@ -23,6 +23,7 @@
                      hideLabels={false}
                      dataPoints={value.dataPoints}
                      minimal={false}
+                     randomColor={settings.groupBy != null}
                      dataSetLabel={value.name}
                      labelFormatter={value.labelFormatter}
                      labels={value.labels}/>

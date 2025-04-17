@@ -3,7 +3,7 @@ import {type Variable, type VariableTypeDef, VariableTypeName} from "@perfice/mo
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-import {faHashtag, faTags, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {faHashtag, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
 export interface DashboardMetricWidgetSettings {
     timeScope: SimpleTimeScopeType;
@@ -36,8 +36,9 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
         };
     }
 
-    createDependencies(settings: DashboardMetricWidgetSettings): Map<string, Variable> {
-        const listVariableId = crypto.randomUUID();
+    createDependencies(settings: DashboardMetricWidgetSettings, dependencies?: Record<string, string>): Map<string, Variable> {
+        let listVariableId = dependencies?.["list_variable"] ?? crypto.randomUUID();
+        let aggregateVariableId = dependencies?.["aggregate"] ?? crypto.randomUUID();
         return new Map([
             [
                 "list_variable",
@@ -54,7 +55,7 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
             [
                 "variable",
                 {
-                    id: crypto.randomUUID(),
+                    id: aggregateVariableId,
                     name: "Metric",
                     type: {
                         type: VariableTypeName.AGGREGATE,

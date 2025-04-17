@@ -3,7 +3,7 @@
     import TableWidgetEntry from "@perfice/components/dashboard/types/table/TableWidgetEntry.svelte";
     import TableWidgetGroupHeader from "@perfice/components/dashboard/types/table/TableWidgetGroupHeader.svelte";
     import {tableWidget, weekStart} from "@perfice/app";
-    import {type PrimitiveValue, pString} from "@perfice/model/primitive/primitive";
+    import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import type {TableWidgetGroup} from "@perfice/stores/sharedWidgets/table/table";
@@ -30,7 +30,7 @@
         if (groupBy == null || group.group == null) return;
 
         openFormModal(settings.formId, {
-            [groupBy]: pString(group.group)
+            [groupBy]: group.group
         });
     }
 </script>

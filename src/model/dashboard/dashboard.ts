@@ -1,4 +1,4 @@
-import {type Variable, type VariableTypeDef} from "@perfice/model/variable/variable";
+import {type Variable} from "@perfice/model/variable/variable";
 import {
     DashboardEntryRowWidgetDefinition,
     type DashboardEntryRowWidgetSettings
@@ -15,10 +15,7 @@ import {
     DashboardTableWidgetDefinition,
     type DashboardTableWidgetSettings
 } from "@perfice/model/dashboard/widgets/table";
-import {
-    DashboardGoalWidgetDefinition,
-    type DashboardGoalWidgetSettings
-} from "@perfice/model/dashboard/widgets/goal";
+import {DashboardGoalWidgetDefinition, type DashboardGoalWidgetSettings} from "@perfice/model/dashboard/widgets/goal";
 import {DashboardTagsWidgetDefinition, type DashboardTagsWidgetSettings} from "@perfice/model/dashboard/widgets/tags";
 import {
     DashboardMetricWidgetDefinition,
@@ -104,10 +101,10 @@ export interface DashboardWidgetDefinition<T extends DashboardWidgetType, S> {
     getDefaultSettings(): S;
 
     // Creates the variables that this widget depends on
-    createDependencies(settings: S): Map<string, Variable>;
+    createDependencies(settings: S, previousDependencies?: Record<string, string>): Map<string, Variable>;
 
-    // Returns the variable updates should occur when the settings change
-    updateDependencies(dependencies: Record<string, string>, previousSettings: S, updatedSettings: S): Map<string, VariableTypeDef>;
+    // // Returns the variable updates should occur when the settings change
+    // updateDependencies(dependencies: Record<string, string>, previousSettings: S, updatedSettings: S): Map<string, VariableTypeDef>;
 
     getName(): string;
 

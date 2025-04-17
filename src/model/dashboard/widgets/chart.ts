@@ -3,7 +3,8 @@ import {type Variable, type VariableTypeDef, VariableTypeName} from "@perfice/mo
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-import {faBarChart, faBars, faLineChart, faPieChart, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {faBarChart, faLineChart, faPieChart, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {GroupVariableType} from "@perfice/services/variable/types/group";
 
 export enum DashboardChartWidgetType {
     LINE = "line",
@@ -33,6 +34,7 @@ export interface DashboardChartWidgetSettings {
     type: DashboardChartWidgetType;
     formId: string;
     questionId: string;
+    groupBy: string | null;
     aggregateType: AggregateType;
     timeScope: SimpleTimeScopeType;
     color: string;
@@ -65,6 +67,7 @@ export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition
             type: DashboardChartWidgetType.LINE,
             formId: "abc",
             questionId: "",
+            groupBy: null,
             color: "#ff0000",
             timeScope: SimpleTimeScopeType.DAILY,
             aggregateType: AggregateType.SUM,
@@ -79,6 +82,13 @@ export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition
         };
     }
 
+    private createGroupTypeDef(settings: DashboardChartWidgetSettings, groupBy: string): VariableTypeDef {
+        return {
+            type: VariableTypeName.GROUP,
+            value: new GroupVariableType(settings.formId, {[settings.questionId]: true}, groupBy, [])
+        };
+    }
+
     private createAggregateTypeDef(listVariableId: string, settings: DashboardChartWidgetSettings): VariableTypeDef {
         return {
             type: VariableTypeName.AGGREGATE,
@@ -86,27 +96,39 @@ export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition
         };
     }
 
-    createDependencies(settings: DashboardChartWidgetSettings): Map<string, Variable> {
-        let listVariableId = crypto.randomUUID();
-        return new Map([
-            ["list", {
+    createDependencies(settings: DashboardChartWidgetSettings, dependencies?: Record<string, string>): Map<string, Variable> {
+        const dependencyName = settings.groupBy != null ? "group" : "list";
+        let listVariableId = dependencies?.[dependencyName] ?? crypto.randomUUID();
+        let aggregateVariableId = dependencies?.["aggregate"] ?? crypto.randomUUID();
+
+        let map: Map<string, Variable> = new Map();
+        if (settings.groupBy == null) {
+            map.set(dependencyName, {
                 id: listVariableId,
                 name: "List",
                 type: this.createListTypeDef(settings)
-            }],
-            ["aggregate", {
-                id: crypto.randomUUID(),
-                name: "Aggregate",
-                type: this.createAggregateTypeDef(listVariableId, settings)
-            }]
-        ]);
+            });
+        } else {
+            map.set(dependencyName, {
+                id: listVariableId,
+                name: "Group",
+                type: this.createGroupTypeDef(settings, settings.groupBy)
+            });
+        }
+
+        map.set("aggregate", {
+            id: aggregateVariableId,
+            name: "Aggregate",
+            type: this.createAggregateTypeDef(listVariableId, settings)
+        });
+
+        return map;
     }
 
-    updateDependencies(dependencies: Record<string, string>, previousSettings: DashboardChartWidgetSettings, settings: DashboardChartWidgetSettings): Map<string, VariableTypeDef> {
-        return new Map([
-            ["list", this.createListTypeDef(settings)],
-            ["aggregate", this.createAggregateTypeDef(dependencies["list"], settings)]
-        ]);
+    updateDependencies(_dependencies: Record<string, string>, _previousSettings: DashboardChartWidgetSettings, settings: DashboardChartWidgetSettings): Map<string, VariableTypeDef> {
+        return new Map(this.createDependencies(settings)
+            .entries()
+            .map(([key, value]) => [key, value.type]));
     }
 
 }

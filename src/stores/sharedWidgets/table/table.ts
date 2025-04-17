@@ -4,9 +4,9 @@ import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {forms} from "@perfice/app";
 import {
+    comparePrimitives,
     pDisplay,
     prettyPrintPrimitive,
-    primitiveAsString,
     type PrimitiveValue,
     PrimitiveValueType,
     pString
@@ -23,7 +23,7 @@ export interface TableWidgetResult {
 }
 
 export interface TableWidgetGroup {
-    group: string | null;
+    group: PrimitiveValue | null;
     name: string;
     entries: TableWidgetEntry[];
 }
@@ -46,14 +46,14 @@ function addTableWidgetEntryFromAnswers(groups: TableWidgetGroup[], answers: Rec
         let groupAnswer = answers[settings.groupBy];
         if (groupAnswer == null) return;
 
-        let groupAnswerStr = primitiveAsString(extractValueFromDisplay(groupAnswer));
+        let groupAnswerValue = extractValueFromDisplay(groupAnswer);
 
         let existing = groups.find(g =>
-            g.group == groupAnswerStr);
+            g.group != null && comparePrimitives(g.group, groupAnswerValue));
 
         if (existing == null) {
             groups.push({
-                group: groupAnswerStr,
+                group: groupAnswerValue,
                 name: prettyPrintPrimitive(groupAnswer),
                 entries: [entry]
             });

@@ -21,7 +21,7 @@ import {
     type PrimitiveValue,
     PrimitiveValueType
 } from "@perfice/model/primitive/primitive";
-import {extractFieldsFromAnswers, extractValueFromDisplay} from "@perfice/services/variable/types/list";
+import {extractDisplayFromDisplay, extractFieldsFromAnswers} from "@perfice/services/variable/types/list";
 
 export class GroupVariableType implements VariableType, JournalEntryDependent {
 
@@ -43,7 +43,7 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
             return null;
         }
 
-        return primitiveAsString(extractValueFromDisplay(groupAnswer));
+        return primitiveAsString(extractDisplayFromDisplay(groupAnswer));
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {

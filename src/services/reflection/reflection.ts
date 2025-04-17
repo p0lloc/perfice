@@ -79,12 +79,12 @@ export class ReflectionService {
 
     private async updateNotifications(previous: Reflection, reflection: Reflection) {
         // Don't update notifications if the name didn't change
-        if(previous.name == reflection.name) return;
+        if (previous.name == reflection.name) return;
 
         let notifications = await this.notificationService.getNotificationsByEntityId(reflection.id);
 
         // Update notifications to match new reflection name
-        for(let notification of notifications) {
+        for (let notification of notifications) {
             await this.notificationService.updateNotification({
                 ...notification,
                 title: reflection.name,
@@ -112,11 +112,8 @@ export class ReflectionService {
                 }
             } else {
                 // Update dependencies
-                let variableUpdates = definition.updateDependencies(widget.dependencies,
-                    previousWidget.settings, widget.settings);
-
-                await updateDependencies(this.variableService, widget.dependencies,
-                    structuredClone(previousWidget.dependencies), variableUpdates);
+                let variableUpdates = definition.createDependencies(widget.dependencies);
+                await updateDependencies(this.variableService, widget.dependencies, previousWidget.dependencies, variableUpdates);
 
                 previousWidgets = previousWidgets.filter(w => w.id != widget.id);
             }
@@ -200,7 +197,7 @@ export class ReflectionService {
                     for (let value of data) {
                         switch (value.type) {
                             case ChecklistConditionType.FORM:
-                                if(value.unchecked){
+                                if (value.unchecked) {
                                     await this.journalService.deleteEntryById(value.id);
                                 } else {
                                     let form = await this.formService.getFormById(value.data.formId);
@@ -212,7 +209,7 @@ export class ReflectionService {
                                 }
                                 break;
                             case ChecklistConditionType.TAG:
-                                if(value.unchecked){
+                                if (value.unchecked) {
                                     await this.tagService.unlogTagEntry(value.id);
                                 } else {
                                     await this.tagService.logTag(value.data.tagId, date);

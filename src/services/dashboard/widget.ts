@@ -3,7 +3,8 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import {
     type DashboardWidget,
     type DashboardWidgetDisplaySettings,
-    DashboardWidgetType, getDashboardWidgetDefinition
+    DashboardWidgetType,
+    getDashboardWidgetDefinition
 } from "@perfice/model/dashboard/dashboard";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {updateDependencies} from "../variable/dependencies";
@@ -36,6 +37,7 @@ export class DashboardWidgetService {
         const dependenciesMap = definition.createDependencies(settings);
         let storedDependencies: Record<string, string> = {};
         for (let [key, variable] of dependenciesMap.entries()) {
+            console.log("create new", key, variable)
             await this.variableService.createVariable(variable);
             storedDependencies[key] = variable.id;
         }
@@ -57,9 +59,9 @@ export class DashboardWidgetService {
 
     private async updateWidgetDependencies(previous: DashboardWidget, widget: DashboardWidget) {
         const definition = getDashboardWidgetDefinition(widget.type)!;
-        const variableUpdates = definition.updateDependencies(widget.dependencies, previous.settings, widget.settings);
+        const variableUpdates = definition.createDependencies(widget.settings, previous.dependencies);
 
-        await updateDependencies(this.variableService, widget.dependencies, structuredClone(previous.dependencies), variableUpdates);
+        await updateDependencies(this.variableService, widget.dependencies, previous.dependencies, variableUpdates);
     }
 
     private async deleteWidgetDependencies(widget: DashboardWidget) {
