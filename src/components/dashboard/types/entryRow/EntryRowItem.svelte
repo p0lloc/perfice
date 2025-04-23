@@ -1,6 +1,7 @@
 <script lang="ts">
     import type {EntryRowWidgetEntry} from "@perfice/stores/dashboard/widget/entryRow";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
+    import {formatTimestampHHMM} from "@perfice/util/time/format";
 
     let {entry}: { entry: EntryRowWidgetEntry } = $props();
 </script>
@@ -11,5 +12,5 @@
     {:else}
         {entry.value}
     {/if}
-    <span class="text-gray-400 text-sm">22:03</span>
+    <span class="text-gray-400 text-sm">{formatTimestampHHMM(entry.timestamp)}</span>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {journalSearch} from "@perfice/stores";
+    import {forms, groupedJournal, journal, journalSearch, paginatedJournal, tagEntries} from "@perfice/stores";
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
     import {
         jeForm,
@@ -23,7 +23,6 @@
     import Button from "@perfice/components/base/button/Button.svelte";
     import {onMount} from "svelte";
     import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
-    import {forms, groupedJournal, journal, paginatedJournal, tagEntries} from "@perfice/stores";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;

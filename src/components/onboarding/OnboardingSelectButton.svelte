@@ -9,8 +9,6 @@
         updateSelectState: (selections: OnboardingSelection[]) => void
     } = $props();
 
-    let selected = $derived(selectState?.some(s => s.item == item.name) ?? false);
-
     function onClick() {
         if (selectState == null) return;
 
@@ -21,6 +19,7 @@
         }
     }
 
+    let selected = $derived(selectState?.some(s => s.category == category && s.item == item.name) ?? false);
     let buttonClass = $derived(selected ? "pointer-feedback:bg-green-100 bg-white border-1 border-green-500 bg-green-50" : "hover-feedback bg-white");
 </script>
 

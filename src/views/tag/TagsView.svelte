@@ -87,14 +87,16 @@
             Loading...
         {:then categories}
             {#each categories as category (category.category?.id)}
-                <TagCategoryContainer
-                        date={$tagDate}
-                        {category}
-                        weekStart={$weekStart}
-                        onTagEdit={(t) => onTagEdit(t)}
-                        onDelete={() => onStartTagCategoryDelete(category.category)}
-                        onTagClicked={(t, entryId) => onTagClicked(t, entryId)}
-                />
+                {#if category.items.length > 0 || categories.flatMap(c => c.items).length === 0}
+                    <TagCategoryContainer
+                            date={$tagDate}
+                            {category}
+                            weekStart={$weekStart}
+                            onTagEdit={(t) => onTagEdit(t)}
+                            onDelete={() => onStartTagCategoryDelete(category.category)}
+                            onTagClicked={(t, entryId) => onTagClicked(t, entryId)}
+                    />
+                {/if}
             {/each}
             <LineButton onClick={addCategory}/>
         {/await}

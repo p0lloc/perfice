@@ -20,14 +20,15 @@ export class TrackableCategoryService implements TrackableCategoryEntityProvider
         return this.collection.getCategories();
     }
 
-    async createCategory(name: string): Promise<void> {
-        let category = {
+    async createCategory(name: string): Promise<TrackableCategory> {
+        let category: TrackableCategory = {
             id: crypto.randomUUID(),
             name
         }
 
         await this.collection.createCategory(category);
         await this.observers.notifyObservers(EntityObserverType.CREATED, category);
+        return category;
     }
 
     async updateCategory(category: TrackableCategory): Promise<void> {

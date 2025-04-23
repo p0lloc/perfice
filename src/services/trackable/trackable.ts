@@ -60,9 +60,12 @@ export class TrackableService implements TrackableEntityProvider {
     async createSingleValueTrackable(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) {
         const mainQuestionId = crypto.randomUUID();
 
+        let dataDef = questionDataTypeRegistry.getDefinition(type);
+        if (dataDef == null) return;
+
         let dataSettings = {
             dataType: type,
-            dataSettings: questionDataTypeRegistry.getDefaultValue(type)
+            dataSettings: dataDef.getDefaultSettings()
         }
 
         let form: Form = {
@@ -418,7 +421,7 @@ export class TrackableService implements TrackableEntityProvider {
     }
 
     private createSingleValueCardSettings(type: FormQuestionDataType, mainQuestionId: string): TrackableCardSettings {
-        switch(type){
+        switch (type) {
             case FormQuestionDataType.NUMBER:
             case FormQuestionDataType.TIME_ELAPSED:
                 return {

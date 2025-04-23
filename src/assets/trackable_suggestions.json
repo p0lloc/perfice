@@ -148,11 +148,106 @@
       },
       {
         "name": "Sleep",
-        "icon": "moon"
+        "icon": "moon",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "82a2f3cc-9270-46e6-90de-af6023f649a3"
+            }
+          ],
+          "questions": [
+            {
+              "id": "82a2f3cc-9270-46e6-90de-af6023f649a3",
+              "name": "How long did you sleep?",
+              "dataType": "TIME_ELAPSED",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "6d38a27e-b985-425c-9483-68bcd9f277eb",
+              "name": "How rested did you feel waking up?",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 0,
+                "max": 10
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "f139bf30-f47b-438c-96d2-8576478a6048",
+              "name": "Did you use screens 30 min before bedtime?",
+              "dataType": "BOOLEAN",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "f6a61e8d-1808-4a1e-8967-5a651145f86e",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "82a2f3cc-9270-46e6-90de-af6023f649a3"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
-        "name": "Energy",
-        "icon": "battery_full"
+        "name": "Energy levels",
+        "icon": "battery_half",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "c439c5b6-807d-48af-8dbd-f77ea68273c4"
+            }
+          ],
+          "questions": [
+            {
+              "id": "c439c5b6-807d-48af-8dbd-f77ea68273c4",
+              "name": "How energized are you feeling?",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 0,
+                "max": 10
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "c9775161-28d3-4479-a7a2-2cc4590beff3",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "SUM",
+          "field": "c439c5b6-807d-48af-8dbd-f77ea68273c4",
+          "color": "#ff0000"
+        }
       },
       {
         "name": "Stress",
@@ -314,7 +409,31 @@
     "suggestions": [
       {
         "name": "Steps",
-        "icon": "shoes"
+        "icon": "shoes",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "7594c886-6076-4a21-93a0-52705a1f32c9"
+            }
+          ],
+          "questions": [
+            {
+              "id": "7594c886-6076-4a21-93a0-52705a1f32c9",
+              "name": "Steps",
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "SUM",
+          "field": "7594c886-6076-4a21-93a0-52705a1f32c9",
+          "color": "#ff0000"
+        }
       },
       {
         "name": "Exercise",

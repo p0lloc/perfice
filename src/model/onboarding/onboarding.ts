@@ -87,7 +87,7 @@ export const ONBOARDING: OnboardingPage[] = [
     },
     {
         pageType: OnboardingPageType.SELECT,
-        selectType: OnboardingSelectType.TRACKABLE,
+        selectType: OnboardingSelectType.TAG,
         title: "Tags",
         description: "Select some tags to get started with",
         categories: TAG_SUGGESTIONS.map(g => {

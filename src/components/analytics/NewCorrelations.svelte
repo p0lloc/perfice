@@ -57,4 +57,6 @@
                          correlation={correlation}/>
         <span class="text-right text-sm text-gray-400 flex justify-end">{formatDayDifference(new Date(), new Date(correlation.timestamp))}</span>
     </div>
+{:else}
+    <p>There are no correlations yet, try adding more data.</p>
 {/each}

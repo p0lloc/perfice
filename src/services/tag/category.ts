@@ -23,7 +23,7 @@ export class TagCategoryService implements TagCategoryEntityProvider {
         return this.collection.getCategories();
     }
 
-    async createCategory(name: string): Promise<void> {
+    async createCategory(name: string): Promise<TagCategory> {
         let category = {
             id: crypto.randomUUID(),
             name
@@ -31,6 +31,7 @@ export class TagCategoryService implements TagCategoryEntityProvider {
 
         await this.collection.createCategory(category);
         await this.observers.notifyObservers(EntityObserverType.CREATED, category);
+        return category;
     }
 
     async updateCategory(category: TagCategory): Promise<void> {

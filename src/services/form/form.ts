@@ -57,19 +57,19 @@ export class BaseFormService implements FormService, FormEntityProvider {
     }
 
     async createForm(form: Form): Promise<void> {
-        await this.createSnapshotAndUpdateSnapshotId(form);
+        await this.createSnapshotAndUpdateSnapshotId(form, true);
         await this.formCollection.createForm(form);
         await this.observers.notifyObservers(EntityObserverType.CREATED, form);
     }
 
-    private async createSnapshotAndUpdateSnapshotId(form: Form): Promise<void> {
+    private async createSnapshotAndUpdateSnapshotId(form: Form, create: boolean = false): Promise<void> {
         let entriesReferencingSnapshot = true; // If we are creating a new form, we need to create a snapshot regardless
-        if (form.snapshotId != "") {
+        if (!create) {
             let entries = await this.journalService.getEntriesBySnapshotId(form.snapshotId);
             entriesReferencingSnapshot = entries.length > 0;
         }
 
-        if (entriesReferencingSnapshot) {
+        if (entriesReferencingSnapshot || create) {
             let snapshot: FormSnapshot = {
                 id: crypto.randomUUID(),
                 formId: form.id,
@@ -83,7 +83,11 @@ export class BaseFormService implements FormService, FormEntityProvider {
         } else {
             // If no entries are referencing this snapshot, we can just update it
             let snapshot = await this.snapshotCollection.getFormSnapshotById(form.snapshotId);
-            if (snapshot == null) return;
+            if (snapshot == null) {
+                // Snapshot is missing, force-create a new one
+                await this.createSnapshotAndUpdateSnapshotId(form, true);
+                return;
+            }
 
             snapshot.questions = form.questions;
             snapshot.format = form.format;

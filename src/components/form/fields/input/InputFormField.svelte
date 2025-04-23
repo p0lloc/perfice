@@ -33,8 +33,8 @@
         }
     }
 
-    export function focus(){
-        renderer.focus();
+    export function focus() {
+        renderer.focus?.();
     }
 
     let RenderComponent = $derived(renderInput(dataType));

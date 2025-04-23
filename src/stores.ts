@@ -133,7 +133,8 @@ export class StoreProvider {
 
         imports = new EntryImportStore(this.services.import);
         exports = new EntryExportStore(this.services.export);
-        onboarding = new OnboardingStore();
+        onboarding = new OnboardingStore(this.services.trackable, this.services.trackableCategory,
+            this.services.tag, this.services.tagCategory);
 
         analyticsSettings = new AnalyticsSettingsStore(this.services.analyticsSettings);
         analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 60, 6);

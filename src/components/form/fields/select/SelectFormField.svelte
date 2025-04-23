@@ -35,9 +35,10 @@
 
 
 {#if display.grid != null}
-    <div class="grid gap-2 select-grid bg-white"
+    <div class="grid gap-2 select-grid"
          style:--width="{Math.min(display.grid.itemsPerRow / 4, 1) * 75}%"
          class:select-grid-border={display.grid.border}
+         class:bg-white={display.grid.border}
          style:grid-template-columns="repeat({display.grid.itemsPerRow}, minmax(0, 1fr))">
         {@render list(display)}
     </div>
@@ -49,7 +50,8 @@
 
 {#snippet list(display: SelectFormQuestionSettings)}
     {#each display.options as option}
-        <SelectOptionButton selected={isOptionSelected(option)} {option} onClick={() => selectOption(option)} grid={display.grid != null}/>
+        <SelectOptionButton selected={isOptionSelected(option)} {option} onClick={() => selectOption(option)}
+                            grid={display.grid != null}/>
     {/each}
 {/snippet}
 
