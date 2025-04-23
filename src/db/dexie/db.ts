@@ -4,13 +4,24 @@ import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variab
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import type {
-    AnalyticsSettingsCollection, DashboardCollection, DashboardWidgetCollection,
+    AnalyticsSettingsCollection,
+    DashboardCollection,
+    DashboardWidgetCollection,
     FormCollection,
-    FormSnapshotCollection, FormTemplateCollection, GoalCollection,
+    FormSnapshotCollection,
+    FormTemplateCollection,
+    GoalCollection,
     IndexCollection,
-    JournalCollection, NotificationCollection, ReflectionCollection, SavedSearchCollection, TagCategoryCollection,
-    TagCollection, TagEntryCollection,
-    TrackableCategoryCollection, TrackableCollection, VariableCollection
+    JournalCollection,
+    NotificationCollection,
+    ReflectionCollection,
+    SavedSearchCollection,
+    TagCategoryCollection,
+    TagCollection,
+    TagEntryCollection,
+    TrackableCategoryCollection,
+    TrackableCollection,
+    VariableCollection
 } from "@perfice/db/collections";
 import {DexieTrackableCategoryCollection, DexieTrackableCollection} from "@perfice/db/dexie/trackable";
 import {DexieVariableCollection} from "@perfice/db/dexie/variable";
@@ -34,7 +45,7 @@ import {DexieSavedSearchCollection} from "@perfice/db/dexie/search";
 import {DexieNotificationCollection} from "@perfice/db/dexie/notification";
 import type {StoredNotification} from "@perfice/model/notification/notification";
 
-type DexieDB = Dexie & {
+export type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
     variables: EntityTable<StoredVariable, 'id'>;
     entries: EntityTable<JournalEntry, 'id'>;

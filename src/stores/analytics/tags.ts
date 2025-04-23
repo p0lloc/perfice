@@ -1,6 +1,5 @@
 import {derived, readable, type Readable} from "svelte/store";
 import type {Tag} from "@perfice/model/tag/tag";
-import {analytics} from "@perfice/app";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {
     AnalyticsService,
@@ -14,6 +13,7 @@ import {
     type DetailCorrelation
 } from "@perfice/stores/analytics/analytics";
 import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
+import {analytics} from "@perfice/stores";
 
 export interface TagAnalyticsResult {
     results: SingleTagAnalyticsResult[];

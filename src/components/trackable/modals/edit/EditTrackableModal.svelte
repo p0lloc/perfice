@@ -8,9 +8,9 @@
     import EditTrackableImportExport from "@perfice/components/trackable/modals/edit/EditTrackableImportExport.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
-    import {trackables} from "@perfice/app";
     import {goto} from "@mateothegreat/svelte5-router";
     import type {Trackable} from "@perfice/model/trackable/trackable";
+    import {trackables} from "@perfice/stores";
 
     let viewType: TrackableEditViewType = $state(TrackableEditViewType.GENERAL);
     let editState: EditTrackableState = $state({} as EditTrackableState);

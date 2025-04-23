@@ -9,11 +9,13 @@ import {
     AnalyticsService,
     type BasicAnalytics,
     type CategoricalWeekDayAnalytics,
-    convertValue, type CorrelationResult, isAnalyticsSupportedQuestion,
+    convertValue,
+    type CorrelationResult,
+    isAnalyticsSupportedQuestion,
     type QuantitativeWeekDayAnalytics,
     type ValueBag
 } from "@perfice/services/analytics/analytics";
-import {analytics, analyticsSettings, trackables} from "@perfice/app";
+import {analytics, analyticsSettings, trackables} from "@perfice/stores";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 import type {TrackableService} from "@perfice/services/trackable/trackable";

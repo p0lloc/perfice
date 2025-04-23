@@ -1,16 +1,16 @@
 <script lang="ts">
-    import {goals, goalDate} from "@perfice/app";
     import GoalCard from "@perfice/components/goal/GoalCard.svelte";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import GoalNewCard from "@perfice/components/goal/GoalNewCard.svelte";
     import {onMount} from "svelte";
-    import {faBars, faBullseye} from "@fortawesome/free-solid-svg-icons";
+    import {faBullseye} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {dateToMidnight} from "@perfice/util/time/simple";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import type {Goal} from "@perfice/model/goal/goal";
+    import {goalDate, goals} from "@perfice/stores";
 
     let deleteGoalModal: GenericDeleteModal<Goal>;
 

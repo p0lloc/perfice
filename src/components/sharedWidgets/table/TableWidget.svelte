@@ -2,12 +2,12 @@
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import TableWidgetEntry from "@perfice/components/dashboard/types/table/TableWidgetEntry.svelte";
     import TableWidgetGroupHeader from "@perfice/components/dashboard/types/table/TableWidgetGroupHeader.svelte";
-    import {tableWidget, weekStart} from "@perfice/app";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import type {TableWidgetGroup} from "@perfice/stores/sharedWidgets/table/table";
     import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
+    import {tableWidget, weekStart} from "@perfice/stores";
 
     let {openFormModal, settings, date, listVariableId, extraAnswers = []}: {
         settings: TableWidgetSettings,

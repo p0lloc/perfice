@@ -7,7 +7,7 @@
     import {formatDayDifference} from "@perfice/util/time/format";
     import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
     import GenericEntityModal from "@perfice/components/base/modal/generic/GenericEntityModal.svelte";
-    import {analytics} from "@perfice/app";
+    import {analytics} from "@perfice/stores";
 
     let {newCorrelations, result}: { newCorrelations: AnalyticsHistoryEntry[], result: AnalyticsResult } = $props();
 

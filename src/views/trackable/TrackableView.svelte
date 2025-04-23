@@ -1,6 +1,5 @@
 <script lang="ts">
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
-    import {forms, trackableDate, trackables, weekStart} from "@perfice/app";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import EditTrackableModal from "@perfice/components/trackable/modals/edit/EditTrackableModal.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
@@ -16,9 +15,9 @@
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import {dateToMidnight} from "@perfice/util/time/simple.js";
     import CreateTrackableModal from "@perfice/components/trackable/modals/create/CreateTrackableModal.svelte";
-    import {onMount} from "svelte";
     import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
+    import {forms, trackableDate, trackables, weekStart} from "@perfice/stores";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
@@ -89,7 +88,8 @@
         onStartDelete={onStartDeleteTrackable}
         bind:this={editTrackableModal}
 />
-<CreateTrackableModal bind:this={createTrackableModal} onSelectSuggestion={onSuggestionSelected} onSingleValue={onSingleValue}/>
+<CreateTrackableModal bind:this={createTrackableModal} onSelectSuggestion={onSuggestionSelected}
+                      onSingleValue={onSingleValue}/>
 <GenericDeleteModal
         subject="this trackable"
         onDelete={onDeleteTrackable}

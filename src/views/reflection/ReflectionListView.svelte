@@ -1,6 +1,5 @@
 <script lang="ts">
-    import {reflections} from "@perfice/app";
-    import {faBars, faPen, faPlay, faSun, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faPen, faPlay, faSun, faTrash} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     // noinspection ES6UnusedImports
@@ -14,6 +13,7 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import ReflectionModal from "@perfice/components/reflection/modal/ReflectionModal.svelte";
     import {publishToEventStore} from "@perfice/util/event";
+    import {reflections} from "@perfice/stores";
 
     let deleteReflectionModal: GenericDeleteModal<Reflection>;
     let reflectionModal: ReflectionModal;

@@ -2,7 +2,6 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/t
 import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
 import {VariableValueStore} from "@perfice/stores/variable/value";
-import {forms} from "@perfice/app";
 import {
     comparePrimitives,
     pDisplay,
@@ -15,6 +14,7 @@ import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import type {TableWidgetSettings} from "@perfice/model/sharedWidgets/table/table";
 import {formatDateLongTermOrHHMM} from "@perfice/util/time/format";
+import {forms} from "@perfice/stores";
 
 export interface TableWidgetResult {
     name: string;

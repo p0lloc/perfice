@@ -1,18 +1,15 @@
 <script lang="ts">
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
-    import {tagCategories, tagDate} from "@perfice/app";
-    import {tags} from "@perfice/app";
     import {onMount} from "svelte";
     import type {Tag, TagCategory} from "@perfice/model/tag/tag";
-    import {weekStart, categorizedTags} from "@perfice/app";
     import TagCategoryContainer from "@perfice/components/tag/TagCategoryContainer.svelte";
     import LineButton from "@perfice/components/base/button/LineButton.svelte";
     import {faTags} from "@fortawesome/free-solid-svg-icons";
     import {dateToMidnight} from "@perfice/util/time/simple";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import type {CategoryList} from "@perfice/util/category";
     import EditTagModal from "@perfice/components/tag/modal/EditTagModal.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
+    import {categorizedTags, tagCategories, tagDate, tags, weekStart} from "@perfice/stores";
 
     let editTagModal: EditTagModal;
     let deleteTagModal: GenericDeleteModal<Tag>;
@@ -62,7 +59,7 @@
     tagDate.set(dateToMidnight(new Date()));
 
     function onStartTagCategoryDelete(category: TagCategory | null) {
-        if(category == null) return;
+        if (category == null) return;
 
         deleteTagCategoryModal.open(category);
     }
@@ -74,7 +71,8 @@
 {/await}
 
 <GenericDeleteModal bind:this={deleteTagModal} onDelete={onTagDeleted} subject="this tag"/>
-<GenericDeleteModal bind:this={deleteTagCategoryModal} onDelete={onTagCategoryDeleted} subject="this category and all associated tags"/>
+<GenericDeleteModal bind:this={deleteTagCategoryModal} onDelete={onTagCategoryDeleted}
+                    subject="this category and all associated tags"/>
 
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar

@@ -19,7 +19,7 @@
     import HorizontalPlusButton from "@perfice/components/base/button/HorizontalPlusButton.svelte";
     import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
     import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
-    import {journalSearch} from "@perfice/app";
+    import {journalSearch} from "@perfice/stores";
     import type {JournalSearchUiDependencies} from "@perfice/model/journal/search/ui";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     // noinspection ES6UnusedImports

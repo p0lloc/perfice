@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
-    import {analytics} from "@perfice/app";
+    import {analytics} from "@perfice/stores";
     import NewCorrelations from "@perfice/components/analytics/NewCorrelations.svelte";
     import {faMagicWandSparkles} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports

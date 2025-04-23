@@ -1,7 +1,7 @@
 import {derived, type Readable} from "svelte/store";
 import {categorize, type CategoryList} from "@perfice/util/category";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
-import {tagCategories, tags} from "@perfice/app";
+import {tagCategories, tags} from "@perfice/stores";
 
 export function CategorizedTags(): Readable<Promise<CategoryList<TagCategory, Tag>[]>> {
     return derived<[Readable<Promise<Tag[]>>, Readable<Promise<TagCategory[]>>],

@@ -8,11 +8,11 @@
     import EditChecklistConditionModal
         from "@perfice/components/sharedWidgets/checklist/EditChecklistConditionModal.svelte";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
-    import {tags} from "@perfice/app";
     import type {ChecklistCondition, ChecklistWidgetSettings} from "@perfice/model/sharedWidgets/checklist/checklist";
     import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {tags} from "@perfice/stores";
 
     let {settings, onChange, forms}: {
         settings: ChecklistWidgetSettings,

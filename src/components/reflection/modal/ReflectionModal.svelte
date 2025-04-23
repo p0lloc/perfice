@@ -11,7 +11,6 @@
     import Fa from "svelte-fa";
     import ReflectionPageButton from "@perfice/components/reflection/modal/ReflectionPageButton.svelte";
     import ReflectionPageRenderer from "@perfice/components/reflection/modal/ReflectionPageRenderer.svelte";
-    import {forms, reflections} from "@perfice/app";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import type {Form} from "@perfice/model/form/form";
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
@@ -21,6 +20,7 @@
     import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
     import {faCalendar} from "@fortawesome/free-solid-svg-icons";
     import {formatDateYYYYMMDDHHMMSS} from "@perfice/util/time/format";
+    import {forms, reflections} from "@perfice/stores";
 
     let modal: Modal;
     let reflection = $state<Reflection>({} as Reflection);

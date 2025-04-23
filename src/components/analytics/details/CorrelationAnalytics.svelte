@@ -2,7 +2,7 @@
     import type {DetailCorrelation} from "@perfice/stores/analytics/analytics";
     import CorrelationCard from "@perfice/components/analytics/details/CorrelationCard.svelte";
     import GenericEntityModal from "@perfice/components/base/modal/generic/GenericEntityModal.svelte";
-    import {analytics} from "@perfice/app";
+    import {analytics} from "@perfice/stores";
 
     let ignoreConfirmationModal: GenericEntityModal<DetailCorrelation>;
 

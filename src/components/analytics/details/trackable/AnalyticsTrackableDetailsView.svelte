@@ -1,6 +1,5 @@
 <script lang="ts">
     import PieChart from "@perfice/components/chart/PieChart.svelte";
-    import {trackableDetailedAnalytics} from "@perfice/app";
     import {AnalyticsChartType, type TrackableDetailedAnalyticsResult,} from "@perfice/stores/analytics/trackable";
     import type {Readable} from "svelte/store";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
@@ -21,6 +20,7 @@
     import Fa from "svelte-fa";
     import AnalyticsTrackableLineChart
         from "@perfice/components/analytics/trackable/AnalyticsTrackableLineChart.svelte";
+    import {trackableDetailedAnalytics} from "@perfice/stores";
 
     let {id}: { id: string } = $props();
     let res = $state<Readable<Promise<TrackableDetailedAnalyticsResult>>>(

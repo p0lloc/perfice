@@ -1,9 +1,10 @@
 <script lang="ts">
-    import {analyticsSettings, trackableAnalytics, trackables} from "@perfice/app";
+    import {analyticsSettings} from "@perfice/stores";
     import EditAnalyticsSettingsModal from "@perfice/components/analytics/modal/EditAnalyticsSettingsModal.svelte";
     import AnalyticsTrackableCard from "@perfice/components/analytics/trackable/AnalyticsTrackableCard.svelte";
     import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
     import type {FormQuestion} from "@perfice/model/form/form";
+    import {trackableAnalytics, trackables} from "@perfice/stores";
 
     let res = $derived(trackableAnalytics());
     let editSettingsModal: EditAnalyticsSettingsModal;

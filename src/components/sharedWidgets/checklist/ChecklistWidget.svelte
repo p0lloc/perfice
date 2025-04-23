@@ -1,5 +1,4 @@
 <script lang="ts">
-    import {checklistWidget, forms, weekStart} from "@perfice/app";
     import {faCheck} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
@@ -12,6 +11,7 @@
         ChecklistConditionType,
         type ChecklistWidgetSettings
     } from "@perfice/model/sharedWidgets/checklist/checklist";
+    import {checklistWidget, forms, weekStart} from "@perfice/stores";
 
     let {settings, dependencies, date, onCheck, onUncheck, extraData = []}: {
         settings: ChecklistWidgetSettings,

@@ -5,13 +5,13 @@ import {writable, type Writable} from "svelte/store";
 import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import type {EditTrackableState} from "@perfice/model/trackable/ui";
-import {forms, journal, trackableCategories, variables} from "@perfice/app";
 import {EntityObserverType} from "@perfice/services/observer";
 import {type JournalEntryValue, pDisplay, pNumber, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {resolvedPromise} from "@perfice/util/promise";
 import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 import type {Form, FormQuestionDataType} from "@perfice/model/form/form";
+import {forms, journal, trackableCategories} from "@perfice/stores";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));

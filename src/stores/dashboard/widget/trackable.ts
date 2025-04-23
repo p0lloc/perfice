@@ -1,7 +1,7 @@
 import {type Readable, writable} from "svelte/store";
 import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
-import {trackables} from "@perfice/app";
 import type {Trackable} from "@perfice/model/trackable/trackable";
+import {trackables} from "@perfice/stores";
 
 export interface TrackableWidgetResult {
     trackable: Trackable;

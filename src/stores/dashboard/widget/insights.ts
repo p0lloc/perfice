@@ -1,8 +1,8 @@
 import {derived, type Readable} from "svelte/store";
-import {analytics, forms} from "@perfice/app";
 import type {HistoricalQuantitativeInsight} from "@perfice/services/analytics/analytics";
 import type {DashboardInsightsWidgetSettings} from "@perfice/model/dashboard/widgets/insights";
 import {getInsightText, type InsightText} from "@perfice/services/analytics/display";
+import {analytics, forms} from "@perfice/stores";
 
 export interface InsightResult {
     formName: string;

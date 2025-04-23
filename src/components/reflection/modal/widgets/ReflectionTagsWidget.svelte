@@ -1,13 +1,13 @@
 <script lang="ts">
     import FilteredTagCategories from "@perfice/components/tag/FilteredTagCategories.svelte";
     import {onMount} from "svelte";
-    import {categorizedTags, tagCategories, tags} from "@perfice/app";
     import TagCard from "@perfice/components/tag/TagCard.svelte";
     import type {Tag} from "@perfice/model/tag/tag";
     import type {
         ReflectionTagsWidgetAnswerState,
         ReflectionTagsWidgetSettings
     } from "@perfice/model/reflection/widgets/tags";
+    import {categorizedTags, tagCategories, tags} from "@perfice/stores";
 
     let {settings, state, onChange}: {
         settings: ReflectionTagsWidgetSettings,

@@ -6,8 +6,8 @@
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import type {Tag, TagCategory} from "@perfice/model/tag/tag";
     import TagValueCard from "@perfice/components/tag/TagValueCard.svelte";
-    import {tags} from "@perfice/app";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
+    import {tags} from "@perfice/stores";
 
     let {category, date, weekStart, onTagClicked, onTagEdit, onDelete}: {
         category: CategoryList<TagCategory, Tag>,

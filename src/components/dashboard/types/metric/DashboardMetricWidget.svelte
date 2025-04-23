@@ -1,8 +1,8 @@
 <script lang="ts">
     import type {DashboardMetricWidgetSettings} from "@perfice/model/dashboard/widgets/metric";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
-    import {metricWidget, weekStart} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
+    import {metricWidget, weekStart} from "@perfice/stores";
 
     let {widgetId, dependencies, settings}: {
         settings: DashboardMetricWidgetSettings,

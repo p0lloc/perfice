@@ -1,6 +1,5 @@
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {derived, type Readable} from "svelte/store";
-import {forms, journal, tagEntries, tags} from "@perfice/app";
 import {timestampToMidnight} from "@perfice/util/time/simple";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {TagEntryStore} from "@perfice/stores/journal/tag";
@@ -8,6 +7,7 @@ import type {FormStore} from "@perfice/stores/form/form";
 import type {TagStore} from "@perfice/stores/tag/tag";
 import type {Form} from "@perfice/model/form/form";
 import type {Tag} from "@perfice/model/tag/tag";
+import {forms, journal, tagEntries, tags} from "@perfice/stores";
 
 
 export type TransformedJournalEntry = JournalEntry & {
@@ -87,7 +87,7 @@ export class PaginatedJournal {
 
     async nextPage() {
         // Prevent multiple loading requests from scrolling too quickly
-        if(this.loading) return;
+        if (this.loading) return;
 
         this.loading = true;
 

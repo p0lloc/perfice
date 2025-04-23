@@ -1,9 +1,9 @@
 <script lang="ts">
     import {UNCATEGORIZED_TAG_CATEGORY_ID} from "@perfice/model/tag/tag";
     import {UNCATEGORIZED_NAME} from "@perfice/util/category";
-    import {tagCategories} from "@perfice/app";
     import MultiSelectDropdownButton from "@perfice/components/base/dropdown/MultiSelectDropdownButton.svelte";
     import type {ReflectionTagsWidgetSettings} from "@perfice/model/reflection/widgets/tags";
+    import {tagCategories} from "@perfice/stores";
 
     let {settings, onChange}: {
         settings: ReflectionTagsWidgetSettings,

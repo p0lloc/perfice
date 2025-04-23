@@ -1,9 +1,9 @@
 <script lang="ts">
     import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
-    import {trackableWidget, weekStart} from "@perfice/app";
     import TrackableCard from "@perfice/components/trackable/card/TrackableCard.svelte";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import type {Trackable} from "@perfice/model/trackable/trackable";
+    import {trackableWidget, weekStart} from "@perfice/stores";
 
     let {settings, openFormModal}: {
         settings: DashboardTrackableWidgetSettings,

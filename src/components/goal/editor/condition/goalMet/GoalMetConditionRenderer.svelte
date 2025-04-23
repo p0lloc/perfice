@@ -2,8 +2,8 @@
     import {GoalMetGoalCondition} from "@perfice/services/variable/types/goal";
     import type {GoalSidebarAction} from "@perfice/model/goal/ui";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
-    import {variableEditProvider} from "@perfice/app";
     import {VariableTypeName} from "@perfice/model/variable/variable";
+    import {variableEditProvider} from "@perfice/stores";
 
     let {condition, onValueChange}: {
         condition: GoalMetGoalCondition,

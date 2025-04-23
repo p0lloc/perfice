@@ -7,7 +7,6 @@
         type ReflectionPage,
         type ReflectionWidget
     } from "@perfice/model/reflection/reflection";
-    import {forms, reflections} from "@perfice/app";
     import {NEW_REFLECTION_ROUTE, ReflectionSidebarActionType} from "@perfice/model/reflection/ui";
     import {faArrowLeft, faCheck} from "@fortawesome/free-solid-svg-icons";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -25,8 +24,7 @@
     import EditReflectionNotifications
         from "@perfice/components/reflection/editor/notifications/EditReflectionNotifications.svelte";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
-    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
-    import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
+    import {forms, reflections} from "@perfice/stores";
 
     let {params}: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);

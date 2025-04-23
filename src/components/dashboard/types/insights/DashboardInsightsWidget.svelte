@@ -1,6 +1,5 @@
 <script lang="ts">
     import type {DashboardInsightsWidgetSettings} from "@perfice/model/dashboard/widgets/insights";
-    import {insightsWidget} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import {faHatWizard} from "@fortawesome/free-solid-svg-icons";
     import {TIME_SCOPE_LABELS} from "@perfice/model/variable/ui";
@@ -8,6 +7,7 @@
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import {insightsWidget} from "@perfice/stores";
 
     let {widgetId, dependencies, settings}: {
         settings: DashboardInsightsWidgetSettings,

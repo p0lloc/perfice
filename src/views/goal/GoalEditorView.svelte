@@ -1,14 +1,14 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {type GoalSidebarAction, GoalSidebarActionType, NEW_GOAL_ROUTE} from "@perfice/model/goal/ui";
-    import {back, goals, variableEditProvider} from "@perfice/app";
+    import {goals, variableEditProvider} from "@perfice/stores";
     import type {Goal} from "@perfice/model/goal/goal";
     import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
     import {type GoalCondition, GoalVariableType} from "@perfice/services/variable/types/goal";
     import ColorPickerButton from "@perfice/components/base/color/ColorPickerButton.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
-    import {faArrowLeft, faCheck, faPlusCircle, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faArrowLeft, faCheck, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -17,7 +17,8 @@
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
     import {goto} from "@mateothegreat/svelte5-router";
     import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
-    import {type TimeScope, TimeScopeType} from "@perfice/model/variable/time/time";
+    import {type TimeScope} from "@perfice/model/variable/time/time";
+    import {back} from "@perfice/app";
 
     let {params}: { params: Record<string, string> } = $props();
 

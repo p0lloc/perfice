@@ -1,6 +1,5 @@
 <script lang="ts">
     import {VariableTypeName} from "@perfice/model/variable/variable";
-    import {variableEditProvider} from "@perfice/app.js";
     import type {Variable} from "@perfice/model/variable/variable.js";
     import type {EditLatestVariableState} from "@perfice/stores/variable/editState";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
@@ -8,6 +7,7 @@
     import type {JournalEntryFilter} from "@perfice/services/variable/filtering";
     import {LatestVariableType} from "@perfice/services/variable/types/latest";
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
+    import {variableEditProvider} from "@perfice/stores";
 
     let {variable, value, editState}: {
         variable: Variable,

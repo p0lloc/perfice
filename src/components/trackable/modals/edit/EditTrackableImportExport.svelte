@@ -5,7 +5,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import FileButton from "@perfice/components/base/fileButton/FileButton.svelte";
-    import {imports, exports} from "@perfice/app";
+    import {exports, imports} from "@perfice/stores";
     import {downloadTextFile} from "@perfice/util/file";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import {ExportFileType} from "@perfice/services/export/export";

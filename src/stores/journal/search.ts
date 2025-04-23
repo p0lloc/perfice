@@ -4,10 +4,10 @@ import type {TagEntityProvider} from "@perfice/services/tag/tag";
 import type {TrackableEntityProvider} from "@perfice/services/trackable/trackable";
 import type {JournalSearch, SearchEntity} from "@perfice/model/journal/search/search";
 import {resolvedPromise} from "@perfice/util/promise";
-import {journal, tagEntries} from "@perfice/app";
 import type {TrackableCategoryEntityProvider} from "@perfice/services/trackable/category";
 import type {JournalSearchUiDependencies} from "@perfice/model/journal/search/ui";
 import type {FormEntityProvider} from "@perfice/services/form/form";
+import {journal, tagEntries} from "@perfice/stores";
 
 export function parseSearchFromUrl(param: string): SearchEntity[] {
     try {

@@ -10,7 +10,7 @@
     import OnboardingSelect from "@perfice/components/onboarding/OnboardingSelect.svelte";
     import type {Component} from "svelte";
     import SwipeDetector from "@perfice/components/base/gesture/SwipeDetector.svelte";
-    import {onboarding} from "@perfice/app";
+    import {onboarding} from "@perfice/stores";
 
     let page = $state(0);
     let current = $derived(ONBOARDING[page]);

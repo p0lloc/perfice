@@ -1,5 +1,4 @@
 <script lang="ts">
-    import {forms, journal, tags} from "@perfice/app";
     import {
         type Form,
         type FormQuestion,
@@ -15,6 +14,7 @@
     import type {Tag} from "@perfice/model/tag/tag";
     import DynamicInput from "@perfice/components/base/dynamic/DynamicInput.svelte";
     import {getCurrentRoute, routingNavigatorState} from "@perfice/model/ui/router.svelte";
+    import {forms, journal, tags} from "@perfice/stores";
 
     function hierarchyOptionToInputOption(
         option: HierarchyOption,

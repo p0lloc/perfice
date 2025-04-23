@@ -1,12 +1,10 @@
 <script lang="ts">
-    import TagButtonBase from "@perfice/components/tag/TagButtonBase.svelte";
     import type {Tag} from "@perfice/model/tag/tag";
-    import {faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {tagValue} from "@perfice/app";
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import TagCard from "@perfice/components/tag/TagCard.svelte";
+    import {tagValue} from "@perfice/stores";
 
     let {tag, date, weekStart, onClick, editing = false}: {
         tag: Tag,

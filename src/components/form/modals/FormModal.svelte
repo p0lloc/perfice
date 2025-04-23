@@ -7,7 +7,6 @@
     import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
-    import {forms, journal} from "@perfice/app";
     import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
     import type {FormTemplate} from "@perfice/model/form/form.js";
     import {extractAnswerValuesFromDisplay} from "@perfice/services/variable/types/list";
@@ -16,6 +15,7 @@
     import Fa from "svelte-fa";
     import {faCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
+    import {forms, journal} from "@perfice/stores";
 
     let {largeLogButton = true, onDelete}: {
         largeLogButton?: boolean,

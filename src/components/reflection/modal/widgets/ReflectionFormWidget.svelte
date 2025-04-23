@@ -1,11 +1,11 @@
 <script lang="ts">
-    import {forms} from "@perfice/app";
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
     import {extractAnswerValuesFromDisplay} from "@perfice/services/variable/types/list";
     import type {
         ReflectionFormWidgetAnswerState,
         ReflectionFormWidgetSettings
     } from "@perfice/model/reflection/widgets/form";
+    import {forms} from "@perfice/stores";
 
     let {settings, state, onChange}: {
         settings: ReflectionFormWidgetSettings,

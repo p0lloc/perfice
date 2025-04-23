@@ -1,15 +1,13 @@
 <script lang="ts">
-    import {
-        type DashboardChecklistWidgetSettings
-    } from "@perfice/model/dashboard/widgets/checklist";
+    import {type DashboardChecklistWidgetSettings} from "@perfice/model/dashboard/widgets/checklist";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import ChecklistWidget from "@perfice/components/sharedWidgets/checklist/ChecklistWidget.svelte";
     import type {ChecklistData} from "@perfice/stores/sharedWidgets/checklist/checklist";
     import {ChecklistConditionType} from "@perfice/model/sharedWidgets/checklist/checklist";
-    import {forms, journal, tags} from "@perfice/app";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {convertAnswersToDisplay} from "@perfice/model/form/validation";
+    import {forms, journal, tags} from "@perfice/stores";
 
     let {settings, dependencies, openFormModal}: {
         settings: DashboardChecklistWidgetSettings,

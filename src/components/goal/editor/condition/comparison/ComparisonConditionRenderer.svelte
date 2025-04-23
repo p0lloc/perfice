@@ -12,11 +12,11 @@
     } from "@perfice/model/goal/ui";
     import AddSourceButton from "@perfice/components/goal/editor/condition/comparison/AddSourceButton.svelte";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
-    import {pNumber, prettyPrintPrimitive, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
+    import {pNumber, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
     import type {VariableTypeName} from "@perfice/model/variable/variable";
-    import {variableEditProvider} from "@perfice/app";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
     import EditConstantOrVariable from "@perfice/components/variable/edit/EditConstantOrVariable.svelte";
+    import {variableEditProvider} from "@perfice/stores";
 
     let {condition, onValueChange, onSidebar}: {
         condition: ComparisonGoalCondition,

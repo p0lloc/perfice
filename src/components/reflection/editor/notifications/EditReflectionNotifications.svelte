@@ -2,13 +2,12 @@
     import {NotificationType, type StoredNotification} from "@perfice/model/notification/notification";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
-    import {reflections} from "@perfice/app";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
-    import {Weekday} from "@capacitor/local-notifications";
     import EditNotificationModal
         from "@perfice/components/reflection/editor/notifications/EditNotificationModal.svelte";
     import {updateIdentifiedInArray} from "@perfice/util/array";
     import NotificationCard from "@perfice/components/reflection/editor/notifications/NotificationCard.svelte";
+    import {reflections} from "@perfice/stores";
 
     let {entityId, notifications, onChange}: {
         entityId: string,

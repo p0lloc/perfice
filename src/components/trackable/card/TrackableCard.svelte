@@ -1,13 +1,13 @@
 <script lang="ts">
     import {type Trackable, TrackableCardType} from "@perfice/model/trackable/trackable";
     import {WeekStart} from "@perfice/model/variable/time/time";
-    import {trackableValue} from "@perfice/app";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {type Component} from "svelte";
     import ChartTrackableRenderer from "@perfice/components/trackable/card/chart/ChartTrackableRenderer.svelte";
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import ValueTrackableRenderer from "@perfice/components/trackable/card/value/ValueTrackableRenderer.svelte";
     import TallyTrackableRenderer from "@perfice/components/trackable/card/tally/TallyTrackableRenderer.svelte";
+    import {trackableValue} from "@perfice/stores";
 
     let {trackable, date, weekStart, onEdit, onLog, class: className = 'max-h-40 min-h-40'}: {
         trackable: Trackable,

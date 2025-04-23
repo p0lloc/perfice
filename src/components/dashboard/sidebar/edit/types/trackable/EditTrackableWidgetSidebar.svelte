@@ -1,8 +1,8 @@
 <script lang="ts">
     import type {DashboardTrackableWidgetSettings} from "@perfice/model/dashboard/widgets/trackable";
     import type {Form} from "@perfice/model/form/form";
-    import {goals, trackables} from "@perfice/app";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
+    import {trackables} from "@perfice/stores";
 
     let {settings, onChange, forms}: {
         settings: DashboardTrackableWidgetSettings,

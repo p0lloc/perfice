@@ -1,5 +1,4 @@
 <script lang="ts">
-    import {forms} from "@perfice/app";
     import {
         type Form,
         type FormQuestion,
@@ -36,6 +35,7 @@
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import {onMount} from "svelte";
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
+    import {forms} from "@perfice/stores";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -90,7 +90,7 @@
 
         form.questions.push(question);
 
-        if(form.format.length == 0){
+        if (form.format.length == 0) {
             // If format is empty, add the new question to be shown there
             form.format.push({
                 dynamic: true,
@@ -100,7 +100,7 @@
         }
 
         let newQuestion = form.questions.find(q => q.id == question.id);
-        if(newQuestion == null) return;
+        if (newQuestion == null) return;
 
         // Necessary to use the stateful value inside the array
         editQuestion(newQuestion);
@@ -128,7 +128,7 @@
         if (form == undefined) return;
 
         let snapshot = $state.snapshot(form);
-        if(creating == null) {
+        if (creating == null) {
             await forms.updateForm(snapshot);
             back();
         } else {
@@ -179,7 +179,7 @@
 
         currentQuestion = form.questions.find(q => q.id == currentQuestion?.id) ?? null;
 
-        if(currentQuestion != null){
+        if (currentQuestion != null) {
             sidebar.open(currentQuestion);
         }
     }

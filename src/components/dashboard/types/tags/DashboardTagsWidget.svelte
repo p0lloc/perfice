@@ -1,15 +1,14 @@
 <script lang="ts">
     import type {DashboardTagsWidgetSettings} from "@perfice/model/dashboard/widgets/tags";
-    import {categorizedTags, tagCategories, tags, weekStart} from "@perfice/app";
     import {onMount} from "svelte";
-    import {UNCATEGORIZED_NAME} from "@perfice/util/category";
     import TagValueCard from "@perfice/components/tag/TagValueCard.svelte";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import {faTags} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {type Tag, UNCATEGORIZED_TAG_CATEGORY_ID} from "@perfice/model/tag/tag";
+    import {type Tag} from "@perfice/model/tag/tag";
     import FilteredTagCategories from "@perfice/components/tag/FilteredTagCategories.svelte";
+    import {categorizedTags, tagCategories, tags, weekStart} from "@perfice/stores";
 
     let {settings}: {
         settings: DashboardTagsWidgetSettings,

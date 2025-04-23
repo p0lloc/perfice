@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {appReady} from "./app";
+    import {appReady} from "./stores";
     import type {Route} from "@mateothegreat/svelte5-router";
     import {Router} from "@mateothegreat/svelte5-router";
     import TrackableView from "@perfice/views/trackable/TrackableView.svelte";

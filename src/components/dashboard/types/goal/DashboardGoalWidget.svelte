@@ -1,8 +1,8 @@
 <script lang="ts">
     import type {DashboardGoalWidgetSettings} from "@perfice/model/dashboard/widgets/goal";
     import GoalCardBase from "@perfice/components/goal/GoalCardBase.svelte";
-    import {goalWidget, weekStart} from "@perfice/app";
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
+    import {goalWidget, weekStart} from "@perfice/stores";
 
     let {settings}: {
         settings: DashboardGoalWidgetSettings,

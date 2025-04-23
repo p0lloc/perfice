@@ -1,6 +1,6 @@
 <script lang="ts">
     import GridstackGrid from "@perfice/components/dashboard/GridstackGrid.svelte";
-    import {dashboards, dashboardWidgets, forms} from "@perfice/app";
+    import {dashboards, dashboardWidgets} from "@perfice/stores";
     import {
         type DashboardWidget,
         type DashboardWidgetDisplaySettings,
@@ -24,6 +24,7 @@
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
+    import {forms} from "@perfice/stores";
 
     let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
 
@@ -144,7 +145,7 @@
                     grid.addWidget(widget);
                     sidebar.close();
 
-                    if(disableEdit)
+                    if (disableEdit)
                         $editingDashboard = false;
                 }
             }

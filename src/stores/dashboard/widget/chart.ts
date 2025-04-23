@@ -3,12 +3,12 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import {derived, type Readable} from "svelte/store";
 import {type DashboardChartWidgetSettings, DashboardChartWidgetType} from "@perfice/model/dashboard/widgets/chart";
 import {RangedVariableValueStore, VariableValueStore} from "@perfice/stores/variable/value";
-import {forms} from "@perfice/app";
 import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {getChartColors} from "@perfice/util/color";
 import {formatValueAsDataType} from "@perfice/model/form/data";
 import {offsetDateByTimeScope} from "@perfice/util/time/simple";
 import {formatSimpleTimestamp} from "@perfice/model/variable/ui";
+import {forms} from "@perfice/stores";
 
 export interface ChartWidgetResult {
     chartType: DashboardChartWidgetType,
