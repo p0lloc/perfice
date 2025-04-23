@@ -11,6 +11,27 @@ import type {Reflection} from "@perfice/model/reflection/reflection";
 import type {JournalSearch} from "@perfice/model/journal/search/search";
 import type {StoredNotification} from "@perfice/model/notification/notification";
 
+export interface Collections {
+    entries: JournalCollection;
+    formSnapshots: FormSnapshotCollection;
+    forms: FormCollection;
+    indices: IndexCollection;
+    trackableCategories: TrackableCategoryCollection;
+    trackables: TrackableCollection;
+    variables: VariableCollection;
+    goals: GoalCollection;
+    tags: TagCollection;
+    tagEntries: TagEntryCollection;
+    formTemplates: FormTemplateCollection;
+    tagCategories: TagCategoryCollection;
+    analyticsSettings: AnalyticsSettingsCollection;
+    dashboards: DashboardCollection;
+    dashboardWidgets: DashboardWidgetCollection;
+    reflections: ReflectionCollection;
+    savedSearches: SavedSearchCollection;
+    notifications: NotificationCollection;
+}
+
 export interface TrackableCollection {
     count(): Promise<number>;
 

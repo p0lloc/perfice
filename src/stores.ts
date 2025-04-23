@@ -81,7 +81,7 @@ export let onboarding: OnboardingStore;
 
 export let analyticsSettings: AnalyticsSettingsStore;
 export let analytics: AnalyticsStore;
-export let appReady: Writable<boolean>;
+export let appReady: Writable<boolean> = writable(false);
 
 export let journalSearch: JournalSearchStore;
 
@@ -137,8 +137,6 @@ export class StoreProvider {
 
         analyticsSettings = new AnalyticsSettingsStore(this.services.analyticsSettings);
         analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 60, 6);
-
-        appReady = writable(false);
 
         journalSearch = new JournalSearchStore(this.services.journalSearch, this.services.form, this.services.trackable,
             this.services.trackableCategory, this.services.tag, this.services.tagCategory);

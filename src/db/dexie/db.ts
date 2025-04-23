@@ -3,26 +3,7 @@ import type {Trackable, TrackableCategory} from "@perfice/model/trackable/tracka
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
-import type {
-    AnalyticsSettingsCollection,
-    DashboardCollection,
-    DashboardWidgetCollection,
-    FormCollection,
-    FormSnapshotCollection,
-    FormTemplateCollection,
-    GoalCollection,
-    IndexCollection,
-    JournalCollection,
-    NotificationCollection,
-    ReflectionCollection,
-    SavedSearchCollection,
-    TagCategoryCollection,
-    TagCollection,
-    TagEntryCollection,
-    TrackableCategoryCollection,
-    TrackableCollection,
-    VariableCollection
-} from "@perfice/db/collections";
+import type {Collections, TrackableCollection, VariableCollection} from "@perfice/db/collections";
 import {DexieTrackableCategoryCollection, DexieTrackableCollection} from "@perfice/db/dexie/trackable";
 import {DexieVariableCollection} from "@perfice/db/dexie/variable";
 import {DexieJournalCollection} from "@perfice/db/dexie/journal";
@@ -44,6 +25,8 @@ import type {JournalSearch} from "@perfice/model/journal/search/search";
 import {DexieSavedSearchCollection} from "@perfice/db/dexie/search";
 import {DexieNotificationCollection} from "@perfice/db/dexie/notification";
 import type {StoredNotification} from "@perfice/model/notification/notification";
+import {type Migrator} from "@perfice/db/migration/migration";
+import {DexieMigrator} from "@perfice/db/dexie/migration";
 
 export type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -92,28 +75,7 @@ function loadDb(): DexieDB {
     return db;
 }
 
-export interface Collections {
-    entries: JournalCollection;
-    formSnapshots: FormSnapshotCollection;
-    forms: FormCollection;
-    indices: IndexCollection;
-    trackableCategories: TrackableCategoryCollection;
-    trackables: TrackableCollection;
-    variables: VariableCollection;
-    goals: GoalCollection;
-    tags: TagCollection;
-    tagEntries: TagEntryCollection;
-    formTemplates: FormTemplateCollection;
-    tagCategories: TagCategoryCollection;
-    analyticsSettings: AnalyticsSettingsCollection;
-    dashboards: DashboardCollection;
-    dashboardWidgets: DashboardWidgetCollection;
-    reflections: ReflectionCollection;
-    savedSearches: SavedSearchCollection;
-    notifications: NotificationCollection;
-}
-
-export function setupDb(): Collections {
+export function setupDb(): { collections: Collections, migrator: Migrator } {
     const db = loadDb();
     const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
     const variableCollection: VariableCollection = new DexieVariableCollection(db.variables);
@@ -140,24 +102,26 @@ export function setupDb(): Collections {
     const notificationCollection = new DexieNotificationCollection(db.notifications);
 
     return {
-        entries: journalCollection,
-        formSnapshots: formSnapshotCollection,
-        forms: formCollection,
-        indices: indexCollection,
-        trackableCategories: trackableCategoryCollection,
-        trackables: trackableCollection,
-        variables: variableCollection,
-        goals: goalCollection,
-        tags: tagCollection,
-        tagEntries: tagEntryCollection,
-        formTemplates: formTemplateCollection,
-        tagCategories: tagCategoryCollection,
-        analyticsSettings: analyticsSettingsCollection,
-        dashboards: dashboardCollection,
-        dashboardWidgets: dashboardWidgetCollection,
-        reflections: reflectionCollection,
-        savedSearches: savedSearchCollection,
-        notifications: notificationCollection
+        collections: {
+            entries: journalCollection,
+            formSnapshots: formSnapshotCollection,
+            forms: formCollection,
+            indices: indexCollection,
+            trackableCategories: trackableCategoryCollection,
+            trackables: trackableCollection,
+            variables: variableCollection,
+            goals: goalCollection,
+            tags: tagCollection,
+            tagEntries: tagEntryCollection,
+            formTemplates: formTemplateCollection,
+            tagCategories: tagCategoryCollection,
+            analyticsSettings: analyticsSettingsCollection,
+            dashboards: dashboardCollection,
+            dashboardWidgets: dashboardWidgetCollection,
+            reflections: reflectionCollection,
+            savedSearches: savedSearchCollection,
+            notifications: notificationCollection
+        }, migrator: new DexieMigrator(db)
     };
 }
 

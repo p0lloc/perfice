@@ -1,8 +1,7 @@
-import type {DexieDB} from "@perfice/db/dexie/db";
-import type {Table} from "dexie";
-
 export const CURRENT_DATA_VERSION: number = 0;
 export const CURRENT_VERSION_STORAGE_KEY = "data_version";
+
+const MIGRATIONS: Migration[] = [];
 
 export interface Migration {
     apply(entity: object): Promise<object>;
@@ -15,8 +14,6 @@ export interface Migration {
 export interface Migrator {
     applyMigration(migration: Migration): Promise<void>;
 }
-
-const migrations: Migration[] = [];
 
 export class MigrationService {
 
@@ -33,6 +30,9 @@ export class MigrationService {
             if (!isNaN(number)) {
                 return number;
             }
+        } else {
+            // Version is missing, set it to the current version
+            localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, CURRENT_DATA_VERSION.toString());
         }
 
         return CURRENT_DATA_VERSION;
@@ -42,7 +42,9 @@ export class MigrationService {
         let userVersion = this.getUserVersion();
         if (userVersion >= CURRENT_DATA_VERSION) return;
 
-        let relevantMigrations = migrations
+        console.log("Migrating from version", userVersion, "to", CURRENT_DATA_VERSION);
+
+        let relevantMigrations = MIGRATIONS
             .filter(m => m.getVersion() > userVersion
                 && m.getVersion() <= CURRENT_DATA_VERSION);
 
@@ -51,26 +53,7 @@ export class MigrationService {
         }
 
         localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, CURRENT_DATA_VERSION.toString());
-    }
-
-}
-
-export class DexieMigrator implements Migrator {
-    private readonly db: DexieDB;
-
-    constructor(db: DexieDB) {
-        this.db = db;
-    }
-
-    async applyMigration<T extends object>(migration: Migration): Promise<void> {
-        // @ts-ignore
-        let collection: Table<T> | undefined = this.db[migration.getEntityType()];
-        if (collection == undefined) return;
-
-        let allEntities = await collection.toArray();
-        for (let entity of allEntities) {
-            await migration.apply(entity);
-        }
+        console.log("Migration complete");
     }
 
 }

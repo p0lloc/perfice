@@ -1,4 +1,3 @@
-import type {Collections} from "@perfice/db/dexie/db";
 import {TrackableService} from "@perfice/services/trackable/trackable";
 import {BaseJournalService, JournalEntryObserverType, type JournalService} from "@perfice/services/journal/journal";
 import {TagEntryService} from "@perfice/services/tag/entry";
@@ -24,6 +23,7 @@ import {ReflectionService} from "@perfice/services/reflection/reflection";
 import {JournalSearchService} from "@perfice/services/journal/search";
 import {AnalyticsService} from "@perfice/services/analytics/analytics";
 import {AnalyticsHistoryService} from "@perfice/services/analytics/history";
+import type {Collections} from "@perfice/db/collections";
 
 export interface Services {
     readonly trackable: TrackableService;

@@ -9,10 +9,16 @@ import {registerDataTypes} from "@perfice/model/form/data";
 import {appReady, onboarding, reflections, setupStores, variables} from "@perfice/stores";
 import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
+import {MigrationService} from "@perfice/db/migration/migration";
+
+export const test = false;
 
 // Main entry point of the application
 (async () => {
-    let collections = setupDb();
+    let {collections, migrator} = setupDb();
+    const migrationService = new MigrationService(migrator);
+    await migrationService.migrate();
+
     let services = setupServices(collections);
     await setupStores(services);
     registerDataTypes();
