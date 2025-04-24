@@ -15,6 +15,7 @@ import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/pr
 import {TagVariableType} from "@perfice/services/variable/types/tag";
 import {LatestVariableType} from "@perfice/services/variable/types/latest";
 import {GroupVariableType} from "@perfice/services/variable/types/group";
+import type {Form, FormQuestion} from "@perfice/model/form/form";
 
 export enum VariableChangeType {
     CREATE,
@@ -239,4 +240,48 @@ export class VariableEditProvider {
         return this.variables;
     }
 
+}
+
+export function extractFormQuestionFromVariable(forms: Form[], graph: VariableService, variable: Variable): FormQuestion | null {
+    switch (variable.type.type) {
+        case VariableTypeName.CALCULATION:
+            return extractFormQuestionFromCalculation(forms, graph, variable.type.value);
+        case VariableTypeName.AGGREGATE:
+            return extractFormQuestionFromAggregate(forms, graph, variable.type.value);
+    }
+
+    return null;
+}
+
+export function extractFormQuestionFromCalculation(forms: Form[], graph: VariableService, calculation: CalculationVariableType): FormQuestion | null {
+    // Loop through all entries and find the first variable that is able to extract a question
+    for (let entry of calculation.getEntries()) {
+        if (typeof entry != "object") continue;
+
+        if (entry.constant || entry.value.type != PrimitiveValueType.STRING) continue;
+
+        let variable = graph.getVariableById(entry.value.value);
+        if (variable == null) continue;
+
+        let extracted = extractFormQuestionFromVariable(forms, graph, variable);
+        if (extracted != null) return extracted;
+    }
+
+    return null;
+}
+
+export function extractFormQuestionFromAggregate(forms: Form[], graph: VariableService, aggregate: AggregateVariableType): FormQuestion | null {
+    let listVariable = graph.getVariableById(aggregate.getListVariableId());
+    if (listVariable == null) return null;
+
+    let listType = listVariable.type;
+    if (listType.type != VariableTypeName.LIST) return null;
+
+    let form = forms.find(f => f.id == listType.value.getFormId());
+    if (form == null) return null;
+
+    let question = form.questions.find(q => q.id == aggregate.getField());
+    if (question == null) return null;
+
+    return question;
 }

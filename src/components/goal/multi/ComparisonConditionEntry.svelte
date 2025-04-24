@@ -21,7 +21,7 @@
                                  strokeColor={color}/>
             <span class="text-xs">{value.name}</span>
         </div>
-        {formatComparisonNumberValues(value.source.value, value.target.value)}
+        {formatComparisonNumberValues(value.source.value, value.target.value, value.dataType)}
     </div>
 {:else}
     {prettyPrintPrimitive(value.source)} {value.operator} {prettyPrintPrimitive(value.target)}

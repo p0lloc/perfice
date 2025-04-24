@@ -70,11 +70,15 @@ export function formatTimestampHHMM(timestamp: number) {
     return formatDateHHMM(new Date(timestamp));
 }
 
-export function formatTimeElapsed(minutes: number) {
+export function formatTimeElapsed(minutes: number): string {
+    if (minutes < 0) {
+        return `-${formatTimeElapsed(-minutes)}`;
+    }
+
     let hours = Math.floor(minutes / 60);
     minutes = Math.floor(minutes % 60);
 
-    if (hours > 0) {
+    if (hours != 0) {
         return `${hours}h ${minutes}m`;
     }
 
@@ -88,7 +92,7 @@ export function formatDateHHMM(date: Date) {
 export function formatDateLongTerm(date: Date, currentDate: Date) {
     let weekStart = dateToWeekStart(currentDate, WeekStart.MONDAY); // TODO: don't hardcode week start
     let prefix;
-    if(date.getTime() > weekStart.getTime()){
+    if (date.getTime() > weekStart.getTime()) {
         return WEEK_DAYS_SHORT[date.getDay()];
     } else {
         return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`

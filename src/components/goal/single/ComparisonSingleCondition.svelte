@@ -5,9 +5,9 @@
 
     let {value, color}: { value: ComparisonValueResult, color: string } = $props();
 
-    let {first, second, progress} = $derived(getGoalConditionProgress(value));
+    let {first, second, progress, dataType} = $derived(getGoalConditionProgress(value));
 </script>
 
 <CircularProgressBar progress={progress} strokeColor={color}>
-    {formatComparisonNumberValues(first, second)}
+    {formatComparisonNumberValues(first, second, dataType)}
 </CircularProgressBar>

@@ -1,14 +1,21 @@
 import {primitiveAsNumber} from "../primitive/primitive";
 import {VariableTypeName} from "@perfice/model/variable/variable";
-import {ComparisonOperator, type ConstantOrVariable, type GoalCondition, GoalConditionType} from "@perfice/services/variable/types/goal";
 import {
-    faBullseye, faDivide,
+    ComparisonOperator,
+    type ConstantOrVariable,
+    type GoalCondition,
+    GoalConditionType
+} from "@perfice/services/variable/types/goal";
+import {
+    faBullseye,
+    faDivide,
     faEquals,
     faGreaterThan,
     faGreaterThanEqual,
     faLessThan,
     faLessThanEqual,
-    faNotEqual, faPlusMinus
+    faNotEqual,
+    faPlusMinus
 } from "@fortawesome/free-solid-svg-icons";
 import type {ComparisonValueResult} from "@perfice/stores/goal/value";
 import {calculateProgressSafe} from "@perfice/util/math";
@@ -19,13 +26,14 @@ export interface ConditionProgress {
     first: number;
     second: number;
     progress: number;
+    dataType: FormQuestionDataType;
 }
 
 export function getGoalConditionProgress(value: ComparisonValueResult): ConditionProgress {
     let first = primitiveAsNumber(value.source);
     let second = primitiveAsNumber(value.target);
 
-    return {first, second, progress: calculateProgressSafe(first, second)};
+    return {first, second, progress: calculateProgressSafe(first, second), dataType: value.dataType};
 }
 
 export enum GoalSidebarActionType {

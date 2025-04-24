@@ -37,7 +37,6 @@ export class DashboardWidgetService {
         const dependenciesMap = definition.createDependencies(settings);
         let storedDependencies: Record<string, string> = {};
         for (let [key, variable] of dependenciesMap.entries()) {
-            console.log("create new", key, variable)
             await this.variableService.createVariable(variable);
             storedDependencies[key] = variable.id;
         }

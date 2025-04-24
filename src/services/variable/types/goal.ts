@@ -7,7 +7,7 @@ import {
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
-import {SimpleTimeScope, type TimeScope, TimeScopeType, tSimple} from "@perfice/model/variable/time/time";
+import {type TimeScope, TimeScopeType, tSimple} from "@perfice/model/variable/time/time";
 
 export type GoalCondition = {
     id: string;

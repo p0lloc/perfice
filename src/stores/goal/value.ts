@@ -12,6 +12,10 @@ import {
 } from "@perfice/services/variable/types/goal";
 import {VariableTypeName} from "@perfice/model/variable/variable";
 import {emptyPromise} from "@perfice/util/promise";
+import {type Form, FormQuestionDataType} from "@perfice/model/form/form";
+import {extractFormQuestionFromVariable} from "@perfice/stores/variable/edit";
+import {forms} from "@perfice/stores";
+import {formatValueAsDataType} from "@perfice/model/form/data";
 
 export type GoalConditionValueResult =
     GV<GoalConditionType.GOAL_MET, GoalMetValueResult>
@@ -20,6 +24,7 @@ export type GoalConditionValueResult =
 export interface ComparisonValueResult {
     name: string;
     source: PrimitiveValue;
+    dataType: FormQuestionDataType;
     operator: ComparisonOperator;
     target: PrimitiveValue;
     met: boolean;
@@ -35,7 +40,30 @@ export interface GV<K extends GoalConditionType, V> {
     value: V;
 }
 
-function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: GoalCondition, variableService: VariableService): GoalConditionValueResult | null {
+function extractNameAndDataTypeFromDependencies(dependencies: string[], forms: Form[], variableService: VariableService): {
+    name: string,
+    dataType: FormQuestionDataType
+} {
+    let name = "Goal";
+    let dataType = FormQuestionDataType.NUMBER;
+    if (dependencies.length > 0) {
+        for (let dependency of dependencies) {
+            let variable = variableService.getVariableById(dependency);
+            if (variable == null) continue;
+
+            let question = extractFormQuestionFromVariable(forms, variableService, variable);
+            if (question == null)
+                continue;
+
+            return {name: variable.name, dataType: question.dataType};
+        }
+    }
+
+    return {name, dataType};
+}
+
+function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: GoalCondition,
+                       variableService: VariableService, forms: Form[]): GoalConditionValueResult | null {
     let result = resultMap[condition.id];
     if (result == null) return null;
 
@@ -43,17 +71,17 @@ function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: Goa
         case GoalConditionType.COMPARISON: {
             if (result.type != PrimitiveValueType.COMPARISON_RESULT) return null;
 
-            let name = "Goal";
-            let dependencies = condition.value.getDependencies();
-            if (dependencies.length > 0) {
-                let variable = variableService.getVariableById(dependencies[0]);
-                name = variable?.name ?? "Unknown";
-            }
+            let {
+                name,
+                dataType
+            } = extractNameAndDataTypeFromDependencies(condition.value.getDependencies(), forms, variableService);
+
             return {
                 type: GoalConditionType.COMPARISON,
                 value: {
                     name: name,
                     source: result.value.source,
+                    dataType,
                     operator: condition.value.getOperator(),
                     target: result.value.target,
                     met: result.value.met,
@@ -105,11 +133,13 @@ export function GoalValueStore(variableId: string, date: Date,
             let resolved = await value;
             if (resolved.type != PrimitiveValueType.MAP) return;
 
+            let availableForms = await forms.get();
+
             let resultMap = resolved.value;
             let results: GoalConditionValueResult[] = [];
             let conditions = goalData.getConditions();
             for (let condition of conditions) {
-                let result = mapGoalResult(resultMap, condition, variableService);
+                let result = mapGoalResult(resultMap, condition, variableService, availableForms);
                 if (result == null) continue;
 
                 results.push(result);
@@ -121,8 +151,11 @@ export function GoalValueStore(variableId: string, date: Date,
 }
 
 
-export function formatComparisonNumberValues(first: number, second: number): string {
-    return `${first} of ${second}`;
+export function formatComparisonNumberValues(first: number, second: number, dataType: FormQuestionDataType): string {
+    let firstFormatted = formatValueAsDataType(first, dataType);
+    let secondFormatted = formatValueAsDataType(second, dataType);
+
+    return `${firstFormatted} of ${secondFormatted}`;
 }
 
 export function formatComparisonNonNumberValues(result: ComparisonValueResult): string {

@@ -20,8 +20,8 @@
 </script>
 
 {#if value.constant || value.value.type !== PrimitiveValueType.STRING}
-    <EditConstant value={value.value} onChange={onConstantChange} />
+    <EditConstant value={value.value} onChange={onConstantChange}/>
 {:else}
-    <EditVariable variableId={value.value.value} {onEdit} />
+    <EditVariable variableId={value.value.value} {onEdit} useDisplayValues={true}/>
 {/if}
-<EditBackButton {onBack} />
+<EditBackButton {onBack}/>
