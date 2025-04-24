@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
+    import {type FormQuestion} from "@perfice/model/form/form";
     import {type PrimitiveValue, PrimitiveValueType,} from "@perfice/model/primitive/primitive";
     import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
@@ -46,7 +46,7 @@
         return value;
     }
 
-    export function focus(){
+    export function focus() {
         renderer.focus();
     }
 
@@ -71,5 +71,7 @@
                    onChange={onRendererUpdateValue}
                    displayType={question.displayType}
                    bind:this={renderer}
-                   displaySettings={question}/>
+                   displaySettings={question}
+                   unit={question.unit ?? undefined}
+/>
 <p class="text-red-500">{errorMessage}</p>

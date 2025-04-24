@@ -2,7 +2,13 @@
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import type {SelectOption} from "@perfice/model/form/display/select";
 
-    let {option, selected, onClick, grid}: { option: SelectOption, selected: boolean, onClick: () => void, grid: boolean } = $props();
+    let {option, selected, onClick, grid, unit}: {
+        option: SelectOption,
+        selected: boolean,
+        onClick: () => void,
+        grid: boolean,
+        unit?: string
+    } = $props();
 </script>
 
 <button class="border-2 p-2 rounded-xl aspect-square flex flex-col justify-center items-center"
@@ -14,7 +20,7 @@
         <Icon class="text-2xl" name={option.icon}/>
     {/if}
     {#if option.icon == null || option.iconAndText}
-        <span class="whitespace-nowrap overflow-hidden w-full text-xs">{option.text}</span>
+        <span class="whitespace-nowrap overflow-hidden w-full text-xs">{option.text} {unit ?? ""}</span>
     {/if}
 </button>
 

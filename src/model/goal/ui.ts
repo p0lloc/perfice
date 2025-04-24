@@ -19,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type {ComparisonValueResult} from "@perfice/stores/goal/value";
 import {calculateProgressSafe} from "@perfice/util/math";
+import type {FormQuestionDataType} from "@perfice/model/form/form";
 
 export const NEW_GOAL_ROUTE = "new";
 

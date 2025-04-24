@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {DashboardMetricWidgetSettings} from "@perfice/model/dashboard/widgets/metric";
-    import type {Form} from "@perfice/model/form/form";
+    import {type Form, isFormQuestionNumberRepresentable} from "@perfice/model/form/form";
     import {onMount} from "svelte";
     import {AGGREGATE_TYPES, SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
@@ -22,9 +22,12 @@
         return {value: v.id, name: v.name}
     }));
 
-    let availableQuestions = $derived(selectedForm?.questions.map(v => {
-        return {value: v.id, name: v.name}
-    }) ?? []);
+    let availableQuestions = $derived(selectedForm?.questions
+        ?.filter(q => isFormQuestionNumberRepresentable(q.dataType))
+        .map(v => {
+            return {value: v.id, name: v.name}
+        }) ?? []
+    );
 
     function onFormChange(formId: string) {
         let form = forms.find(f => f.id == formId);

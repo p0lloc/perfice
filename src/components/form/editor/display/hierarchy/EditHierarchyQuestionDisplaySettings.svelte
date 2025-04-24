@@ -2,14 +2,19 @@
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import type {HierarchyFormDisplaySettings} from "@perfice/model/form/display/hierarchy";
 
-    let {settings = $bindable(), dataType, dataSettings}: {
+    let {settings, onChange}: {
         settings: HierarchyFormDisplaySettings,
+        onChange: (settings: HierarchyFormDisplaySettings) => void,
         dataType: FormQuestionDataType,
         dataSettings: any
     } = $props();
+
+    function onOnlyLeafOptionChange(e: { currentTarget: HTMLInputElement }) {
+        onChange({...settings, onlyLeafOption: e.currentTarget.checked});
+    }
 </script>
 
 <div class="row-between">
     Show only last option
-    <input type="checkbox" bind:checked={settings.onlyLeafOption}/>
+    <input type="checkbox" checked={settings.onlyLeafOption} onchange={onOnlyLeafOptionChange}/>
 </div>

@@ -102,13 +102,14 @@
         // @ts-ignore
         let variable: Variable = $state.snapshot<Variable>(goalVariable);
         variable.type.value = goalData;
+        variable.name = goal.name;
         variableEditProvider.updateVariable(variable);
         await variableEditProvider.save();
 
         let goalSnapshot: Goal = $state.snapshot(goal);
         if (creating) {
             variable.name = goalSnapshot.name;
-            await goals.createGoal(goalSnapshot.name, variable);
+            await goals.createGoal(goalSnapshot.name, goalSnapshot.color, variable);
         } else {
             await goals.updateGoal(goalSnapshot);
         }
@@ -158,7 +159,8 @@
                 <p class="block mb-2 label mt-4">Conditions</p>
                 <div class="flex flex-col gap-2 mt-2 h-full">
                     {#each goalData.getConditions() as condition(condition.id)}
-                        <GoalConditionCard {condition}
+                        <GoalConditionCard goalId={goal.variableId}
+                                           {condition}
                                            onOpenSidebar={openSidebar}
                                            onUpdate={(condition) => onConditionUpdate(condition)}
                                            onDelete={() => onConditionDelete(condition)}

@@ -5,21 +5,22 @@
     import {VariableTypeName} from "@perfice/model/variable/variable";
     import {variableEditProvider} from "@perfice/stores";
 
-    let {condition, onValueChange}: {
+    let {goalId, condition, onValueChange}: {
+        goalId: string,
         condition: GoalMetGoalCondition,
         onValueChange: (v: GoalMetGoalCondition) => void,
         onSidebar: (v: GoalSidebarAction) => void
     } = $props();
 
-    let goalId = $state(condition.getGoalVariableId());
+    let selectedGoalId = $state(condition.getGoalVariableId());
 
     function onGoalIdChange(id: string) {
-        goalId = id;
-        onValueChange(new GoalMetGoalCondition(goalId));
+        selectedGoalId = id;
+        onValueChange(new GoalMetGoalCondition(selectedGoalId));
     }
 
     let goals = $derived(variableEditProvider.getVariables()
-        .filter(v => v.type.type == VariableTypeName.GOAL)
+        .filter(v => v.type.type == VariableTypeName.GOAL && v.id != goalId)
         .map(v => {
             return {
                 value: v.id,
@@ -30,5 +31,5 @@
 
 <div class="row-between">
     Goal
-    <DropdownButton items={goals} value={goalId} onChange={onGoalIdChange}/>
+    <DropdownButton items={goals} value={selectedGoalId} onChange={onGoalIdChange}/>
 </div>

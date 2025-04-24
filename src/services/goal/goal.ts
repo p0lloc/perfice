@@ -3,7 +3,6 @@ import type {Goal} from "@perfice/model/goal/goal";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {type Variable} from "@perfice/model/variable/variable";
-import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
 import {GoalConditionType} from "@perfice/services/variable/types/goal";
 
@@ -27,11 +26,11 @@ export class GoalService {
         return await this.goalCollection.getGoalById(id);
     }
 
-    async createGoal(name: string, variable: Variable): Promise<void> {
+    async createGoal(name: string, color: string, variable: Variable): Promise<void> {
         let goal: Goal = {
             id: crypto.randomUUID(),
             variableId: variable.id,
-            color: "#ff0000",
+            color,
             name,
         };
 

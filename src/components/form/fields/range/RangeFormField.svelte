@@ -7,8 +7,8 @@
 
     let {dataSettings, displaySettings, disabled, value, onChange}: FormFieldProps = $props();
 
-    let data = dataSettings as NumberFormQuestionDataSettings;
-    let display = displaySettings as RangeFormQuestionSettings;
+    let data = $derived(dataSettings as NumberFormQuestionDataSettings);
+    let display = $derived(displaySettings as RangeFormQuestionSettings);
 </script>
 
 <RangeSlider on:change={(e) => onChange(e.detail.value)}

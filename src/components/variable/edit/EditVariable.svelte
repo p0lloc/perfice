@@ -46,6 +46,11 @@
         loadVariable(variableId);
     });
 
+    function onE(v: EditConstantOrVariableState) {
+        console.log(v)
+        onEdit(v);
+    }
+
     let RendererComponent = $derived(variable != null ? RENDERERS[variable.type.type] : null);
 </script>
 {#if variable != null && editState != null}
@@ -54,7 +59,7 @@
     {/if}
     <div>
         {#if RendererComponent != null}
-            <RendererComponent {variable} value={variable.type.value} {editState} {onEdit}
+            <RendererComponent {variable} value={variable.type.value} {editState} onEdit={onE}
                                useDisplayValues={useDisplayValues}/>
         {:else}
             This variable type has no settings.

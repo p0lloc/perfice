@@ -2,14 +2,15 @@
     import type {HierarchyOption} from "@perfice/model/form/data/hierarchy";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {faFolderTree, faPen, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
-    import {deleteIdentifiedInArray} from "@perfice/util/array";
+    import {deleteIdentifiedInArray, updateIndexInArray} from "@perfice/util/array";
     import EditHierarchyOption from "./EditHierarchyOption.svelte"
     import {pString} from "@perfice/model/primitive/primitive";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
-    let {option = $bindable(), root = false, onDelete, onEdit}: {
+    let {option, onChange, root = false, onDelete, onEdit}: {
         option: HierarchyOption,
+        onChange: (option: HierarchyOption) => void,
         root?: boolean,
         onDelete: (option: HierarchyOption) => void,
         onEdit: (option: HierarchyOption) => void
@@ -26,8 +27,12 @@
         });
     }
 
+    function onChildChange(index: number, child: HierarchyOption) {
+        onChange({...option, children: updateIndexInArray(option.children, index, child)});
+    }
+
     function onDeleteChild(child: HierarchyOption) {
-        option.children = deleteIdentifiedInArray(option.children, child.id);
+        onChange({...option, children: deleteIdentifiedInArray(option.children, child.id)});
     }
 
 </script>
@@ -46,6 +51,7 @@
         </div>
     </div>
     {#each option.children as child, i}
-        <EditHierarchyOption bind:option={option.children[i]} {onEdit} onDelete={onDeleteChild}/>
+        <EditHierarchyOption option={child} onChange={(v) => onChildChange(i, v)} {onEdit}
+                             onDelete={onDeleteChild}/>
     {/each}
 </div>

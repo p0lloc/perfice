@@ -1,15 +1,11 @@
 import type {FormQuestionDisplaySettingsValue} from "./display";
-import type {DataSettingValues, FormQuestionDataSettings} from "@perfice/model/form/data";
+import type {DataSettingValues} from "@perfice/model/form/data";
 import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "./form";
-import {
-    faBorderAll, faCalendar, faCheck, faCircleDot, faFolderTree, faHashtag, faKeyboard,
-    faRulerHorizontal, faStopwatch, type IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
-import {faFont} from "@fortawesome/free-solid-svg-icons/faFont";
 
 export const NEW_FORM_ROUTE = "new";
 
 export interface FormFieldProps {
+    unit?: string;
     displaySettings: FormQuestionDisplaySettingsValue;
     dataType: FormQuestionDataType;
     dataSettings: DataSettingValues;
@@ -44,7 +40,7 @@ export function getHtmlInputFromQuestionType(type: FormQuestionDataType): string
 const INPUT_AUTO_FOCUS_TYPES = [FormQuestionDataType.TEXT, FormQuestionDataType.NUMBER, FormQuestionDataType.BOOLEAN];
 
 export function shouldAutoFocusNext(question: FormQuestion): boolean {
-    switch(question.displayType){
+    switch (question.displayType) {
         case FormQuestionDisplayType.INPUT:
             return INPUT_AUTO_FOCUS_TYPES.includes(question.dataType);
         case FormQuestionDisplayType.SEGMENTED:

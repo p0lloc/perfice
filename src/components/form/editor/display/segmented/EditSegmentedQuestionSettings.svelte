@@ -11,38 +11,35 @@
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import type {SelectOption} from "@perfice/model/form/display/select";
 
-    let {settings = $bindable(), dataType, dataSettings}: {
+    let {settings, onChange, dataType, dataSettings}: {
         settings: SegmentedFormQuestionSettings,
+        onChange: (settings: SegmentedFormQuestionSettings) => void,
         dataType: FormQuestionDataType,
         dataSettings: any
     } = $props();
 
     let editOptionModal: EditSegmentedOptionModal;
-    let dragContainer: DragAndDropContainer;
 
     async function addOption() {
         let newOption = await editOptionModal.open(null);
         if (newOption == null) return;
 
-        settings.options.push(newOption);
-        dragContainer.invalidateItems();
+        onChange({...settings, options: [...settings.options, newOption]});
     }
 
     async function onEditOption(option: SegmentedOption) {
         let updatedOption = await editOptionModal.open($state.snapshot(option));
         if (updatedOption == null) return;
 
-        settings.options = updateIdentifiedInArray(settings.options, updatedOption);
-        dragContainer.invalidateItems();
+        onChange({...settings, options: updateIdentifiedInArray(settings.options, updatedOption)});
     }
 
     function onDeleteOption(option: SegmentedOption) {
-        settings.options = deleteIdentifiedInArray(settings.options, option.id);
-        dragContainer.invalidateItems();
+        onChange({...settings, options: deleteIdentifiedInArray(settings.options, option.id)});
     }
 
     function onReorderFinalize(items: SelectOption[]) {
-        settings.options = items;
+        onChange({...settings, options: items});
     }
 </script>
 
@@ -51,7 +48,7 @@
     <h2 class="text-xl text-gray-500 font-bold">Options</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>
-<DragAndDropContainer zoneId="segmented-options" bind:this={dragContainer}
+<DragAndDropContainer zoneId="segmented-options"
                       onFinalize={onReorderFinalize} items={settings.options} class="flex flex-col gap-2 mt-2">
     {#snippet item(option)}
         <EditSegmentedOptionCard {option} onEdit={() => onEditOption(option)}

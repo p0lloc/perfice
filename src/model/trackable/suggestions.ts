@@ -4,7 +4,8 @@ import {
     type TableTrackableValueSettings,
     type Trackable,
     type TrackableCardSettings,
-    TrackableCardType, type TrackableChartSettings,
+    TrackableCardType,
+    type TrackableChartSettings,
     type TrackableTallySettings,
     TrackableValueType
 } from "@perfice/model/trackable/trackable";
@@ -38,8 +39,11 @@ export interface SCS<K extends TrackableCardType, V> {
     cardSettings: V;
 }
 
-export interface TrackableSuggestionTallySettings extends TrackableTallySettings {}
-export interface TrackableSuggestionChartSettings extends TrackableChartSettings {}
+export interface TrackableSuggestionTallySettings extends TrackableTallySettings {
+}
+
+export interface TrackableSuggestionChartSettings extends TrackableChartSettings {
+}
 
 
 export type TrackableSuggestionValueSettings = {

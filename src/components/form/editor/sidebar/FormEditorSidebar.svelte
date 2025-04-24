@@ -1,15 +1,8 @@
 <script lang="ts">
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {
-        faCheck,
-        faDumbbell,
-        faFont,
-    } from "@fortawesome/free-solid-svg-icons";
-    import {
-        type FormQuestion,
-        FormQuestionDataType,
-    } from "@perfice/model/form/form";
+    import {faCheck, faDumbbell, faFont,} from "@fortawesome/free-solid-svg-icons";
+    import {type FormQuestion, FormQuestionDataType,} from "@perfice/model/form/form";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import EditDisplayQuestionSettings
         from "@perfice/components/form/editor/display/EditDisplayQuestionSettings.svelte";
@@ -18,8 +11,10 @@
     import Sidebar from "@perfice/components/base/sidebar/Sidebar.svelte";
 
     let {
+        onChange,
         onClose,
     }: {
+        onChange: (question: FormQuestion | null) => void,
         onClose: () => void;
     } = $props();
 
@@ -43,6 +38,11 @@
             currentQuestion?.dataType ?? FormQuestionDataType.TEXT,
         )!,
     );
+
+    function onQuestionChange(q: FormQuestion) {
+        currentQuestion = q;
+        onChange(currentQuestion);
+    }
 </script>
 
 <Sidebar
@@ -72,8 +72,8 @@
                 />
             </div>
 
-            <EditDataQuestionSettings bind:currentQuestion/>
-            <EditDisplayQuestionSettings bind:currentQuestion {dataTypeDef}/>
+            <EditDataQuestionSettings {currentQuestion} onChange={onQuestionChange}/>
+            <EditDisplayQuestionSettings {currentQuestion} onChange={onQuestionChange} {dataTypeDef}/>
         </div>
     {/if}
 </Sidebar>

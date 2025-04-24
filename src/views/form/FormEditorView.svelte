@@ -145,6 +145,15 @@
         goto("/");
     }
 
+    function onSidebarQuestionChange(question: FormQuestion | null) {
+        if (form == undefined || question == null) return;
+        let index = form.questions.findIndex(q => q.id == question?.id);
+        if (index == -1) return;
+
+        form.questions[index] = question;
+        currentQuestion = question;
+    }
+
     async function loadForm() {
         let formId = params.formId;
         if (formId == undefined) return;
@@ -211,8 +220,10 @@
 
     <FormEditorSidebar
             onClose={() => (currentQuestion = null)}
+            onChange={onSidebarQuestionChange}
             bind:this={sidebar}
     />
+
     <div class="flex justify-between">
         <div class="p-2 flex-1 flex">
             <div class="mx-auto w-full lg:w-1/2 md:w-3/4 md:mt-8 main-content">
@@ -267,7 +278,7 @@
                 >
                     {#snippet item(question, i)}
                         <FormFieldEdit
-                                bind:question={form.questions[i]}
+                                question={form.questions[i]}
                                 selected={currentQuestion?.id === question.id}
                                 onClick={() => editQuestion(question)}
                                 onDelete={() => deleteQuestion(question)}

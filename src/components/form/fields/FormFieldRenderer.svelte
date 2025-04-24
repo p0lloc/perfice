@@ -12,18 +12,19 @@
     import RichInputFormField from "@perfice/components/form/fields/richInput/RichInputFormField.svelte";
     import TextAreaFormField from "@perfice/components/form/fields/textArea/TextAreaFormField.svelte";
 
-    let {displayType, value, onChange, disabled, dataSettings, displaySettings}: {
+    let {displayType, value, onChange, disabled, dataSettings, displaySettings, unit}: {
         dataSettings: FormQuestionDataSettings,
         displaySettings: FormQuestionDisplaySettings,
         displayType: FormQuestionDisplayType,
         disabled: boolean,
         value: any,
-        onChange: (v: any) => void
+        onChange: (v: any) => void,
+        unit?: string
     } = $props();
 
     let renderer: any;
 
-    export function focus(){
+    export function focus() {
         renderer.focus?.();
     }
 
@@ -40,5 +41,6 @@
     const RendererComponent = $derived(FIELD_RENDERERS[displayType]);
 </script>
 <RendererComponent {value} {onChange} {disabled} dataSettings={dataSettings.dataSettings}
+                   {unit}
                    bind:this={renderer}
                    displaySettings={displaySettings.displaySettings} dataType={dataSettings.dataType}/>

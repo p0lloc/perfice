@@ -9,7 +9,7 @@
     import DateInputFormField from "@perfice/components/form/fields/input/DateInputFormField.svelte";
     import DateTimeInputFormField from "@perfice/components/form/fields/input/DateTimeInputFormField.svelte";
 
-    let {dataSettings, disabled, value, onChange, dataType}: FormFieldProps = $props();
+    let {disabled, value, onChange, dataType}: FormFieldProps = $props();
 
     let renderer: any;
 

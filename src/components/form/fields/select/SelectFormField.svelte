@@ -3,7 +3,7 @@
     import type {FormFieldProps} from "@perfice/model/form/ui";
     import SelectOptionButton from "@perfice/components/form/fields/select/SelectOptionButton.svelte";
 
-    let {dataSettings, displaySettings, disabled, value, onChange}: FormFieldProps = $props();
+    let {displaySettings, disabled, value, onChange, unit}: FormFieldProps = $props();
 
     function selectOption(o: SelectOption) {
         if (disabled) return;
@@ -30,9 +30,8 @@
         }
     }
 
-    let display = displaySettings as SelectFormQuestionSettings;
+    let display = $derived(displaySettings as SelectFormQuestionSettings);
 </script>
-
 
 {#if display.grid != null}
     <div class="grid gap-2 select-grid"
@@ -51,6 +50,7 @@
 {#snippet list(display: SelectFormQuestionSettings)}
     {#each display.options as option}
         <SelectOptionButton selected={isOptionSelected(option)} {option} onClick={() => selectOption(option)}
+                            {unit}
                             grid={display.grid != null}/>
     {/each}
 {/snippet}

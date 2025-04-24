@@ -29,7 +29,11 @@ interface VariableListener {
     deleteListenerCallback: IndexDeleteListener | undefined;
 }
 
-export class VariableService {
+export interface VariableProvider {
+    getVariableById(id: string): Variable | undefined;
+}
+
+export class VariableService implements VariableProvider {
 
     private variableCollection: VariableCollection;
     private indexCollection: IndexCollection;

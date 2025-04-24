@@ -5,10 +5,9 @@
     import FormFieldRenderer from "@perfice/components/form/fields/FormFieldRenderer.svelte";
     import type {FormQuestion} from "@perfice/model/form/form";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
-    import {getDefaultPrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {
-        question = $bindable(),
+        question,
         selected,
         onClick,
         onDelete,
@@ -29,7 +28,7 @@
         questionDataTypeRegistry.getDefaultValue(question.dataType)!,
     );
 
-    function onDeleteClick(e: MouseEvent){
+    function onDeleteClick(e: MouseEvent) {
         // Prevent the click from bubbling to the parent so it would open the sidebar again
         e.stopPropagation();
         onDelete();
@@ -61,6 +60,7 @@
             value={defaultValue}
             disabled={true}
             onChange={() => {}}
+            unit={question.unit ?? undefined}
             displayType={question.displayType}
             displaySettings={question}
     />

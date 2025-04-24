@@ -5,8 +5,7 @@
 
     let {displaySettings, value, onChange}: FormFieldProps = $props();
 
-    let display = displaySettings as SegmentedFormQuestionSettings;
-
+    let display = $derived(displaySettings as SegmentedFormQuestionSettings);
 </script>
 
 <SegmentedControl {value}
@@ -15,4 +14,4 @@
         name: o.text,
         value: o.value.value,
     }
-})} {onChange} />
+})} {onChange}/>

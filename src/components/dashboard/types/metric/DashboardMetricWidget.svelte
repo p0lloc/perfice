@@ -18,12 +18,12 @@
 <div class="w-full h-full bg-white p-4 flex gap-3 items-center border rounded-xl">
     {#await $result then value}
         <div>
-            <Icon name={value.icon} class="text-3xl w-8"/>
+            <Icon name={value.icon} class="text-green-500 text-3xl w-8"/>
         </div>
         <div class="flex-1 min-w-0">
-            <div class="row-between w-full">
-                <h2 class="text-xl text-gray-600 font-bold overflow-hidden text-ellipsis">{value.name}</h2>
-                <p class="text-xs text-gray-400 overflow-hidden">{value.timeScope}</p>
+            <div class="flex justify-between gap-1 items-center w-full">
+                <h2 class="text-xl text-gray-600 font-bold overflow-hidden text-ellipsis text-nowrap">{value.name}</h2>
+                <p class="text-[10px] text-gray-400 overflow-hidden">{value.timeScope}</p>
             </div>
             <p class="text-lg">{value.value}</p>
         </div>

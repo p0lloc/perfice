@@ -16,7 +16,9 @@
     import type {VariableTypeName} from "@perfice/model/variable/variable";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
     import EditConstantOrVariable from "@perfice/components/variable/edit/EditConstantOrVariable.svelte";
-    import {variableEditProvider} from "@perfice/stores";
+    import {forms, variableEditProvider} from "@perfice/stores";
+    import {FormQuestionDataType} from "@perfice/model/form/form";
+    import {extractFormQuestionFromVariable} from "@perfice/stores/variable/edit";
 
     let {condition, onValueChange, onSidebar}: {
         condition: ComparisonGoalCondition,
@@ -24,13 +26,13 @@
         onSidebar: (v: GoalSidebarAction) => void
     } = $props();
 
-
     let editing: EditConstantOrVariableState | null = $state(null);
     let editStack: EditConstantOrVariableState[] = [];
     let editingSource: boolean = $state(false);
 
     let source = $derived(condition.getSource());
     let target = $derived(condition.getTarget());
+    let dataType = $state(extractFirstDataType());
 
     function onAddSource(constant: boolean, source: boolean) {
         if (constant) {
@@ -54,14 +56,17 @@
         editingSource = source;
 
         if (source) {
-            onValueChange(new ComparisonGoalCondition(v, condition.getOperator(), condition.getTarget()));
+            condition = new ComparisonGoalCondition(v, condition.getOperator(), condition.getTarget());
+            onValueChange(condition);
         } else {
-            onValueChange(new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), v));
+            condition = new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), v);
+            onValueChange(condition);
         }
     }
 
     function onChangeOperator(operator: ComparisonOperator) {
-        onValueChange(new ComparisonGoalCondition(condition.getSource(), operator, condition.getTarget()));
+        condition = new ComparisonGoalCondition(condition.getSource(), operator, condition.getTarget());
+        onValueChange(condition);
     }
 
     function editSource(source: boolean) {
@@ -76,14 +81,16 @@
         if (source == null) return;
 
         deleteSourceVariable(source);
-        onValueChange(new ComparisonGoalCondition(null, condition.getOperator(), condition.getTarget()));
+        condition = new ComparisonGoalCondition(null, condition.getOperator(), condition.getTarget());
+        onValueChange(condition);
     }
 
     function removeTarget() {
         if (target == null) return;
 
         deleteSourceVariable(target);
-        onValueChange(new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), null));
+        condition = new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), null)
+        onValueChange(condition);
     }
 
     function deleteSourceVariable(v: ConstantOrVariable) {
@@ -93,20 +100,24 @@
     }
 
     function onBack() {
+        dataType = extractFirstDataType();
         editStack.pop();
         editing = editStack.length > 0 ? editStack[editStack.length - 1] : null;
     }
 
     function onSourceUpdate(value: ConstantOrVariable) {
         if (editingSource) {
-            onValueChange(new ComparisonGoalCondition(value, condition.getOperator(), condition.getTarget()));
+            condition = new ComparisonGoalCondition(value, condition.getOperator(), condition.getTarget());
+            onValueChange(condition);
         } else {
-            onValueChange(new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), value));
+            condition = new ComparisonGoalCondition(condition.getSource(), condition.getOperator(), value);
+            onValueChange(condition);
         }
     }
 
     function onEditingChange(value: ConstantOrVariable) {
         if (editing == null) return;
+        editing.value = value;
         editing.onChange(value);
     }
 
@@ -114,27 +125,53 @@
         editing = value;
         editStack.push(value);
     }
+
+    async function extractDataType(v: ConstantOrVariable): Promise<FormQuestionDataType | null> {
+        if (v.constant || v.value.type != PrimitiveValueType.STRING) return null;
+
+        let variable = variableEditProvider.getVariableById(v.value.value);
+        if (variable == null) return null;
+
+        return extractFormQuestionFromVariable(await forms.get(), variableEditProvider, variable)?.dataType ?? null;
+    }
+
+
+    async function extractFirstDataType() {
+        if (source != null) {
+            let extracted = await extractDataType(source);
+            if (extracted != null) return extracted;
+        }
+        if (target != null) {
+            let extracted = await extractDataType(target);
+            if (extracted != null) return extracted;
+        }
+
+        return FormQuestionDataType.NUMBER;
+    };
 </script>
 
-<div class="flex flex-col gap-2">
-    {#if editing != null}
-        <EditConstantOrVariable value={editing.value} onBack={onBack} onChange={onEditingChange} onEdit={onEdit}/>
-    {:else}
-        {#if source != null }
-            <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(source)}
-                                   onEdit={() => editSource(true)}
-                                   onDelete={removeSource}/>
+{#await dataType then dataType}
+    <div class="flex flex-col gap-2">
+        {#if editing != null}
+            <EditConstantOrVariable {dataType} value={editing.value} onBack={onBack} onChange={onEditingChange}
+                                    onEdit={onEdit}/>
         {:else}
-            <AddSourceButton onAdd={(constant) => onAddSource(constant, true)}/>
+            {#if source != null }
+                <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(source, dataType)}
+                                       onEdit={() => editSource(true)}
+                                       onDelete={removeSource}/>
+            {:else}
+                <AddSourceButton onAdd={(constant) => onAddSource(constant, true)}/>
+            {/if}
+            <BindableDropdownButton value={condition.getOperator()} items={COMPARISON_OPERATORS}
+                                    onChange={onChangeOperator}/>
+            {#if target != null}
+                <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(target, dataType)}
+                                       onEdit={() => editSource(false)}
+                                       onDelete={removeTarget}/>
+            {:else}
+                <AddSourceButton onAdd={(constant) => onAddSource(constant, false)}/>
+            {/if}
         {/if}
-        <BindableDropdownButton value={condition.getOperator()} items={COMPARISON_OPERATORS}
-                                onChange={onChangeOperator}/>
-        {#if target != null}
-            <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(target)}
-                                   onEdit={() => editSource(false)}
-                                   onDelete={removeTarget}/>
-        {:else}
-            <AddSourceButton onAdd={(constant) => onAddSource(constant, false)}/>
-        {/if}
-    {/if}
-</div>
+    </div>
+{/await}

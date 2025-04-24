@@ -4,7 +4,18 @@
     import {faListNumeric} from "@fortawesome/free-solid-svg-icons";
     import type {TextFormQuestionDataSettings} from "@perfice/model/form/data/text";
 
-    let {settings = $bindable()}: { settings: TextFormQuestionDataSettings } = $props();
+    let {settings, onChange}: {
+        settings: TextFormQuestionDataSettings,
+        onChange: (v: TextFormQuestionDataSettings) => void
+    } = $props();
+
+    function onMinLengthChange(e: { currentTarget: HTMLInputElement }) {
+        onChange({...settings, minLength: parseInt(e.currentTarget.value)});
+    }
+
+    function onMaxLengthChange(e: { currentTarget: HTMLInputElement }) {
+        onChange({...settings, maxLength: parseInt(e.currentTarget.value)});
+    }
 </script>
 
 <div class="row-between">
@@ -13,7 +24,7 @@
         <p>Min length</p>
     </div>
 
-    <input type="number" class="border" bind:value={settings.minLength}/>
+    <input type="number" class="border" value={settings.minLength} onchange={onMinLengthChange}/>
 </div>
 <div class="row-between mt-2">
     <div class="row-gap">
@@ -21,5 +32,5 @@
         <p>Max length</p>
     </div>
 
-    <input type="number" class="border" bind:value={settings.maxLength}/>
+    <input type="number" class="border" value={settings.maxLength} onchange={onMaxLengthChange}/>
 </div>

@@ -10,6 +10,7 @@
     import type {EditConstantOrVariableState} from "@perfice/model/goal/ui";
     import {ListVariableType} from "@perfice/services/variable/types/list";
     import {variableEditProvider} from "@perfice/stores";
+    import {isFormQuestionNumberRepresentable} from "@perfice/model/form/form";
 
     let {variable, value, editState, useDisplayValues = false}: {
         variable: Variable,
@@ -79,7 +80,7 @@
     }
 
     let entityFormId = $derived(editState.listVariableValue.getFormId());
-    let questions = $derived(editState.forms.find(f => f.id == entityFormId)?.questions ?? []);
+    let questions = $derived(editState.forms.find(f => f.id == entityFormId)?.questions?.filter(q => isFormQuestionNumberRepresentable(q.dataType)) ?? []);
 
     let entities = $derived(editState.entities.map(v => {
         return {

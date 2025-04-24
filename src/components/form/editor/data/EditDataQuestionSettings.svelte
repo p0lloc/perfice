@@ -12,7 +12,7 @@
     import EditHierarchyQuestionSettings
         from "@perfice/components/form/editor/data/hierarchy/EditHierarchyQuestionSettings.svelte";
 
-    let {currentQuestion = $bindable()}: { currentQuestion: FormQuestion } = $props();
+    let {currentQuestion, onChange}: { currentQuestion: FormQuestion, onChange: (v: FormQuestion) => void } = $props();
 
     function changeDataType(type: FormQuestionDataType) {
         if (currentQuestion == null) return;
@@ -32,6 +32,12 @@
             // Transform the display settings to the new data type
             currentQuestion.displaySettings = displayDef.onDataTypeChanged(currentQuestion.displaySettings, type, definition.getPrimitiveType());
         }
+
+        onChange(currentQuestion);
+    }
+
+    function onDataSettingsChange(v: any) {
+        onChange({...currentQuestion, dataSettings: v});
     }
 
     function getDataDropdownItems(): DropdownMenuItem<FormQuestionDataType>[] {
@@ -45,7 +51,10 @@
         })
     }
 
-    const FIELD_RENDERERS: Partial<Record<FormQuestionDataType, Component<{ settings: any }>>> = {
+    const FIELD_RENDERERS: Partial<Record<FormQuestionDataType, Component<{
+        settings: any,
+        onChange: (settings: any) => void
+    }>>> = {
         [FormQuestionDataType.TEXT]: EditTextQuestionSettings,
         [FormQuestionDataType.NUMBER]: EditNumberQuestionSettings,
         [FormQuestionDataType.HIERARCHY]: EditHierarchyQuestionSettings,
@@ -57,7 +66,7 @@
                        items={getDataDropdownItems()}/>
 <div class="p-4">
     {#if RendererComponent != null}
-        <RendererComponent bind:settings={currentQuestion.dataSettings}/>
+        <RendererComponent settings={currentQuestion.dataSettings} onChange={onDataSettingsChange}/>
     {:else}
         There are no settings for this data type
     {/if}

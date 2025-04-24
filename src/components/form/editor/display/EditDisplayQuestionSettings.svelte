@@ -15,8 +15,9 @@
     import EditHierarchyQuestionDisplaySettings
         from "@perfice/components/form/editor/display/hierarchy/EditHierarchyQuestionDisplaySettings.svelte";
 
-    let {currentQuestion = $bindable(), dataTypeDef}: {
+    let {currentQuestion, onChange, dataTypeDef}: {
         currentQuestion: FormQuestion,
+        onChange: (question: FormQuestion) => void,
         dataTypeDef: FormQuestionDataTypeDefinition<any, any>
     } = $props();
 
@@ -24,8 +25,7 @@
         if (currentQuestion == null) return;
         let definition = questionDisplayTypeRegistry.getFieldByType(type)!;
 
-        currentQuestion.displayType = type;
-        currentQuestion.displaySettings = definition.getDefaultSettings();
+        onChange({...currentQuestion, displayType: type, displaySettings: definition.getDefaultSettings()});
     }
 
     function getDisplayDropdownItems(dataTypeDef: FormQuestionDataTypeDefinition<any, any>): DropdownMenuItem<FormQuestionDisplayType>[] {
@@ -41,11 +41,15 @@
             })
     }
 
+    function onDisplaySettingsChange(settings: any) {
+        onChange({...currentQuestion, displaySettings: settings});
+    }
 
     const FIELD_RENDERERS: Partial<Record<FormQuestionDisplayType, Component<{
         settings: any,
         dataType: FormQuestionDataType,
-        dataSettings: any
+        dataSettings: any,
+        onChange: (settings: any) => void
     }>>> = {
         [FormQuestionDisplayType.SELECT]: EditSelectQuestionSettings,
         [FormQuestionDisplayType.SEGMENTED]: EditSegmentedQuestionSettings,
@@ -60,7 +64,8 @@
 
 <div class="p-4">
     {#if RendererComponent != null}
-        <RendererComponent bind:settings={currentQuestion.displaySettings} dataType={currentQuestion.dataType}
+        <RendererComponent settings={currentQuestion.displaySettings} onChange={onDisplaySettingsChange}
+                           dataType={currentQuestion.dataType}
                            dataSettings={currentQuestion.dataSettings}/>
     {:else}
         There are no settings for this display type

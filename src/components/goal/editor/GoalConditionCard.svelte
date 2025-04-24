@@ -10,7 +10,8 @@
     import GoalMetConditionRenderer
         from "@perfice/components/goal/editor/condition/goalMet/GoalMetConditionRenderer.svelte";
 
-    let {condition, onOpenSidebar, onUpdate, onDelete}: {
+    let {goalId, condition, onOpenSidebar, onUpdate, onDelete}: {
+        goalId: string,
         condition: GoalCondition,
         onOpenSidebar: (v: GoalSidebarAction) => void,
         onUpdate: (c: GoalCondition) => void
@@ -18,6 +19,7 @@
     } = $props();
 
     const RENDERERS: Partial<Record<GoalConditionType, Component<{
+        goalId: string,
         condition: any,
         onValueChange: (v: any) => void,
         onSidebar: (v: GoalSidebarAction) => void
@@ -40,5 +42,5 @@
         {name}
         <IconButton icon={faTrash} onClick={onDelete}/>
     </div>
-    <RendererComponent condition={condition.value} {onValueChange} onSidebar={onOpenSidebar}/>
+    <RendererComponent {goalId} condition={condition.value} {onValueChange} onSidebar={onOpenSidebar}/>
 </div>

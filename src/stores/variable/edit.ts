@@ -1,6 +1,6 @@
 import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import type {FormService} from "@perfice/services/form/form";
-import type {VariableService} from "@perfice/services/variable/variable";
+import type {VariableProvider, VariableService} from "@perfice/services/variable/variable";
 import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import {ListVariableType} from "@perfice/services/variable/types/list";
@@ -11,11 +11,12 @@ import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/t
 import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
 
 import {CalculationOperator, CalculationVariableType} from "@perfice/services/variable/types/calculation";
-import {pNull, prettyPrintPrimitive, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import {pNull, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
 import {LatestVariableType} from "@perfice/services/variable/types/latest";
 import {GroupVariableType} from "@perfice/services/variable/types/group";
-import type {Form, FormQuestion} from "@perfice/model/form/form";
+import {type Form, type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
+import {formatValueAsDataType} from "@perfice/model/form/data";
 
 export enum VariableChangeType {
     CREATE,
@@ -37,7 +38,7 @@ export interface VariableChange {
  * Also provides concrete edit states where variables/forms/entities are fetched
  * so that they can be readily used in the UI.
  */
-export class VariableEditProvider {
+export class VariableEditProvider implements VariableProvider {
 
     private readonly variableService: VariableService;
 
@@ -67,9 +68,9 @@ export class VariableEditProvider {
         return this.variables.find(v => v.id == id);
     }
 
-    textForConstantOrVariable(v: ConstantOrVariable): string {
+    textForConstantOrVariable(v: ConstantOrVariable, dataType: FormQuestionDataType): string {
         if (v.constant || v.value.type != PrimitiveValueType.STRING) {
-            return prettyPrintPrimitive(v.value);
+            return formatValueAsDataType(v.value.value, dataType);
         }
 
         let variable = this.getVariableById(v.value.value);
@@ -242,7 +243,7 @@ export class VariableEditProvider {
 
 }
 
-export function extractFormQuestionFromVariable(forms: Form[], graph: VariableService, variable: Variable): FormQuestion | null {
+export function extractFormQuestionFromVariable(forms: Form[], graph: VariableProvider, variable: Variable): FormQuestion | null {
     switch (variable.type.type) {
         case VariableTypeName.CALCULATION:
             return extractFormQuestionFromCalculation(forms, graph, variable.type.value);
@@ -253,7 +254,7 @@ export function extractFormQuestionFromVariable(forms: Form[], graph: VariableSe
     return null;
 }
 
-export function extractFormQuestionFromCalculation(forms: Form[], graph: VariableService, calculation: CalculationVariableType): FormQuestion | null {
+export function extractFormQuestionFromCalculation(forms: Form[], graph: VariableProvider, calculation: CalculationVariableType): FormQuestion | null {
     // Loop through all entries and find the first variable that is able to extract a question
     for (let entry of calculation.getEntries()) {
         if (typeof entry != "object") continue;
@@ -270,7 +271,7 @@ export function extractFormQuestionFromCalculation(forms: Form[], graph: Variabl
     return null;
 }
 
-export function extractFormQuestionFromAggregate(forms: Form[], graph: VariableService, aggregate: AggregateVariableType): FormQuestion | null {
+export function extractFormQuestionFromAggregate(forms: Form[], graph: VariableProvider, aggregate: AggregateVariableType): FormQuestion | null {
     let listVariable = graph.getVariableById(aggregate.getListVariableId());
     if (listVariable == null) return null;
 
