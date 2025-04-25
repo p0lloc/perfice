@@ -138,10 +138,15 @@
     }
 
     onMount(() => {
+        const maxY = widgets
+            .map(v => v.display.y + v.display.height)
+            .reduce((max, obj) =>
+                obj > max ? obj : max, 0);
+
         grid = GridStack.init({
             cellHeight: 25,
             acceptWidgets: true,
-            minRow: 10,
+            minRow: maxY + 10,
             margin: 5,
             staticGrid: !edit,
             animate: false,
@@ -174,7 +179,7 @@
     })
 </script>
 
-<div class="grid-stack min-h-[85vh]">
+<div class="grid-stack min-h-[100vh]">
 </div>
 
 

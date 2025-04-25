@@ -115,7 +115,7 @@
         $selectedWidget = undefined;
     }
 
-    async function findBottommostWidget(): Promise<DashboardWidgetDisplaySettings> {
+    async function createBottommostDisplay(): Promise<DashboardWidgetDisplaySettings> {
         let items = await get(dashboardWidgets);
 
         let x = 0;
@@ -140,7 +140,7 @@
         sidebar.open({
             type: DashboardSidebarActionType.ADD_WIDGET, value: {
                 onClick: async (type: DashboardWidgetType, disableEdit: boolean) => {
-                    let display = await findBottommostWidget();
+                    let display = await createBottommostDisplay();
                     let widget = await dashboardWidgets.createWidget(currentDashboard, type, display);
 
                     grid.addWidget(widget);
