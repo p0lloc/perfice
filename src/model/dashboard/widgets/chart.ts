@@ -35,6 +35,7 @@ export interface DashboardChartWidgetSettings {
     formId: string;
     questionId: string;
     groupBy: string | null;
+    title: string | null;
     aggregateType: AggregateType;
     timeScope: SimpleTimeScopeType;
     color: string;
@@ -69,6 +70,7 @@ export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition
             questionId: "",
             groupBy: null,
             color: "#ff0000",
+            title: null,
             timeScope: SimpleTimeScopeType.DAILY,
             aggregateType: AggregateType.SUM,
             count: 10

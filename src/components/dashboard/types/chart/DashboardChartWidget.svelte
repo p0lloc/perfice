@@ -4,7 +4,7 @@
     import SingleChart from "@perfice/components/chart/SingleChart.svelte";
     import {chartWidget, weekStart} from "@perfice/stores";
 
-    let {settings, dependencies}: {
+    let {settings, dependencies, openFormModal}: {
         settings: DashboardChartWidgetSettings,
         dependencies: Record<string, string>,
         openFormModal: (formId: string) => void
@@ -13,7 +13,8 @@
     let result = $derived(chartWidget(dependencies, settings, $dashboardDate,
         $weekStart, `${settings.formId}:${settings.questionId}:${settings.aggregateType}:${settings.count}`));
 </script>
-<div class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col p-2">
+<button class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col p-2"
+        onclick={() => openFormModal(settings.formId)}>
     {#await $result}
         <span class="p-2">
             Please select a form
@@ -24,8 +25,9 @@
                      dataPoints={value.dataPoints}
                      minimal={false}
                      randomColor={settings.groupBy != null}
+                     title={settings.title}
                      dataSetLabel={value.name}
                      labelFormatter={value.labelFormatter}
                      labels={value.labels}/>
     {/await}
-</div>
+</button>

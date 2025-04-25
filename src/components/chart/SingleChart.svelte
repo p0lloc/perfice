@@ -15,6 +15,7 @@
         fillColor = "#9BD0F5",
         borderColor = "#36A2EB",
         dataSetLabel = "Data",
+        title,
         labelFormatter = (v: number) => v.toString(),
     }: {
         type: ChartType,
@@ -28,6 +29,7 @@
         fillColor?: string,
         borderColor?: string,
         dataSetLabel?: string,
+        title?: string | null,
         labelFormatter?: (v: number) => string,
     } = $props();
 
@@ -69,6 +71,10 @@
                         }
                     }
                 },
+                title: title != null ? {
+                    display: true,
+                    text: title
+                } : undefined,
                 legend: {
                     display: !minimal && legend
                 }

@@ -9,6 +9,7 @@
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {AGGREGATE_TYPES, SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
     import type {AggregateType} from "@perfice/services/variable/types/aggregate";
+    import Button from "@perfice/components/base/button/Button.svelte";
 
     let {settings, onChange, forms}: {
         settings: DashboardChartWidgetSettings,
@@ -54,6 +55,10 @@
 
     function onQuestionChange(questionId: string) {
         onChange({...settings, questionId});
+    }
+
+    function addTitle() {
+        onChange({...settings, title: ""});
     }
 </script>
 
@@ -109,3 +114,12 @@
         <ColorPickerButton value={settings.color} onChange={(v) => onChange({...settings, color: v})}/>
     </div>
 {/if}
+<div class="row-between mt-2">
+    Title
+    {#if settings.title != null}
+        <input type="text" value={settings.title}
+               onchange={(e) => onChange({...settings, title: e.currentTarget.value})}/>
+    {:else}
+        <Button onClick={addTitle}>Add</Button>
+    {/if}
+</div>

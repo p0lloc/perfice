@@ -4,7 +4,7 @@
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import {metricWidget, weekStart} from "@perfice/stores";
 
-    let {widgetId, dependencies, settings}: {
+    let {widgetId, dependencies, settings, openFormModal}: {
         settings: DashboardMetricWidgetSettings,
         dependencies: Record<string, string>,
         openFormModal: (formId: string) => void,
@@ -15,7 +15,8 @@
         $weekStart, widgetId));
 </script>
 
-<div class="w-full h-full bg-white p-4 flex gap-3 items-center border rounded-xl">
+<button class="w-full h-full bg-white p-4 flex gap-3 items-center border rounded-xl text-left hover-feedback"
+        onclick={() => openFormModal(settings.formId)}>
     {#await $result then value}
         <div>
             <Icon name={value.icon} class="text-green-500 text-3xl w-8"/>
@@ -28,4 +29,4 @@
             <p class="text-lg">{value.value}</p>
         </div>
     {/await}
-</div>
+</button>

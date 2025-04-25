@@ -1,10 +1,12 @@
-export const CURRENT_DATA_VERSION: number = 0;
+import {ChartTitlesMigration} from "@perfice/db/migration/migrations/chartTitles";
+
+export const CURRENT_DATA_VERSION: number = 1;
 export const CURRENT_VERSION_STORAGE_KEY = "data_version";
 
-const MIGRATIONS: Migration[] = [];
+const MIGRATIONS: Migration[] = [new ChartTitlesMigration()];
 
 export interface Migration {
-    apply(entity: object): Promise<object>;
+    apply(entity: any): Promise<object>;
 
     getEntityType(): string;
 
