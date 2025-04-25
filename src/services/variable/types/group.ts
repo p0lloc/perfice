@@ -21,7 +21,8 @@ import {
     type PrimitiveValue,
     PrimitiveValueType
 } from "@perfice/model/primitive/primitive";
-import {extractDisplayFromDisplay, extractFieldsFromAnswers} from "@perfice/services/variable/types/list";
+import {extractFieldsFromAnswers, extractValueFromDisplay} from "@perfice/services/variable/types/list";
+import {findArrayDifferences} from "@perfice/util/array";
 
 export class GroupVariableType implements VariableType, JournalEntryDependent {
 
@@ -37,13 +38,18 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
         this.filters = filters;
     }
 
-    private getEntryGroup(entry: JournalEntry): string | null {
+    private getEntryGroups(entry: JournalEntry): string[] {
         const groupAnswer = entry.answers[this.groupBy];
         if (groupAnswer == undefined) {
-            return null;
+            return [];
         }
 
-        return primitiveAsString(extractDisplayFromDisplay(groupAnswer));
+        let value = extractValueFromDisplay(groupAnswer);
+        if (value.type == PrimitiveValueType.LIST) {
+            return value.value.map(v => primitiveAsString(v));
+        } else {
+            return [primitiveAsString(value)];
+        }
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
@@ -55,19 +61,17 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
                 continue;
             }
 
-            const group = this.getEntryGroup(entry);
-            if (group == null) {
-                continue;
-            }
+            const groups = this.getEntryGroups(entry);
+            for (let group of groups) {
+                let fields = extractFieldsFromAnswers(entry.answers, this.fields);
+                let value = pJournalEntry(entry.id, entry.timestamp, fields);
 
-            let fields = extractFieldsFromAnswers(entry.answers, this.fields);
-            let value = pJournalEntry(entry.id, entry.timestamp, fields);
-
-            let existing = result.get(group);
-            if (existing == undefined) {
-                result.set(group, [value]);
-            } else {
-                existing.push(value);
+                let existing = result.get(group);
+                if (existing == undefined) {
+                    result.set(group, [value]);
+                } else {
+                    existing.push(value);
+                }
             }
         }
 
@@ -100,7 +104,7 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
     async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
         if (entry.formId != this.formId) return [];
 
-        const newGroup = this.getEntryGroup(entry);
+        const newGroup = this.getEntryGroups(entry);
         if (newGroup == null) {
             return [];
         }
@@ -112,7 +116,7 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
             if (index.value.type != PrimitiveValueType.MAP)
                 continue;
 
-            let previousGroup: string | null = null;
+            let previousGroup: string[] = [];
             let foundEntry: JournalEntryValue | undefined;
 
             // We must loop through all groups to find the entry
@@ -129,9 +133,8 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
 
                     if (existing == undefined || existing.type != PrimitiveValueType.JOURNAL_ENTRY) continue;
 
-                    previousGroup = group;
+                    previousGroup.push(group);
                     foundEntry = existing.value;
-                    break;
                 }
             }
 
@@ -140,30 +143,63 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
                 foundEntry.value = extractedFields;
                 foundEntry.timestamp = entry.timestamp;
 
-                if (newGroup != previousGroup) {
-                    // Entry was moved to a new group, remove it from the old group
-                    let existing = index.value.value[previousGroup];
-                    if (existing == undefined || existing.type != PrimitiveValueType.LIST) continue;
-
-                    existing.value = existing.value
-                        .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
-
-                    // Add it to the new group
-                    existing.value.push({
+                // Find which groups that the entry was added to and which groups it was removed from
+                let {added, removed} = findArrayDifferences(previousGroup, newGroup);
+                let primitiveEntry: PrimitiveValue =
+                    {
                         type: PrimitiveValueType.JOURNAL_ENTRY,
                         value: foundEntry
-                    });
+                    };
+
+                for (let add of added) {
+                    let addGroup = index.value.value[add];
+                    if (addGroup == undefined) {
+                        // Create a new group
+                        index.value.value[add] = pList([primitiveEntry]);
+                    } else {
+                        if (addGroup.type != PrimitiveValueType.LIST) continue;
+
+                        // Add entry to existing group
+                        addGroup.value.push(primitiveEntry);
+                    }
                 }
+
+                for (let remove of removed) {
+                    let removeGroup = index.value.value[remove];
+                    if (removeGroup == undefined) continue;
+
+                    if (removeGroup.type != PrimitiveValueType.LIST) continue;
+
+                    removeGroup.value = removeGroup.value
+                        .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
+                }
+
+                // if (newGroup != previousGroup) {
+                //     // Entry was moved to a new group, remove it from the old group
+                //     let existing = index.value.value[previousGroup];
+                //     if (existing == undefined || existing.type != PrimitiveValueType.LIST) continue;
+                //
+                //     existing.value = existing.value
+                //         .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
+                //
+                //     // Add it to the new group
+                //     existing.value.push({
+                //         type: PrimitiveValueType.JOURNAL_ENTRY,
+                //         value: foundEntry
+                //     });
+                // }
             } else {
                 // Entry went from being filtered to not filtered, add it to its group (potentially creating a new group)
-                let existing = index.value.value[newGroup];
-                let value = pJournalEntry(entry.id, entry.timestamp, extractedFields);
-                if (existing == undefined) {
-                    index.value.value[newGroup] = pList([value]);
-                } else {
-                    if (existing.type != PrimitiveValueType.LIST) continue;
+                for (let group of newGroup) {
+                    let existing = index.value.value[group];
+                    let value = pJournalEntry(entry.id, entry.timestamp, extractedFields);
+                    if (existing == undefined) {
+                        index.value.value[group] = pList([value]);
+                    } else {
+                        if (existing.type != PrimitiveValueType.LIST) continue;
 
-                    existing.value.push(value);
+                        existing.value.push(value);
+                    }
                 }
             }
 
@@ -182,8 +218,8 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
         // Don't create list entries for entries that should be filtered
         if (shouldFilterOutEntry(entry, this.filters)) return [];
 
-        const group = this.getEntryGroup(entry);
-        if (group == null) {
+        const newGroup = this.getEntryGroups(entry);
+        if (newGroup == null) {
             return [];
         }
 
@@ -193,13 +229,15 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
                 continue;
 
             let value = pJournalEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields));
-            let existing = index.value.value[group];
-            if (existing == undefined) {
-                index.value.value[group] = pList([value]);
-            } else {
-                if (existing.type != PrimitiveValueType.LIST) continue;
+            for (let group of newGroup) {
+                let existing = index.value.value[group];
+                if (existing == undefined) {
+                    index.value.value[group] = pList([value]);
+                } else {
+                    if (existing.type != PrimitiveValueType.LIST) continue;
 
-                existing.value.push(value);
+                    existing.value.push(value);
+                }
             }
 
             actions.push({
@@ -214,8 +252,8 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
     async onEntryDeleted(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
         if (entry.formId != this.formId) return [];
 
-        const group = this.getEntryGroup(entry);
-        if (group == null) {
+        const newGroup = this.getEntryGroups(entry);
+        if (newGroup == null) {
             return [];
         }
 
@@ -224,14 +262,16 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
             if (index.value.type != PrimitiveValueType.MAP)
                 continue;
 
-            let existing = index.value.value[group];
-            if (existing == undefined) continue;
+            for (let group of newGroup) {
+                let existing = index.value.value[group];
+                if (existing == undefined) continue;
 
-            if (existing.type != PrimitiveValueType.LIST) continue;
+                if (existing.type != PrimitiveValueType.LIST) continue;
 
-            // Entry was deleted, remove it from the list
-            existing.value = existing.value
-                .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
+                // Entry was deleted, remove it from the list
+                existing.value = existing.value
+                    .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
+            }
 
             actions.push({
                 type: VariableIndexActionType.UPDATE,

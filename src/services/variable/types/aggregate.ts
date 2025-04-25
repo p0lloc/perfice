@@ -68,7 +68,7 @@ export class AggregateVariableType implements VariableType {
 
         switch (this.aggregateType) {
             case AggregateType.COUNT: {
-                return pNumber(numbers.length);
+                return pNumber(list.length);
             }
             case AggregateType.SUM: {
                 return pNumber(sumNumbers(numbers));
