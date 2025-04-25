@@ -63,4 +63,4 @@
         onChange={onSettingsChange}
         forms={action.forms}/>
 
-<Button onClick={action.onDelete} color={ButtonColor.RED} class="md:hidden block w-full mt-8">Delete</Button>
+<Button onClick={action.onDelete} color={ButtonColor.RED} class="block w-full mt-8">Delete widget</Button>

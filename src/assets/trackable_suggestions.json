@@ -268,7 +268,129 @@
     "suggestions": [
       {
         "name": "Hydration",
-        "icon": "glass"
+        "icon": "glass",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "9ebf9c7a-dd86-4ac8-8ea2-9a3b1766f169"
+            }
+          ],
+          "questions": [
+            {
+              "id": "9ebf9c7a-dd86-4ac8-8ea2-9a3b1766f169",
+              "name": "How much did you drink?",
+              "unit": "ml",
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": 250,
+                    "value": 250,
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": 500,
+                    "value": 500,
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": 750,
+                    "value": 750,
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": 1000,
+                    "value": 1000,
+                    "icon": "star",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": false
+              }
+            },
+            {
+              "id": "8f23deae-9f5e-4534-bb47-2b58b7a3247b",
+              "name": "What did you drink?",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Water",
+                    "value": "Water",
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Coffee",
+                    "value": "Coffee",
+                    "icon": "coffee",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Tea",
+                    "value": "Tea",
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Beer",
+                    "value": "Beer",
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Juice",
+                    "value": "Juice",
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Soda",
+                    "value": "Soda",
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Wine",
+                    "value": "Wine",
+                    "icon": "star",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Energy",
+                    "value": "Energy",
+                    "icon": "star",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": false,
+                "grid": {
+                  "itemsPerRow": 4,
+                  "border": true
+                }
+              }
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "9ebf9c7a-dd86-4ac8-8ea2-9a3b1766f169"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
         "name": "Food",

@@ -1,6 +1,6 @@
 <script lang="ts">
     import GridstackGrid from "@perfice/components/dashboard/GridstackGrid.svelte";
-    import {dashboards, dashboardWidgets} from "@perfice/stores";
+    import {dashboards, dashboardWidgets, forms} from "@perfice/stores";
     import {
         type DashboardWidget,
         type DashboardWidgetDisplaySettings,
@@ -24,7 +24,8 @@
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
-    import {forms} from "@perfice/stores";
+    // noinspection ES6UnusedImports
+    import Fa from "svelte-fa";
 
     let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
 
@@ -152,6 +153,11 @@
         });
     }
 
+    async function onExport() {
+        let widgets = await dashboardWidgets.get();
+        console.log(JSON.stringify(widgets))
+    }
+
     async function onWidgetUpdate(widget: DashboardWidget, settingsUpdated: boolean) {
         await dashboardWidgets.updateWidget(widget, settingsUpdated);
         grid.updateWidget(widget);
@@ -184,9 +190,10 @@
 <div class="flex-1 h-screen overflow-y-scroll scrollbar-hide md:w-auto w-screen pb-32 px-2">
     <div class="flex md:justify-end justify-center">
         <div class="row-gap p-2 flex-wrap flex-1 md:flex-initial">
-            <CalendarScroll value={$dashboardDate} onChange={(v) => $dashboardDate = v}/>
-            <input type="checkbox" class="hidden md:block" bind:checked={$editingDashboard}>
-            <button onclick={openAddWidgetSidebar} class="hidden md:block">+</button>
+            <div class="mr-4">
+                <CalendarScroll value={$dashboardDate} onChange={(v) => $dashboardDate = v}/>
+            </div>
+            <button onclick={onExport}>E</button>
             {#await $dashboards then values}
                 <BindableDropdownButton
                         class="min-w-64 hidden md:flex"
@@ -194,6 +201,10 @@
                         onChange={onDashboardChange}
                         items={dropdownButtonsForDashboards(values)}/>
             {/await}
+            <button class="bg-green-500 hover:bg-green-600 w-10 h-10 rounded-full md:flex hidden items-center justify-center text-white"
+                    onclick={() => $editingDashboard = !$editingDashboard}>
+                <Fa icon={$editingDashboard ? faCheck : faPen}/>
+            </button>
         </div>
     </div>
 
@@ -208,5 +219,12 @@
                            {widgets} edit={$editingDashboard}/>
         {/await}
     </div>
+
+    {#if $editingDashboard}
+        <button onclick={openAddWidgetSidebar} class="hidden rounded-full bg-green-500 hover:bg-green-600 fixed bottom-10
+    right-10 w-16 h-16 md:flex justify-center items-center text-white">
+            <Fa icon={faPlus} size="2x"/>
+        </button>
+    {/if}
 </div>
 <DashboardSidebar onClose={onSidebarClosed} bind:this={sidebar}/>
