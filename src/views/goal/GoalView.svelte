@@ -37,7 +37,7 @@
 
 <GenericDeleteModal subject="this goal" onDelete={onGoalDelete} bind:this={deleteGoalModal}/>
 <MobileTopBar title="Goals"/>
-<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
+<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 px-4 py-2 main-content">
     <TitleAndCalendar date={$goalDate} onDateChange={onDateChange} title="Goals" icon={faBullseye}/>
     {#await $goals}
         Loading...

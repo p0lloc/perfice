@@ -56,6 +56,8 @@
                 {#each group.entries as entry}
                     <TableWidgetEntry {entry}/>
                 {/each}
+            {:else}
+                <p class="p-2">There are no entries yet</p>
             {/each}
         </div>
     {/await}

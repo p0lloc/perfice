@@ -187,13 +187,13 @@
     {/snippet}
 </MobileTopBar>
 
-<div class="flex-1 h-screen overflow-y-scroll scrollbar-hide md:w-auto w-screen pb-32 px-2">
-    <div class="flex md:justify-end justify-center">
-        <div class="row-gap p-2 flex-wrap flex-1 md:flex-initial">
-            <div class="mr-4">
+<div class="flex-1 h-screen overflow-y-scroll scrollbar-hide md:w-auto w-screen pb-32">
+    <div class="flex md:justify-end justify-center sticky top-0 w-full z-10 bg-white border-b px-0 md:px-2">
+        <div class="row-gap px-4 py-2 flex-wrap flex-1 md:flex-initial">
+            <div class="md:mr-4 w-full md:w-auto">
                 <CalendarScroll value={$dashboardDate} onChange={(v) => $dashboardDate = v}/>
             </div>
-            <button onclick={onExport}>E</button>
+            <!--            <button onclick={onExport}>E</button>-->
             {#await $dashboards then values}
                 <BindableDropdownButton
                         class="min-w-64 hidden md:flex"
@@ -211,7 +211,7 @@
     <!-- Click event only for dismissing sidebar when clicking on the background -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div class="w-full" onclick={onBackgroundClick}>
+    <div class="w-full px-2" onclick={onBackgroundClick}>
         {#await $dashboardWidgets then widgets}
             <GridstackGrid {openFormModal} bind:this={grid} {onWidgetAdd} onWidgetDelete={onWidgetStartDelete}
                            onWidgetUpdate={(widget) => onWidgetUpdate(widget, false)}

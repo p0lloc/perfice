@@ -38,6 +38,8 @@
         <div class="p-2 flex gap-4 items-center flex-1 overflow-x-auto overflow-y-hidden w-full">
             {#each value.entries as entry}
                 <EntryRowItem {entry}/>
+            {:else}
+                <p class="p-2">There are no entries yet</p>
             {/each}
         </div>
     {/await}
