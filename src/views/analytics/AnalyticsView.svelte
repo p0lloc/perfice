@@ -1,17 +1,13 @@
 <script lang="ts">
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
-    import {faArrowLeft, faBars, faChartLine, faCheck} from "@fortawesome/free-solid-svg-icons";
-    import {
-        ANALYTICS_SEGMENTED_ITEMS,
-        AnalyticsViewType,
-    } from "@perfice/model/analytics/ui";
+    import {faChartLine} from "@fortawesome/free-solid-svg-icons";
+    import {ANALYTICS_SEGMENTED_ITEMS, AnalyticsViewType,} from "@perfice/model/analytics/ui";
     import AnalyticsTrackableView from "@perfice/components/analytics/trackable/AnalyticsTrackableView.svelte";
     import AnalyticsTagView from "@perfice/components/analytics/tag/AnalyticsTagView.svelte";
     import AnalyticsCorrelationView from "@perfice/components/analytics/AnalyticsCorrelationView.svelte";
     import type {Component} from "svelte";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import Fa from "svelte-fa";
 
     let viewType = $state(AnalyticsViewType.TRACKABLES);
 
@@ -43,7 +39,7 @@
     />
 </div>
 
-<div class="md:w-3/4 mx-auto md:mt-8 md:px-0 p-2 pb-20 main-content">
+<div class="md:w-3/4 mx-auto md:mt-8 md:px-0 px-2 pb-20 main-content">
     <RendererComponent/>
 </div>
 

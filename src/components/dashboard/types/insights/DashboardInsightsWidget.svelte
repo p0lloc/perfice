@@ -43,7 +43,7 @@
                     <span class={insight.insight.error > 1 ? "text-green-600" : "text-red-500"}>{insight.text.percentage}</span>
                 </div>
             {:else}
-                <span class="p-2">There are no insights yet, try adding more data.</span>
+                <span class="p-4">There are no insights yet, try adding more data.</span>
             {/each}
         </div>
     {/await}

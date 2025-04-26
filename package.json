@@ -43,6 +43,7 @@
     "papaparse": "^5.5.2",
     "svelte-dnd-action": "^0.9.57",
     "svelte-fa": "^4.0.3",
+    "svelte-portal": "^2.2.1",
     "svelty-picker": "^6.1.3"
   }
 }

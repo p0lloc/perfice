@@ -1,6 +1,6 @@
 {
   "desktop": {
-    "name": "Desktop",
+    "name": "My dashboard",
     "widgets": [
       {
         "type": "WELCOME",
@@ -248,6 +248,181 @@
           "field": "energy",
           "aggregateType": "MEAN",
           "filters": []
+        }
+      }
+    ]
+  },
+  "mobile": {
+    "name": "My dashboard",
+    "widgets": [
+      {
+        "type": "TRACKABLE",
+        "display": {
+          "x": 1,
+          "y": 7,
+          "width": 0,
+          "height": 7
+        },
+        "settings": {
+          "trackableId": "Steps"
+        }
+      },
+      {
+        "type": "NEW_CORRELATIONS",
+        "display": {
+          "x": 0,
+          "y": 39,
+          "width": 2,
+          "height": 8
+        },
+        "settings": {}
+      },
+      {
+        "type": "INSIGHTS",
+        "display": {
+          "x": 0,
+          "y": 47,
+          "width": 2,
+          "height": 9
+        },
+        "settings": {
+          "timeScope": "DAILY"
+        }
+      },
+      {
+        "type": "GOAL",
+        "display": {
+          "x": 0,
+          "y": 31,
+          "width": 0,
+          "height": 8
+        },
+        "settings": {
+          "goalVariableId": "Daily steps"
+        }
+      },
+      {
+        "type": "TRACKABLE",
+        "display": {
+          "x": 0,
+          "y": 7,
+          "width": 0,
+          "height": 7
+        },
+        "settings": {
+          "trackableId": "Sleep"
+        }
+      },
+      {
+        "type": "TRACKABLE",
+        "display": {
+          "x": 1,
+          "y": 14,
+          "width": 0,
+          "height": 7
+        },
+        "settings": {
+          "trackableId": "Food"
+        }
+      },
+      {
+        "type": "WELCOME",
+        "display": {
+          "x": 0,
+          "y": 0,
+          "width": 2,
+          "height": 7
+        },
+        "settings": {}
+      },
+      {
+        "type": "ENTRY_ROW",
+        "display": {
+          "x": 0,
+          "y": 21,
+          "width": 2,
+          "height": 5
+        },
+        "settings": {
+          "formId": "Mood",
+          "questionId": "feeling"
+        }
+      },
+      {
+        "type": "ENTRY_ROW",
+        "display": {
+          "x": 0,
+          "y": 26,
+          "width": 2,
+          "height": 5
+        },
+        "settings": {
+          "formId": "Hydration",
+          "questionId": "volume"
+        }
+      },
+      {
+        "type": "CHART",
+        "display": {
+          "x": 0,
+          "y": 56,
+          "width": 2,
+          "height": 10
+        },
+        "settings": {
+          "type": "bar",
+          "formId": "Mood",
+          "questionId": "feeling",
+          "groupBy": null,
+          "color": "#ff0019",
+          "title": null,
+          "timeScope": "DAILY",
+          "aggregateType": "MEAN",
+          "count": 7
+        }
+      },
+      {
+        "type": "CHART",
+        "display": {
+          "x": 0,
+          "y": 66,
+          "width": 2,
+          "height": 11
+        },
+        "settings": {
+          "type": "pie",
+          "formId": "Food",
+          "questionId": "meal_type",
+          "groupBy": "what",
+          "color": "#ff0000",
+          "title": "Weekly food types",
+          "timeScope": "WEEKLY",
+          "aggregateType": "COUNT",
+          "count": 10
+        }
+      },
+      {
+        "type": "GOAL",
+        "display": {
+          "x": 1,
+          "y": 31,
+          "width": 0,
+          "height": 8
+        },
+        "settings": {
+          "goalVariableId": "Healthy day"
+        }
+      },
+      {
+        "type": "TRACKABLE",
+        "display": {
+          "x": 0,
+          "y": 14,
+          "width": 0,
+          "height": 7
+        },
+        "settings": {
+          "trackableId": "Energy levels"
         }
       }
     ]

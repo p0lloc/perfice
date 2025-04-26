@@ -15,10 +15,10 @@
 
 
 <div
-        class="border rounded-xl flex flex-col items-center w-full h-full bg-white"
+        class="border rounded-xl flex flex-col justify-center items-center w-full h-full bg-white"
 >
     {#await $res}
-        Loading...
+        Please select a goal
     {:then value}
         <GoalCardBase goal={value.goal} value={value.value}>
         </GoalCardBase>

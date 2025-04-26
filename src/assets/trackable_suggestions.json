@@ -245,11 +245,16 @@
             }
           ]
         },
-        "cardType": "CHART",
+        "cardType": "VALUE",
         "cardSettings": {
-          "aggregateType": "SUM",
-          "field": "energy",
-          "color": "#ff0000"
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "energy"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
         }
       },
       {

@@ -15,6 +15,7 @@ import {CURRENT_DASHBOARD_KEY} from "@perfice/model/dashboard/ui";
 import type {VariableService} from "@perfice/services/variable/variable";
 import type {GoalService} from "@perfice/services/goal/goal";
 import {createGoalSuggestion, GOAL_SUGGESTIONS} from "@perfice/model/goal/suggestions";
+import {analytics} from "@perfice/stores";
 
 const ONBOARDING_KEY = "onboarded";
 const FINISH_ROUTE = "/";
@@ -114,12 +115,9 @@ export class OnboardingStore {
         }
 
         let assignedGoals = await this.createDefaultGoals(createdTrackables);
+        await this.createDefaultDashboard(Capacitor.isNativePlatform() ? "mobile" : "desktop", createdTrackables, assignedGoals);
 
-        if (Capacitor.isNativePlatform()) {
-            // Mobile dashboard
-        } else {
-            await this.createDefaultDesktopDashboard(createdTrackables, assignedGoals);
-        }
+        await analytics.reload();
 
         localStorage.setItem(ONBOARDING_KEY, "true");
         goto(FINISH_ROUTE);
@@ -148,12 +146,14 @@ export class OnboardingStore {
         return assignedGoals;
     }
 
-    private async createDefaultDesktopDashboard(createdTrackables: Map<string, {
-        trackable: Trackable;
-        form: Form;
-        assignedQuestions: Map<string, string>;
-    }>, assignedGoals: Map<string, string>) {
-        let dashboardSuggestion = DASHBOARD_SUGGESTIONS["desktop"];
+    private async createDefaultDashboard(
+        suggestionId: string,
+        createdTrackables: Map<string, {
+            trackable: Trackable;
+            form: Form;
+            assignedQuestions: Map<string, string>;
+        }>, assignedGoals: Map<string, string>) {
+        let dashboardSuggestion = DASHBOARD_SUGGESTIONS[suggestionId];
         let dashboard = await this.dashboardService.createDashboard(dashboardSuggestion.name);
         for (let widget of dashboardSuggestion.widgets) {
             await this.dashboardWidgetService.createWidget(dashboard.id, widget.type,

@@ -13,7 +13,7 @@
 
     function getColor(i: number, values: Map<number, number>) {
         let val = values.get(start + (i * DAY_MS));
-        if (val == null) return "";
+        if (val == null) return "bg-gray-200";
 
         return val == 1 ? "bg-green-500" : "bg-gray-200";
     }

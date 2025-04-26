@@ -41,5 +41,6 @@ export class AnalyticsSettingsService {
         };
 
         await this.analyticsSettingsCollection.insertSettings(settings);
+        await this.observers.notifyObservers(EntityObserverType.CREATED, settings);
     }
 }

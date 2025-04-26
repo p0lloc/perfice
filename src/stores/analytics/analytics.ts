@@ -1,4 +1,4 @@
-import { SimpleTimeScopeType } from "@perfice/model/variable/time/time";
+import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import type {
     AnalyticsService,
     BasicAnalytics,
@@ -6,14 +6,14 @@ import type {
     RawAnalyticsValues,
     TagAnalyticsValues
 } from "@perfice/services/analytics/analytics";
-import type { Form } from "@perfice/model/form/form";
-import { AsyncStore } from "@perfice/stores/store";
-import type { Tag } from "@perfice/model/tag/tag";
-import { convertResultKey, type CorrelationDisplay } from "@perfice/services/analytics/display";
-import type { AnalyticsSettingsService } from "@perfice/services/analytics/settings";
-import type { AnalyticsHistoryEntry, AnalyticsHistoryService } from "@perfice/services/analytics/history";
-import type { AnalyticsSettings } from "@perfice/model/analytics/analytics";
-import type { CorrelationIgnoreService } from "@perfice/services/analytics/ignore";
+import type {Form} from "@perfice/model/form/form";
+import {AsyncStore} from "@perfice/stores/store";
+import type {Tag} from "@perfice/model/tag/tag";
+import {convertResultKey, type CorrelationDisplay} from "@perfice/services/analytics/display";
+import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
+import type {AnalyticsHistoryEntry, AnalyticsHistoryService} from "@perfice/services/analytics/history";
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+import type {CorrelationIgnoreService} from "@perfice/services/analytics/ignore";
 
 export interface AnalyticsResult {
     correlations: Map<SimpleTimeScopeType, Map<string, CorrelationResult>>;
@@ -29,8 +29,8 @@ export interface AnalyticsResult {
 }
 
 async function fetchAnalytics(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
-    historyService: AnalyticsHistoryService | null, ignoreService: CorrelationIgnoreService,
-    date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+                              historyService: AnalyticsHistoryService | null, ignoreService: CorrelationIgnoreService,
+                              date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
 
     let allSettings = await settingsService.getAllSettings();
     let [forms, entries] = await analyticsService.fetchFormsAndEntries(date, range);
@@ -120,14 +120,27 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
     private readonly historyService: AnalyticsHistoryService;
     private readonly ignoreService: CorrelationIgnoreService;
 
+    private readonly date: Date;
+    private readonly range: number;
+    private readonly minimumSampleSize: number;
+
     constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
-        historyService: AnalyticsHistoryService, ignoreService: CorrelationIgnoreService,
-        date: Date, range: number, minimumSampleSize: number) {
+                historyService: AnalyticsHistoryService, ignoreService: CorrelationIgnoreService,
+                date: Date, range: number, minimumSampleSize: number) {
+
         super(fetchAnalytics(analyticsService, settingsService, historyService, ignoreService, date, range, minimumSampleSize));
         this.settingsService = settingsService;
         this.analyticsService = analyticsService;
         this.historyService = historyService;
         this.ignoreService = ignoreService;
+        this.date = date;
+        this.range = range;
+        this.minimumSampleSize = minimumSampleSize;
+    }
+
+    async reload() {
+        this.set(fetchAnalytics(this.analyticsService, this.settingsService, this.historyService, this.ignoreService,
+            this.date, this.range, this.minimumSampleSize));
     }
 
     async getSpecificAnalytics(date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {

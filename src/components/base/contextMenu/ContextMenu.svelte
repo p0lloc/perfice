@@ -1,6 +1,7 @@
 <script lang="ts">
     import {onDestroy, type Snippet} from "svelte";
     import {openContextMenu, removeContextMenuCallback} from "@perfice/model/ui/context-menu";
+    import Portal from "svelte-portal";
 
     let {children}: { children: Snippet } = $props();
 
@@ -37,7 +38,7 @@
             let selfRect = container.getBoundingClientRect();
 
             // Make sure we aren't rendering outside the screen on the bottom
-            if(selfRect.y + selfRect.height > window.innerHeight){
+            if (selfRect.y + selfRect.height > window.innerHeight) {
                 top = _relativeY - selfRect.height;
             }
 
@@ -64,11 +65,13 @@
 </script>
 
 {#if inLayout}
-    <div class:invisible={!visible} class="fixed z-50 border rounded-xl bg-white text-black font-normal"
-         style:top="{top}px"
-         style:left="{left}px"
-         style:min-width="{minWidth}"
-         bind:this={container}>
-        {@render children()}
-    </div>
+    <Portal target="body">
+        <div class:invisible={!visible} class="fixed z-[5000] border rounded-xl bg-white text-black font-normal"
+             style:top="{top}px"
+             style:left="{left}px"
+             style:min-width="{minWidth}"
+             bind:this={container}>
+            {@render children()}
+        </div>
+    </Portal>
 {/if}
