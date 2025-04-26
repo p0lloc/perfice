@@ -3,11 +3,16 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
-    let {navigate, page, max}: { navigate: (page: number) => void, page: number, max: number } = $props();
+    let {navigate, page, max, onSkip}: {
+        navigate: (page: number) => void,
+        page: number,
+        max: number,
+        onSkip: () => void
+    } = $props();
 </script>
 
 <div class="flex items-center justify-between mt-20">
-    <button class="text-xl text-gray-500">Skip</button>
+    <button onclick={onSkip} class="text-xl text-gray-500">Skip</button>
     <div class="flex gap-1 md:gap-2">
         {#each Array(max) as _, i }
             <button aria-label="Page {i}"

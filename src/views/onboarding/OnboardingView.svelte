@@ -20,11 +20,15 @@
         if (newPage < 0) return;
 
         if (newPage >= ONBOARDING.length) {
-            onboarding.finalize($state.snapshot(selectedState));
+            finalize();
             return;
         }
 
         page = newPage;
+    }
+
+    function finalize() {
+        onboarding.finalize($state.snapshot(selectedState));
     }
 
     function updateSelectState(selections: OnboardingSelection[]) {
@@ -55,5 +59,5 @@
     <div class="md:h-[55vh] h-[65vh]">
         <RendererComponent page={current} selectState={currentSelectState} updateSelectState={updateSelectState}/>
     </div>
-    <OnboardingPageNavigation max={ONBOARDING.length} {navigate} {page}/>
+    <OnboardingPageNavigation onSkip={finalize} max={ONBOARDING.length} {navigate} {page}/>
 </div>

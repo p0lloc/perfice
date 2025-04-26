@@ -2,15 +2,16 @@
     import Icon from "@perfice/components/base/icon/Icon.svelte";
     import type {OnboardingCategoryItem, OnboardingSelection} from "@perfice/model/onboarding/onboarding";
 
-    let {category, item, selectState, updateSelectState}: {
+    let {category, item, selectState, updateSelectState, isDefault}: {
         category: string,
         item: OnboardingCategoryItem,
+        isDefault: boolean,
         selectState?: OnboardingSelection[],
         updateSelectState: (selections: OnboardingSelection[]) => void
     } = $props();
 
     function onClick() {
-        if (selectState == null) return;
+        if (selectState == null || isDefault) return;
 
         if (selected) {
             updateSelectState($state.snapshot(selectState).filter(s => s.item != item.name));
@@ -20,15 +21,25 @@
     }
 
     let selected = $derived(selectState?.some(s => s.category == category && s.item == item.name) ?? false);
-    let buttonClass = $derived(selected ? "pointer-feedback:bg-green-100 bg-white border-1 border-green-500 bg-green-50" : "hover-feedback bg-white");
+    let feedbackClass = $derived.by(() => {
+        if (isDefault) return "cursor-default";
+
+        return selected ? "pointer-feedback:bg-green-200" : "hover-feedback";
+    })
+    let buttonClass = $derived(selected ? `bg-white border-green-500 bg-green-100` : " bg-white");
 </script>
 
 <button onclick={onClick}
         class:min-h-28={item.icon != null}
-        class="{buttonClass} hover-feedback border rounded-xl py-2 px-4 flex flex-col gap-2 justify-center items-center">
+        class="{buttonClass} {feedbackClass} border-2 rounded-xl py-2 px-4 flex flex-col gap-2 justify-center items-center">
 
     {#if item.icon}
-        <Icon name={item.icon} class="text-xl"/>
+        <Icon name={item.icon} class="text-2xl"/>
     {/if}
-    <span class:text-lg={item.icon != null}>{item.name}</span>
+    <div class="flex flex-col">
+        <span class:text-lg={item.icon != null}>{item.name}</span>
+        {#if isDefault}
+            <span class="text-[10px]">Default</span>
+        {/if}
+    </div>
 </button>
