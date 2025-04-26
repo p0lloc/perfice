@@ -17,7 +17,9 @@
             <h2 class="mb-2 font-bold text-xl">{category.name}</h2>
             <div class="grid md:grid-cols-4 grid-cols-2 gap-2">
                 {#each category.items as item}
-                    <OnboardingSelectButton {updateSelectState} {selectState} category={category.name} item={item}/>
+                    {#if !item.default}
+                        <OnboardingSelectButton {updateSelectState} {selectState} category={category.name} item={item}/>
+                    {/if}
                 {/each}
             </div>
         </div>

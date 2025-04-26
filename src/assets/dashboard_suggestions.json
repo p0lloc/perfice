@@ -1,0 +1,255 @@
+{
+  "desktop": {
+    "name": "Desktop",
+    "widgets": [
+      {
+        "type": "WELCOME",
+        "display": {
+          "x": 4,
+          "y": 1,
+          "width": 12,
+          "height": 9
+        },
+        "settings": {}
+      },
+      {
+        "type": "ENTRY_ROW",
+        "display": {
+          "x": 4,
+          "y": 14,
+          "width": 6,
+          "height": 5
+        },
+        "settings": {
+          "formId": "Mood",
+          "questionId": "feeling"
+        }
+      },
+      {
+        "type": "GOAL",
+        "display": {
+          "x": 17,
+          "y": 1,
+          "width": 4,
+          "height": 8
+        },
+        "settings": {
+          "goalVariableId": "Daily steps"
+        }
+      },
+      {
+        "type": "CHART",
+        "display": {
+          "x": 4,
+          "y": 34,
+          "width": 6,
+          "height": 11
+        },
+        "settings": {
+          "type": "line",
+          "formId": "Productivity",
+          "questionId": "how",
+          "groupBy": null,
+          "color": "#985fec",
+          "timeScope": "DAILY",
+          "aggregateType": "SUM",
+          "count": 7,
+          "title": null
+        }
+      },
+      {
+        "type": "TAGS",
+        "display": {
+          "x": 17,
+          "y": 29,
+          "width": 8,
+          "height": 16
+        },
+        "settings": {
+          "categories": []
+        }
+      },
+      {
+        "type": "CHART",
+        "display": {
+          "x": 10,
+          "y": 24,
+          "width": 6,
+          "height": 10
+        },
+        "settings": {
+          "type": "line",
+          "formId": "Mood",
+          "questionId": "feeling",
+          "groupBy": null,
+          "color": "#0dd335",
+          "timeScope": "DAILY",
+          "aggregateType": "MEAN",
+          "count": 6,
+          "title": null
+        }
+      },
+      {
+        "type": "CHART",
+        "display": {
+          "x": 10,
+          "y": 34,
+          "width": 6,
+          "height": 11
+        },
+        "settings": {
+          "type": "pie",
+          "formId": "Food",
+          "questionId": "meal_type",
+          "groupBy": "what",
+          "color": "#ff0000",
+          "timeScope": "WEEKLY",
+          "aggregateType": "COUNT",
+          "count": 10,
+          "title": "Weekly food types"
+        }
+      },
+      {
+        "type": "ENTRY_ROW",
+        "display": {
+          "x": 4,
+          "y": 19,
+          "width": 6,
+          "height": 5
+        },
+        "settings": {
+          "formId": "Hydration",
+          "questionId": "volume"
+        }
+      },
+      {
+        "type": "NEW_CORRELATIONS",
+        "display": {
+          "x": 17,
+          "y": 19,
+          "width": 8,
+          "height": 10
+        },
+        "settings": {}
+      },
+      {
+        "type": "METRIC",
+        "display": {
+          "x": 4,
+          "y": 10,
+          "width": 4,
+          "height": 4
+        },
+        "settings": {
+          "timeScope": "DAILY",
+          "formId": "Sleep",
+          "field": "duration",
+          "aggregateType": "SUM",
+          "filters": []
+        }
+      },
+      {
+        "type": "GOAL",
+        "display": {
+          "x": 21,
+          "y": 1,
+          "width": 4,
+          "height": 8
+        },
+        "settings": {
+          "goalVariableId": "Healthy day"
+        }
+      },
+      {
+        "type": "METRIC",
+        "display": {
+          "x": 8,
+          "y": 10,
+          "width": 4,
+          "height": 4
+        },
+        "settings": {
+          "timeScope": "DAILY",
+          "formId": "Steps",
+          "field": "count",
+          "aggregateType": "SUM",
+          "filters": []
+        }
+      },
+      {
+        "type": "TABLE",
+        "display": {
+          "x": 10,
+          "y": 14,
+          "width": 6,
+          "height": 10
+        },
+        "settings": {
+          "formId": "Food",
+          "prefix": [
+            {
+              "value": "what",
+              "dynamic": true
+            }
+          ],
+          "timeScope": "DAILY",
+          "suffix": [
+            {
+              "value": "calories",
+              "dynamic": true
+            }
+          ],
+          "groupBy": "meal_type"
+        }
+      },
+      {
+        "type": "CHART",
+        "display": {
+          "x": 4,
+          "y": 24,
+          "width": 6,
+          "height": 10
+        },
+        "settings": {
+          "type": "line",
+          "formId": "Sleep",
+          "questionId": "duration",
+          "groupBy": null,
+          "color": "#307fd5",
+          "timeScope": "DAILY",
+          "aggregateType": "SUM",
+          "count": 7,
+          "title": null
+        }
+      },
+      {
+        "type": "INSIGHTS",
+        "display": {
+          "x": 17,
+          "y": 9,
+          "width": 8,
+          "height": 10
+        },
+        "settings": {
+          "timeScope": "DAILY"
+        }
+      },
+      {
+        "type": "METRIC",
+        "display": {
+          "x": 12,
+          "y": 10,
+          "width": 4,
+          "height": 4
+        },
+        "settings": {
+          "timeScope": "DAILY",
+          "formId": "Energy levels",
+          "field": "energy",
+          "aggregateType": "MEAN",
+          "filters": []
+        }
+      }
+    ]
+  }
+}

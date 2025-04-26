@@ -51,10 +51,19 @@ export class TrackableService implements TrackableEntityProvider {
         return this.collection.getTrackables();
     }
 
-    async createTrackableFromSuggestion(suggestion: TrackableSuggestion, categoryId: string | null = null): Promise<void> {
-        let [trackable, form] = parseTrackableSuggestion(suggestion);
+    async createTrackableFromSuggestion(suggestion: TrackableSuggestion, categoryId: string | null = null): Promise<{
+        trackable: Trackable,
+        form: Form,
+        assignedQuestions: Map<string, string>
+    }> {
+        let [trackable, form, assignedQuestions] = parseTrackableSuggestion(suggestion);
         await this.formService.createForm(form);
-        await this.createTrackable(suggestion.name, suggestion.icon, form, trackable, categoryId);
+
+        return {
+            trackable: await this.createTrackable(suggestion.name, suggestion.icon, form, trackable, categoryId),
+            form,
+            assignedQuestions
+        };
     }
 
     async createSingleValueTrackable(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) {
@@ -107,7 +116,7 @@ export class TrackableService implements TrackableEntityProvider {
     }
 
     async createTrackable(name: string, icon: string, form: Form, card: TrackableCardSettings,
-                          categoryId: string | null = null): Promise<void> {
+                          categoryId: string | null = null): Promise<Trackable> {
 
         let trackableCount = await this.collection.count();
         let cardSettings: TrackableCardSettings = {
@@ -150,6 +159,7 @@ export class TrackableService implements TrackableEntityProvider {
         await this.variableService.createVariable(aggregateVariable);
         await this.collection.createTrackable(trackable);
         await this.observers.notifyObservers(EntityObserverType.CREATED, trackable);
+        return trackable;
     }
 
     /*

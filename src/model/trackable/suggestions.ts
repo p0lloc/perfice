@@ -26,6 +26,7 @@ export interface TrackableSuggestionGroup {
 export type TrackableSuggestion = {
     name: string;
     icon: string;
+    default?: boolean;
     form: FormSuggestion;
 } & TrackableSuggestionCardSettings;
 
@@ -96,12 +97,8 @@ export function parseCardSettings(suggestion: TrackableSuggestionCardSettings, a
     }
 }
 
-export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trackable, Form] {
+export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trackable, Form, Map<string, string>] {
     let [form, assignedQuestions] = parseFormSuggestion(suggestion.form, suggestion.name, suggestion.icon);
-    let cardSettings: TrackableCardSettings = {
-        cardSettings: suggestion.cardSettings,
-        cardType: suggestion.cardType
-    } as TrackableCardSettings;
 
     let trackable: Trackable = {
         id: crypto.randomUUID(),
@@ -114,7 +111,7 @@ export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trac
         ...parseCardSettings(suggestion, assignedQuestions)
     }
 
-    return [trackable, form];
+    return [trackable, form, assignedQuestions];
 }
 
 export function serializeTrackableToSuggestion(trackable: Trackable, form: Form): TrackableSuggestion {

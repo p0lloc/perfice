@@ -9,6 +9,7 @@ export enum OnboardingPageType {
 export interface OnboardingCategoryItem {
     icon?: string;
     name: string;
+    default: boolean;
 }
 
 export interface OnboardingCategory {
@@ -58,7 +59,7 @@ export const ONBOARDING: OnboardingPage[] = [
         pageType: OnboardingPageType.SELECT,
         selectType: OnboardingSelectType.TRACKABLE,
         title: "Trackables",
-        description: "Select some trackables to get started with",
+        description: "Here are some suggestions you can choose from!",
         categories: TRACKABLE_SUGGESTIONS.map(g => {
             return {
                 name: g.name,
@@ -66,6 +67,7 @@ export const ONBOARDING: OnboardingPage[] = [
                     return {
                         name: s.name,
                         icon: s.icon,
+                        default: s.default === true
                     }
                 }) ?? []
             }
@@ -95,7 +97,8 @@ export const ONBOARDING: OnboardingPage[] = [
                 name: g.name,
                 items: g.suggestions.map(s => {
                     return {
-                        name: s.name
+                        name: s.name,
+                        default: false
                     }
                 })
             }
@@ -113,11 +116,18 @@ export const ONBOARDING: OnboardingPage[] = [
 export interface OnboardingSelection {
     category: string;
     item: string;
+    default: boolean;
 }
 
 export function createOnboardingSelectState(): Record<OnboardingSelectType, OnboardingSelection[]> {
     return {
-        [OnboardingSelectType.TRACKABLE]: [],
+        [OnboardingSelectType.TRACKABLE]: TRACKABLE_SUGGESTIONS
+            .flatMap(g => g.suggestions?.filter(s => s.default === true)
+                .map(s => ({
+                    category: g.name,
+                    item: s.name,
+                    default: true
+                })) ?? []),
         [OnboardingSelectType.TAG]: []
     }
 }

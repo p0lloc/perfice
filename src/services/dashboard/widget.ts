@@ -30,9 +30,9 @@ export class DashboardWidgetService {
         return this.collection.getWidgetById(id);
     }
 
-    async createWidget(dashboardId: string, type: DashboardWidgetType, display: DashboardWidgetDisplaySettings): Promise<DashboardWidget> {
+    async createWidget(dashboardId: string, type: DashboardWidgetType, display: DashboardWidgetDisplaySettings, customSettings?: any): Promise<DashboardWidget> {
         const definition = getDashboardWidgetDefinition(type)!;
-        const settings = definition.getDefaultSettings();
+        const settings = customSettings ?? definition.getDefaultSettings();
 
         const dependenciesMap = definition.createDependencies(settings);
         let storedDependencies: Record<string, string> = {};

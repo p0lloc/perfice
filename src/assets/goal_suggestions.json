@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Daily steps",
+    "color": "#ff0000",
+    "conditions": [
+      {
+        "type": "COMPARISON",
+        "value": {
+          "source": "steps",
+          "operator": "GREATER_THAN_EQUAL",
+          "target": 5000
+        }
+      }
+    ]
+  },
+  {
+    "name": "Good sleep",
+    "color": "#ff0000",
+    "conditions": [
+      {
+        "type": "COMPARISON",
+        "value": {
+          "source": "steps",
+          "operator": "GREATER_THAN_EQUAL",
+          "target": 5000
+        }
+      }
+    ]
+  }
+]

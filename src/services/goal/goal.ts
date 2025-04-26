@@ -26,7 +26,7 @@ export class GoalService {
         return await this.goalCollection.getGoalById(id);
     }
 
-    async createGoal(name: string, color: string, variable: Variable): Promise<void> {
+    async createGoal(name: string, color: string, variable: Variable): Promise<Goal> {
         let goal: Goal = {
             id: crypto.randomUUID(),
             variableId: variable.id,
@@ -36,6 +36,8 @@ export class GoalService {
 
         await this.goalCollection.createGoal(goal);
         await this.observers.notifyObservers(EntityObserverType.CREATED, goal);
+
+        return goal;
     }
 
     async updateGoalVariable(previous: Goal, goal: Goal) {

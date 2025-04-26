@@ -1,12 +1,10 @@
-import type {
-    Dashboard,
-    DashboardWidget,
-    DashboardWidgetType
-} from "@perfice/model/dashboard/dashboard";
+import type {Dashboard, DashboardWidget, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import type {Form} from "@perfice/model/form/form";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
 import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
+
+export const CURRENT_DASHBOARD_KEY = "currentDashboard";
 
 export enum DashboardSidebarActionType {
     ADD_WIDGET,

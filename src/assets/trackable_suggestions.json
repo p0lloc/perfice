@@ -6,6 +6,7 @@
       {
         "name": "Mood",
         "icon": "smile",
+        "default": true,
         "form": {
           "format": [
             {
@@ -149,16 +150,17 @@
       {
         "name": "Sleep",
         "icon": "moon",
+        "default": true,
         "form": {
           "format": [
             {
               "dynamic": true,
-              "value": "82a2f3cc-9270-46e6-90de-af6023f649a3"
+              "value": "duration"
             }
           ],
           "questions": [
             {
-              "id": "82a2f3cc-9270-46e6-90de-af6023f649a3",
+              "id": "duration",
               "name": "How long did you sleep?",
               "dataType": "TIME_ELAPSED",
               "dataSettings": {},
@@ -201,7 +203,7 @@
           "representation": [
             {
               "dynamic": true,
-              "value": "82a2f3cc-9270-46e6-90de-af6023f649a3"
+              "value": "duration"
             }
           ],
           "type": "TABLE",
@@ -211,16 +213,17 @@
       {
         "name": "Energy levels",
         "icon": "battery_half",
+        "default": true,
         "form": {
           "format": [
             {
               "dynamic": true,
-              "value": "c439c5b6-807d-48af-8dbd-f77ea68273c4"
+              "value": "energy"
             }
           ],
           "questions": [
             {
-              "id": "c439c5b6-807d-48af-8dbd-f77ea68273c4",
+              "id": "energy",
               "name": "How energized are you feeling?",
               "dataType": "NUMBER",
               "dataSettings": {
@@ -245,7 +248,7 @@
         "cardType": "CHART",
         "cardSettings": {
           "aggregateType": "SUM",
-          "field": "c439c5b6-807d-48af-8dbd-f77ea68273c4",
+          "field": "energy",
           "color": "#ff0000"
         }
       },
@@ -259,7 +262,103 @@
       },
       {
         "name": "Productivity",
-        "icon": "frown"
+        "icon": "",
+        "default": true,
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "how"
+            }
+          ],
+          "questions": [
+            {
+              "id": "how",
+              "name": "How productive were you today?",
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": 1,
+                    "value": 1,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 2,
+                    "value": 2,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 3,
+                    "value": 3,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 4,
+                    "value": 4,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 5,
+                    "value": 5,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 6,
+                    "value": 6,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 7,
+                    "value": 7,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 8,
+                    "value": 8,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 9,
+                    "value": 9,
+                    "iconAndText": false
+                  },
+                  {
+                    "text": 10,
+                    "value": 10,
+                    "iconAndText": false
+                  }
+                ],
+                "multiple": false,
+                "grid": {
+                  "itemsPerRow": 10,
+                  "border": false
+                }
+              }
+            },
+            {
+              "id": "10abf678-888c-415b-8a90-12ffa49950fa",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "how"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       }
     ]
   },
@@ -269,16 +368,17 @@
       {
         "name": "Hydration",
         "icon": "glass",
+        "default": true,
         "form": {
           "format": [
             {
               "dynamic": true,
-              "value": "9ebf9c7a-dd86-4ac8-8ea2-9a3b1766f169"
+              "value": "volume"
             }
           ],
           "questions": [
             {
-              "id": "9ebf9c7a-dd86-4ac8-8ea2-9a3b1766f169",
+              "id": "volume",
               "name": "How much did you drink?",
               "unit": "ml",
               "dataType": "NUMBER",
@@ -385,7 +485,7 @@
           "representation": [
             {
               "dynamic": true,
-              "value": "9ebf9c7a-dd86-4ac8-8ea2-9a3b1766f169"
+              "value": "volume"
             }
           ],
           "type": "TABLE",
@@ -395,6 +495,7 @@
       {
         "name": "Food",
         "icon": "fish",
+        "default": true,
         "form": {
           "format": [
             {
@@ -532,16 +633,17 @@
       {
         "name": "Steps",
         "icon": "shoes",
+        "default": true,
         "form": {
           "format": [
             {
               "dynamic": true,
-              "value": "7594c886-6076-4a21-93a0-52705a1f32c9"
+              "value": "count"
             }
           ],
           "questions": [
             {
-              "id": "7594c886-6076-4a21-93a0-52705a1f32c9",
+              "id": "count",
               "name": "Steps",
               "dataType": "NUMBER",
               "dataSettings": {},
@@ -553,7 +655,7 @@
         "cardType": "CHART",
         "cardSettings": {
           "aggregateType": "SUM",
-          "field": "7594c886-6076-4a21-93a0-52705a1f32c9",
+          "field": "count",
           "color": "#ff0000"
         }
       },

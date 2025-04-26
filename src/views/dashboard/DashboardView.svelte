@@ -10,6 +10,7 @@
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import DashboardSidebar from "@perfice/components/dashboard/DashboardSidebar.svelte";
     import {
+        CURRENT_DASHBOARD_KEY,
         DashboardSidebarActionType,
         dropdownButtonsForDashboards,
         popupButtonsForDashboards
@@ -27,7 +28,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
-    let currentDashboard = $state(window.localStorage.getItem("currentDashboard") ?? "test");
+    let currentDashboard = $state(window.localStorage.getItem(CURRENT_DASHBOARD_KEY) ?? "test");
 
     let deleteWidgetModal: GenericDeleteModal<DashboardWidget>;
     let grid: GridstackGrid;
@@ -155,7 +156,11 @@
 
     async function onExport() {
         let widgets = await dashboardWidgets.get();
-        console.log(JSON.stringify(widgets))
+        console.log(JSON.stringify(widgets.map(w => ({
+            type: w.type,
+            display: w.display,
+            settings: w.settings
+        }))))
     }
 
     async function onWidgetUpdate(widget: DashboardWidget, settingsUpdated: boolean) {

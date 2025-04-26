@@ -15,7 +15,7 @@
         if (selected) {
             updateSelectState($state.snapshot(selectState).filter(s => s.item != item.name));
         } else {
-            updateSelectState([...$state.snapshot(selectState), {category: category, item: item.name}]);
+            updateSelectState([...$state.snapshot(selectState), {category: category, item: item.name, default: false}]);
         }
     }
 
