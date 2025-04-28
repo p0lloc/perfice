@@ -11,8 +11,6 @@ import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
 import {MigrationService} from "@perfice/db/migration/migration";
 
-export const test = false;
-
 // Main entry point of the application
 (async () => {
     let {collections, migrator} = setupDb();

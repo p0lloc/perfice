@@ -1,6 +1,4 @@
 <script lang="ts">
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
     import {faCheck, faDumbbell, faFont,} from "@fortawesome/free-solid-svg-icons";
     import {type FormQuestion, FormQuestionDataType,} from "@perfice/model/form/form";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
@@ -39,6 +37,26 @@
         )!,
     );
 
+    function onNameChange(e: { currentTarget: HTMLInputElement }) {
+        if (currentQuestion == null) return;
+        onQuestionChange({
+            ...currentQuestion,
+            name: e.currentTarget.value,
+        });
+    }
+
+    function onUnitChange(e: { currentTarget: HTMLInputElement }) {
+        if (currentQuestion == null) return;
+
+        let unit: string | null = e.currentTarget.value;
+        if (unit == "") unit = null;
+
+        onQuestionChange({
+            ...currentQuestion,
+            unit,
+        });
+    }
+
     function onQuestionChange(q: FormQuestion) {
         currentQuestion = q;
         onChange(currentQuestion);
@@ -59,7 +77,8 @@
                 <input
                         type="text"
                         class="w-full border mt-2"
-                        bind:value={currentQuestion.name}
+                        value={currentQuestion.name}
+                        onchange={onNameChange}
                 />
             </div>
             <div class="mt-4 px-4">
@@ -67,7 +86,8 @@
                 <input
                         type="text"
                         class="w-full border mt-2"
-                        bind:value={currentQuestion.unit}
+                        value={currentQuestion.unit}
+                        onchange={onUnitChange}
                         placeholder="kg, ml, ..."
                 />
             </div>

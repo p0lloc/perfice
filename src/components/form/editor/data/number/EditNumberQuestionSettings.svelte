@@ -24,7 +24,7 @@
         <p>Min</p>
     </div>
 
-    <input type="number" class="border" bind:value={settings.min} onchange={onMinChange}/>
+    <input type="number" class="border" value={settings.min} onchange={onMinChange}/>
 </div>
 <div class="row-between mt-2">
     <div class="row-gap">
@@ -32,5 +32,5 @@
         <p>Max</p>
     </div>
 
-    <input type="number" class="border" bind:value={settings.max} onchange={onMaxChange}/>
+    <input type="number" class="border" value={settings.max} onchange={onMaxChange}/>
 </div>
