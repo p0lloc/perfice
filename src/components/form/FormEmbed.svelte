@@ -1,8 +1,7 @@
 <script lang="ts">
     import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import type {FormQuestion} from "@perfice/model/form/form";
+    import {type FormQuestion, FormQuestionDisplayType} from "@perfice/model/form/form";
     import ValidatedFormField from "@perfice/components/form/fields/ValidatedFormField.svelte";
-    import {shouldAutoFocusNext} from "@perfice/model/form/ui";
 
     let {questions, answers}: { questions: FormQuestion[], answers: Record<string, PrimitiveValue> } = $props();
     let fields: Record<string, ValidatedFormField> = $state({});
@@ -28,26 +27,23 @@
         return result;
     }
 
-    export function focus(){
-        if(questions.length == 0) return;
-        focusField(questions[0].id);
+    export function focus() {
+        if (questions.length == 0) return;
+
+        let question = questions[0];
+        if (question.displayType != FormQuestionDisplayType.INPUT) return;
+
+        focusField(question.id);
     }
 
-    export function focusField(id: string){
+    export function focusField(id: string) {
         let field = fields[id];
-        if(field == null) return;
+        if (field == null) return;
 
         field.focus();
     }
 
-    function onFieldChanged(question: FormQuestion){
-        if(!shouldAutoFocusNext(question)) return;
-
-        let index = questions.findIndex(q => q.id == question.id);
-        if(index == -1 || index == questions.length - 1) return;
-
-        // Focus the next field
-        focusField(questions[index + 1].id);
+    function onFieldChanged(_question: FormQuestion) {
     }
 
     /**
