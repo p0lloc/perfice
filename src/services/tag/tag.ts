@@ -1,6 +1,6 @@
 import type {Tag} from "@perfice/model/tag/tag";
 import type {TagCollection} from "@perfice/db/collections";
-import {VariableTypeName, type Variable} from "@perfice/model/variable/variable";
+import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import {TagVariableType} from "../variable/types/tag";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
@@ -69,7 +69,7 @@ export class TagService implements TagEntityProvider {
         let tag = await this.tagCollection.getTagById(id);
         if (tag == null) return;
 
-        await this.variableService.deleteVariableAndDependencies(tag.variableId);
+        await this.variableService.deleteVariableById(tag.variableId);
         await this.tagCollection.deleteTagById(id);
         await this.observers.notifyObservers(EntityObserverType.DELETED, tag);
     }

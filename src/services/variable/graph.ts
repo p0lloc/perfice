@@ -288,29 +288,37 @@ export class VariableGraph {
         return result;
     }
 
-    async deleteVariableAndDependencies(id: string): Promise<Variable[]> {
+    async deleteVariableAndDependencies(id: string, shouldDeleteChild: (v: Variable) => boolean): Promise<Variable[]> {
         let variable = this.getVariableById(id);
         if (variable == null) return [];
 
+        let stack = [variable];
         let variablesToDelete: Variable[] = [variable];
+        while (stack.length > 0) {
+            let current = stack.pop();
+            if (current == null) continue;
 
-        let dependents = this.dependents.get(id);
-        if (dependents != null) {
-            for (let dependent of dependents) {
-                let variable = this.getVariableById(dependent);
-                if (variable == null) continue;
+            variablesToDelete.push(current);
 
-                variablesToDelete.push(variable);
+            let dependencies = current.type.value.getDependencies();
+            for (let dependency of dependencies) {
+                let child = this.getVariableById(dependency);
+                if (child == null) continue;
+
+                if (!shouldDeleteChild(child)) continue;
+
+                stack.push(child);
             }
         }
 
-        let variableIds = variablesToDelete.map(v => v.id);
-        variableIds.forEach(v => this.nodes.delete(v));
+        // This could be more optimized by deleting all variables at once
+        // But then we would need to keep the logic in sync with onVariableDeleted
+        for (const v of variablesToDelete) {
+            await this.onVariableDeleted(v.id);
+        }
 
-        await this.indexCollection.deleteIndicesByVariableIds(variableIds);
         return variablesToDelete;
     }
-
 
     private async deleteIndicesForDependentVariables(variableId: string) {
         let dependents = this.dependents.get(variableId);

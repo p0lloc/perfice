@@ -2,7 +2,7 @@ import type {GoalCollection} from "@perfice/db/collections";
 import type {Goal} from "@perfice/model/goal/goal";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import type {VariableService} from "@perfice/services/variable/variable";
-import {type Variable} from "@perfice/model/variable/variable";
+import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
 import {GoalConditionType} from "@perfice/services/variable/types/goal";
 
@@ -65,7 +65,8 @@ export class GoalService {
 
         await this.goalCollection.deleteGoalById(id);
         await this.observers.notifyObservers(EntityObserverType.DELETED, goal);
-        await this.variableService.deleteVariableAndDependencies(goal.variableId);
+        await this.variableService.deleteVariableAndDependencies(goal.variableId,
+            (v) => v.type.type != VariableTypeName.GOAL); // Don't delete goal met condition dependencies, that would delete a completely different goal
     }
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<Goal>) {

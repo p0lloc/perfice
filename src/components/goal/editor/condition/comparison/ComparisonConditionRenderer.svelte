@@ -13,7 +13,7 @@
     import AddSourceButton from "@perfice/components/goal/editor/condition/comparison/AddSourceButton.svelte";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {pNumber, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
-    import type {VariableTypeName} from "@perfice/model/variable/variable";
+    import {VariableTypeName} from "@perfice/model/variable/variable";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
     import EditConstantOrVariable from "@perfice/components/variable/edit/EditConstantOrVariable.svelte";
     import {forms, variableEditProvider} from "@perfice/stores";
@@ -95,7 +95,8 @@
 
     function deleteSourceVariable(v: ConstantOrVariable) {
         if (!v.constant && v.value.type == PrimitiveValueType.STRING) {
-            variableEditProvider.deleteVariableAndDependencies(v.value.value);
+            variableEditProvider.deleteVariableAndDependencies(v.value.value,
+                (v) => v.type.type != VariableTypeName.GOAL); // Don't delete goal met condition dependencies, that would delete a completely different goal
         }
     }
 

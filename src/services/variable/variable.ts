@@ -217,8 +217,8 @@ export class VariableService implements VariableProvider {
         await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
     }
 
-    async deleteVariableAndDependencies(variableId: string) {
-        let variablesToDelete = await this.graph.deleteVariableAndDependencies(variableId);
+    async deleteVariableAndDependencies(variableId: string, shouldDelete: (v: Variable) => boolean) {
+        let variablesToDelete = await this.graph.deleteVariableAndDependencies(variableId, shouldDelete);
         for (let variable of variablesToDelete) {
             await this.variableCollection.deleteVariableById(variable.id);
             await this.observers.notifyObservers(EntityObserverType.DELETED, variable);

@@ -195,7 +195,7 @@ export class VariableEditProvider implements VariableProvider {
     /**
      * Deletes a variable and recursively all of the dependencies returned by the type.
      */
-    deleteVariableAndDependencies(id: string) {
+    deleteVariableAndDependencies(id: string, shouldDelete: (v: Variable) => boolean) {
         let variable = this.getVariableById(id);
         if (variable == null) return;
 
@@ -203,7 +203,12 @@ export class VariableEditProvider implements VariableProvider {
         this.variables = deleteIdentifiedInArray(this.variables, id);
 
         for (let dependencyId of variable.type.value.getDependencies()) {
-            this.deleteVariableAndDependencies(dependencyId);
+            let dependency = this.getVariableById(dependencyId);
+            if (dependency == null) continue;
+
+            if (shouldDelete(dependency)) {
+                this.deleteVariableAndDependencies(dependencyId, shouldDelete);
+            }
         }
     }
 
