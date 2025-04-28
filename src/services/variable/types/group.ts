@@ -21,7 +21,11 @@ import {
     type PrimitiveValue,
     PrimitiveValueType
 } from "@perfice/model/primitive/primitive";
-import {extractFieldsFromAnswers, extractValueFromDisplay} from "@perfice/services/variable/types/list";
+import {
+    extractDisplayFromDisplay,
+    extractFieldsFromAnswers,
+    extractValueFromDisplay
+} from "@perfice/services/variable/types/list";
 import {findArrayDifferences} from "@perfice/util/array";
 
 export class GroupVariableType implements VariableType, JournalEntryDependent {
@@ -45,8 +49,21 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
         }
 
         let value = extractValueFromDisplay(groupAnswer);
+        let display = primitiveAsString(extractDisplayFromDisplay(groupAnswer));
+
+        // We need to deduce if this is concerning multiple values
+        // Hierarchy also uses a list for the path of the tree, so reasonably it wouldn't contain a comma
+        let multiple = display.includes(",");
+
         if (value.type == PrimitiveValueType.LIST) {
-            return value.value.map(v => primitiveAsString(v));
+            if (multiple) {
+                return value.value.map(v => primitiveAsString(v));
+            } else {
+                if (value.value.length < 1) return []
+
+                // Return the leaf node
+                return [primitiveAsString(value.value[value.value.length - 1])];
+            }
         } else {
             return [primitiveAsString(value)];
         }
