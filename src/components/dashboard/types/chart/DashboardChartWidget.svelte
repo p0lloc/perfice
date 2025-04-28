@@ -3,6 +3,7 @@
     import {dashboardDate} from "@perfice/stores/dashboard/dashboard";
     import SingleChart from "@perfice/components/chart/SingleChart.svelte";
     import {chartWidget, weekStart} from "@perfice/stores";
+    import {Capacitor} from "@capacitor/core";
 
     let {settings, dependencies, openFormModal}: {
         settings: DashboardChartWidgetSettings,
@@ -12,9 +13,17 @@
 
     let result = $derived(chartWidget(dependencies, settings, $dashboardDate,
         $weekStart, `${settings.formId}:${settings.questionId}:${settings.aggregateType}:${settings.count}`));
+
+    function onClick() {
+        // On mobile we need to support hovering as click (such as when clicking on different data points)
+        if (Capacitor.isNativePlatform())
+            return;
+
+        openFormModal(settings.formId);
+    }
 </script>
 <button class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col p-2"
-        onclick={() => openFormModal(settings.formId)}>
+        onclick={onClick}>
     {#await $result}
         <span class="p-2">
             Please select a form
