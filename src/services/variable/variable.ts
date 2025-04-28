@@ -148,12 +148,33 @@ export class VariableService implements VariableProvider {
     }
 
     async createVariable(variable: Variable): Promise<void> {
+        if (this.detectCircularDependencies(variable)) {
+            throw new Error("Circular dependency detected");
+        }
+
         let stored = this.serializeVariable(variable);
         await this.variableCollection.createVariable(stored);
         this.graph.onVariableCreated(variable);
         await this.observers.notifyObservers(EntityObserverType.CREATED, variable);
     }
 
+    private detectCircularDependencies(variable: Variable): boolean {
+        let visited = new Set<string>();
+        let stack: Variable[] = [variable];
+
+        while (stack.length > 0) {
+            let current = stack.pop()!;
+            if (visited.has(current.id)) return true;
+            visited.add(current.id);
+
+            let dependencies = current.type.value.getDependencies();
+            for (let dependency of dependencies) {
+                stack.push(this.getVariableById(dependency)!);
+            }
+        }
+
+        return false;
+    }
 
     private serializeVariable(variable: Variable): StoredVariable {
         return {
@@ -205,6 +226,10 @@ export class VariableService implements VariableProvider {
     }
 
     async updateVariable(variable: Variable) {
+        if (this.detectCircularDependencies(variable)) {
+            throw new Error("Circular dependency detected");
+        }
+
         await this.variableCollection.updateVariable(this.serializeVariable(variable));
         await this.graph.onVariableUpdated(variable);
         await this.observers.notifyObservers(EntityObserverType.UPDATED, variable);
