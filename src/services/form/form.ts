@@ -112,6 +112,7 @@ export class BaseFormService implements FormService, FormEntityProvider {
         let form = await this.formCollection.getFormById(id);
         if (form == undefined) return;
         await this.formCollection.deleteFormById(id);
+        await this.journalService.deleteEntriesByFormId(id);
         await this.observers.notifyObservers(EntityObserverType.DELETED, form);
     }
 

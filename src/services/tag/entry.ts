@@ -1,5 +1,4 @@
 import type {TagEntryCollection} from "@perfice/db/collections";
-import type {Tag} from "@perfice/model/tag/tag";
 import type {TagEntry} from "@perfice/model/journal/journal";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 
@@ -44,5 +43,9 @@ export class TagEntryService {
 
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<TagEntry>) {
         this.observers.removeObserver(type, callback);
+    }
+
+    async deleteEntriesByTagId(id: string) {
+        await this.tagEntryCollection.deleteEntriesByTagId(id);
     }
 }

@@ -71,9 +71,9 @@ export class TagService implements TagEntityProvider {
 
         await this.variableService.deleteVariableById(tag.variableId);
         await this.tagCollection.deleteTagById(id);
+        await this.tagEntryService.deleteEntriesByTagId(id);
         await this.observers.notifyObservers(EntityObserverType.DELETED, tag);
     }
-
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<Tag>) {
         this.observers.addObserver(type, callback);
@@ -88,6 +88,9 @@ export class TagService implements TagEntityProvider {
     }
 
     async deleteTagsByCategoryId(categoryId: string) {
-        await this.tagCollection.deleteTagsByCategoryId(categoryId);
+        let tags = await this.tagCollection.getTagsByCategoryId(categoryId);
+        for (let tag of tags) {
+            await this.deleteTagById(tag.id);
+        }
     }
 }

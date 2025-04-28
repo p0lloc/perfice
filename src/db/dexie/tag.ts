@@ -1,11 +1,7 @@
 import type {TagEntry} from "@perfice/model/journal/journal";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 import type {EntityTable} from "dexie";
-import type {
-    TagCategoryCollection,
-    TagCollection,
-    TagEntryCollection,
-} from "@perfice/db/collections";
+import type {TagCategoryCollection, TagCollection, TagEntryCollection,} from "@perfice/db/collections";
 
 export class DexieTagEntryCollection implements TagEntryCollection {
 
@@ -51,7 +47,7 @@ export class DexieTagEntryCollection implements TagEntryCollection {
     }
 
     async deleteEntriesByTagId(tagId: string): Promise<void> {
-        await this.table.delete(tagId);
+        await this.table.where("tagId").equals(tagId).delete();
     }
 
     async deleteEntryById(id: string): Promise<void> {
@@ -107,8 +103,8 @@ export class DexieTagCollection implements TagCollection {
         await this.table.delete(id);
     }
 
-    async deleteTagsByCategoryId(categoryId: string): Promise<void> {
-        await this.table.where("categoryId").equals(categoryId).delete();
+    async getTagsByCategoryId(categoryId: string): Promise<Tag[]> {
+        return this.table.where("categoryId").equals(categoryId).toArray();
     }
 }
 

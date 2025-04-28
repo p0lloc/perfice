@@ -45,6 +45,8 @@ export interface JournalService {
     getEntriesFromTime(lower: number): Promise<JournalEntry[]>;
 
     getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]>;
+
+    deleteEntriesByFormId(id: string): Promise<void>;
 }
 
 export class BaseJournalService implements JournalService {
@@ -55,6 +57,10 @@ export class BaseJournalService implements JournalService {
     constructor(collection: JournalCollection) {
         this.collection = collection;
         this.observers = [];
+    }
+
+    async deleteEntriesByFormId(id: string): Promise<void> {
+        await this.collection.deleteEntriesByFormId(id);
     }
 
     getEntryById(id: string) {

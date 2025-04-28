@@ -203,7 +203,7 @@ export interface TagCollection {
 
     deleteTagById(id: string): Promise<void>;
 
-    deleteTagsByCategoryId(categoryId: string): Promise<void>;
+    getTagsByCategoryId(categoryId: string): Promise<Tag[]>;
 }
 
 export interface TagEntryCollection {
