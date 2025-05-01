@@ -1,9 +1,10 @@
 import {ChartTitlesMigration} from "@perfice/db/migration/migrations/chartTitles";
+import {FormQuestionDefaultValuesMigration} from "@perfice/db/migration/migrations/defaultQuestionValues";
 
-export const CURRENT_DATA_VERSION: number = 1;
+export const CURRENT_DATA_VERSION: number = 2;
 export const CURRENT_VERSION_STORAGE_KEY = "data_version";
 
-const MIGRATIONS: Migration[] = [new ChartTitlesMigration()];
+const MIGRATIONS: Migration[] = [new ChartTitlesMigration(), new FormQuestionDefaultValuesMigration()];
 
 export interface Migration {
     apply(entity: any): Promise<object>;

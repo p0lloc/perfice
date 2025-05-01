@@ -5,9 +5,10 @@
     let {option, onClick, selected}: { option: HierarchyOption, onClick: () => void, selected: boolean } = $props();
 </script>
 
-<button class="flex-col-center aspect-square rounded-xl border-2 border-transparent" class:selected={selected} style:background-color={sanitizeColor(option.color)}
+<button class="flex-col-center aspect-square rounded-xl border-2 border-transparent " class:selected={selected}
+        style:background-color={sanitizeColor(option.color)}
         onclick={onClick}>
-    <span class="whitespace-pre-line text-center">{option.text}</span>
+    <p class="whitespace-pre-line text-center overflow-hidden text-ellipsis w-full text-sm md:text-base">{option.text}</p>
 </button>
 
 <style>

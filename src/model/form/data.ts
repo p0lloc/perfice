@@ -89,6 +89,13 @@ export class FormQuestionDataTypeRegistry {
         return definition.getDefaultValue(definition.getDefaultSettings());
     }
 
+    getDefaultPrimitiveValue(type: string): PrimitiveValue | null {
+        let definition = this.getDefinition(type);
+        if (definition === undefined) return null;
+
+        return definition.deserialize(definition.getDefaultValue(definition.getDefaultSettings()));
+    }
+
     /**
      * Gets the first data type that supports the given display type
      */
@@ -139,13 +146,17 @@ export function getDefaultFormAnswers(questions: FormQuestion[]): Record<string,
         if (displayDef == null) continue;
 
         let value: any;
-        if (displayDef.hasMultiple(question.displaySettings)) {
-            value = pList([]);
+        if (question.defaultValue != null) {
+            value = question.defaultValue;
         } else {
-            let definition = questionDataTypeRegistry.getDefinition(question.dataType);
-            if (definition == null) continue;
+            if (displayDef.hasMultiple(question.displaySettings)) {
+                value = pList([]);
+            } else {
+                let definition = questionDataTypeRegistry.getDefinition(question.dataType);
+                if (definition == null) continue;
 
-            value = definition.deserialize(definition.getDefaultValue(question.dataSettings));
+                value = definition.deserialize(definition.getDefaultValue(question.dataSettings));
+            }
         }
 
         answers[question.id] = value;

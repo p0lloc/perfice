@@ -49,6 +49,7 @@ export type FormQuestion = {
         id: string;
         name: string;
         unit: string | null;
+        defaultValue: PrimitiveValue | null;
     }
     & FormQuestionDataSettings
     & FormQuestionDisplaySettings;

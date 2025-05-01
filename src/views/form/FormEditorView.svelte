@@ -163,6 +163,8 @@
             if (parts.length != 2) return;
 
             creating = parts[1];
+            createName = "";
+            createIcon = "";
             form = {
                 id: crypto.randomUUID(),
                 name: "",

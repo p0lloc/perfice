@@ -66,7 +66,11 @@
                     "iconAndText": false
                   }
                 ],
-                "multiple": false
+                "multiple": false,
+                "grid": {
+                  "itemsPerRow": 5,
+                  "border": false
+                }
               }
             },
             {
@@ -84,26 +88,357 @@
                       "value": "high_unpleasant",
                       "text": "High energy\nUnpleasant",
                       "color": "#FFA9A9",
-                      "gridSize": 2,
-                      "children": []
+                      "gridSize": 4,
+                      "children": [
+                        {
+                          "value": "Enraged",
+                          "text": "Enraged",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Furious",
+                          "text": "Furious",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Frustrated",
+                          "text": "Frustrated",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Shocked",
+                          "text": "Shocked",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Livid",
+                          "text": "Livid",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Frightened",
+                          "text": "Frightened",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Nervous",
+                          "text": "Nervous",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Restless",
+                          "text": "Restless",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Fuming",
+                          "text": "Fuming",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Apprehensive",
+                          "text": "Apprehensive",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Worried",
+                          "text": "Worried",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Annoyed",
+                          "text": "Annoyed",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Repulsed",
+                          "text": "Repulsed",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Troubled",
+                          "text": "Troubled",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Uneasy",
+                          "text": "Uneasy",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Peeved",
+                          "text": "Peeved",
+                          "color": "#FFA9A9",
+                          "gridSize": 0,
+                          "children": []
+                        }
+                      ]
                     },
                     {
                       "value": "high_pleasant",
                       "text": "High energy\nPleasant",
-                      "color": "#FFA9A9",
-                      "gridSize": 2,
-                      "children": []
+                      "color": "#FFF49B",
+                      "gridSize": 4,
+                      "children": [
+                        {
+                          "value": "Surprised",
+                          "text": "Surprised",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Upbeat",
+                          "text": "Upbeat",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Motivated",
+                          "text": "Motivated",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Ecstatic",
+                          "text": "Ecstatic",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Hyper",
+                          "text": "Hyper",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Cheerful",
+                          "text": "Cheerful",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Inspired",
+                          "text": "Inspired",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Elated",
+                          "text": "Elated",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Energized",
+                          "text": "Energized",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Lively",
+                          "text": "Lively",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Optimistic",
+                          "text": "Optimistic",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Thrilled",
+                          "text": "Thrilled",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Pleasant",
+                          "text": "Pleasant",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Joyful",
+                          "text": "Joyful",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Proud",
+                          "text": "Proud",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Blissful",
+                          "text": "Blissful",
+                          "color": "#FFF49B",
+                          "gridSize": 0,
+                          "children": []
+                        }
+                      ]
                     },
                     {
                       "value": "low_unpleasant",
                       "text": "Low energy\nUnpleasant",
-                      "color": "#A9AAFF",
+                      "color": "#A9C9FF",
                       "gridSize": 4,
                       "children": [
                         {
-                          "value": "depressed",
-                          "text": "Depressed",
-                          "color": "#A9AAFF",
+                          "value": "Disgusted",
+                          "text": "Disgusted",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Disappointed",
+                          "text": "Disappointed",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Glum",
+                          "text": "Glum",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Ashamed",
+                          "text": "Ashamed",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Mortified",
+                          "text": "Mortified",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Alienated",
+                          "text": "Alienated",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Mopey",
+                          "text": "Mopey",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Apathetic",
+                          "text": "Apathetic",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Embarrassed",
+                          "text": "Embarrassed",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Excluded",
+                          "text": "Excluded",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Timid",
+                          "text": "Timid",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Drained",
+                          "text": "Drained",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Alone",
+                          "text": "Alone",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Down",
+                          "text": "Down",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Bored",
+                          "text": "Bored",
+                          "color": "#A9C9FF",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Tired",
+                          "text": "Tired",
+                          "color": "#A9C9FF",
                           "gridSize": 0,
                           "children": []
                         }
@@ -112,13 +447,118 @@
                     {
                       "value": "low_pleasant",
                       "text": "Low energy\nPleasant",
-                      "color": "#A9AAFF",
+                      "color": "#B6F5B6",
                       "gridSize": 4,
                       "children": [
                         {
-                          "value": "grateful",
+                          "value": "Blessed",
+                          "text": "Blessed",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "At Ease",
+                          "text": "At Ease",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Content",
+                          "text": "Content",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Fulfilled",
+                          "text": "Fulfilled",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Humbled",
+                          "text": "Humbled",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Secure",
+                          "text": "Secure",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Chill",
+                          "text": "Chill",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Grateful",
                           "text": "Grateful",
-                          "color": "#A9AAFF",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Calm",
+                          "text": "Calm",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Satisfied",
+                          "text": "Satisfied",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Relaxed",
+                          "text": "Relaxed",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Carefree",
+                          "text": "Carefree",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Relieved",
+                          "text": "Relieved",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Restful",
+                          "text": "Restful",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Tranquil",
+                          "text": "Tranquil",
+                          "color": "#B6F5B6",
+                          "gridSize": 0,
+                          "children": []
+                        },
+                        {
+                          "value": "Serene",
+                          "text": "Serene",
+                          "color": "#B6F5B6",
                           "gridSize": 0,
                           "children": []
                         }
@@ -128,6 +568,14 @@
                 }
               },
               "displayType": "HIERARCHY",
+              "displaySettings": {}
+            },
+            {
+              "id": "f6a61e8d-1808-4a1e-8967-5a651145f86e",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
               "displaySettings": {}
             }
           ]
@@ -262,12 +710,45 @@
         }
       },
       {
-        "name": "Stress",
-        "icon": "frown"
-      },
-      {
         "name": "Focus",
-        "icon": "bullseye"
+        "icon": "🎯",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "7324f6b3-572c-4eeb-b52b-0c3f087db23a"
+            }
+          ],
+          "questions": [
+            {
+              "id": "7324f6b3-572c-4eeb-b52b-0c3f087db23a",
+              "name": "Focus",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 1,
+                "max": 10
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "e0b7b177-3121-4c15-9378-b65db340fd91",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "MEAN",
+          "field": "7324f6b3-572c-4eeb-b52b-0c3f087db23a",
+          "color": "#ea6666"
+        }
       },
       {
         "name": "Productivity",
@@ -283,7 +764,7 @@
           "questions": [
             {
               "id": "how",
-              "name": "How productive were you today?",
+              "name": "Productivity level",
               "dataType": "NUMBER",
               "dataSettings": {
                 "min": 1,
@@ -332,12 +813,16 @@
               "dynamic": true
             },
             {
-              "value": " ",
+              "value": " (",
               "dynamic": false
             },
             {
               "value": "volume",
               "dynamic": true
+            },
+            {
+              "value": ")",
+              "dynamic": false
             }
           ],
           "questions": [
@@ -371,7 +856,11 @@
                     "iconAndText": false
                   }
                 ],
-                "multiple": false
+                "multiple": false,
+                "grid": {
+                  "itemsPerRow": 4,
+                  "border": false
+                }
               }
             },
             {
@@ -475,12 +964,16 @@
               "dynamic": true
             },
             {
-              "value": " ",
+              "value": " (",
               "dynamic": false
             },
             {
               "value": "calories",
               "dynamic": true
+            },
+            {
+              "value": ")",
+              "dynamic": false
             }
           ],
           "questions": [
@@ -680,7 +1173,10 @@
                 ],
                 "multiple": true,
                 "grid": {
-                  "itemsPerRow": 5,
+                  "itemsPerRow": [
+                    5,
+                    4
+                  ],
                   "border": true
                 }
               }
@@ -709,7 +1205,46 @@
       },
       {
         "name": "Medicine",
-        "icon": "pills"
+        "icon": "💊",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "b5c96500-524e-4527-ab9e-69a5b492034b"
+            }
+          ],
+          "questions": [
+            {
+              "id": "b5c96500-524e-4527-ab9e-69a5b492034b",
+              "name": "Dose",
+              "unit": "mg",
+              "defaultValue": 5,
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "85cdd756-e2a6-4860-81a0-8cff4fa795d3",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "b5c96500-524e-4527-ab9e-69a5b492034b"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       }
     ]
   },
@@ -782,15 +1317,348 @@
       },
       {
         "name": "Exercise",
-        "icon": "dumbbell"
+        "icon": "💪",
+        "form": {
+          "format": [
+            {
+              "value": "e1df9039-b1a5-464b-aa76-21966d0e121d",
+              "dynamic": true
+            },
+            {
+              "value": " (",
+              "dynamic": false
+            },
+            {
+              "value": "394db3d6-30b0-4e03-bdee-44d465f596c0",
+              "dynamic": true
+            },
+            {
+              "value": ")",
+              "dynamic": false
+            }
+          ],
+          "questions": [
+            {
+              "id": "394db3d6-30b0-4e03-bdee-44d465f596c0",
+              "name": "Duration",
+              "dataType": "TIME_ELAPSED",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "e1df9039-b1a5-464b-aa76-21966d0e121d",
+              "name": "Type",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Biceps",
+                    "value": "Biceps",
+                    "icon": "💪",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Triceps",
+                    "value": "Triceps",
+                    "icon": "🦾",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Legs",
+                    "value": "Legs",
+                    "icon": "🦵",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Back",
+                    "value": "Back",
+                    "icon": "🪽",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Cardio",
+                    "value": "Cardio",
+                    "icon": "🫀",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Chest",
+                    "value": "Chest",
+                    "icon": "",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Core",
+                    "value": "Core",
+                    "icon": "🫓",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Full body",
+                    "value": "Full body",
+                    "icon": "🧍",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Weights",
+                    "value": "Weights",
+                    "icon": "🏋️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Run",
+                    "value": "Run",
+                    "icon": "🏃",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Yoga",
+                    "value": "Yoga",
+                    "icon": "🧘",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Cycling",
+                    "value": "Cycling",
+                    "icon": "🚴",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Swim",
+                    "value": "Swim",
+                    "icon": "🏊️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Boxing",
+                    "value": "Boxing",
+                    "icon": "🥊",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Soccer",
+                    "value": "Soccer",
+                    "icon": "⚽️",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": true,
+                "grid": {
+                  "itemsPerRow": [
+                    5,
+                    4
+                  ],
+                  "border": false
+                }
+              }
+            },
+            {
+              "id": "9d5ff89c-d866-42d5-8e71-9f866a12bf89",
+              "name": "Calories burnt",
+              "unit": "kcal",
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "ddecd936-558d-44bb-a578-5ecdcdcc7a34",
+              "name": "Difficulty",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 1,
+                "max": 10
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "fbbb92a1-3491-40e0-8aee-f3ff84222a68",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "id": "0e1df9039-b1a5-464b-aa76-21966d0e121d",
+              "value": "e1df9039-b1a5-464b-aa76-21966d0e121d",
+              "dynamic": true
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
         "name": "Outdoor time",
-        "icon": "leaf"
+        "icon": "🌿",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "53fe9d0e-860a-4b34-afcf-513f4ba3691a"
+            }
+          ],
+          "questions": [
+            {
+              "id": "53fe9d0e-860a-4b34-afcf-513f4ba3691a",
+              "name": "Outdoor time",
+              "dataType": "TIME_ELAPSED",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "SUM",
+          "field": "53fe9d0e-860a-4b34-afcf-513f4ba3691a",
+          "color": "#0b9922"
+        }
       },
       {
         "name": "Social time",
-        "icon": "leaf"
+        "icon": "🫂",
+        "form": {
+          "format": [
+            {
+              "value": "c5a4c817-f959-4673-b026-f2044a21765b",
+              "dynamic": true
+            }
+          ],
+          "questions": [
+            {
+              "id": "c5a4c817-f959-4673-b026-f2044a21765b",
+              "name": "Social time",
+              "dataType": "TIME_ELAPSED",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "d679bfdf-f13b-4345-9280-6655df447d8e",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "SUM",
+          "field": "c5a4c817-f959-4673-b026-f2044a21765b",
+          "color": "#ffbb00"
+        }
+      },
+      {
+        "name": "Resting HR",
+        "icon": "❤️",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "heart_rate"
+            }
+          ],
+          "questions": [
+            {
+              "id": "heart_rate",
+              "name": "Resting HR",
+              "unit": "bpm",
+              "dataType": "NUMBER",
+              "displayType": "INPUT"
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "MEAN",
+          "field": "heart_rate",
+          "color": "#ff6f61"
+        }
+      },
+      {
+        "name": "Blood sugar",
+        "icon": "🩸",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "glucose_level"
+            }
+          ],
+          "questions": [
+            {
+              "id": "glucose_level",
+              "name": "Blood Sugar",
+              "unit": "mmol/L",
+              "dataType": "NUMBER",
+              "displayType": "INPUT"
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "MEAN",
+          "field": "glucose_level",
+          "color": "#ff6f61"
+        }
+      },
+      {
+        "name": "Blood Pressure",
+        "icon": "💓",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "systolic"
+            },
+            {
+              "dynamic": false,
+              "value": "/"
+            },
+            {
+              "dynamic": true,
+              "value": "diastolic"
+            }
+          ],
+          "questions": [
+            {
+              "id": "systolic",
+              "name": "Systolic",
+              "unit": "mmHg",
+              "dataType": "NUMBER",
+              "displayType": "INPUT"
+            },
+            {
+              "id": "diastolic",
+              "name": "Diastolic",
+              "unit": "mmHg",
+              "dataType": "NUMBER",
+              "displayType": "INPUT"
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "MEAN",
+          "field": "systolic",
+          "color": "#7b9cf6"
+        }
       }
     ]
   },
@@ -804,6 +1672,105 @@
       {
         "name": "Income",
         "icon": "shoes"
+      }
+    ]
+  },
+  {
+    "name": "Environment",
+    "suggestions": [
+      {
+        "name": "Location",
+        "icon": "📍",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "location"
+            }
+          ],
+          "questions": [
+            {
+              "id": "location",
+              "name": "Location",
+              "dataType": "TEXT",
+              "displayType": "INPUT"
+            },
+            {
+              "name": "Notes",
+              "dataType": "TEXT",
+              "displayType": "TEXT_AREA"
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "value": "location",
+              "dynamic": true
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
+      },
+      {
+        "name": "Weather",
+        "icon": "heart"
+      },
+      {
+        "name": "Air quality",
+        "icon": "🌫️",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "aqi"
+            }
+          ],
+          "questions": [
+            {
+              "id": "aqi",
+              "name": "Air Quality Index",
+              "unit": "AQI",
+              "dataType": "NUMBER",
+              "displayType": "INPUT"
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "MEAN",
+          "field": "aqi",
+          "color": "#ffcc00"
+        }
+      },
+      {
+        "name": "Temperature",
+        "icon": "🌡️",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "temperature"
+            }
+          ],
+          "questions": [
+            {
+              "id": "temperature",
+              "name": "Temperature",
+              "unit": "°C",
+              "dataType": "NUMBER",
+              "displayType": "INPUT"
+            }
+          ]
+        },
+        "cardType": "CHART",
+        "cardSettings": {
+          "aggregateType": "MEAN",
+          "field": "temperature",
+          "color": "#ff7f50"
+        }
       }
     ]
   },

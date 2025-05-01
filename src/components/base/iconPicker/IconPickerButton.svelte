@@ -15,16 +15,18 @@
     const MOBILE_CELL_HEIGHT = 54;
     const DESKTOP_CELL_HEIGHT = 48;
 
-    async function open() {
-        let rect = button.getBoundingClientRect();
+    function calculateScrollTop() {
         let index = EMOJIS.findIndex(e => e.emoji == icon);
         if (index == -1) index = 0;
 
         let rows = isMobile() ? MOBILE_ROWS : DESKTOP_ROWS;
         let itemHeight = isMobile() ? MOBILE_CELL_HEIGHT : DESKTOP_CELL_HEIGHT;
-        let scrollTop = (index / rows) * itemHeight;
+        return (index / rows) * itemHeight;
+    }
 
-        let newIcon = await iconPicker.open(rect.left + rect.width, rect.top + rect.height, right, scrollTop);
+    async function open() {
+        let rect = button.getBoundingClientRect();
+        let newIcon = await iconPicker.open(rect.left + rect.width, rect.top + rect.height, right, calculateScrollTop());
         onChange(newIcon);
     }
 </script>

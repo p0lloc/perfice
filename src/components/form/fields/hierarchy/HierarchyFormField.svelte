@@ -46,7 +46,7 @@
     }
 </script>
 
-<div class="md:max-w-96">
+<div class="md:max-w-[28rem]">
     {#if selected != null && (value.length > 1 || selected.children.length > 0)}
         <div class="mb-2">
             <IconButton icon={faArrowLeft} onClick={reset}/>

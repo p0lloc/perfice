@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {faCheck, faDumbbell, faFont,} from "@fortawesome/free-solid-svg-icons";
+    import {faCheck, faDumbbell, faFont, faHashtag, faTimes,} from "@fortawesome/free-solid-svg-icons";
     import {type FormQuestion, FormQuestionDataType,} from "@perfice/model/form/form";
     import {questionDataTypeRegistry} from "@perfice/model/form/data";
     import EditDisplayQuestionSettings
@@ -7,6 +7,11 @@
     import EditDataQuestionSettings from "@perfice/components/form/editor/data/EditDataQuestionSettings.svelte";
     import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
     import Sidebar from "@perfice/components/base/sidebar/Sidebar.svelte";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import Button from "@perfice/components/base/button/Button.svelte";
+    import EditConstant from "@perfice/components/variable/edit/EditConstant.svelte";
+    // noinspection ES6UnusedImports
+    import Fa from "svelte-fa";
 
     let {
         onChange,
@@ -57,9 +62,23 @@
         });
     }
 
+    function onDefaultChange(defaultValue: PrimitiveValue | null) {
+        if (currentQuestion == null) return;
+        onQuestionChange({
+            ...currentQuestion,
+            defaultValue: defaultValue
+        });
+    }
+
     function onQuestionChange(q: FormQuestion) {
         currentQuestion = q;
         onChange(currentQuestion);
+    }
+
+    function addDefaultValue() {
+        if (currentQuestion == null) return;
+
+        onDefaultChange(questionDataTypeRegistry.getDefaultPrimitiveValue(currentQuestion.dataType));
     }
 </script>
 
@@ -90,6 +109,21 @@
                         onchange={onUnitChange}
                         placeholder="kg, ml, ..."
                 />
+            </div>
+            <div class="mt-4 px-4 justify-between" class:flex={currentQuestion.defaultValue == null}>
+                <IconLabel icon={faHashtag} title="Default value"/>
+                {#if currentQuestion.defaultValue != null}
+                    <div class="mt-2 flex gap-2">
+                        <EditConstant dataType={currentQuestion.dataType}
+                                      onChange={onDefaultChange}
+                                      value={currentQuestion.defaultValue}/>
+                        <button onclick={() => onDefaultChange(null)}>
+                            <Fa icon={faTimes}/>
+                        </button>
+                    </div>
+                {:else}
+                    <Button onClick={addDefaultValue}>Add</Button>
+                {/if}
             </div>
 
             <EditDataQuestionSettings {currentQuestion} onChange={onQuestionChange}/>

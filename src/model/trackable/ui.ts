@@ -1,6 +1,7 @@
 import type {Form, FormQuestion} from "../form/form";
 import {
-    type Trackable, type TrackableCardSettings,
+    type Trackable,
+    type TrackableCardSettings,
     TrackableCardType,
     type TrackableCategory,
     TrackableValueType,
@@ -67,15 +68,17 @@ export function formatAnswersIntoRepresentation(answers: Record<string, Primitiv
     let result: string = "";
     for (let rep of representation) {
         if (rep.dynamic) {
-            let answerValue = answers[rep.value];
-            if (answerValue == null) return "Missing value";
-
             let display;
-            if (answerValue.type == PrimitiveValueType.DISPLAY) {
-                let displayValue = answerValue.value;
-                display = displayValue.display?.value ?? displayValue.value;
+            let answerValue = answers[rep.value];
+            if (answerValue != null) {
+                if (answerValue.type == PrimitiveValueType.DISPLAY) {
+                    let displayValue = answerValue.value;
+                    display = displayValue.display?.value ?? displayValue.value;
+                } else {
+                    display = answerValue;
+                }
             } else {
-                display = answerValue;
+                display = "";
             }
 
             result += display.toString();

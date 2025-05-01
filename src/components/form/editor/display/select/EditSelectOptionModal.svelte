@@ -51,7 +51,7 @@
     }
 
     function addIcon() {
-        option.icon = "\u2b50\ufe0f";
+        option.icon = "";
         option.iconAndText = false;
     }
 

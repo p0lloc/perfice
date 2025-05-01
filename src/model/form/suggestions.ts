@@ -3,10 +3,11 @@ import {type Form, type FormQuestion, FormQuestionDataType, FormQuestionDisplayT
 import type {FormQuestionDataSettings} from "@perfice/model/form/data";
 import type {FormQuestionDisplaySettings} from "@perfice/model/form/display";
 import {HIERARCHY_ROOT_ID, type HierarchyOption} from "@perfice/model/form/data/hierarchy";
-import {pNumber, primitiveAsString, pString} from "@perfice/model/primitive/primitive";
+import {pBoolean, pNumber, primitiveAsString, type PrimitiveValue, pString} from "@perfice/model/primitive/primitive";
 import type {RangeFormQuestionSettings} from "@perfice/model/form/display/range";
 import type {SelectGrid, SelectOption} from "@perfice/model/form/display/select";
 import type {SegmentedOption} from "@perfice/model/form/display/segmented";
+import {Capacitor} from "@capacitor/core";
 
 export interface FormSuggestion {
     format: TextOrDynamic[];
@@ -154,6 +155,21 @@ export function parseFormSuggestion(suggestion: FormSuggestion, name: string, ic
     return [form, assignedQuestions];
 }
 
+function parseBasicValue(v: string | number | boolean | null | undefined): PrimitiveValue | null {
+    if (v == null) return null;
+
+    switch (typeof v) {
+        case "string":
+            return pString(v);
+        case "number":
+            return pNumber(v);
+        case "boolean":
+            return pBoolean(v);
+        default:
+            return null;
+    }
+}
+
 export function parseFormQuestionSuggestion(suggestion: FormQuestionSuggestion, assignedQuestions: Map<string, string>): FormQuestion {
     let existingId = suggestion.id;
     let id = crypto.randomUUID();
@@ -165,6 +181,7 @@ export function parseFormQuestionSuggestion(suggestion: FormQuestionSuggestion, 
         id,
         name: suggestion.name,
         unit: suggestion.unit ?? null,
+        defaultValue: parseBasicValue(suggestion.defaultValue),
         ...parseDataSettings(suggestion),
         ...parseDisplaySettings(suggestion)
     }
@@ -275,6 +292,25 @@ export function parseSegmentedItem(v: SegmentedItemSuggestion): SegmentedOption 
     }
 }
 
+/**
+ * Parses a number value for responsive design.
+ * Follows format [<value on desktop>, <value on mobile>].
+ */
+function parseResponsiveNumber(v: number | number[]): number {
+    if (Array.isArray(v)) {
+        return v[Capacitor.isNativePlatform() ? 1 : 0];
+    } else {
+        return v;
+    }
+}
+
+function parseSelectGrid(v: SelectSuggestionGrid): SelectGrid {
+    return {
+        itemsPerRow: parseResponsiveNumber(v.itemsPerRow),
+        border: v.border
+    }
+}
+
 export function parseDisplaySettings(v: FormQuestionSuggestionDisplaySettings): FormQuestionDisplaySettings {
     switch (v.displayType) {
         case FormQuestionDisplayType.SELECT: {
@@ -283,7 +319,7 @@ export function parseDisplaySettings(v: FormQuestionSuggestionDisplaySettings): 
                 displaySettings: {
                     options: v.displaySettings?.options.map(parseSelectOption) ?? [],
                     multiple: v.displaySettings?.multiple ?? false,
-                    grid: v.displaySettings?.grid ?? null
+                    grid: (v.displaySettings?.grid ?? null) != null ? parseSelectGrid(v.displaySettings!.grid!) : null
                 }
             }
         }
@@ -330,6 +366,7 @@ export type FormQuestionSuggestion = {
     id?: string;
     name: string;
     unit: string | undefined;
+    defaultValue?: string | number | boolean | null;
 } & FormQuestionSuggestionDataSettings & FormQuestionSuggestionDisplaySettings;
 
 export type FormQuestionSuggestionDataSettings =
@@ -394,10 +431,15 @@ export interface SelectOptionSuggestion {
     iconAndText?: boolean;
 }
 
+export interface SelectSuggestionGrid {
+    itemsPerRow: number | number[];
+    border: boolean;
+}
+
 export interface SelectSuggestionDisplaySettings {
     options: SelectOptionSuggestion[];
     multiple?: boolean;
-    grid?: SelectGrid;
+    grid?: SelectSuggestionGrid;
 }
 
 
