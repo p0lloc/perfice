@@ -1,4 +1,4 @@
-package dev.adoe.perfice;
+package io.perfice.app;
 
 import android.os.Bundle;
 import android.webkit.WebView;

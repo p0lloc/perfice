@@ -18,8 +18,8 @@
 </script>
 
 <div>
-    <h2 class="text-2xl font-bold mb-2 flex gap-2 items-center text-gray-600">
-        <Icon name={group.icon} class="text-green-500"/>
+    <h2 class="text-2xl font-bold mb-2 flex gap-1 items-center text-gray-600">
+        <Icon name={group.icon} class="text-green-500 text-3xl"/>
         {group.name}
     </h2>
     <div class="flex gap-2 flex-col">

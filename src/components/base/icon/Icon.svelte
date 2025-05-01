@@ -1,12 +1,11 @@
 <script lang="ts">
-    import {faStar} from "@fortawesome/free-regular-svg-icons";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
-    import {ICONS} from "./icons";
+	// noinspection ES6UnusedImports
+	import Fa from "svelte-fa";
 
-    let {class: className, name}: { name: string, class?: string } = $props();
+	let {class: className = "text-xl", name}: { name: string, class?: string } = $props();
 </script>
 
-<span class={`${className} flex items-center justify-center min-w-4`}>
-	<Fa icon={ICONS[name] ?? faStar}></Fa>
+<span class={`${className} flex items-center justify-center aspect-square min-w-4 openmoji`}>
+	{name}
+    <!--	<Fa icon={ICONS[name] ?? faStar}></Fa>-->
 </span>

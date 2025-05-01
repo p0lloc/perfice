@@ -9,7 +9,7 @@
     let dataPoints = $derived.by(() => {
         if (value.type == PrimitiveValueType.LIST) {
             return value.value
-                .map(v => v.value as number)
+                .map(v => v?.value as number ?? 0)
                 .toReversed();
         }
 

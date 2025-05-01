@@ -47,9 +47,9 @@
 
 
 <div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch text-gray-500 {className}">
-    <button class="border-b rounded-t-xl p-2 flex gap-2 items-center hover-feedback"
+    <button class="border-b rounded-t-xl p-2 flex gap-1 items-center hover-feedback"
             onclick={onEditClick}>
-        <Icon name={trackable.icon} class="text-green-500"/>
+        <Icon name={trackable.icon} class="text-green-500 text-xl"/>
         <span class="text-left font-semibold text-gray-700">{trackable.name}</span>
     </button>
 

@@ -17,7 +17,7 @@
         onclick={onClick}
 >
     {#if option.icon != null}
-        <Icon class="text-2xl" name={option.icon}/>
+        <Icon class="text-4xl" name={option.icon}/>
     {/if}
     {#if option.icon == null || option.iconAndText}
         <span class="whitespace-nowrap overflow-hidden w-full text-xs">{option.text} {unit ?? ""}</span>

@@ -101,7 +101,7 @@
           "type": "pie",
           "formId": "Food",
           "questionId": "meal_type",
-          "groupBy": "what",
+          "groupBy": "components",
           "color": "#ff0000",
           "timeScope": "WEEKLY",
           "aggregateType": "COUNT",
@@ -119,7 +119,7 @@
         },
         "settings": {
           "formId": "Hydration",
-          "questionId": "volume"
+          "questionId": "what_drink"
         }
       },
       {
@@ -358,7 +358,7 @@
         },
         "settings": {
           "formId": "Hydration",
-          "questionId": "volume"
+          "questionId": "what_drink"
         }
       },
       {
@@ -393,7 +393,7 @@
           "type": "pie",
           "formId": "Food",
           "questionId": "meal_type",
-          "groupBy": "what",
+          "groupBy": "components",
           "color": "#ff0000",
           "title": "Weekly food types",
           "timeScope": "WEEKLY",

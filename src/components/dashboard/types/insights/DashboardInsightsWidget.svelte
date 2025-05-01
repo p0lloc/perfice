@@ -32,9 +32,9 @@
         <div class="flex flex-col overflow-y-scroll scrollbar-hide w-full">
             {#each value.insights as insight}
                 <div class="text-sm border-b p-2 flex justify-between gap-2">
-                    <span class="flex flex-wrap gap-1 break-words">Your
+                    <span class="flex flex-wrap gap-1 break-words items-center">Your
                         <QuestionLabel message={`${insight.formName} > ${insight.questionName}`}>
-                            <Icon name={insight.icon}/>
+                            <Icon name={insight.icon} class="text-sm"/>
                         </QuestionLabel>
                         {#each insight.text.text.split(" ") as word}
                             <span>{word}</span>

@@ -43,7 +43,7 @@
     {:then value}
         <div class="border-b basic self-stretch p-2 font-bold text-gray-600 row-between">
             <div class="row-gap">
-                <Icon name={value.icon} class="text-green-500"/>
+                <Icon name={value.icon} class="text-green-500 text-xl"/>
                 <span>{value.name}</span>
             </div>
             <IconButton icon={faPlus} onClick={onLogAny}/>

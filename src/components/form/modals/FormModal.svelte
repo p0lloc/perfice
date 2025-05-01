@@ -142,7 +142,9 @@
         <hr class="my-4"/>
     {/if}
 
-    <FormEmbed bind:this={embed} questions={questions} answers={answers}/>
+    <div class="overflow-y-scroll scrollbar-hide md:pb-0 pb-20">
+        <FormEmbed bind:this={embed} questions={questions} answers={answers}/>
+    </div>
 
     {#if largeLogButton}
         <button onclick={confirm} class="md:hidden fixed bottom-0 w-screen h-20 bg-green-500 flex-center

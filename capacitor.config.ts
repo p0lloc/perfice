@@ -1,7 +1,7 @@
 import type {CapacitorConfig} from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'dev.adoe.perfice',
+    appId: 'io.perfice.app',
     appName: 'Perfice',
     webDir: 'dist',
 };

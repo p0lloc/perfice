@@ -1,5 +1,6 @@
 <script lang="ts">
     import {type FormFieldProps} from "@perfice/model/form/ui";
+
     let {disabled, value, onChange}: FormFieldProps = $props();
 
     let input: HTMLTextAreaElement;
@@ -13,7 +14,7 @@
     }
 </script>
 
-<textarea class="border bg-white" {disabled} value={value} onchange={onInputChange}
+<textarea class="border bg-white md:w-1/2 w-full" {disabled} value={value} onchange={onInputChange}
           rows="3"
           bind:this={input}
 ></textarea>

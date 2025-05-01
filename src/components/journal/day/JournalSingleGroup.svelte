@@ -20,7 +20,7 @@
             onClick={() =>  onEntryClick(entry)}>
         <div class="flex items-center gap-4">
             <p class="text-2xl">
-                <Icon name={group.icon} class="text-green-500 w-7"/>
+                <Icon name={group.icon} class="text-green-500 w-7 text-3xl"/>
             </p>
             <div class="flex-1 w-[60%]">
                 <JournalCardHeader {entry} onDelete={() => onEntryDelete(entry)}>

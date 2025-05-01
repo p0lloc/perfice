@@ -1,3 +1,4 @@
+import emojiJson from "@perfice/assets/emojis.json?raw";
 import {
     faAnchor,
     faBacon,
@@ -12,7 +13,8 @@ import {
     faBicycle,
     faBook,
     faBowlRice,
-    faBrain, faBullseye,
+    faBrain,
+    faBullseye,
     faCandyCane,
     faCar,
     faCircle,
@@ -69,6 +71,14 @@ import {
     faFaceSmile,
     faFaceTired
 } from "@fortawesome/free-regular-svg-icons";
+
+export interface Emoji {
+    emoji: string;
+    annotation: string;
+    tags: string;
+}
+
+export const EMOJIS: Emoji[] = JSON.parse(emojiJson);
 
 export const ICONS: Record<string, IconDefinition> = {
     "star": faStar,

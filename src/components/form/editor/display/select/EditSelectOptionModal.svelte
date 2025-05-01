@@ -7,10 +7,7 @@
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
-    import {
-        type DataSettingValues,
-        questionDataTypeRegistry
-    } from "@perfice/model/form/data";
+    import {type DataSettingValues, questionDataTypeRegistry} from "@perfice/model/form/data";
     import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
@@ -54,7 +51,7 @@
     }
 
     function addIcon() {
-        option.icon = "star";
+        option.icon = "\u2b50\ufe0f";
         option.iconAndText = false;
     }
 
