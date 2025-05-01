@@ -2,7 +2,7 @@ import dashboardSuggestionsAsset from '@perfice/assets/dashboard_suggestions.jso
 import {type DashboardWidgetDisplaySettings, type DashboardWidgetSettings, DashboardWidgetType} from "./dashboard";
 import type {Trackable} from "@perfice/model/trackable/trackable";
 import type {Form} from "@perfice/model/form/form";
-import type {TextOrDynamic} from "@perfice/model/variable/variable";
+import {manipulateTextOrDynamic} from "@perfice/model/form/suggestions";
 
 export const DASHBOARD_SUGGESTIONS: Record<string, DashboardSuggestion> = JSON.parse(dashboardSuggestionsAsset);
 
@@ -80,16 +80,6 @@ export function manipulateSuggestionWidgetSettings(suggestion: DashboardWidgetSe
     return suggestion.settings;
 }
 
-function manipulateTextOrDynamic(suggestion: TextOrDynamic, assignedQuestions: Map<string, string>): TextOrDynamic {
-    if (suggestion.dynamic) {
-        return {
-            ...suggestion,
-            value: assignedQuestions.get(suggestion.value) ?? suggestion.value
-        };
-    }
-
-    return suggestion;
-}
 
 export interface DashboardSuggestion {
     name: string;

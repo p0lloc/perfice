@@ -66,7 +66,7 @@ function serializeDisplaySettings(question: FormQuestion): FormQuestionSuggestio
             }
         }
 
-        case FormQuestionDisplayType.RANGE:{
+        case FormQuestionDisplayType.RANGE: {
             let displaySettings = question.displaySettings;
             return {
                 displayType: FormQuestionDisplayType.RANGE,
@@ -408,4 +408,15 @@ export interface SegmentedSuggestionDisplaySettings {
 export interface SegmentedItemSuggestion {
     text: string;
     value: string | number;
+}
+
+export function manipulateTextOrDynamic(suggestion: TextOrDynamic, assignedQuestions: Map<string, string>): TextOrDynamic {
+    if (suggestion.dynamic) {
+        return {
+            ...suggestion,
+            value: assignedQuestions.get(suggestion.value) ?? suggestion.value
+        };
+    }
+
+    return suggestion;
 }

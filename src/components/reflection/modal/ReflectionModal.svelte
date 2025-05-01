@@ -21,6 +21,7 @@
     import {faCalendar} from "@fortawesome/free-solid-svg-icons";
     import {formatDateYYYYMMDDHHMMSS} from "@perfice/util/time/format";
     import {forms, reflections} from "@perfice/stores";
+    import {getDefaultFormAnswers} from "@perfice/model/form/data";
 
     let modal: Modal;
     let reflection = $state<Reflection>({} as Reflection);
@@ -73,7 +74,7 @@
 
         date = new Date();
         nestedForm = formById;
-        nestedFormAnswers = answers ?? {};
+        nestedFormAnswers = {...getDefaultFormAnswers(formById.questions), ...answers};
         nestedFormCallback = onLog;
         nestedFormTimeScope = timeScope;
     }

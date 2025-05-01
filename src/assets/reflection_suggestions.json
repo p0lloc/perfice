@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Evening reflection",
+    "pages": [
+      {
+        "name": "Mood",
+        "icon": "😀",
+        "description": "How have you been feeling today?",
+        "widgets": [
+          {
+            "type": "TABLE",
+            "settings": {
+              "formId": "Mood",
+              "prefix": [
+                {
+                  "value": "emotion",
+                  "dynamic": true
+                }
+              ],
+              "suffix": [
+                {
+                  "value": "timestamp",
+                  "dynamic": true
+                }
+              ],
+              "timeScope": "DAILY",
+              "groupBy": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "Food",
+        "icon": "🍋",
+        "description": "What did you eat today?",
+        "widgets": [
+          {
+            "type": "TABLE",
+            "settings": {
+              "formId": "Food",
+              "prefix": [
+                {
+                  "value": "what",
+                  "dynamic": true
+                }
+              ],
+              "suffix": [
+                {
+                  "value": "calories",
+                  "dynamic": true
+                }
+              ],
+              "timeScope": "DAILY",
+              "groupBy": "meal_type"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Tags",
+        "icon": "🏷️",
+        "description": "Add any missing tags now",
+        "widgets": [
+          {
+            "type": "TAGS",
+            "settings": {
+              "categories": []
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

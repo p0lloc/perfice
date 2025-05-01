@@ -18,13 +18,11 @@
     async function open() {
         let rect = button.getBoundingClientRect();
         let index = EMOJIS.findIndex(e => e.emoji == icon);
-        console.log(icon, EMOJIS[0].emoji);
         if (index == -1) index = 0;
 
         let rows = isMobile() ? MOBILE_ROWS : DESKTOP_ROWS;
         let itemHeight = isMobile() ? MOBILE_CELL_HEIGHT : DESKTOP_CELL_HEIGHT;
         let scrollTop = (index / rows) * itemHeight;
-        console.log(scrollTop);
 
         let newIcon = await iconPicker.open(rect.left + rect.width, rect.top + rect.height, right, scrollTop);
         onChange(newIcon);

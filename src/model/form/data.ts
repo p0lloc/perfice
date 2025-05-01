@@ -1,6 +1,6 @@
-import {FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
+import {type FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "@perfice/model/form/form";
 import {type TextFormQuestionDataSettings, TextFormQuestionDataType} from "./data/text";
-import {type RichTextFormQuestionDataSettings, RichTextFormQuestionDataType} from "./data/rich-text";
+import {type RichTextFormQuestionDataSettings} from "./data/rich-text";
 import {type HierarchyFormQuestionDataSettings, HierarchyFormQuestionDataType} from "./data/hierarchy";
 import {type NumberFormQuestionDataSettings, NumberFormQuestionDataType} from "./data/number";
 import {type BooleanFormQuestionDataSettings, BooleanFormQuestionDataType} from "./data/boolean";
@@ -8,9 +8,10 @@ import {type DateFormQuestionDataSettings, DateFormQuestionDataType} from "./dat
 import {type DateTimeFormQuestionDataSettings, DateTimeFormQuestionDataType} from "./data/date-time";
 import {type TimeElapsedFormQuestionDataSettings, TimeElapsedFormQuestionDataType} from "./data/time-elapsed";
 import {type TimeOfDayFormQuestionDataSettings, TimeOfDayFormQuestionDataType} from "./data/time-of-day";
-import {prettyPrintPrimitive, type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
+import {pList, prettyPrintPrimitive, type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
 import type {ExportedPrimitive} from "@perfice/services/export/export";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
 
 export type FormQuestionDataSettings =
     DataDef<FormQuestionDataType.TEXT, TextFormQuestionDataSettings>
@@ -129,4 +130,26 @@ export function formatValueAsDataType(value: any, dataType: string): string {
     if (displayValue == null) return value.toString();
 
     return prettyPrintPrimitive(displayValue);
+}
+
+export function getDefaultFormAnswers(questions: FormQuestion[]): Record<string, PrimitiveValue> {
+    let answers: Record<string, PrimitiveValue> = {};
+    for (let question of questions) {
+        let displayDef = questionDisplayTypeRegistry.getFieldByType(question.displayType);
+        if (displayDef == null) continue;
+
+        let value: any;
+        if (displayDef.hasMultiple(question.displaySettings)) {
+            value = pList([]);
+        } else {
+            let definition = questionDataTypeRegistry.getDefinition(question.dataType);
+            if (definition == null) continue;
+
+            value = definition.deserialize(definition.getDefaultValue(question.dataSettings));
+        }
+
+        answers[question.id] = value;
+    }
+
+    return answers;
 }

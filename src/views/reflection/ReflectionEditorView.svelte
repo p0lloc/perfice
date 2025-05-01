@@ -58,7 +58,7 @@
         reflection.pages.push({
             id: crypto.randomUUID(),
             name: "New page",
-            icon: "moon",
+            icon: "\ud83c\udf19",
             description: "",
             widgets: []
         });
@@ -157,7 +157,8 @@
             <input type="text" bind:value={reflection.name} placeholder="Name"/>
         </div>
         <div class="label-icon mt-4">
-            <h3 class="label">Auto open</h3>
+            <div class="flex-col flex"><h3 class="label">Auto open</h3>
+                <p class="text-xs">Automatically open when the app is opened</p></div>
             <DropdownButton value={reflection.openType} items={REFLECTION_AUTO_OPEN_TYPES} onChange={onAutoOpenChange}/>
         </div>
         {#if editing}

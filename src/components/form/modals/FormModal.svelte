@@ -4,9 +4,7 @@
     import type {Form, FormQuestion} from "@perfice/model/form/form";
     import FormEmbed from "@perfice/components/form/FormEmbed.svelte";
     import type {JournalEntry} from "@perfice/model/journal/journal";
-    import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
-    import {questionDataTypeRegistry} from "@perfice/model/form/data";
+    import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import FormTemplateButton from "@perfice/components/form/modals/FormTemplateButton.svelte";
     import type {FormTemplate} from "@perfice/model/form/form.js";
     import {extractAnswerValuesFromDisplay} from "@perfice/services/variable/types/list";
@@ -16,6 +14,7 @@
     import {faCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {forms, journal} from "@perfice/stores";
+    import {getDefaultFormAnswers} from "@perfice/model/form/data";
 
     let {largeLogButton = true, onDelete}: {
         largeLogButton?: boolean,
@@ -46,7 +45,7 @@
         questions = formQuestions;
         editEntry = entry;
         templates = availableTemplates;
-        answers = existingAnswers ?? getDefaultAnswers(form.questions);
+        answers = existingAnswers ?? getDefaultFormAnswers(form.questions);
         currentTemplateName = null;
         modal.open();
 
@@ -85,28 +84,6 @@
         }
 
         close();
-    }
-
-    function getDefaultAnswers(questions: FormQuestion[]): Record<string, PrimitiveValue> {
-        let answers: Record<string, PrimitiveValue> = {};
-        for (let question of questions) {
-            let displayDef = questionDisplayTypeRegistry.getFieldByType(question.displayType);
-            if (displayDef == null) continue;
-
-            let value: any;
-            if (displayDef.hasMultiple(question.displaySettings)) {
-                value = pList([]);
-            } else {
-                let definition = questionDataTypeRegistry.getDefinition(question.dataType);
-                if (definition == null) continue;
-
-                value = definition.deserialize(definition.getDefaultValue(question.dataSettings));
-            }
-
-            answers[question.id] = value;
-        }
-
-        return answers;
     }
 
     function onNewTemplate() {

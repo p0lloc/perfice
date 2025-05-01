@@ -21,6 +21,10 @@
         action.page.icon = icon;
         action.onChange({...action.page, icon: icon});
     }
+
+    function addIcon() {
+        onIconChange("\ud83c\udf19")
+    }
 </script>
 
 <div class="row-between">
@@ -32,7 +36,7 @@
     <textarea class="border" value={action.page.description} placeholder="Description"
               onchange={onDescriptionChange}></textarea>
 </div>
-<div class="flex gap-2 justify-between mt-2">
+<div class="flex gap-2 justify-between items-center mt-2">
     Icon
     {#if action.page.icon != null}
         <div class="row-gap">
@@ -40,6 +44,6 @@
             <IconButton icon={faTimes} onClick={() => onIconChange(null)}/>
         </div>
     {:else}
-        <Button onClick={() => onIconChange("moon")}>Select icon</Button>
+        <Button onClick={addIcon}>Select icon</Button>
     {/if}
 </div>

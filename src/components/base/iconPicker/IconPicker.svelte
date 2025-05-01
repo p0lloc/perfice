@@ -9,6 +9,7 @@
     const WIDTH = 290;
 
     let picker: HTMLDivElement | undefined = $state();
+    let search = $state("");
 
     let opened = $state(false);
     let x = $state(0);
@@ -17,6 +18,7 @@
 
     export function open(xPos: number, yPos: number, right: boolean = false, scrollTop: number = 0): Promise<string> {
         opened = true;
+        search = "";
         x = (right || xPos + WIDTH > window.innerWidth) ? xPos - WIDTH : xPos;
         y = yPos;
 
@@ -37,7 +39,6 @@
         close();
     }
 
-    let search = $state("");
 
     let emojis = $derived(icons.filter(e => e.annotation.includes(search) || e.tags.includes(search)));
 </script>

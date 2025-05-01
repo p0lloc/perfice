@@ -27,6 +27,7 @@
     import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import {getDefaultFormAnswers} from "@perfice/model/form/data";
 
     let currentDashboard = $state(window.localStorage.getItem(CURRENT_DASHBOARD_KEY) ?? "test");
 
@@ -51,7 +52,7 @@
             form.format,
             dateWithCurrentTime($dashboardDate),
             templates,
-            answers
+            {...getDefaultFormAnswers(form.questions), ...answers}
         );
     }
 

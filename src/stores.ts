@@ -135,7 +135,7 @@ export class StoreProvider {
         exports = new EntryExportStore(this.services.export);
         onboarding = new OnboardingStore(this.services.trackable, this.services.trackableCategory,
             this.services.tag, this.services.tagCategory, this.services.dashboard,
-            this.services.dashboardWidget, this.services.variable, this.services.goal);
+            this.services.dashboardWidget, this.services.variable, this.services.goal, this.services.reflection);
 
         analyticsSettings = new AnalyticsSettingsStore(this.services.analyticsSettings);
         analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 60, 6);

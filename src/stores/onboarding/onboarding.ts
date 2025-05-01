@@ -16,6 +16,12 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import type {GoalService} from "@perfice/services/goal/goal";
 import {createGoalSuggestion, GOAL_SUGGESTIONS} from "@perfice/model/goal/suggestions";
 import {analytics} from "@perfice/stores";
+import {
+    manipulateReflectionSuggestionWidgetSettings,
+    REFLECTION_SUGGESTIONS
+} from "@perfice/model/reflection/suggestions";
+import type {ReflectionService} from "@perfice/services/reflection/reflection";
+import {ReflectionAutoOpenType} from "@perfice/model/reflection/reflection";
 
 const ONBOARDING_KEY = "onboarded";
 const FINISH_ROUTE = "/";
@@ -33,6 +39,7 @@ export class OnboardingStore {
     private dashboardWidgetService: DashboardWidgetService;
     private variableService: VariableService;
     private goalService: GoalService;
+    private reflectionService: ReflectionService;
 
     constructor(trackableService: TrackableService, trackableCategoryService: TrackableCategoryService,
                 tagService: TagService, tagCategoryService: TagCategoryService,
@@ -40,6 +47,7 @@ export class OnboardingStore {
                 dashboardWidgetService: DashboardWidgetService,
                 variableService: VariableService,
                 goalService: GoalService,
+                reflectionService: ReflectionService,
     ) {
         this.trackableService = trackableService;
         this.trackableCategoryService = trackableCategoryService;
@@ -49,6 +57,7 @@ export class OnboardingStore {
         this.dashboardWidgetService = dashboardWidgetService;
         this.variableService = variableService;
         this.goalService = goalService;
+        this.reflectionService = reflectionService;
     }
 
     onboardNewUser() {
@@ -116,11 +125,40 @@ export class OnboardingStore {
 
         let assignedGoals = await this.createDefaultGoals(createdTrackables);
         await this.createDefaultDashboard(Capacitor.isNativePlatform() ? "mobile" : "desktop", createdTrackables, assignedGoals);
+        await this.createDefaultReflections(createdTrackables);
 
         await analytics.reload();
 
         localStorage.setItem(ONBOARDING_KEY, "true");
         goto(FINISH_ROUTE);
+    }
+
+    private async createDefaultReflections(createdTrackables: Map<string, {
+        trackable: Trackable,
+        form: Form,
+        assignedQuestions: Map<string, string>
+    }>) {
+        for (let suggestion of REFLECTION_SUGGESTIONS) {
+            await this.reflectionService.createReflection({
+                id: crypto.randomUUID(),
+                name: suggestion.name,
+                openType: ReflectionAutoOpenType.DISABLE,
+                pages: suggestion.pages.map(p => {
+                    return {
+                        id: crypto.randomUUID(),
+                        name: p.name,
+                        icon: p.icon,
+                        description: p.description,
+                        widgets: p.widgets.map(w => ({
+                                id: crypto.randomUUID(),
+                                dependencies: {},
+                                ...manipulateReflectionSuggestionWidgetSettings(w, createdTrackables)
+                            })
+                        )
+                    }
+                })
+            });
+        }
     }
 
     private async createDefaultGoals(createdTrackables: Map<string, {

@@ -8,6 +8,7 @@
     function selectOption(o: SelectOption) {
         if (disabled) return;
         let selectedValue = structuredClone(o.value);
+        // Value is array when multiple values can be selected
         if (Array.isArray(value)) {
             let newValues;
             if (isOptionSelected(o)) {
@@ -23,6 +24,7 @@
     }
 
     function isOptionSelected(o: SelectOption): boolean {
+        // Value is array when multiple values can be selected
         if (Array.isArray(value)) {
             return value.some(v => v == o.value.value);
         } else {
