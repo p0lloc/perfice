@@ -15,11 +15,12 @@
         title, type,
         extraActions,
 
-        onDelete, onConfirm, onClose
-    }: { title: string, type: ModalType, extraActions?: Snippet } & ModalActions = $props();
+        onDelete, onConfirm, onClose,
+        leftTitle = false
+    }: { title: string, type: ModalType, extraActions?: Snippet, leftTitle?: boolean } & ModalActions = $props();
 </script>
 
-<MobileTopBar {title}>
+<MobileTopBar {title} leftTitleOffset={leftTitle ? "left-12": undefined}>
     {#snippet leading()}
         <button class="icon-button" onclick={onClose}>
             <Fa icon={faArrowLeft}/>

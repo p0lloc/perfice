@@ -206,26 +206,31 @@ export function offsetDateByTimeScope(
     }
 }
 
-export function parseHhMmElapsedMinutes(value: string): number | null {
+export function parseHhMm(value: string): [number, number] | null {
     let parts = value.split(":");
-    if(parts.length != 2) return null;
+    if (parts.length != 2) return null;
 
     let hours = parseInt(parts[0]);
     let minutes = parseInt(parts[1]);
-    if(isNaN(hours) || isNaN(minutes) || hours < 0 || minutes < 0) return null;
+    if (isNaN(hours) || isNaN(minutes) || hours < 0 || minutes < 0) return null;
 
+    return [hours, minutes];
+}
+
+export function parseHhMmElapsedMinutes(value: string): number | null {
+    let result = parseHhMm(value);
+    if (result == null) return null;
+
+    let [hours, minutes] = result;
     return hours * 60 + minutes;
 }
 
 export function parseHhMmTimeOfDayMinutes(value: string): number | null {
-    let parts = value.split(":");
-    if(parts.length != 2) return null;
+    let result = parseHhMm(value);
+    if (result == null) return null;
 
-    let hours = parseInt(parts[0]);
-    let minutes = parseInt(parts[1]);
-    if(isNaN(hours) || isNaN(minutes)) return null;
-
-    if(hours < 0 || minutes < 0 || hours > 23 || minutes > 59) return null;
+    let [hours, minutes] = result;
+    if (hours < 0 || minutes < 0 || hours > 23 || minutes > 59) return null;
 
     return hours * 60 + minutes;
 }

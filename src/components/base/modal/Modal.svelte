@@ -2,10 +2,10 @@
     import ModalFooter from "./ModalFooter.svelte";
     import {onDestroy, type Snippet} from "svelte";
     import {
+        closableState,
+        type ModalActions,
         type ModalFooterProps,
         ModalSize,
-        type ModalActions,
-        closableState,
         onClosableClosed,
     } from "../../../model/ui/modal";
     import MobileModalHeader from "./MobileModalHeader.svelte";
@@ -27,6 +27,7 @@
         onDelete,
         onConfirm,
         onClose,
+        leftTitle = false,
     }: {
         title: string;
         children: Snippet;
@@ -36,6 +37,7 @@
         actions?: Snippet;
         customFooter?: Snippet;
         closeWithBackground?: boolean;
+        leftTitle?: boolean;
     } & ModalFooterProps &
         ModalActions = $props();
 
@@ -97,14 +99,16 @@
                     {onDelete}
                     {onConfirm}
                     onClose={close}
+                    {leftTitle}
                     extraActions={actions}
             />
             <div
                     class="py-4 px-6 border-b-gray-300 border-b hidden md:flex justify-between"
             >
                 <h2 class="text-2xl font-semibold">{title}</h2>
-                {@render actions?.()}
+                <div class="row-gap">{@render actions?.()}</div>
             </div>
+
             {@render header?.()}
             <div class="p-4 md:p-6">
                 {@render children?.()}

@@ -15,6 +15,9 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {forms, journal} from "@perfice/stores";
     import {getDefaultFormAnswers} from "@perfice/model/form/data";
+    import SveltyPicker from "svelty-picker";
+    import {formatDateHHMM} from "@perfice/util/time/format";
+    import {parseHhMm} from "@perfice/util/time/simple";
 
     let {largeLogButton = true, onDelete}: {
         largeLogButton?: boolean,
@@ -24,6 +27,7 @@
     let form: Form = $state({} as Form);
     let questions: FormQuestion[] = $state([]);
     let date: Date = $state(new Date());
+    let logTime: string = $state("");
     let editEntry: JournalEntry | undefined;
     let answers: Record<string, PrimitiveValue> = $state({});
     let templates: FormTemplate[] = $state([]);
@@ -41,6 +45,7 @@
 
         form = logForm;
         date = logDate;
+        logTime = formatDateHHMM(logDate);
         format = displayFormat;
         questions = formQuestions;
         editEntry = entry;
@@ -70,10 +75,18 @@
         let answers = embed.validateAndGetAnswers();
         if (answers == null) return; // If there are validation errors, don't save
 
+        let parsedTime = parseHhMm(logTime);
+        if (parsedTime == null) return;
+
+        let [hours, minutes] = parsedTime;
+        date.setHours(hours);
+        date.setMinutes(minutes);
+
         if (editEntry != null) {
             journal.updateEntry({
                 ...editEntry,
-                answers
+                answers,
+                timestamp: date.getTime()
             }, format);
         } else {
             journal.logEntry(form, answers, format, date.getTime());
@@ -108,9 +121,31 @@
         close();
         onDelete?.(editEntry);
     }
+
+    function onLogTimeChanged(e: string | string[] | null) {
+        if (typeof e != "string") return;
+
+        logTime = e;
+    }
 </script>
 
-<Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm}>
+<Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm} leftTitle={true}>
+    {#snippet actions()}
+        <SveltyPicker
+                inputClasses="w-16 text-center"
+                mode={"time"}
+                format="hh:ii"
+                value={logTime}
+                onChange={onLogTimeChanged}
+        />
+        {#if editEntry != null}
+            <IconButton icon={faTrash} onClick={onDeleteClicked}/>
+        {:else}
+            <FormTemplateButton {templates} onNew={onNewTemplate}
+                                onTemplateSelected={onTemplateSelected} onEditTemplate={onEditTemplate}/>
+        {/if}
+    {/snippet}
+
     {#if currentTemplateName != null}
         <input type="text" class="w-full border mt-2" bind:value={currentTemplateName} placeholder="Template name"/>
         {#if editingTemplate == null}
@@ -130,13 +165,4 @@
             <Fa icon={faCheck} size="2.0x"/>
         </button>
     {/if}
-
-    {#snippet actions()}
-        {#if editEntry != null}
-            <IconButton icon={faTrash} onClick={onDeleteClicked}/>
-        {:else}
-            <FormTemplateButton {templates} onNew={onNewTemplate}
-                                onTemplateSelected={onTemplateSelected} onEditTemplate={onEditTemplate}/>
-        {/if}
-    {/snippet}
 </Modal>

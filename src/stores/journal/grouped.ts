@@ -1,6 +1,6 @@
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {derived, type Readable} from "svelte/store";
-import {timestampToMidnight} from "@perfice/util/time/simple";
+import {dateToLastSecondOfDay, timestampToMidnight} from "@perfice/util/time/simple";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
 import type {TagEntryStore} from "@perfice/stores/journal/tag";
 import type {FormStore} from "@perfice/stores/form/form";
@@ -71,14 +71,14 @@ export interface IGroupedJournal extends Readable<Promise<JournalDay[]>> {
 const PAGE_SIZE = 20;
 
 export class PaginatedJournal {
-    private currentPage = new Date().getTime();
+    private currentPage = 0;
     private loading = false;
 
     async load() {
         // Load tags so we can display names in the UI
         await tags.load();
 
-        this.currentPage = new Date().getTime();
+        this.currentPage = dateToLastSecondOfDay(new Date()).getTime();
 
         await journal.init();
         await tagEntries.init();
