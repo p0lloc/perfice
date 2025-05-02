@@ -37,7 +37,8 @@ export class AnalyticsSettingsService {
         let settings: AnalyticsSettings = {
             formId,
             questionId: questions.length > 0 ? questions[0].id : "",
-            useMeanValue: Object.fromEntries(questions.map(q => [q.id, true]))
+            useMeanValue: Object.fromEntries(questions.map(q => [q.id, true])),
+            interpolate: false
         };
 
         await this.analyticsSettingsCollection.insertSettings(settings);

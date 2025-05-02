@@ -99,7 +99,7 @@
                     message="Are you sure you want to hide this correlation?"
                     confirmText="Hide" onConfirm={onCorrelationIgnored}
 ></GenericEntityModal>
-<div class="row-gap justify-between flex-wrap">
+<div class="row-gap justify-between flex-wrap mt-4 md:mt-0">
     <input class="md:w-auto w-full" type="text" placeholder="Search..." bind:value={search}>
     <div class="row-gap flex-wrap">
         {#each KEY_FILTERS as filter}

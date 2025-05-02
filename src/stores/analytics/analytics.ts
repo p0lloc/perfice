@@ -28,6 +28,7 @@ export interface AnalyticsResult {
     date: Date;
 }
 
+
 async function fetchAnalytics(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
                               historyService: AnalyticsHistoryService | null, ignoreService: CorrelationIgnoreService,
                               date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
@@ -37,9 +38,10 @@ async function fetchAnalytics(analyticsService: AnalyticsService, settingsServic
 
     let ignores = ignoreService.groupIgnoresByTimeScope();
 
-    let [dailyValues] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
+    let [dailyValues, interpolated] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY, allSettings);
+    analyticsService.interpolateValues(dailyValues, interpolated, SimpleTimeScopeType.DAILY, date, range);
+
     let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7 * 14);
-    // TODO: limit tag values to same range for correlations
     let dailyBasicAnalytics = await analyticsService.calculateAllBasicAnalytics(dailyValues, allSettings);
     let dailyCorrelations = await analyticsService.runBasicCorrelations(dailyValues, tagValues, allSettings, date, range, minimumSampleSize, true);
 

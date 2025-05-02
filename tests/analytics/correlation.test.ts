@@ -453,7 +453,8 @@ function mockAnalyticsSettings(): AnalyticsSettings[] {
     return [{
         formId: "test_form",
         questionId: "test",
-        useMeanValue: {"test": true}
+        useMeanValue: {"test": true},
+        interpolate: false
     }]
 }
 
@@ -462,12 +463,14 @@ function mockAnalyticsSettings2(): AnalyticsSettings[] {
     return [{
         formId: "test_form",
         questionId: "test",
-        useMeanValue: {"test": true}
+        useMeanValue: {"test": true},
+        interpolate: false
     },
         {
             formId: "test_form2",
             questionId: "test",
-            useMeanValue: {"test": true}
+            useMeanValue: {"test": true},
+            interpolate: false
         }
     ]
 }

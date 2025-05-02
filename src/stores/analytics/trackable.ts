@@ -79,7 +79,11 @@ function constructChartFromValues(bag: ValueBag, useMeanValue: boolean,
         let values = [];
         let labels = [];
 
-        for (let [timestamp, value] of bag.values.entries()) {
+        let sorted = bag.values
+            .entries()
+            .toArray()
+            .sort(([firstTimestamp], [secondTimestamp]) => firstTimestamp - secondTimestamp);
+        for (let [timestamp, value] of sorted) {
             values.push(convertValue(value, useMeanValue).value);
             labels.push(formatSimpleTimestamp(timestamp, timeScope));
         }

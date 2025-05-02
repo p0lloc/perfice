@@ -46,13 +46,13 @@
 </script>
 
 {#await $res}
-    Loading
+    There is not enough data to provide analytics for this trackable.
 {:then val}
-    <h3 class="text-4xl font-bold mt-8 row-gap">
+    <h3 class="text-3xl md:text-4xl font-bold mt-2 md:mt-8 row-gap">
         <Fa icon={faRuler}/>
         {val.trackable.name}
     </h3>
-    <div class="mt-8 flex justify-between gap-2 flex-wrap">
+    <div class="mt-4 md:mt-8 flex justify-between gap-2 flex-wrap">
         <SegmentedControl
                 class="w-full md:w-auto"
                 value={val.timeScope}

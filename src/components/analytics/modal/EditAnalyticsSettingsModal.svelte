@@ -60,4 +60,9 @@
             </div>
         {/each}
     </div>
+    <div class="mt-4 row-between">
+        <div class="flex flex-col mb-2"><h2 class="text-xl text-gray-500 font-bold">Interpolate values</h2>
+            <p class="text-xs">Uses the last available value to interpolate values for the next day</p></div>
+        <input type="checkbox" bind:checked={settings.interpolate}>
+    </div>
 </Modal>

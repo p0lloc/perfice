@@ -825,12 +825,49 @@ export class AnalyticsService {
         return [forms, entries];
     }
 
+    /**
+     * Interpolates empty analytics values with data from the closest timestamps that contain data.
+     * This is done in-place.
+     * @param values Values to interpolate (is mutated)
+     * @param interpolated Form id -> list of timestamps where data is available
+     * @param timeScope Time scope of the data
+     * @param date Date to interpolate backwards from
+     * @param range Range to interpolate
+     */
+    interpolateValues(values: RawAnalyticsValues, interpolated: Map<string, number[]>, timeScope: SimpleTimeScopeType, date: Date, range: number) {
+        let start = offsetDateByTimeScope(dateToStartOfTimeScope(date, timeScope, WeekStart.MONDAY), timeScope, -range);
+        for (let [formId, timestamps] of interpolated) {
+            let valuesByForm = values.get(formId);
+            if (valuesByForm == null) continue;
 
-    async constructRawValues(forms: Form[], entries: JournalEntry[], timeScope: SimpleTimeScopeType): Promise<[RawAnalyticsValues, Form[]]> {
+            for (let valueBag of valuesByForm.values()) {
+                if (!valueBag.quantitative) continue;
+                for (let i = 0; i < range; i++) {
+                    let date = offsetDateByTimeScope(start, timeScope, i).getTime();
+
+                    let val = valueBag.values.get(date)
+                    if (val != null) continue;
+
+                    let closestTimestamps = timestamps.filter(t => t <= date).sort((a, b) => a - b);
+                    if (closestTimestamps.length == 0) continue;
+                    let closestTimestamp = closestTimestamps[closestTimestamps.length - 1];
+
+                    let interpolatedValue = valueBag.values.get(closestTimestamp);
+                    if (interpolatedValue == null) continue;
+
+                    valueBag.values.set(date, interpolatedValue);
+                }
+            }
+        }
+    }
+
+    async constructRawValues(forms: Form[], entries: JournalEntry[], timeScope: SimpleTimeScopeType,
+                             settings: AnalyticsSettings[] = []): Promise<[RawAnalyticsValues, Map<string, number[]>]> {
 
         // Form id -> question id -> values
         let res: RawAnalyticsValues = new Map();
         let displayAnswerQuestions: string[] = []; // Question ids that should use display value as category
+        let interpolateTimestamps: Map<string, number[]> = new Map();
         for (let form of forms) {
             let map: QuestionIdToValues = new Map();
 
@@ -855,14 +892,23 @@ export class AnalyticsService {
             }
 
             res.set(form.id, map);
-        }
 
+            let settingsForForm = settings.find(s => s.formId == form.id);
+            if (settingsForForm != null && settingsForForm.interpolate) {
+                interpolateTimestamps.set(form.id, []);
+            }
+        }
 
         for (let entry of entries) {
             let data = res.get(entry.formId);
             if (data === undefined) continue;
 
             let timestamp = dateToStartOfTimeScope(new Date(entry.timestamp), timeScope, WeekStart.MONDAY).getTime();
+
+            let interpolate = interpolateTimestamps.get(entry.formId);
+            if (interpolate != null) {
+                interpolate.push(timestamp);
+            }
 
             for (let [questionId, value] of Object.entries(entry.answers)) {
                 let bag = data.get(questionId);
@@ -909,6 +955,7 @@ export class AnalyticsService {
             }
         }
 
-        return [res, forms];
+
+        return [res, interpolateTimestamps];
     }
 }

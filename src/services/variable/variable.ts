@@ -169,7 +169,9 @@ export class VariableService implements VariableProvider {
 
             let dependencies = current.type.value.getDependencies();
             for (let dependency of dependencies) {
-                stack.push(this.getVariableById(dependency)!);
+                let dependencyVariable = this.getVariableById(dependency);
+                if (dependencyVariable == null) continue;
+                stack.push(dependencyVariable);
             }
         }
 

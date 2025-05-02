@@ -3,6 +3,7 @@
     import AnalyticsTrackableDetailsView
         from "@perfice/components/analytics/details/trackable/AnalyticsTrackableDetailsView.svelte";
     import AnalyticsTagDetailsView from "@perfice/components/analytics/details/tag/AnalyticsTagDetailsView.svelte";
+    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -28,6 +29,7 @@
     const RendererComponent = $derived(VIEWS[entityType]);
 </script>
 
+<MobileTopBar title="Analytics"/>
 <div class="main-content mx-auto md:w-1/2 p-4 md:px-0">
     {#if RendererComponent != null}
         <RendererComponent id={entityId}/>

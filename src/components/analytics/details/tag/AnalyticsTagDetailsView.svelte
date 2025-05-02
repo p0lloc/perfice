@@ -17,7 +17,7 @@
 </script>
 
 {#await $res}
-    Loading
+    There is not enough data to show analytics for this tag.
 {:then val}
     <h3 class="text-4xl font-bold mt-8 row-gap">
         <Fa icon={faTag}/>
