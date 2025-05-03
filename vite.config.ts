@@ -29,16 +29,16 @@ export default defineConfig({
                 display_override: ["window-controls-overlay"],
                 screenshots: [
                     {
-                        src: "dashboard.png",
-                        sizes: "1700x925",
+                        src: "dashboard-onboarding.png",
+                        sizes: "1337x874",
                         type: "image/png",
                         form_factor: "wide",
                         label: "Perfice app"
                     },
 
                     {
-                        src: "mobile.png",
-                        sizes: "1242x2688",
+                        src: "dashboard-onboarding-mobile.png",
+                        sizes: "801x1295",
                         type: "image/png",
                         form_factor: "narrow",
                         label: "Perfice mobile view"
