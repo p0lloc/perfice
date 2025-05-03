@@ -52,7 +52,6 @@ export class DexieIndexCollection implements IndexCollection {
             .where("variableId")
             .anyOf(variablesToDelete);
 
-        console.log("delete", await query.toArray());
         await this.performBulkDeleteQuery(query);
     }
 

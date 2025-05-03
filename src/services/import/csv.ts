@@ -16,15 +16,16 @@ export class CsvImporter implements Importer {
         for (let row of data) {
             if (data.length < 2) return [];
 
-            let entry = await this.parseCsvEntry(row, form);
+            let entry = this.parseCsvEntry(row, form);
+            if (entry == null) continue;
             entries.push(entry);
         }
 
         return entries;
     }
 
-    private parseCsvEntry(data: string[], form: Form): ImportedEntry {
-        if (data.length < 2) throw new Error("Invalid CSV entry");
+    private parseCsvEntry(data: string[], form: Form): ImportedEntry | null {
+        if (data.length < 2) return null;
 
         let timestamp = parseInt(data[0]);
         if (!isFinite(timestamp)) throw new Error("Invalid timestamp");

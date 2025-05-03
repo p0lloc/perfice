@@ -394,7 +394,6 @@ export class VariableGraph {
 
     async onFormEntriesImported(formIds: Set<string>) {
         for (let formId of formIds) {
-            console.log("Imported", formId);
             let variableIds = this.filterEntryDependents(this.journalEntryDependent,
                 v => v.getFormDependencies().includes(formId)).keys().toArray();
 
