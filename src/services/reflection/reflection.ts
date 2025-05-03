@@ -112,7 +112,7 @@ export class ReflectionService {
                 }
             } else {
                 // Update dependencies
-                let variableUpdates = definition.createDependencies(widget.dependencies);
+                let variableUpdates = definition.createDependencies(widget.settings);
                 await updateDependencies(this.variableService, widget.dependencies, previousWidget.dependencies, variableUpdates);
 
                 previousWidgets = previousWidgets.filter(w => w.id != widget.id);

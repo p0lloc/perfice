@@ -24,21 +24,47 @@
     import OnboardingView from "@perfice/views/onboarding/OnboardingView.svelte";
     import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
 
-    const routes: Route[] = [
-        {path: "/forms/(?<formId>.*)", component: FormEditorView},
-        {path: "/goals/(?<goalId>.*)", component: GoalEditorView},
+    type AppRoute = Route & { hideBottomBar?: boolean };
+
+    const routes: AppRoute[] = [
+        {
+            path: "/forms/(?<formId>.*)",
+            component: FormEditorView,
+            hideBottomBar: true
+        },
+        {
+            path: "/goals/(?<goalId>.*)",
+            component: GoalEditorView,
+            hideBottomBar: true,
+        },
         {path: "/tags", component: TagsView},
-        {path: "/journal/search/(?<search>.*)", component: JournalSearchView},
-        {path: "/journal/search", component: JournalSearchView},
-        {path: "/journal/(?<search>.*)", component: JournalView},
+        {
+            path: "/journal/search/(?<search>.*)",
+            component: JournalSearchView,
+            hideBottomBar: true,
+        },
+        {
+            path: "/journal/search",
+            component: JournalSearchView,
+            hideBottomBar: true,
+        },
+        {
+            path: "/journal/(?<search>.*)",
+            component: JournalView,
+        },
         {path: "/journal", component: JournalView},
-        {path: "/analytics/(?<subject>.*)", component: AnalyticsDetailView},
+        {
+            path: "/analytics/(?<subject>.*)",
+            component: AnalyticsDetailView,
+            hideBottomBar: true,
+        },
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
         {path: "/trackables", component: TrackableView},
         {
             path: "/reflections/(?<reflectionId>.*)",
             component: ReflectionEditorView,
+            hideBottomBar: true,
         },
         {path: "/reflections", component: ReflectionListView},
         {path: ONBOARDING_ROUTE, component: OnboardingView},
@@ -47,18 +73,29 @@
 
     const CUSTOM_LAYOUT_ROUTES = [ONBOARDING_ROUTE];
     let customLayout = $state<boolean>(false);
+    let hideBottomBar = $state<boolean>(false);
 
     function onBodyClick(e: MouseEvent) {
         closeContextMenus(e.target as HTMLElement);
     }
 
-    function onRouterRoute(r: Route) {
-        if (typeof r.path == "string") {
-            customLayout = CUSTOM_LAYOUT_ROUTES.includes(r.path);
+    function fillRegexGroups(regexStr: string, params: Record<string, string>) {
+        return regexStr.replace(/\(\?<(\w+)>[^)]+\)/g, (_, groupName) => {
+            return params[groupName] !== undefined ? params[groupName] : '';
+        });
+    }
+
+    function onRouterRoute(r: AppRoute) {
+        let path = r.path.toString();
+        if (r.params != undefined && !Array.isArray(r.params)) {
+            path = fillRegexGroups(path, r.params);
         }
 
+        customLayout = CUSTOM_LAYOUT_ROUTES.includes(path);
+        hideBottomBar = r.hideBottomBar ?? false;
+
         clearClosables(); // Any overlays like modals don't matter if we move to a new route
-        routingNavigatorState.push(r.path.toString());
+        routingNavigatorState.push(path);
         return r;
     }
 </script>
@@ -68,7 +105,7 @@
     <div class="flex main-container">
         {#if !customLayout}
             <GlobalReflectionModal/>
-            <NavigationSidebar/>
+            <NavigationSidebar {hideBottomBar}/>
             <MobileDrawer/>
             <QuickLogField/>
         {/if}

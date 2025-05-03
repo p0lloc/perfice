@@ -59,6 +59,7 @@
             maintainAspectRatio: false,
             layout: {
                 padding: minimal ? {
+                    top: 10,
                     left: -10,
                     bottom: -10,
                 } : undefined

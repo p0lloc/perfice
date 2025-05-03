@@ -11,7 +11,7 @@
         SearchEntityType,
     } from "@perfice/model/journal/search/search";
     import JournalSearchEntityCard from "@perfice/components/journal/search/JournalSearchEntityCard.svelte";
-    import {faExclamationTriangle, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
+    import {faArrowLeft, faExclamationTriangle, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {goto} from "@mateothegreat/svelte5-router";
@@ -27,6 +27,7 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {emptyPromise, resolvedUpdatePromise} from "@perfice/util/promise";
     import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
+    import {back} from "@perfice/app";
 
     let search = $state<JournalSearch>({} as JournalSearch);
     let dependencies = $state({} as Promise<JournalSearchUiDependencies>);
@@ -105,7 +106,13 @@
     const noInclude = $derived(!search.entities.some(e => e.mode === SearchEntityMode.INCLUDE));
 </script>
 
-<MobileTopBar title="Search"/>
+<MobileTopBar title="Search">
+    {#snippet leading()}
+        <button class="icon-button" onclick={back}>
+            <Fa icon={faArrowLeft}/>
+        </button>
+    {/snippet}
+</MobileTopBar>
 <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
     <div class="row-between">
         <Title title={"Search"} icon={faSearch}/>
