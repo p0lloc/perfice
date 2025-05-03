@@ -173,8 +173,7 @@ export class VariableGraph {
         this.deleteJournalDependencies(id);
 
         // When a variable is deleted, we need to delete all of its indices
-        await this.indexCollection.deleteIndicesByVariableId(id);
-        await this.deleteIndicesForDependentVariables(id);
+        await this.deleteIndicesForVariableAndDependents(id);
     }
 
     async onVariableUpdated(variable: Variable) {
@@ -188,9 +187,7 @@ export class VariableGraph {
         this.removeDependenciesForVariable(variable.id);
         this.updateDependentsForVariable(variable);
 
-
-        await this.indexCollection.deleteIndicesByVariableId(variable.id);
-        await this.deleteIndicesForDependentVariables(variable.id);
+        await this.deleteIndicesForVariableAndDependents(variable.id);
     }
 
     private filterIndicesByTimestamp(indices: VariableIndex[], timestamp: number) {
@@ -320,12 +317,14 @@ export class VariableGraph {
         return variablesToDelete;
     }
 
-    private async deleteIndicesForDependentVariables(variableId: string) {
+    private async deleteIndicesForVariableAndDependents(variableId: string) {
+        await this.indexCollection.deleteIndicesByVariableId(variableId);
+
         let dependents = this.dependents.get(variableId);
         if (dependents == undefined) return;
 
         for (let dependentId of dependents) {
-            await this.indexCollection.deleteIndicesByVariableId(dependentId);
+            await this.deleteIndicesForVariableAndDependents(dependentId);
         }
     }
 
@@ -393,6 +392,17 @@ export class VariableGraph {
         this.weekStart = weekStart;
     }
 
+    async onFormEntriesImported(formIds: Set<string>) {
+        for (let formId of formIds) {
+            console.log("Imported", formId);
+            let variableIds = this.filterEntryDependents(this.journalEntryDependent,
+                v => v.getFormDependencies().includes(formId)).keys().toArray();
+
+            for (let variableId of variableIds) {
+                await this.deleteIndicesForVariableAndDependents(variableId);
+            }
+        }
+    }
 }
 
 

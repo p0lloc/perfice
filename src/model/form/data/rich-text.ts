@@ -46,7 +46,7 @@ export class RichTextFormQuestionDataType implements FormQuestionDataTypeDefinit
         return PrimitiveValueType.STRING;
     }
 
-    import(value: any): PrimitiveValue | null {
+    importPrimitive(value: any): PrimitiveValue | null {
         return null;
     }
 

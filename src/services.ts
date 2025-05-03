@@ -79,7 +79,7 @@ export function setupServices(db: Collections): Services {
     const dashboardWidgetService = new DashboardWidgetService(db.dashboardWidgets, variableService);
 
     const tagCategoryService = new TagCategoryService(db.tagCategories, tagService);
-    const importService = new EntryImportService(journalService);
+    const importService = new EntryImportService(journalService, variableService);
     const exportService = new EntryExportService(journalService, formService);
     const notificationService = new NotificationService(db.notifications, WeekStart.MONDAY);
 

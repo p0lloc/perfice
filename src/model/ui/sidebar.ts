@@ -1,10 +1,11 @@
 import {
-    faBell,
     faBook,
-    faBullseye, faClock, faHome,
+    faBullseye,
+    faCog,
+    faHome,
     faLineChart,
-    faRuler, faSquarePlus, faSun,
-    faTag,
+    faSquarePlus,
+    faSun,
     faTags,
     type IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +15,7 @@ export interface SidebarLink {
     path: string,
     title: string,
     showOnMobile?: boolean
+    bottom?: boolean
 }
 
 export const SIDEBAR_LINKS: SidebarLink[] = [
@@ -24,4 +26,5 @@ export const SIDEBAR_LINKS: SidebarLink[] = [
     {icon: faTags, path: "/tags", title: "Tags"},
     {icon: faLineChart, path: "/analytics", title: "Analytics", showOnMobile: false},
     {icon: faSun, path: "/reflections", title: "Reflections", showOnMobile: false},
+    {icon: faCog, path: "/settings", title: "Settings", bottom: true},
 ];

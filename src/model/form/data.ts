@@ -67,7 +67,9 @@ export interface FormQuestionDataTypeDefinition<V, S> {
 
     export(value: PrimitiveValue): ExportedPrimitive | null;
 
-    import(value: ExportedPrimitive): PrimitiveValue | null;
+    importPrimitive(value: ExportedPrimitive): PrimitiveValue | null;
+
+    importString?: (value: string) => PrimitiveValue | null;
 
     getDisplayValue(value: V): PrimitiveValue | null;
 }

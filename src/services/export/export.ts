@@ -4,17 +4,23 @@ import type {FormService} from "@perfice/services/form/form";
 import type {FormQuestion, FormSnapshot} from "@perfice/model/form/form";
 import {extractValueFromDisplay} from "../variable/types/list";
 import {
-    PrimitiveValueType,
-    type PrimitiveValue,
-    pString,
-    pList,
     pBoolean,
-    pNumber, pNull
+    pList,
+    pNull,
+    pNumber,
+    type PrimitiveValue,
+    PrimitiveValueType,
+    pString
 } from "@perfice/model/primitive/primitive";
 import {questionDataTypeRegistry} from "@perfice/model/form/data";
 import Papa from 'papaparse';
 
 export type ExportedPrimitive = string | number | boolean | null | ExportedPrimitive[];
+
+export interface FormEntryExport {
+    questions: string[];
+    entries: ExportEntry[];
+}
 
 export interface ExportEntry {
     timestamp: number;
@@ -26,7 +32,7 @@ export enum ExportFileType {
     JSON = "application/json"
 }
 
-export function importPrimitive(value: ExportedPrimitive): PrimitiveValue{
+export function importPrimitive(value: ExportedPrimitive): PrimitiveValue {
     switch (typeof value) {
         case "string":
             return pString(value);
@@ -63,6 +69,8 @@ export function exportPrimitive(value: PrimitiveValue): ExportedPrimitive {
     }
 }
 
+export const EXPORT_LIST_SEPARATOR_STRING = "|||";
+
 export class EntryExportService {
 
     private journalService: JournalService;
@@ -85,7 +93,7 @@ export class EntryExportService {
 
             let value = extractValueFromDisplay(answer);
             let dataDefinition = questionDataTypeRegistry.getDefinition(question.dataType);
-            if(dataDefinition == null) throw new Error("Invalid data type");
+            if (dataDefinition == null) throw new Error("Invalid data type");
 
             let exported = dataDefinition.export(value);
 
@@ -100,12 +108,30 @@ export class EntryExportService {
 
     async exportCsv(formId: string): Promise<string> {
         let exported = await this.exportEntries(formId);
-        console.log(exported);
-        return Papa.unparse(exported.map(e =>
-            [e.timestamp.toString(), ...e.answers]));
+
+        let columns = ["Timestamp", ...exported.questions];
+        let data = exported.entries.map(e =>
+            [e.timestamp.toString(), ...e.answers.map(this.exportPrimitiveCsv)]);
+
+        return Papa.unparse([columns, ...data]);
     }
 
-    async exportEntries(formId: string): Promise<ExportEntry[]> {
+    private exportPrimitiveCsv(value: ExportedPrimitive): ExportedPrimitive {
+        if (Array.isArray(value)) {
+            return value.join(EXPORT_LIST_SEPARATOR_STRING);
+        } else {
+            return value;
+        }
+    }
+
+    async exportEntries(formId: string): Promise<FormEntryExport> {
+        let form = await this.formService.getFormById(formId);
+        if (form == null) return {
+            questions: [],
+            entries: []
+        };
+
+        let questions = form.questions.map(v => v.name);
         let entries = await this.journalService.getEntriesByFormId(formId);
 
         let snapshots: Map<string, FormSnapshot> = new Map();
@@ -127,7 +153,10 @@ export class EntryExportService {
             exported.push(this.exportEntry(entry, snapshot.questions));
         }
 
-        return exported;
+        return {
+            questions,
+            entries: exported,
+        };
     }
 
     async exportJson(formId: string): Promise<string> {

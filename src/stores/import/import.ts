@@ -33,6 +33,7 @@ export class EntryImportStore {
                 entryCount: this.currentImport?.length ?? 0
             });
         } catch (e) {
+            console.error(e);
             publishToEventStore(entryImportEvents, {
                 success: false,
                 entryCount: 0

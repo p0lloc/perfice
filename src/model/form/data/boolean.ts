@@ -40,11 +40,11 @@ export class BooleanFormQuestionDataType implements FormQuestionDataTypeDefiniti
     }
 
     deserialize(value: any): PrimitiveValue | null {
-        if(typeof value == "string") {
-            if(value == "true") {
+        if (typeof value == "string") {
+            if (value == "true") {
                 return pBoolean(true);
             }
-            if(value == "false") {
+            if (value == "false") {
                 return pBoolean(false);
             }
         }
@@ -56,7 +56,7 @@ export class BooleanFormQuestionDataType implements FormQuestionDataTypeDefiniti
         return [FormQuestionDisplayType.INPUT];
     }
 
-    import(value: any): PrimitiveValue | null {
+    importPrimitive(value: any): PrimitiveValue | null {
         return null;
     }
 

@@ -57,7 +57,7 @@ export class TextFormQuestionDataType implements FormQuestionDataTypeDefinition<
     }
 
 
-    import(value: any): PrimitiveValue | null {
+    importPrimitive(value: any): PrimitiveValue | null {
         return null;
     }
 

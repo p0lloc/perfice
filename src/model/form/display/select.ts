@@ -1,8 +1,9 @@
 import {
-    PrimitiveValueType,
-    pString,
+    prettyPrintPrimitive,
+    primitiveAsType,
     type PrimitiveValue,
-    prettyPrintPrimitive, primitiveAsType
+    PrimitiveValueType,
+    pString
 } from "@perfice/model/primitive/primitive";
 import type {FormDisplayTypeDefinition} from "@perfice/model/form/display";
 import {faBorderAll, type IconDefinition} from "@fortawesome/free-solid-svg-icons";

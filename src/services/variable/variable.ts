@@ -252,4 +252,8 @@ export class VariableService implements VariableProvider {
     async onTagEntryDeleted(e: TagEntry) {
         await this.graph.onTagEntryAction(e, EntryAction.DELETED);
     }
+
+    async onFormEntriesImported(formIds: Set<string>) {
+        await this.graph.onFormEntriesImported(formIds);
+    }
 }

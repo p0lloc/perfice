@@ -1,5 +1,5 @@
 import type {IndexCollection, IndexUpdateListener} from "@perfice/db/collections";
-import type {EntityTable} from "dexie";
+import type {Collection, EntityTable} from "dexie";
 import type {VariableIndex} from "@perfice/model/variable/variable";
 
 export class DexieIndexCollection implements IndexCollection {
@@ -33,20 +33,18 @@ export class DexieIndexCollection implements IndexCollection {
         await this.table.bulkPut(indices);
     }
 
-    async deleteIndicesByIds(ids: string[]): Promise<void> {
-        await this.table.bulkDelete(ids);
-    }
-
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {
         return this.table.where("variableId").equals(variableId).toArray();
     }
 
     async deleteIndicesByVariableId(id: string): Promise<void> {
         let query = this.table.where("variableId").equals(id);
-        let indices = await query.toArray();
+        await this.performBulkDeleteQuery(query);
+    }
 
-        await query.delete();
-        await this.notifyDeletion(indices);
+    async deleteIndicesByIds(ids: string[]): Promise<void> {
+        let query = this.table.where("id").anyOf(ids);
+        await this.performBulkDeleteQuery(query);
     }
 
     async deleteIndicesByVariableIds(variablesToDelete: string[]): Promise<void> {
@@ -54,12 +52,17 @@ export class DexieIndexCollection implements IndexCollection {
             .where("variableId")
             .anyOf(variablesToDelete);
 
+        console.log("delete", await query.toArray());
+        await this.performBulkDeleteQuery(query);
+    }
+
+    private async performBulkDeleteQuery(query: Collection): Promise<void> {
         let indices = await query.toArray();
         await query.delete();
         await this.notifyDeletion(indices);
     }
 
-    private async notifyDeletion(indices: VariableIndex[]){
+    private async notifyDeletion(indices: VariableIndex[]) {
         for (let index of indices) {
             for (const callback of this.deleteListeners) {
                 await callback(index);

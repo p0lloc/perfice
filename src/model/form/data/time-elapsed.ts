@@ -1,7 +1,7 @@
 import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "../form";
-import {formatTimeElapsed, formatTimestampHHMM} from "@perfice/util/time/format";
+import {formatTimeElapsed} from "@perfice/util/time/format";
 import {faStopwatch, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import {parseHhMmElapsedMinutes} from "@perfice/util/time/simple";
 
@@ -47,9 +47,9 @@ export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefi
     }
 
     deserialize(value: any): PrimitiveValue | null {
-        if(typeof value == "string") {
+        if (typeof value == "string") {
             let timeElapsed = parseHhMmElapsedMinutes(value);
-            if(timeElapsed != null) {
+            if (timeElapsed != null) {
                 return pNumber(timeElapsed);
             }
         }
@@ -67,7 +67,7 @@ export class TimeElapsedFormQuestionDataType implements FormQuestionDataTypeDefi
     }
 
 
-    import(value: any): PrimitiveValue | null {
+    importPrimitive(value: any): PrimitiveValue | null {
         return null;
     }
 

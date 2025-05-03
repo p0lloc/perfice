@@ -23,6 +23,7 @@
     import GlobalReflectionModal from "@perfice/components/reflection/GlobalReflectionModal.svelte";
     import OnboardingView from "@perfice/views/onboarding/OnboardingView.svelte";
     import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
+    import SettingsView from "@perfice/views/settings/SettingsView.svelte";
 
     type AppRoute = Route & { hideBottomBar?: boolean };
 
@@ -68,6 +69,7 @@
         },
         {path: "/reflections", component: ReflectionListView},
         {path: ONBOARDING_ROUTE, component: OnboardingView},
+        {path: "/settings", component: SettingsView},
         {path: "/", component: DashboardView},
     ];
 

@@ -3,7 +3,7 @@ import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfic
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
 import {formatTimestampHHMM} from "@perfice/util/time/format";
 import {faCalendar, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
-import {parseHhMmElapsedMinutes, parseHhMmTimeOfDayMinutes} from "@perfice/util/time/simple";
+import {parseHhMmTimeOfDayMinutes} from "@perfice/util/time/simple";
 
 export interface TimeOfDayFormQuestionDataSettings {
 }
@@ -42,9 +42,9 @@ export class TimeOfDayFormQuestionDataType implements FormQuestionDataTypeDefini
     }
 
     deserialize(value: any): PrimitiveValue | null {
-        if(typeof value == "string") {
+        if (typeof value == "string") {
             let timeOfDay = parseHhMmTimeOfDayMinutes(value);
-            if(timeOfDay != null) {
+            if (timeOfDay != null) {
                 return pNumber(timeOfDay);
             }
         }
@@ -62,7 +62,7 @@ export class TimeOfDayFormQuestionDataType implements FormQuestionDataTypeDefini
     }
 
 
-    import(value: any): PrimitiveValue | null {
+    importPrimitive(value: any): PrimitiveValue | null {
         return null;
     }
 
