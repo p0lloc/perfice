@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type {ImportEvent} from "@perfice/stores/import/import";
+    import type {ImportEvent} from "@perfice/stores/import/formEntry";
     import Modal from "@perfice/components/base/modal/Modal.svelte";
     import {ModalType} from "@perfice/model/ui/modal";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
-    import {imports} from "@perfice/stores";
+    import {entryImports} from "@perfice/stores";
 
     let event = $state<ImportEvent>();
     let modal: Modal;
@@ -16,12 +16,12 @@
     }
 
     function confirm() {
-        imports.confirmImport(overwrite);
+        entryImports.confirmImport(overwrite);
         modal?.close();
     }
 
     function discard() {
-        imports.discardImport();
+        entryImports.discardImport();
     }
 </script>
 

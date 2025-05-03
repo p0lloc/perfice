@@ -2,7 +2,7 @@ import type {JournalService} from "@perfice/services/journal/journal";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {FormService} from "@perfice/services/form/form";
 import type {FormQuestion, FormSnapshot} from "@perfice/model/form/form";
-import {extractValueFromDisplay} from "../variable/types/list";
+import {extractValueFromDisplay} from "../../variable/types/list";
 import {
     pBoolean,
     pList,

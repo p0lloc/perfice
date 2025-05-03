@@ -9,7 +9,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
-    import {entryImportEvents} from "@perfice/stores/import/import";
+    import {entryImportEvents} from "@perfice/stores/import/formEntry";
     import {subscribeToEventStore} from "@perfice/util/event.js";
     import EntryImportResultModal from "@perfice/components/import/EntryImportResultModal.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";

@@ -13,11 +13,11 @@ import {MigrationService} from "@perfice/db/migration/migration";
 
 // Main entry point of the application
 (async () => {
-    let {collections, migrator} = setupDb();
+    let {tables, collections, migrator} = setupDb();
     const migrationService = new MigrationService(migrator);
     await migrationService.migrate();
 
-    let services = setupServices(collections);
+    let services = setupServices(collections, tables, migrationService);
     await setupStores(services);
     registerDataTypes();
     await variables.get();

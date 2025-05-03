@@ -9,7 +9,7 @@ import {type DateTimeFormQuestionDataSettings, DateTimeFormQuestionDataType} fro
 import {type TimeElapsedFormQuestionDataSettings, TimeElapsedFormQuestionDataType} from "./data/time-elapsed";
 import {type TimeOfDayFormQuestionDataSettings, TimeOfDayFormQuestionDataType} from "./data/time-of-day";
 import {pList, prettyPrintPrimitive, type PrimitiveValue, type PrimitiveValueType} from "../primitive/primitive";
-import type {ExportedPrimitive} from "@perfice/services/export/export";
+import type {ExportedPrimitive} from "@perfice/services/export/formEntries/export";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
 

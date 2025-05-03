@@ -1,10 +1,10 @@
-import {constructAnswers, type ImportedEntry, type Importer} from "@perfice/services/import/import";
+import {constructAnswers, type ImportedEntry, type Importer} from "@perfice/services/import/formEntries/import";
 import type {Form, FormQuestion} from "@perfice/model/form/form";
 import Papa from "papaparse";
 import {pList, pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {questionDataTypeRegistry} from "@perfice/model/form/data";
 import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
-import {EXPORT_LIST_SEPARATOR_STRING} from "../export/export";
+import {EXPORT_LIST_SEPARATOR_STRING} from "../../export/formEntries/export";
 import {convertValueToDisplay} from "@perfice/model/form/validation";
 
 export class CsvImporter implements Importer {

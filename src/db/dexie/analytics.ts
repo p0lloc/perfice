@@ -26,4 +26,8 @@ export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollec
         return this.table.get(formId);
     }
 
+    async deleteSettingsByFormId(formId: string): Promise<void> {
+        await this.table.delete(formId);
+    }
+
 }

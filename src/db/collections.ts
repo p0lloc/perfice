@@ -148,6 +148,8 @@ export interface AnalyticsSettingsCollection {
 
     insertSettings(settings: AnalyticsSettings): Promise<void>;
 
+    deleteSettingsByFormId(formId: string): Promise<void>;
+
     getAllSettings(): Promise<AnalyticsSettings[]>;
 
     getSettingsByFormId(formId: string): Promise<AnalyticsSettings | undefined>;

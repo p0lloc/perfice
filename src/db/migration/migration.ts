@@ -26,7 +26,7 @@ export class MigrationService {
         this.migrator = migrator;
     }
 
-    private getUserVersion(): number {
+    getUserVersion(): number {
         let value = localStorage.getItem(CURRENT_VERSION_STORAGE_KEY);
         if (value != null) {
             let number = parseInt(value);
@@ -35,10 +35,14 @@ export class MigrationService {
             }
         } else {
             // Version is missing, set it to the current version
-            localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, CURRENT_DATA_VERSION.toString());
+            this.saveUserVersion(CURRENT_DATA_VERSION);
         }
 
         return CURRENT_DATA_VERSION;
+    }
+
+    saveUserVersion(value: number) {
+        localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, value.toString());
     }
 
     async migrate() {
@@ -55,7 +59,7 @@ export class MigrationService {
             await this.migrator.applyMigration(migration);
         }
 
-        localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, CURRENT_DATA_VERSION.toString());
+        this.saveUserVersion(CURRENT_DATA_VERSION);
         console.log("Migration complete");
     }
 

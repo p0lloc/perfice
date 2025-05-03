@@ -1,10 +1,10 @@
 import type {Form, FormQuestion} from "@perfice/model/form/form";
-import {type ExportedPrimitive, importPrimitive} from "@perfice/services/export/export";
+import {type ExportedPrimitive, importPrimitive} from "@perfice/services/export/formEntries/export";
 import {pList, pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {questionDataTypeRegistry} from "@perfice/model/form/data";
 import {questionDisplayTypeRegistry} from "@perfice/model/form/display";
 import {convertValueToDisplay} from "@perfice/model/form/validation";
-import {constructAnswers, type ImportedEntry, type Importer} from "@perfice/services/import/import";
+import {constructAnswers, type ImportedEntry, type Importer} from "@perfice/services/import/formEntries/import";
 
 export class JsonImporter implements Importer {
 

@@ -2,10 +2,10 @@ import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {JournalService} from "@perfice/services/journal/journal";
 import {type Form, type FormQuestion} from "@perfice/model/form/form";
 import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
-import {ExportFileType} from "@perfice/services/export/export";
-import {CsvImporter} from "@perfice/services/import/csv";
+import {ExportFileType} from "@perfice/services/export/formEntries/export";
+import {CsvImporter} from "@perfice/services/import/formEntries/csv";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
-import {JsonImporter} from "@perfice/services/import/json";
+import {JsonImporter} from "@perfice/services/import/formEntries/json";
 import type {VariableService} from "@perfice/services/variable/variable";
 
 export interface ImportedEntry {
@@ -15,6 +15,24 @@ export interface ImportedEntry {
 
 export interface Importer {
     import(data: string, form: Form): Promise<ImportedEntry[]>;
+}
+
+
+export function readTextFile<T>(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = async (e) => {
+            let target = e.target;
+            if (target == null) {
+                return;
+            }
+
+            resolve(target.result as string);
+        };
+
+        reader.onerror = e => reject(e);
+        reader.readAsText(file);
+    });
 }
 
 export class EntryImportService {
@@ -30,32 +48,19 @@ export class EntryImportService {
         this.importers.set(ExportFileType.JSON, new JsonImporter());
     }
 
-    readFile(file: File, form: Form): Promise<JournalEntry[]> {
-        return new Promise((resolve, reject) => {
-            let reader = new FileReader();
-            reader.onload = async (e) => {
-                let target = e.target;
-                if (target == null) {
-                    return;
-                }
+    async readFile(file: File, form: Form): Promise<JournalEntry[]> {
+        let text = await readTextFile(file);
+        let importer = this.importers.get(file.type as ExportFileType);
+        if (importer == null) {
+            throw new Error("Unsupported file type");
+        }
 
-                let importer = this.importers.get(file.type as ExportFileType);
-                if (importer == null) {
-                    reject(new Error("Unsupported file type"));
-                    return;
-                }
+        let entries: JournalEntry[] = [];
+        for (let entry of await importer.import(text, form)) {
+            entries.push(this.constructEntry(entry.answers, entry.timestamp, form));
+        }
 
-                let entries: JournalEntry[] = [];
-                for (let entry of await importer.import(target.result as string, form)) {
-                    entries.push(this.constructEntry(entry.answers, entry.timestamp, form));
-                }
-
-                resolve(entries);
-            };
-
-            reader.onerror = e => reject(e);
-            reader.readAsText(file);
-        });
+        return entries;
     }
 
     private constructEntry(answers: Record<string, PrimitiveValue>, timestamp: number, form: Form): JournalEntry {

@@ -5,10 +5,10 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import FileButton from "@perfice/components/base/fileButton/FileButton.svelte";
-    import {exports, imports} from "@perfice/stores";
+    import {entryExports, entryImports} from "@perfice/stores";
     import {downloadTextFile} from "@perfice/util/file";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
-    import {ExportFileType} from "@perfice/services/export/export";
+    import {ExportFileType} from "@perfice/services/export/formEntries/export";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
     import {serializeTrackableToSuggestion} from "@perfice/model/trackable/suggestions";
 
@@ -18,7 +18,7 @@
     let dev = import.meta.env.DEV;
 
     function onFileChange(files: FileList) {
-        imports.importFile(files[0], editState.trackable.formId);
+        entryImports.importFile(files[0], editState.trackable.formId);
         close();
     }
 
@@ -26,11 +26,11 @@
         switch (fileType) {
             case ExportFileType.CSV:
                 downloadTextFile("import.csv", ExportFileType.CSV,
-                    await exports.exportCsv(editState.trackable.formId));
+                    await entryExports.exportCsv(editState.trackable.formId));
                 break;
             case ExportFileType.JSON:
                 downloadTextFile("import.json", ExportFileType.JSON,
-                    await exports.exportJson(editState.trackable.formId));
+                    await entryExports.exportJson(editState.trackable.formId));
                 break;
         }
     }

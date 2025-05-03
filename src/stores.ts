@@ -22,8 +22,8 @@ import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfic
 import {goto} from "@mateothegreat/svelte5-router";
 import {NotificationType} from "@perfice/model/notification/notification";
 import {DashboardStore, DashboardWidgetStore} from "@perfice/stores/dashboard/dashboard";
-import {EntryImportStore} from "@perfice/stores/import/import";
-import {EntryExportStore} from "@perfice/stores/export/export";
+import {EntryImportStore} from "@perfice/stores/import/formEntry";
+import {EntryExportStore} from "@perfice/stores/export/formEntry";
 import {OnboardingStore} from "@perfice/stores/onboarding/onboarding";
 import {AnalyticsSettingsStore} from "@perfice/stores/analytics/settings";
 import {AnalyticsStore} from "@perfice/stores/analytics/analytics";
@@ -50,6 +50,8 @@ import {TagValueStore} from "@perfice/stores/tag/value";
 import {GoalValueStore} from "@perfice/stores/goal/value";
 import {TagAnalytics, TagDetailedAnalytics} from "@perfice/stores/analytics/tags";
 import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/analytics/trackable";
+import {CompleteExportStore} from "@perfice/stores/export/complete";
+import {CompleteImportStore} from "@perfice/stores/import/complete";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -75,8 +77,10 @@ export let reflections: ReflectionStore;
 export let dashboards: DashboardStore;
 export let dashboardWidgets: DashboardWidgetStore;
 
-export let imports: EntryImportStore;
-export let exports: EntryExportStore;
+export let entryImports: EntryImportStore;
+export let entryExports: EntryExportStore;
+export let completeExport: CompleteExportStore;
+export let completeImport: CompleteImportStore;
 export let onboarding: OnboardingStore;
 
 export let analyticsSettings: AnalyticsSettingsStore;
@@ -101,6 +105,8 @@ export class StoreProvider {
         trackableDate = TrackableDate();
         tagDate = TagDate();
         goalDate = GoalDate();
+        completeExport = new CompleteExportStore(this.services.completeExport);
+        completeImport = new CompleteImportStore(this.services.completeImport);
         weekStart = writable(WeekStart.MONDAY);
         trackableCategories = new TrackableCategoryStore(this.services.trackableCategory);
         tagCategories = new TagCategoryStore(this.services.tagCategory);
@@ -131,8 +137,8 @@ export class StoreProvider {
         dashboards = new DashboardStore(this.services.dashboard);
         dashboardWidgets = new DashboardWidgetStore(this.services.dashboardWidget);
 
-        imports = new EntryImportStore(this.services.import);
-        exports = new EntryExportStore(this.services.export);
+        entryImports = new EntryImportStore(this.services.import);
+        entryExports = new EntryExportStore(this.services.export);
         onboarding = new OnboardingStore(this.services.trackable, this.services.trackableCategory,
             this.services.tag, this.services.tagCategory, this.services.dashboard,
             this.services.dashboardWidget, this.services.variable, this.services.goal, this.services.reflection);

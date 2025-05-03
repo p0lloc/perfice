@@ -1,4 +1,4 @@
-import type { EntryExportService } from "@perfice/services/export/export";
+import type {EntryExportService} from "@perfice/services/export/formEntries/export";
 
 export class EntryExportStore {
 

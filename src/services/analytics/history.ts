@@ -66,4 +66,14 @@ export class AnalyticsHistoryService {
         localStorage.setItem(HISTORY_STORE_KEY, JSON.stringify(result));
         this.entries = result;
     }
+
+    getAllHistory(): AnalyticsHistoryEntry[] {
+        return this.entries;
+    }
+
+    importHistory(data: AnalyticsHistoryEntry[]) {
+        this.entries = data;
+        localStorage.setItem(HISTORY_STORE_KEY, JSON.stringify(data));
+    }
+
 }

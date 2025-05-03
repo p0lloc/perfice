@@ -1,7 +1,7 @@
 import {writable} from "svelte/store";
 import {publishToEventStore} from "@perfice/util/event";
 import type {JournalEntry} from "@perfice/model/journal/journal";
-import type {EntryImportService} from "@perfice/services/import/import";
+import type {EntryImportService} from "@perfice/services/import/formEntries/import";
 
 import {forms} from "@perfice/stores";
 

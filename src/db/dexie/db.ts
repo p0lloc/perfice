@@ -1,4 +1,4 @@
-import Dexie, {type EntityTable} from "dexie";
+import Dexie, {type EntityTable, type Table} from "dexie";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
@@ -75,7 +75,7 @@ function loadDb(): DexieDB {
     return db;
 }
 
-export function setupDb(): { collections: Collections, migrator: Migrator } {
+export function setupDb(): { tables: Record<string, Table>, collections: Collections, migrator: Migrator } {
     const db = loadDb();
     const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
     const variableCollection: VariableCollection = new DexieVariableCollection(db.variables);
@@ -102,6 +102,7 @@ export function setupDb(): { collections: Collections, migrator: Migrator } {
     const notificationCollection = new DexieNotificationCollection(db.notifications);
 
     return {
+        tables: db._allTables,
         collections: {
             entries: journalCollection,
             formSnapshots: formSnapshotCollection,

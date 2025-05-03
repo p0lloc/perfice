@@ -16,14 +16,19 @@ import {FormTemplateService} from "@perfice/services/form/template";
 import {DashboardService} from "@perfice/services/dashboard/dashboard";
 import {DashboardWidgetService} from "@perfice/services/dashboard/widget";
 import {TagCategoryService} from "@perfice/services/tag/category";
-import {EntryImportService} from "@perfice/services/import/import";
-import {EntryExportService} from "@perfice/services/export/export";
+import {EntryImportService} from "@perfice/services/import/formEntries/import";
+import {EntryExportService} from "@perfice/services/export/formEntries/export";
 import {NotificationService} from "@perfice/services/notification/notification";
 import {ReflectionService} from "@perfice/services/reflection/reflection";
 import {JournalSearchService} from "@perfice/services/journal/search";
 import {AnalyticsService} from "@perfice/services/analytics/analytics";
 import {AnalyticsHistoryService} from "@perfice/services/analytics/history";
 import type {Collections} from "@perfice/db/collections";
+import {CompleteExportService} from "@perfice/services/export/complete/complete";
+import type {Table} from "dexie";
+import type {Form} from "@perfice/model/form/form";
+import {CompleteImportService} from "@perfice/services/import/complete/complete";
+import type {MigrationService} from "@perfice/db/migration/migration";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -48,9 +53,11 @@ export interface Services {
     readonly journalSearch: JournalSearchService;
     readonly analytics: AnalyticsService;
     readonly analyticsHistory: AnalyticsHistoryService;
+    readonly completeExport: CompleteExportService;
+    readonly completeImport: CompleteImportService;
 }
 
-export function setupServices(db: Collections): Services {
+export function setupServices(db: Collections, tables: Record<string, Table>, migrationService: MigrationService): Services {
     const journalService = new BaseJournalService(db.entries);
     const tagEntryService = new TagEntryService(db.tagEntries);
     const graph = new VariableGraph(db.indices, db.entries, db.tagEntries, WeekStart.MONDAY);
@@ -65,7 +72,11 @@ export function setupServices(db: Collections): Services {
     const formService = new BaseFormService(db.forms, db.formSnapshots);
     formService.initLazyDependencies(journalService);
 
+
     const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
+    formService.addObserver(EntityObserverType.DELETED,
+        async (e: Form) => await analyticsSettingsService.onFormDeleted(e));
+
     const ignoreService = new CorrelationIgnoreService();
     ignoreService.load();
 
@@ -92,6 +103,9 @@ export function setupServices(db: Collections): Services {
     const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
     analyticsHistoryService.load();
 
+    const completeImportService = new CompleteImportService(tables, analyticsHistoryService, ignoreService, migrationService);
+    const completeExportService = new CompleteExportService(tables, analyticsHistoryService, ignoreService, migrationService);
+
     return {
         trackable: trackableService,
         journal: journalService,
@@ -114,6 +128,8 @@ export function setupServices(db: Collections): Services {
         reflection: reflectionService,
         journalSearch: journalSearchService,
         analytics: analyticsService,
-        analyticsHistory: analyticsHistoryService
+        analyticsHistory: analyticsHistoryService,
+        completeExport: completeExportService,
+        completeImport: completeImportService
     }
 }

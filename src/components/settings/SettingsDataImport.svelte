@@ -2,12 +2,20 @@
     import FileButton from "@perfice/components/base/fileButton/FileButton.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
+    import {completeImport} from "@perfice/stores";
+
+    let file = $state<File | null>(null);
+    let newFormat = $state(true);
 
     function onFileChange(files: FileList) {
-        console.log(files);
+        if (files.length == 0) return;
+        file = files[0];
     }
 
-    let newFormat = $state(true);
+    function onImport() {
+        if (file == null) return;
+        completeImport.import(file, newFormat);
+    }
 </script>
 
 <h3 class="settings-label">Import data</h3>
@@ -23,5 +31,6 @@
         }
     ]} value={newFormat} onChange={(v) => newFormat = v}/>
 </div>
+
 <FileButton displayFile={true} onChange={onFileChange}/>
-<Button class="mt-2">Import</Button>
+<Button class="mt-2" onClick={onImport}>Import</Button>

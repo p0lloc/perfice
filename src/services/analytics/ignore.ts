@@ -36,6 +36,15 @@ export class CorrelationIgnoreService {
         this.save();
     }
 
+    getIgnoredCorrelations(): IgnoredCorrelation[] {
+        return this.ignoredCorrelations;
+    }
+
+    importIgnoredCorrelations(data: IgnoredCorrelation[]) {
+        this.ignoredCorrelations = data;
+        this.save();
+    }
+
     private save() {
         localStorage.setItem(IGNORED_CORRELATIONS_STORE_KEY, JSON.stringify(this.ignoredCorrelations));
     }
