@@ -1,8 +1,8 @@
-import type {Table} from "dexie";
-import {type AnalyticsHistoryEntry, AnalyticsHistoryService} from "@perfice/services/analytics/history";
-import {CorrelationIgnoreService, type IgnoredCorrelation} from "@perfice/services/analytics/ignore";
-import {CURRENT_DASHBOARD_KEY} from "@perfice/model/dashboard/ui";
-import type {MigrationService} from "@perfice/db/migration/migration";
+import type { Table } from "dexie";
+import { type AnalyticsHistoryEntry, AnalyticsHistoryService } from "@perfice/services/analytics/history";
+import { CorrelationIgnoreService, type IgnoredCorrelation } from "@perfice/services/analytics/ignore";
+import { CURRENT_DASHBOARD_KEY } from "@perfice/model/dashboard/ui";
+import type { MigrationService } from "@perfice/db/migration/migration";
 
 export const IGNORED_COLLECTIONS: string[] = ["indices"];
 
@@ -21,9 +21,9 @@ export class CompleteExportService {
     private readonly migrationService: MigrationService;
 
     constructor(collections: Record<string, Table>,
-                historyService: AnalyticsHistoryService,
-                ignoreService: CorrelationIgnoreService,
-                migrationService: MigrationService) {
+        historyService: AnalyticsHistoryService,
+        ignoreService: CorrelationIgnoreService,
+        migrationService: MigrationService) {
         this.collections = collections;
         this.historyService = historyService;
         this.ignoreService = ignoreService;
@@ -31,14 +31,14 @@ export class CompleteExportService {
     }
 
     async export(): Promise<NewExportFormat> {
-        let correlations = await this.exportCorrelations();
+        let collections = await this.exportCollections();
         let ignoredCorrelations = this.ignoreService.getIgnoredCorrelations();
         let correlationsHistory = this.historyService.getAllHistory();
         let currentDashboard = localStorage.getItem(CURRENT_DASHBOARD_KEY) ?? "";
         let dataVersion = this.migrationService.getUserVersion();
 
         return {
-            collections: correlations,
+            collections: collections,
             correlationsHistory,
             ignoredCorrelations,
             currentDashboard,
@@ -46,7 +46,7 @@ export class CompleteExportService {
         };
     }
 
-    async exportCorrelations(): Promise<Record<string, any[]>> {
+    async exportCollections(): Promise<Record<string, any[]>> {
         let result: Record<string, any[]> = {};
         for (let [key, value] of Object.entries(this.collections)) {
             if (IGNORED_COLLECTIONS.includes(key)) continue;
