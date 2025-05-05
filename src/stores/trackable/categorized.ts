@@ -11,7 +11,8 @@ export function CategorizedTrackables(): Readable<Promise<CategoryList<Trackable
         let promise = new Promise<CategoryList<TrackableCategory, Trackable>[]>(
             async (resolve) => {
                 let trackables = await $trackables;
-                let categories = await $categories;
+                let categories = (await $categories)
+                    .sort((a, b) => a.order - b.order);
 
                 let res = categorize(categories, trackables);
 

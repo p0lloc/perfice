@@ -84,6 +84,7 @@
             id: crypto.randomUUID(),
             name: "",
             unit: null,
+            defaultValue: null,
             ...dataSettings,
             ...displaySettings,
         };

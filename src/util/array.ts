@@ -24,3 +24,12 @@ export function findArrayDifferences<T>(originalList: T[], updatedList: T[]) {
 
     return {added, removed};
 }
+
+export function reorderGeneric<T extends { order: number }>(items: T[]): T[] {
+    let values: T[] = [];
+    for (let i = 0; i < items.length; i++) {
+        values.push({...items[i], order: i});
+    }
+
+    return values;
+}

@@ -65,4 +65,5 @@ export interface TV<K extends TrackableValueType, V> {
 export interface TrackableCategory {
     id: string;
     name: string;
+    order: number;
 }

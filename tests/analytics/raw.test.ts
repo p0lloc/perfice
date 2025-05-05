@@ -29,6 +29,7 @@ export function mockForm(id: string, questions: Record<string, FormQuestionDataT
             id: questionId,
             name: questionId,
             unit: null,
+            defaultValue: null,
             dataType: dataType,
             dataSettings: {},
             displayType: FormQuestionDisplayType.SELECT

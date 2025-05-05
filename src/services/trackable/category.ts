@@ -1,6 +1,7 @@
 import type {TrackableCategoryCollection} from "@perfice/db/collections";
 import type {TrackableCategory} from "../../model/trackable/trackable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import {reorderGeneric} from "@perfice/util/array";
 
 export interface TrackableCategoryEntityProvider {
     getCategories(): Promise<TrackableCategory[]>;
@@ -21,9 +22,11 @@ export class TrackableCategoryService implements TrackableCategoryEntityProvider
     }
 
     async createCategory(name: string): Promise<TrackableCategory> {
+        let categoryCount = await this.collection.count();
         let category: TrackableCategory = {
             id: crypto.randomUUID(),
-            name
+            name,
+            order: categoryCount
         }
 
         await this.collection.createCategory(category);
@@ -41,6 +44,11 @@ export class TrackableCategoryService implements TrackableCategoryEntityProvider
         if (category == null) return;
         await this.collection.deleteCategoryById(categoryId);
         await this.observers.notifyObservers(EntityObserverType.DELETED, category);
+    }
+
+    async reorderCategories(categories: TrackableCategory[]): Promise<void> {
+        let updatedOrdering = reorderGeneric(categories);
+        await this.collection.updateCategories(updatedOrdering);
     }
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<TrackableCategory>) {

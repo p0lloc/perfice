@@ -1,8 +1,8 @@
 import type {TrackableCategory} from "@perfice/model/trackable/trackable";
-import { AsyncStore } from "../store";
-import type { TrackableCategoryService } from "@perfice/services/trackable/category";
+import {AsyncStore} from "../store";
+import type {TrackableCategoryService} from "@perfice/services/trackable/category";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
-import { EntityObserverType } from "@perfice/services/observer";
+import {EntityObserverType} from "@perfice/services/observer";
 
 export class TrackableCategoryStore extends AsyncStore<TrackableCategory[]> {
 
@@ -29,6 +29,10 @@ export class TrackableCategoryStore extends AsyncStore<TrackableCategory[]> {
 
     async deleteCategoryById(categoryId: string): Promise<void> {
         await this.trackableCategoryService.deleteCategoryById(categoryId);
+    }
+
+    async reorderCategories(categories: TrackableCategory[]): Promise<void> {
+        await this.trackableCategoryService.reorderCategories(categories);
     }
 
     private async onTrackableCategoryCreated(trackable: TrackableCategory) {

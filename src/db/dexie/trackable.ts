@@ -25,6 +25,7 @@ export class DexieTrackableCollection implements TrackableCollection {
     async updateTrackable(trackable: Trackable): Promise<void> {
         await this.table.put(trackable);
     }
+
     async deleteTrackableById(trackableId: string): Promise<void> {
         await this.table.delete(trackableId);
     }
@@ -35,6 +36,10 @@ export class DexieTrackableCollection implements TrackableCollection {
 
     async count(): Promise<number> {
         return this.table.count();
+    }
+
+    async getTrackablesByCategoryId(id: string): Promise<Trackable[]> {
+        return this.table.where("categoryId").equals(id).toArray();
     }
 
 }
@@ -65,6 +70,14 @@ export class DexieTrackableCategoryCollection implements TrackableCategoryCollec
 
     async deleteCategoryById(categoryId: string): Promise<void> {
         await this.table.where("id").equals(categoryId).delete();
+    }
+
+    async count(): Promise<number> {
+        return this.table.count();
+    }
+
+    async updateCategories(updatedOrdering: TrackableCategory[]): Promise<void> {
+        await this.table.bulkPut(updatedOrdering);
     }
 
 }

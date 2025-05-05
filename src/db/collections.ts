@@ -46,6 +46,8 @@ export interface TrackableCollection {
     deleteTrackableById(trackableId: string): Promise<void>;
 
     updateTrackables(items: Trackable[]): Promise<void>;
+
+    getTrackablesByCategoryId(id: string): Promise<Trackable[]>;
 }
 
 export interface ReflectionCollection {
@@ -70,6 +72,10 @@ export interface TrackableCategoryCollection {
     updateCategory(category: TrackableCategory): Promise<void>;
 
     deleteCategoryById(categoryId: string): Promise<void>;
+
+    count(): Promise<number>;
+
+    updateCategories(updatedOrdering: TrackableCategory[]): Promise<void>;
 }
 
 

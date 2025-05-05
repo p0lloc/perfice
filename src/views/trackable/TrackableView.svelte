@@ -3,7 +3,7 @@
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import EditTrackableModal from "@perfice/components/trackable/modals/edit/EditTrackableModal.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
-    import type {Trackable} from "@perfice/model/trackable/trackable";
+    import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {faRuler} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
@@ -17,13 +17,14 @@
     import CreateTrackableModal from "@perfice/components/trackable/modals/create/CreateTrackableModal.svelte";
     import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
-    import {forms, trackableDate, trackables, weekStart} from "@perfice/stores";
+    import {forms, trackableCategories, trackableDate, trackables, weekStart} from "@perfice/stores";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
     let createTrackableModal: CreateTrackableModal;
     let importResultModal: EntryImportResultModal;
     let deleteTrackableModal: GenericDeleteModal<Trackable>;
+    let deleteTrackableCategoryModal: GenericDeleteModal<TrackableCategory>;
 
     function onDateChange(e: Date) {
         $trackableDate = e;
@@ -55,8 +56,16 @@
         deleteTrackableModal.open(trackable);
     }
 
+    function onStartDeleteTrackableCategory(category: TrackableCategory) {
+        deleteTrackableCategoryModal.open(category);
+    }
+
     function onDeleteTrackable(trackable: Trackable) {
         trackables.deleteTrackable(trackable);
+    }
+
+    function onDeleteTrackableCategory(category: TrackableCategory) {
+        trackableCategories.deleteCategoryById(category.id);
     }
 
     function onCreateTrackable(categoryId: string | null) {
@@ -95,6 +104,13 @@
         onDelete={onDeleteTrackable}
         bind:this={deleteTrackableModal}
 />
+
+<GenericDeleteModal
+        subject="this category and all associated trackables"
+        onDelete={onDeleteTrackableCategory}
+        bind:this={deleteTrackableCategoryModal}
+/>
+
 <EntryImportResultModal bind:this={importResultModal}/>
 
 <div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
@@ -109,6 +125,7 @@
             date={$trackableDate}
             weekStart={$weekStart}
             onCreate={onCreateTrackable}
+            onCategoryDelete={onStartDeleteTrackableCategory}
             onEdit={onEditTrackable}
             onLog={onLogTrackable}
     />

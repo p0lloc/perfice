@@ -82,6 +82,9 @@ export function setupServices(db: Collections, tables: Record<string, Table>, mi
 
     const trackableService = new TrackableService(db.trackables, variableService, formService, analyticsSettingsService);
     const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);
+    trackableCategoryService.addObserver(EntityObserverType.DELETED, async (category) =>
+        await trackableService.onTrackableCategoryDeleted(category));
+
     const goalService = new GoalService(db.goals, variableService);
     const tagService = new TagService(db.tags, variableService, tagEntryService);
     const formTemplateService = new FormTemplateService(db.formTemplates);

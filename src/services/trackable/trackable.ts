@@ -94,6 +94,7 @@ export class TrackableService implements TrackableEntityProvider {
                     name: name,
                     unit: null,
                     displayType: FormQuestionDisplayType.INPUT,
+                    defaultValue: null,
                     displaySettings: {},
                     ...dataSettings
                 }
@@ -374,6 +375,14 @@ export class TrackableService implements TrackableEntityProvider {
                         settings: {}
                     }
                 }
+        }
+    }
+
+    async onTrackableCategoryDeleted(category: TrackableCategory) {
+        let trackables = await this.collection.getTrackablesByCategoryId(category.id);
+        for (let trackable of trackables) {
+            console.log("Deleting trackable", trackable);
+            await this.deleteTrackable(trackable);
         }
     }
 
