@@ -11,9 +11,15 @@ export function CategorizedTags(): Readable<Promise<CategoryList<TagCategory, Ta
         let promise = new Promise<CategoryList<TagCategory, Tag>[]>(
             async (resolve) => {
                 let tags = await $tags;
-                let categories = await $categories;
+                let categories = (await $categories).sort((a, b) => a.order - b.order);
 
                 let res = categorize(categories, tags);
+
+                for (let category of res) {
+                    category.items = category.items.sort((a, b) =>
+                        a.order - b.order);
+                }
+
                 resolve(res);
             });
         set(promise);

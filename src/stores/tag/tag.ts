@@ -58,11 +58,14 @@ export class TagStore extends AsyncStore<Tag[]> {
     }
 
     async updateTag(tag: Tag) {
-         await this.tagService.updateTag(tag);
+        await this.tagService.updateTag(tag);
     }
 
     async deleteTag(tag: Tag) {
         await this.tagService.deleteTagById(tag.id);
     }
 
+    async reorderTags(items: Tag[], category: TagCategory | null) {
+        await this.tagService.reorderTags(items, category);
+    }
 }

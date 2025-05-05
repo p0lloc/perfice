@@ -2,10 +2,10 @@
     import TrackableCategoryContainer from "@perfice/components/trackable/TrackableCategoryContainer.svelte";
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
-    import LineButton from "@perfice/components/base/button/LineButton.svelte";
     import type {CategoryList} from "@perfice/util/category";
     import {categorizedTrackables, trackableCategories, trackables} from "@perfice/stores";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
+    import InlineCreateLineButton from "@perfice/components/base/inline/InlineCreateLineButton.svelte";
 
     let {date, weekStart, onEdit, onLog, onCreate, onCategoryDelete}: {
         date: Date,
@@ -16,12 +16,13 @@
         onCategoryDelete: (category: TrackableCategory) => void
     } = $props();
 
+
     function onReorder(category: CategoryList<TrackableCategory, Trackable>, items: Trackable[]) {
         trackables.reorderTrackables(category.category, items);
     }
 
-    function addCategory() {
-        trackableCategories.createCategory(prompt("Name") ?? "");
+    function createCategory(name: string) {
+        trackableCategories.createCategory(name);
     }
 
     type ReorderableCategoryList = CategoryList<TrackableCategory, Trackable> & {
@@ -61,7 +62,7 @@
                                             onReorder={(items) => onReorder(option, items)}/>
             {/snippet}
         </DragAndDropContainer>
-        <LineButton onClick={addCategory}/>
+        <InlineCreateLineButton onSubmit={(name) => createCategory(name)}/>
     </div>
 {/await}
 

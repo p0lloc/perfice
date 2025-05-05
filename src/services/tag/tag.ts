@@ -1,4 +1,4 @@
-import type {Tag} from "@perfice/model/tag/tag";
+import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 import type {TagCollection} from "@perfice/db/collections";
 import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import {TagVariableType} from "../variable/types/tag";
@@ -38,6 +38,7 @@ export class TagService implements TagEntityProvider {
     }
 
     async createTag(name: string, categoryId: string | null): Promise<void> {
+        let tagCount = await this.tagCollection.count();
         let tagId = crypto.randomUUID();
         let variable: Variable = {
             id: crypto.randomUUID(),
@@ -53,6 +54,7 @@ export class TagService implements TagEntityProvider {
             name,
             categoryId,
             variableId: variable.id,
+            order: tagCount
         };
 
         await this.variableService.createVariable(variable);
@@ -92,5 +94,16 @@ export class TagService implements TagEntityProvider {
         for (let tag of tags) {
             await this.deleteTagById(tag.id);
         }
+    }
+
+    async reorderTags(tags: Tag[], category: TagCategory | null) {
+        for (let i = 0; i < tags.length; i++) {
+            tags[i].order = i;
+
+            // Category might have changed, update it
+            tags[i].categoryId = category?.id ?? null;
+        }
+
+        await this.tagCollection.updateTags(tags);
     }
 }

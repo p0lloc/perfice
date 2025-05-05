@@ -28,8 +28,8 @@ export class TagCategoryStore extends AsyncStore<TagCategory[]> {
         await this.tagCategoryService.createCategory(name);
     }
 
-    async updateCategory(category: TagCategory): Promise<void> {
-        await this.tagCategoryService.updateCategory(category);
+    async reorderCategories(categories: TagCategory[]): Promise<void> {
+        await this.tagCategoryService.reorderCategories(categories);
     }
 
     async deleteCategoryById(categoryId: string): Promise<void> {

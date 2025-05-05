@@ -2,6 +2,7 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import type {TagCategory} from "@perfice/model/tag/tag";
 import type {TagCategoryCollection} from "@perfice/db/collections";
 import type {TagService} from "@perfice/services/tag/tag";
+import {reorderGeneric} from "@perfice/util/array";
 
 export interface TagCategoryEntityProvider {
     getCategories(): Promise<TagCategory[]>;
@@ -24,9 +25,11 @@ export class TagCategoryService implements TagCategoryEntityProvider {
     }
 
     async createCategory(name: string): Promise<TagCategory> {
+        let categoryCount = await this.collection.count();
         let category = {
             id: crypto.randomUUID(),
-            name
+            name,
+            order: categoryCount
         }
 
         await this.collection.createCategory(category);
@@ -37,6 +40,11 @@ export class TagCategoryService implements TagCategoryEntityProvider {
     async updateCategory(category: TagCategory): Promise<void> {
         await this.collection.updateCategory(category);
         await this.observers.notifyObservers(EntityObserverType.UPDATED, category);
+    }
+
+    async reorderCategories(categories: TagCategory[]): Promise<void> {
+        let updatedOrdering = reorderGeneric(categories);
+        await this.collection.updateCategories(updatedOrdering);
     }
 
     async deleteCategoryById(categoryId: string): Promise<void> {

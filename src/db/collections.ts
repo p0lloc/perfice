@@ -89,6 +89,10 @@ export interface TagCategoryCollection {
     updateCategory(category: TagCategory): Promise<void>;
 
     deleteCategoryById(categoryId: string): Promise<void>;
+
+    updateCategories(updatedOrdering: TagCategory[]): Promise<void>;
+
+    count(): Promise<number>;
 }
 
 export interface VariableCollection {
@@ -212,6 +216,10 @@ export interface TagCollection {
     deleteTagById(id: string): Promise<void>;
 
     getTagsByCategoryId(categoryId: string): Promise<Tag[]>;
+
+    updateTags(tags: Tag[]): Promise<void>;
+
+    count(): Promise<number>;
 }
 
 export interface TagEntryCollection {

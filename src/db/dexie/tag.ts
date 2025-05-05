@@ -106,6 +106,15 @@ export class DexieTagCollection implements TagCollection {
     async getTagsByCategoryId(categoryId: string): Promise<Tag[]> {
         return this.table.where("categoryId").equals(categoryId).toArray();
     }
+
+    async updateTags(tags: Tag[]): Promise<void> {
+        await this.table.bulkPut(tags);
+    }
+
+    async count(): Promise<number> {
+        return this.table.count();
+    }
+
 }
 
 export class DexieTagCategoryCollection implements TagCategoryCollection {
@@ -134,6 +143,14 @@ export class DexieTagCategoryCollection implements TagCategoryCollection {
 
     async deleteCategoryById(categoryId: string): Promise<void> {
         await this.table.where("id").equals(categoryId).delete();
+    }
+
+    async updateCategories(categories: TagCategory[]): Promise<void> {
+        await this.table.bulkPut(categories);
+    }
+
+    async count(): Promise<number> {
+        return this.table.count();
     }
 
 }
