@@ -106,7 +106,9 @@ export function setupServices(db: Collections, tables: Record<string, Table>, mi
     const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
     analyticsHistoryService.load();
 
-    const completeImportService = new CompleteImportService(tables, analyticsHistoryService, ignoreService, migrationService);
+    const completeImportService = new CompleteImportService(tables, analyticsHistoryService, ignoreService, migrationService,
+        tagService, tagCategoryService, trackableService, trackableCategoryService, formService);
+
     const completeExportService = new CompleteExportService(tables, analyticsHistoryService, ignoreService, migrationService);
 
     return {

@@ -5,6 +5,12 @@ import type {AnalyticsHistoryService} from "@perfice/services/analytics/history"
 import type {CorrelationIgnoreService} from "@perfice/services/analytics/ignore";
 import {CURRENT_DASHBOARD_KEY} from "@perfice/model/dashboard/ui";
 import type {MigrationService} from "@perfice/db/migration/migration";
+import {OldFormatImporter} from "@perfice/services/import/complete/oldFormat";
+import type {TagService} from "@perfice/services/tag/tag";
+import type {TagCategoryService} from "@perfice/services/tag/category";
+import type {TrackableService} from "@perfice/services/trackable/trackable";
+import type {TrackableCategoryService} from "@perfice/services/trackable/category";
+import type {FormService} from "@perfice/services/form/form";
 
 export class CompleteImportService {
 
@@ -14,14 +20,23 @@ export class CompleteImportService {
     private readonly ignoreService: CorrelationIgnoreService;
     private readonly migrationService: MigrationService;
 
+    private readonly oldFormatImporter: OldFormatImporter;
+
     constructor(tables: Record<string, Table>,
                 historyService: AnalyticsHistoryService,
                 ignoreService: CorrelationIgnoreService,
-                migrationService: MigrationService) {
+                migrationService: MigrationService,
+                tagService: TagService,
+                tagCategoryService: TagCategoryService,
+                trackableService: TrackableService,
+                trackableCategoryService: TrackableCategoryService,
+                formService: FormService,
+    ) {
         this.tables = tables;
         this.historyService = historyService;
         this.ignoreService = ignoreService;
         this.migrationService = migrationService;
+        this.oldFormatImporter = new OldFormatImporter(tables, tagService, tagCategoryService, trackableService, trackableCategoryService, formService);
     }
 
     async import(file: File, newFormat: boolean): Promise<void> {
@@ -32,7 +47,7 @@ export class CompleteImportService {
         if (newFormat) {
             await this.importNewFormat(data);
         } else {
-            await this.importOldFormat(data);
+            await this.oldFormatImporter.import(data);
         }
     }
 
@@ -57,7 +72,4 @@ export class CompleteImportService {
         }
     }
 
-    async importOldFormat(data: Record<string, any>) {
-
-    }
 }

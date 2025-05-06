@@ -1,4 +1,5 @@
 import type {CorrelationResult} from "@perfice/services/analytics/analytics";
+import {parseJsonFromLocalStorage} from "@perfice/util/local";
 
 const HISTORY_STORE_KEY = "correlations_history";
 
@@ -20,8 +21,7 @@ export class AnalyticsHistoryService {
     }
 
     load() {
-        let entriesStr = localStorage.getItem(HISTORY_STORE_KEY);
-        this.entries = entriesStr ? JSON.parse(entriesStr) : [];
+        this.entries = parseJsonFromLocalStorage(HISTORY_STORE_KEY) ?? [];
     }
 
     getHistoryByKey(key: string): AnalyticsHistoryEntry | undefined {

@@ -21,6 +21,8 @@ export interface FormService {
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void;
 
     removeObserver(type: EntityObserverType, callback: EntityObserverCallback<Form>): void;
+
+    createStandaloneFormSnapshot(snapshot: FormSnapshot): Promise<void>;
 }
 
 export interface FormEntityProvider {
@@ -60,6 +62,14 @@ export class BaseFormService implements FormService, FormEntityProvider {
         await this.createSnapshotAndUpdateSnapshotId(form, true);
         await this.formCollection.createForm(form);
         await this.observers.notifyObservers(EntityObserverType.CREATED, form);
+    }
+
+    /**
+     * Creates a snapshot that is potentially not currently the most recent
+     * @param snapshot Snapshot to add to database
+     */
+    async createStandaloneFormSnapshot(snapshot: FormSnapshot): Promise<void> {
+        await this.snapshotCollection.createFormSnapshot(snapshot);
     }
 
     private async createSnapshotAndUpdateSnapshotId(form: Form, create: boolean = false): Promise<void> {

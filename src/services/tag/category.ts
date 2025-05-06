@@ -25,9 +25,13 @@ export class TagCategoryService implements TagCategoryEntityProvider {
     }
 
     async createCategory(name: string): Promise<TagCategory> {
+        return this.createCategoryWithIdAndName(crypto.randomUUID(), name);
+    }
+
+    async createCategoryWithIdAndName(id: string, name: string): Promise<TagCategory> {
         let categoryCount = await this.collection.count();
         let category = {
-            id: crypto.randomUUID(),
+            id,
             name,
             order: categoryCount
         }

@@ -37,9 +37,9 @@ export class TagService implements TagEntityProvider {
         return await this.tagCollection.getTagById(id);
     }
 
-    async createTag(name: string, categoryId: string | null): Promise<void> {
+    async createTag(name: string, categoryId: string | null, id?: string): Promise<void> {
         let tagCount = await this.tagCollection.count();
-        let tagId = crypto.randomUUID();
+        let tagId = id ?? crypto.randomUUID();
         let variable: Variable = {
             id: crypto.randomUUID(),
             name: "Tag",

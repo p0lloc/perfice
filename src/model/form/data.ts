@@ -131,6 +131,23 @@ export function registerDataTypes() {
 
 //questionDataTypeRegistry.registerDataType(FormQuestionDataType.RICH_TEXT, new RichTextFormQuestionDataType());
 
+/**
+ * Formats value as specified data type, but first tries to deserialize it.
+ * This almost always assumes that the value is a string.
+ *
+ * @param value
+ * @param dataType
+ */
+export function deserializeAndFormatValueAsDataType(value: any, dataType: string): string {
+    let dataTypeDef = questionDataTypeRegistry.getDefinition(dataType);
+    if (dataTypeDef == null) return value.toString();
+
+    let deserialized = dataTypeDef.deserialize(value);
+    if (deserialized == null) return value.toString();
+
+    return formatValueAsDataType(dataTypeDef.serialize(deserialized), dataType);
+}
+
 export function formatValueAsDataType(value: any, dataType: string): string {
     let dataTypeDef = questionDataTypeRegistry.getDefinition(dataType);
     if (dataTypeDef == null) return value.toString();

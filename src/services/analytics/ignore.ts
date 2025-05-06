@@ -1,4 +1,5 @@
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import {parseJsonFromLocalStorage} from "@perfice/util/local";
 
 const IGNORED_CORRELATIONS_STORE_KEY = "ignored_correlations";
 
@@ -12,8 +13,7 @@ export class CorrelationIgnoreService {
     private ignoredCorrelations: IgnoredCorrelation[] = [];
 
     load() {
-        let entriesStr = localStorage.getItem(IGNORED_CORRELATIONS_STORE_KEY);
-        this.ignoredCorrelations = entriesStr ? JSON.parse(entriesStr) : [];
+        this.ignoredCorrelations = parseJsonFromLocalStorage(IGNORED_CORRELATIONS_STORE_KEY) ?? [];
     }
 
     groupIgnoresByTimeScope(): Record<SimpleTimeScopeType, string[]> {
