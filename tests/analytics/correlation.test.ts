@@ -9,7 +9,7 @@ import {mockEntry, mockForm} from "./raw.test";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 import {AnalyticsSettings} from "../../src/model/analytics/analytics";
 
 
@@ -27,7 +27,7 @@ test("flatten quantitative values", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -64,7 +64,7 @@ test("filter matching timestamps", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -115,7 +115,7 @@ test("filter matching timestamps with lag", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -153,7 +153,7 @@ test("filter matching timestamps with lag, whole range", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(0), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -207,7 +207,7 @@ test("filter matching timestamps with categorical non-empty", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -257,7 +257,7 @@ test("filter matching timestamps with categorical empty", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -306,7 +306,7 @@ test("filter matching timestamps with categorical empty, order switched", async 
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -353,7 +353,7 @@ test("filter matching timestamps with both empty", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(0), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -397,7 +397,7 @@ test("flatten categorical values", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -417,7 +417,7 @@ test("week day dataset is_monday", async () => {
     const journal = new DummyJournalCollection([]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
-    const analytics = new AnalyticsService(new DummyFormService(), journal, tags, tagEntries);
+    const analytics = new AnalyticsService(new DummyFormService(), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 1);
     expect(dataset).toEqual(new Map([
@@ -435,7 +435,7 @@ test("week day dataset is_tuesday", async () => {
     const journal = new DummyJournalCollection([]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
-    const analytics = new AnalyticsService(new DummyFormService(), journal, tags, tagEntries);
+    const analytics = new AnalyticsService(new DummyFormService(), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 2);
     expect(dataset).toEqual(new Map([
@@ -490,7 +490,7 @@ test("filter matching timestamps with week day dataset", async () => {
                 "test": FormQuestionDataType.NUMBER
             }),
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(0), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -546,7 +546,7 @@ test("basic correlation", async () => {
                 "test": FormQuestionDataType.TEXT,
             }),
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [rawValues] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);

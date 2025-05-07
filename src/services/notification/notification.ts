@@ -1,9 +1,8 @@
-import type { NotificationCollection } from "@perfice/db/collections";
-import { NotificationType, type StoredNotification } from "@perfice/model/notification/notification";
-import type { WeekStart } from "@perfice/model/variable/time/time";
-import { Capacitor } from "@capacitor/core";
-import { NativeNotificationScheduler } from "@perfice/services/notification/native";
-import { WebNotificationScheduler } from "@perfice/services/notification/web";
+import type {NotificationCollection} from "@perfice/db/collections";
+import {NotificationType, type StoredNotification} from "@perfice/model/notification/notification";
+import {Capacitor} from "@capacitor/core";
+import {NativeNotificationScheduler} from "@perfice/services/notification/native";
+import {WebNotificationScheduler} from "@perfice/services/notification/web";
 
 export interface NotificationScheduler {
     scheduleStoredNotifications(notifications: StoredNotification[]): Promise<void>;
@@ -18,14 +17,12 @@ export type NotificationClickedCallback = (entityId: string) => Promise<void>;
 export class NotificationService {
 
     private readonly notificationCollection: NotificationCollection;
-    private readonly weekStart: WeekStart;
     private readonly scheduler: NotificationScheduler;
 
     private readonly listeners: Map<NotificationType, NotificationClickedCallback> = new Map();
 
-    constructor(notificationCollection: NotificationCollection, weekStart: WeekStart) {
+    constructor(notificationCollection: NotificationCollection) {
         this.notificationCollection = notificationCollection;
-        this.weekStart = weekStart;
         this.scheduler = Capacitor.isNativePlatform() ? new NativeNotificationScheduler() : new WebNotificationScheduler();
     }
 
@@ -55,7 +52,7 @@ export class NotificationService {
     }
 
     async createNotification(type: NotificationType, entityId: string, title: string, body: string,
-        hour: number, minutes: number, weekDay: number | null): Promise<StoredNotification> {
+                             hour: number, minutes: number, weekDay: number | null): Promise<StoredNotification> {
 
         let entity: StoredNotification = {
             id: crypto.randomUUID(),

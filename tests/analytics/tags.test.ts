@@ -6,7 +6,7 @@ import {
     DummyTagEntryCollection
 } from "../dummy-collections";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 
 test("basic tag values", async () => {
     const journal = new DummyJournalCollection([]);
@@ -27,12 +27,13 @@ test("basic tag values", async () => {
             id: "test_tag",
             name: "Test tag",
             variableId: "",
-            categoryId: ""
+            categoryId: "",
+            order: 0
         }
     ]);
     const analytics = new AnalyticsService(new DummyFormService(
         [],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [values] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(0), 7);
 
@@ -73,12 +74,13 @@ test("tag weekday analytics", async () => {
             id: "test_tag",
             name: "Test tag",
             variableId: "",
-            categoryId: ""
+            categoryId: "",
+            order: 0
         }
     ]);
     const analytics = new AnalyticsService(new DummyFormService(
         [],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [values] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(0), 10);
     let weekDayAnalytics = await analytics.calculateTagWeekDayAnalytics(values.get("tag_test_tag"));

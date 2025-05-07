@@ -2,6 +2,7 @@ import {
     ComparisonGoalCondition,
     ComparisonOperator,
     type ConstantOrVariable,
+    getDummyWeekStartForGoal,
     type GoalCondition,
     GoalConditionType,
     GoalMetGoalCondition,
@@ -163,7 +164,7 @@ export const GOAL_SUGGESTIONS: GoalSuggestion[] = [
                 }
             }
         ],
-        timeScope: serializeTimeScope(tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0))
+        timeScope: serializeTimeScope(tSimple(SimpleTimeScopeType.DAILY, getDummyWeekStartForGoal(), 0))
     },
     {
         name: "Good sleep",
@@ -203,7 +204,7 @@ export const GOAL_SUGGESTIONS: GoalSuggestion[] = [
                 }
             }
         ],
-        timeScope: serializeTimeScope(tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0))
+        timeScope: serializeTimeScope(tSimple(SimpleTimeScopeType.DAILY, getDummyWeekStartForGoal(), 0))
     },
     {
         name: "Healthy day",
@@ -222,7 +223,7 @@ export const GOAL_SUGGESTIONS: GoalSuggestion[] = [
                 }
             }
         ],
-        timeScope: serializeTimeScope(tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0))
+        timeScope: serializeTimeScope(tSimple(SimpleTimeScopeType.DAILY, getDummyWeekStartForGoal(), 0))
     }
 ];
 

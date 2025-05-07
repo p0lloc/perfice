@@ -4,6 +4,7 @@
     import {WeekStart} from "@perfice/model/variable/time/time";
     import SettingsDataImport from "@perfice/components/settings/SettingsDataImport.svelte";
     import SettingsDataExport from "@perfice/components/settings/SettingsDataExport.svelte";
+    import {weekStart} from "@perfice/stores";
 
     const WEEK_START_ITEMS = [
         {value: WeekStart.MONDAY, name: "Monday"},
@@ -11,8 +12,8 @@
         {value: WeekStart.SATURDAY, name: "Saturday"},
     ];
 
-    function onFileChange(files: FileList) {
-        console.log(files);
+    function onWeekStartChange(newValue: WeekStart) {
+        weekStart.setWeekStart(newValue);
     }
 </script>
 
@@ -23,8 +24,8 @@
         <div class="row-between">
             <h3 class="settings-label">Week start</h3>
 
-            <DropdownButton value={WeekStart.MONDAY}
-                            items={WEEK_START_ITEMS} onChange={(v) => console.log(v)}/>
+            <DropdownButton value={$weekStart}
+                            items={WEEK_START_ITEMS} onChange={onWeekStartChange}/>
         </div>
 
         <div>

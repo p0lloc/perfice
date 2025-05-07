@@ -5,8 +5,12 @@ import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
-import {type ConstantOrVariable, GoalVariableType} from "@perfice/services/variable/types/goal";
-import {SimpleTimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
+import {
+    type ConstantOrVariable,
+    getDummyWeekStartForGoal,
+    GoalVariableType
+} from "@perfice/services/variable/types/goal";
+import {SimpleTimeScopeType, tSimple} from "@perfice/model/variable/time/time";
 
 import {VariableEditStateProvider} from "@perfice/stores/variable/editState";
 
@@ -148,7 +152,7 @@ export class VariableEditProvider implements VariableProvider {
                         name: "Goal",
                         type: {
                             type: VariableTypeName.GOAL,
-                            value: new GoalVariableType([], tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0))
+                            value: new GoalVariableType([], tSimple(SimpleTimeScopeType.DAILY, getDummyWeekStartForGoal(), 0))
                         }
                     },
                 };

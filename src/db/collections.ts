@@ -273,6 +273,7 @@ export interface IndexCollection {
 
     removeDeleteListener(listener: IndexDeleteListener): void;
 
+    deleteAllIndices(): Promise<void>;
 }
 
 export interface DashboardCollection {

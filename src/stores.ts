@@ -52,6 +52,7 @@ import {TagAnalytics, TagDetailedAnalytics} from "@perfice/stores/analytics/tags
 import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/analytics/trackable";
 import {CompleteExportStore} from "@perfice/stores/export/complete";
 import {CompleteImportStore} from "@perfice/stores/import/complete";
+import {WeekStartStore} from "@perfice/stores/ui/weekStart";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -60,7 +61,7 @@ export let variables: VariableStore;
 export let trackableDate: Writable<Date>;
 export let tagDate: Writable<Date>;
 export let goalDate: Writable<Date>;
-export let weekStart: Writable<WeekStart>;
+export let weekStart: WeekStartStore;
 export let trackableCategories: TrackableCategoryStore;
 export let tagCategories: TagCategoryStore;
 export let journal: JournalEntryStore;
@@ -97,7 +98,7 @@ export class StoreProvider {
         this.services = services;
     }
 
-    async setup() {
+    async setup(loadedWeekStart: WeekStart) {
         trackables = new TrackableStore(this.services.trackable);
         forms = new FormStore(this.services.form, this.services.formTemplate);
         variables = new VariableStore(this.services.variable);
@@ -107,7 +108,12 @@ export class StoreProvider {
         goalDate = GoalDate();
         completeExport = new CompleteExportStore(this.services.completeExport);
         completeImport = new CompleteImportStore(this.services.completeImport);
-        weekStart = writable(WeekStart.MONDAY);
+        weekStart = new WeekStartStore(loadedWeekStart);
+        weekStart.addObserver(v => {
+            this.services.analytics.setWeekStart(v);
+            this.services.variableGraph.setWeekStart(v);
+        });
+
         trackableCategories = new TrackableCategoryStore(this.services.trackableCategory);
         tagCategories = new TagCategoryStore(this.services.tagCategory);
         journal = new JournalEntryStore(this.services.journal);
@@ -219,9 +225,9 @@ export class StoreProvider {
 
 }
 
-export async function setupStores(services: Services) {
+export async function setupStores(services: Services, weekStart: WeekStart) {
     storeProvider = new StoreProvider(services);
-    await storeProvider.setup();
+    await storeProvider.setup(weekStart);
 }
 
 export function trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {

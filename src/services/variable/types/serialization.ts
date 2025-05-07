@@ -3,6 +3,7 @@ import {AggregateVariableType} from "@perfice/services/variable/types/aggregate"
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {
     ComparisonGoalCondition,
+    getDummyWeekStartForGoal,
     type GoalCondition,
     GoalConditionType,
     type GoalConditionValue,
@@ -10,7 +11,6 @@ import {
     GoalVariableType
 } from "@perfice/services/variable/types/goal";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
-import {WeekStart} from "@perfice/model/variable/time/time";
 import {CalculationVariableType} from "@perfice/services/variable/types/calculation";
 import {TagVariableType} from "@perfice/services/variable/types/tag";
 import {LatestVariableType} from "@perfice/services/variable/types/latest";
@@ -86,7 +86,7 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<VariableTypeName, (value: any) 
     ),
     [VariableTypeName.GOAL]: (value: any) => new GoalVariableType(
         value.conditions.map(deserializeGoalCondition),
-        deserializeTimeScope(value.timeScope, WeekStart.MONDAY), // TODO: do we pass in week start?
+        deserializeTimeScope(value.timeScope, getDummyWeekStartForGoal()),
     ),
     [VariableTypeName.CALCULATION]: (value: any) => new CalculationVariableType(
         value.entries,

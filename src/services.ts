@@ -57,10 +57,12 @@ export interface Services {
     readonly completeImport: CompleteImportService;
 }
 
-export function setupServices(db: Collections, tables: Record<string, Table>, migrationService: MigrationService): Services {
+export function setupServices(db: Collections, tables: Record<string, Table>,
+                              migrationService: MigrationService, weekStart: WeekStart): Services {
+
     const journalService = new BaseJournalService(db.entries);
     const tagEntryService = new TagEntryService(db.tagEntries);
-    const graph = new VariableGraph(db.indices, db.entries, db.tagEntries, WeekStart.MONDAY);
+    const graph = new VariableGraph(db.indices, db.entries, db.tagEntries, weekStart);
 
     const variableService = new VariableService(db.variables, db.indices, graph);
     tagEntryService.addObserver(EntityObserverType.CREATED, async (e: TagEntry) => await variableService.onTagEntryCreated(e));
@@ -95,14 +97,14 @@ export function setupServices(db: Collections, tables: Record<string, Table>, mi
     const tagCategoryService = new TagCategoryService(db.tagCategories, tagService);
     const importService = new EntryImportService(journalService, variableService);
     const exportService = new EntryExportService(journalService, formService);
-    const notificationService = new NotificationService(db.notifications, WeekStart.MONDAY);
+    const notificationService = new NotificationService(db.notifications);
 
     const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService, notificationService);
 
     const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
         trackableService, tagService, formService, db.savedSearches);
 
-    const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries);
+    const analyticsService = new AnalyticsService(formService, db.entries, db.tags, db.tagEntries, weekStart);
     const analyticsHistoryService = new AnalyticsHistoryService(0.5, 0.3);
     analyticsHistoryService.load();
 

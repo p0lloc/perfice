@@ -9,7 +9,7 @@ import {mockEntry, mockForm} from "./raw.test";
 import {pNumber} from "../../src/model/primitive/primitive";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 
 test("insights with an outlier", async () => {
     const journal = new DummyJournalCollection([
@@ -25,7 +25,7 @@ test("insights with an outlier", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -67,7 +67,7 @@ test("insights with no outlier", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);

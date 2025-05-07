@@ -388,8 +388,12 @@ export class VariableGraph {
         return Array.from(this.nodes.values());
     }
 
-    setWeekStart(weekStart: WeekStart) {
+    async setWeekStart(weekStart: WeekStart) {
         this.weekStart = weekStart;
+
+        // Changing week start will break old indices that haven't been updated for the new week start
+        // It's easiest to just delete all indices and recreate them as needed
+        await this.indexCollection.deleteAllIndices();
     }
 
     async onFormEntriesImported(formIds: Set<string>) {

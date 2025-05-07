@@ -7,6 +7,7 @@
     } from "@perfice/model/reflection/widgets/table";
     import type {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
     import {formatTimestampForTable} from "@perfice/stores/sharedWidgets/table/table";
+    import {weekStart} from "@perfice/stores";
 
     let {settings, state: tableState, onChange, dependencies, openNestedForm}: {
         settings: ReflectionTableWidgetSettings,
@@ -33,7 +34,7 @@
             answers: [...tableState.answers, {
                 ...answers,
                 timestamp:
-                    formatTimestampForTable(timestamp, new Date())
+                    formatTimestampForTable(timestamp, new Date(), $weekStart)
             }]
         })
     }

@@ -1,11 +1,9 @@
 <script lang="ts">
     import {type JournalEntryValue, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
-    import type {
-        LatestTrackableValueSettings,
-        TrackableValueSettings
-    } from "@perfice/model/trackable/trackable";
+    import type {LatestTrackableValueSettings, TrackableValueSettings} from "@perfice/model/trackable/trackable";
     import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
     import {formatDateLongTermOrHHMM} from "@perfice/util/time/format";
+    import {weekStart} from "@perfice/stores";
 
     let {values, cardSettings, date}: {
         values: PrimitiveValue[],
@@ -29,8 +27,8 @@
         <span>
             {formatAnswersIntoRepresentation(entry.value, cardSettings.representation)}
         </span>
-            <span class="text-xs">
-            {formatDateLongTermOrHHMM(new Date(entry.timestamp), date)}
+        <span class="text-xs">
+            {formatDateLongTermOrHHMM(new Date(entry.timestamp), date, $weekStart)}
         </span>
     {:else}
         No values

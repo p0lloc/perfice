@@ -6,9 +6,9 @@ import {
     DummyTagEntryCollection
 } from "../dummy-collections";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
-import {aCategoricalFrequency, AnalyticsService, aValue, type Value} from "../../src/services/analytics/analytics";
+import {aCategoricalFrequency, AnalyticsService, aValue} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 import {mockEntry, mockForm} from "./raw.test";
 
 test("basic quantitative weekdays", async () => {
@@ -25,7 +25,7 @@ test("basic quantitative weekdays", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -72,7 +72,7 @@ test("basic categorical weekdays", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let weekDayValues = await analytics.calculateFormWeekDayAnalytics("test",
@@ -119,7 +119,7 @@ test("basic categorical weekdays with multiple", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);

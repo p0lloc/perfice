@@ -28,13 +28,14 @@ export interface ConditionProgress {
     second: number;
     progress: number;
     dataType: FormQuestionDataType;
+    unit: string | null;
 }
 
 export function getGoalConditionProgress(value: ComparisonValueResult): ConditionProgress {
     let first = primitiveAsNumber(value.source);
     let second = primitiveAsNumber(value.target);
 
-    return {first, second, progress: calculateProgressSafe(first, second), dataType: value.dataType};
+    return {first, second, progress: calculateProgressSafe(first, second), dataType: value.dataType, unit: value.unit};
 }
 
 export enum GoalSidebarActionType {

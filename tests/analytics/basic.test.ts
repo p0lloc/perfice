@@ -8,7 +8,7 @@ import {
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 import {mockEntry, mockForm} from "./raw.test";
 
 
@@ -25,7 +25,7 @@ test("basic quantitative values", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -68,7 +68,7 @@ test("basic categorical values", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);

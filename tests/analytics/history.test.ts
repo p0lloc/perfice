@@ -10,7 +10,7 @@ import {pNumber} from "../../src/model/primitive/primitive";
 import {AnalyticsHistoryService} from "../../src/services/analytics/history";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
 import {FormQuestionDataType} from "../../src/model/form/form";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 import {AnalyticsSettings} from "../../src/model/analytics/analytics";
 
 
@@ -57,7 +57,7 @@ test("saves history successfully", async () => {
                 "test": FormQuestionDataType.NUMBER
             }),
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let date = new Date(1000 * 60 * 60 * 24 * 7);
 
@@ -109,7 +109,7 @@ test("timestamp remains same", async () => {
                 "test": FormQuestionDataType.NUMBER
             }),
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     // Process and store in history
     let date1 = new Date(1000 * 60 * 60 * 24 * 7);
@@ -171,7 +171,7 @@ test("timestamp changes for drastic coefficient change", async () => {
                 "test": FormQuestionDataType.NUMBER
             }),
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     // Process and store in history
     let date1 = new Date(1000 * 60 * 60 * 24 * 7);

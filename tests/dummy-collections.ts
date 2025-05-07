@@ -1,7 +1,10 @@
 import {
     IndexCollection,
     IndexUpdateListener,
-    JournalCollection, TagCollection, TagEntryCollection, TrackableCollection,
+    JournalCollection,
+    TagCollection,
+    TagEntryCollection,
+    TrackableCollection,
     VariableCollection
 } from "../src/db/collections";
 import {StoredVariable, VariableIndex} from "../src/model/variable/variable";
@@ -12,7 +15,6 @@ import {Form, FormSnapshot} from "../src/model/form/form";
 import {JournalService} from "../src/services/journal/journal";
 import {EntityObserverCallback, EntityObserverType} from "../src/services/observer";
 import {Trackable} from "../src/model/trackable/trackable";
-import Dexie from "dexie";
 import {Tag} from "../src/model/tag/tag";
 
 export class DummyJournalCollection implements JournalCollection {
@@ -20,6 +22,10 @@ export class DummyJournalCollection implements JournalCollection {
 
     constructor(entries: JournalEntry[] = []) {
         this.entries = entries;
+    }
+
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
+        return this.entries.filter(e => e.timestamp <= untilTimestamp).sort((a, b) => a.timestamp - b.timestamp).slice(0, limit);
     }
 
     async getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]> {
@@ -99,6 +105,18 @@ export class DummyTagCollection implements TagCollection {
         this.tags = tags;
     }
 
+    getTagsByCategoryId(categoryId: string): Promise<Tag[]> {
+        throw new Error("Method not implemented.");
+    }
+
+    updateTags(tags: Tag[]): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    count(): Promise<number> {
+        throw new Error("Method not implemented.");
+    }
+
     async getTags(): Promise<Tag[]> {
         return this.tags;
     }
@@ -174,6 +192,10 @@ export class DummyTagEntryCollection implements TagEntryCollection {
 
     async getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]> {
         return this.entries.filter(e => e.timestamp >= start && e.timestamp <= end);
+    }
+
+    async getEntriesUntilTimeAndLimit(timestamp: number, limit: number): Promise<TagEntry[]> {
+        return this.entries.filter(e => e.timestamp <= timestamp).sort((a, b) => a.timestamp - b.timestamp).slice(0, limit);
     }
 
 }
@@ -259,6 +281,10 @@ export class DummyIndexCollection implements IndexCollection {
         this.deleteListeners = this.deleteListeners.filter(l => l != listener);
     }
 
+    async deleteAllIndices(): Promise<void> {
+        this.indices = [];
+    }
+
 }
 
 export class DummyTrackableCollection implements TrackableCollection {
@@ -266,6 +292,10 @@ export class DummyTrackableCollection implements TrackableCollection {
 
     constructor(trackables: Trackable[] = []) {
         this.trackables = trackables;
+    }
+
+    async getTrackablesByCategoryId(id: string): Promise<Trackable[]> {
+        return this.trackables.filter(t => t.categoryId == id);
     }
 
     count(): Promise<number> {
@@ -303,6 +333,10 @@ export class DummyFormService implements FormService {
 
     constructor(forms: Form[] = []) {
         this.forms = forms;
+    }
+
+    createStandaloneFormSnapshot(snapshot: FormSnapshot): Promise<void> {
+        throw new Error("Method not implemented.");
     }
 
     initLazyDependencies(journalService: JournalService): void {

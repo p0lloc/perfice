@@ -10,6 +10,7 @@ import {appReady, onboarding, reflections, setupStores, variables} from "@perfic
 import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
 import {MigrationService} from "@perfice/db/migration/migration";
+import {loadStoredWeekStart} from "@perfice/stores/ui/weekStart";
 
 // Main entry point of the application
 (async () => {
@@ -17,8 +18,10 @@ import {MigrationService} from "@perfice/db/migration/migration";
     const migrationService = new MigrationService(migrator);
     await migrationService.migrate();
 
-    let services = setupServices(collections, tables, migrationService);
-    await setupStores(services);
+    const weekStart = loadStoredWeekStart();
+
+    let services = setupServices(collections, tables, migrationService, weekStart);
+    await setupStores(services, weekStart);
     registerDataTypes();
     await variables.get();
     setupServiceWorker();

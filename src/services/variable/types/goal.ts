@@ -7,7 +7,7 @@ import {
     type PrimitiveValue,
     PrimitiveValueType,
 } from "@perfice/model/primitive/primitive";
-import {type TimeScope, TimeScopeType, tSimple} from "@perfice/model/variable/time/time";
+import {type TimeScope, TimeScopeType, tSimple, WeekStart} from "@perfice/model/variable/time/time";
 
 export type GoalCondition = {
     id: string;
@@ -187,6 +187,12 @@ export function convertTimeScopeToGoalTimeScope(timeScope: TimeScope, goalTimeSc
 
     // Simply use the goal time scope, ignore anything else.
     return goalTimeScope;
+}
+
+export function getDummyWeekStartForGoal(): WeekStart {
+    // Goal values are always evaluated with the passed in week start, the
+    // week start stored in the time scope is just a dummy value.
+    return WeekStart.MONDAY;
 }
 
 export class GoalVariableType implements VariableType {

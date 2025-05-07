@@ -65,8 +65,8 @@ function addTableWidgetEntryFromAnswers(groups: TableWidgetGroup[], answers: Rec
     }
 }
 
-export function formatTimestampForTable(timestamp: number, date: Date): PrimitiveValue {
-    let formatted = formatDateLongTermOrHHMM(new Date(timestamp), date);
+export function formatTimestampForTable(timestamp: number, date: Date, weekStart: WeekStart): PrimitiveValue {
+    let formatted = formatDateLongTermOrHHMM(new Date(timestamp), date, weekStart);
     return pDisplay(pString(formatted), pString(formatted));
 }
 
@@ -100,7 +100,7 @@ export function TableWidget(variableId: string, settings: TableWidgetSettings, d
 
                 let answers = {
                     ...primitive.value.value, timestamp:
-                        formatTimestampForTable(primitive.value.timestamp, date)
+                        formatTimestampForTable(primitive.value.timestamp, date, weekStart)
                 };
                 addTableWidgetEntryFromAnswers(groups, answers, settings);
             }

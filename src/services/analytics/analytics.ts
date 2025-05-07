@@ -212,12 +212,15 @@ export class AnalyticsService {
     private readonly tagCollection: TagCollection;
     private readonly tagEntryCollection: TagEntryCollection;
 
+    private weekStart: WeekStart;
+
     constructor(formService: FormService, journalService: JournalCollection,
-                tagCollection: TagCollection, tagEntryCollection: TagEntryCollection) {
+                tagCollection: TagCollection, tagEntryCollection: TagEntryCollection, weekStart: WeekStart) {
         this.formService = formService;
         this.journalCollection = journalService;
         this.tagCollection = tagCollection;
         this.tagEntryCollection = tagEntryCollection;
+        this.weekStart = weekStart;
     }
 
     flattenRawValues(raw: RawAnalyticsValues, allSettings: AnalyticsSettings[]): Map<string, FlattenedDataSet> {
@@ -416,7 +419,7 @@ export class AnalyticsService {
 
     async findHistoricalQuantitativeInsights(values: RawAnalyticsValues, allBasicAnalytics: Map<string, Map<string, BasicAnalytics>>,
                                              date: Date, timeScope: SimpleTimeScopeType, allSettings: AnalyticsSettings[], threshold: number = 0.3): Promise<HistoricalQuantitativeInsight[]> {
-        let currentTimestamp = dateToStartOfTimeScope(date, timeScope, WeekStart.MONDAY).getTime();
+        let currentTimestamp = dateToStartOfTimeScope(date, timeScope, this.weekStart).getTime();
         let result: HistoricalQuantitativeInsight[] = [];
         for (let [formId, questionIdToValues] of values.entries()) {
             let forForm = allBasicAnalytics.get(formId);
@@ -835,7 +838,7 @@ export class AnalyticsService {
      * @param range Range to interpolate
      */
     interpolateValues(values: RawAnalyticsValues, interpolated: Map<string, number[]>, timeScope: SimpleTimeScopeType, date: Date, range: number) {
-        let start = offsetDateByTimeScope(dateToStartOfTimeScope(date, timeScope, WeekStart.MONDAY), timeScope, -range);
+        let start = offsetDateByTimeScope(dateToStartOfTimeScope(date, timeScope, this.weekStart), timeScope, -range);
         for (let [formId, timestamps] of interpolated) {
             let valuesByForm = values.get(formId);
             if (valuesByForm == null) continue;
@@ -903,7 +906,7 @@ export class AnalyticsService {
             let data = res.get(entry.formId);
             if (data === undefined) continue;
 
-            let timestamp = dateToStartOfTimeScope(new Date(entry.timestamp), timeScope, WeekStart.MONDAY).getTime();
+            let timestamp = dateToStartOfTimeScope(new Date(entry.timestamp), timeScope, this.weekStart).getTime();
 
             let interpolate = interpolateTimestamps.get(entry.formId);
             if (interpolate != null) {
@@ -958,4 +961,9 @@ export class AnalyticsService {
 
         return [res, interpolateTimestamps];
     }
+
+    setWeekStart(weekStart: WeekStart) {
+        this.weekStart = weekStart;
+    }
+
 }

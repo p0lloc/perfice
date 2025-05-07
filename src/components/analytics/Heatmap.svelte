@@ -1,6 +1,6 @@
 <script lang="ts">
     import {dateToMidnight, dateToWeekStart} from "@perfice/util/time/simple";
-    import {WeekStart} from "@perfice/model/variable/time/time";
+    import {weekStart} from "@perfice/stores";
 
     const DAY_MS = 1000 * 60 * 60 * 24;
 
@@ -9,7 +9,7 @@
     let range = $derived(values.size);
 
     let actualStart = $derived(new Date(date.getTime() - range * DAY_MS));
-    let start = $derived(dateToMidnight(dateToWeekStart(actualStart, WeekStart.SUNDAY)).getTime());
+    let start = $derived(dateToMidnight(dateToWeekStart(actualStart, $weekStart)).getTime());
 
     function getColor(i: number, values: Map<number, number>) {
         let val = values.get(start + (i * DAY_MS));

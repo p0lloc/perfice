@@ -9,8 +9,9 @@
     } = $props();
 </script>
 
-<div class="flex justify-center items-center flex-wrap relative w-full h-full" style:width="{width}px" style:height="{height}px">
-    <div class="absolute text-center" style:width="{width - strokeWidth}px">{@render children?.()}</div>
+<div class="flex justify-center items-center flex-wrap relative w-full h-full" style:width="{width}px"
+     style:height="{height}px">
+    <div class="absolute text-center text-sm" style:width="{width - strokeWidth - 5}px">{@render children?.()}</div>
     <svg
             width={width} height={height} viewBox="0 0 250 250"
             style:--stroke-width="{strokeWidth}px"

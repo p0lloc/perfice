@@ -84,4 +84,9 @@ export class DexieIndexCollection implements IndexCollection {
     removeDeleteListener(listener: IndexUpdateListener) {
         this.deleteListeners = this.deleteListeners.filter(l => l != listener);
     }
+
+    async deleteAllIndices() {
+        await this.table.clear();
+    }
+
 }

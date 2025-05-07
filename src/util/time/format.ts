@@ -89,8 +89,8 @@ export function formatDateHHMM(date: Date) {
     return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
 }
 
-export function formatDateLongTerm(date: Date, currentDate: Date) {
-    let weekStart = dateToWeekStart(currentDate, WeekStart.MONDAY); // TODO: don't hardcode week start
+export function formatDateLongTerm(date: Date, currentDate: Date, ws: WeekStart) {
+    let weekStart = dateToWeekStart(currentDate, ws); // TODO: don't hardcode week start
     let prefix;
     if (date.getTime() > weekStart.getTime()) {
         return WEEK_DAYS_SHORT[date.getDay()];
@@ -99,10 +99,10 @@ export function formatDateLongTerm(date: Date, currentDate: Date) {
     }
 }
 
-export function formatDateLongTermOrHHMM(date: Date, currentDate: Date) {
+export function formatDateLongTermOrHHMM(date: Date, currentDate: Date, ws: WeekStart) {
     if (isSameDay(date, currentDate)) {
         return formatTimestampHHMM(date.getTime());
     }
 
-    return `${formatDateLongTerm(date, currentDate)} ${formatDateHHMM(date)}`;
+    return `${formatDateLongTerm(date, currentDate, ws)} ${formatDateHHMM(date)}`;
 }

@@ -6,7 +6,7 @@ import {
     DummyTagEntryCollection
 } from "../dummy-collections";
 import {AnalyticsService} from "../../src/services/analytics/analytics";
-import {SimpleTimeScopeType} from "../../src/model/variable/time/time";
+import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time";
 import {Form, FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "../../src/model/form/form";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {JournalEntry} from "../../src/model/journal/journal";
@@ -58,7 +58,7 @@ test("basic raw values single", async () => {
                 "test": FormQuestionDataType.NUMBER
             }),
         ]
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
@@ -88,7 +88,7 @@ test("basic raw quantitative values multiple", async () => {
                 "test": FormQuestionDataType.NUMBER
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
@@ -118,7 +118,7 @@ test("basic raw categorical values multiple", async () => {
                 "test": FormQuestionDataType.TEXT
             })
         ],
-    ), journal, tags, tagEntries);
+    ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);

@@ -25,6 +25,7 @@ export interface ComparisonValueResult {
     name: string;
     source: PrimitiveValue;
     dataType: FormQuestionDataType;
+    unit: string | null;
     operator: ComparisonOperator;
     target: PrimitiveValue;
     met: boolean;
@@ -42,7 +43,8 @@ export interface GV<K extends GoalConditionType, V> {
 
 function extractNameAndDataTypeFromDependencies(dependencies: string[], forms: Form[], variableService: VariableService): {
     name: string,
-    dataType: FormQuestionDataType
+    dataType: FormQuestionDataType,
+    unit: string | null
 } {
     let name = "Goal";
     let dataType = FormQuestionDataType.NUMBER;
@@ -55,11 +57,11 @@ function extractNameAndDataTypeFromDependencies(dependencies: string[], forms: F
             if (question == null)
                 continue;
 
-            return {name: variable.name, dataType: question.dataType};
+            return {name: variable.name, dataType: question.dataType, unit: question.unit};
         }
     }
 
-    return {name, dataType};
+    return {name, dataType, unit: null};
 }
 
 function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: GoalCondition,
@@ -73,7 +75,8 @@ function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: Goa
 
             let {
                 name,
-                dataType
+                dataType,
+                unit
             } = extractNameAndDataTypeFromDependencies(condition.value.getDependencies(), forms, variableService);
 
             return {
@@ -82,6 +85,7 @@ function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: Goa
                     name: name,
                     source: result.value.source,
                     dataType,
+                    unit,
                     operator: condition.value.getOperator(),
                     target: result.value.target,
                     met: result.value.met,
@@ -151,11 +155,11 @@ export function GoalValueStore(variableId: string, date: Date,
 }
 
 
-export function formatComparisonNumberValues(first: number, second: number, dataType: FormQuestionDataType): string {
+export function formatComparisonNumberValues(first: number, second: number, dataType: FormQuestionDataType, unit: string | null): string {
     let firstFormatted = formatValueAsDataType(first, dataType);
     let secondFormatted = formatValueAsDataType(second, dataType);
 
-    return `${firstFormatted} of ${secondFormatted}`;
+    return `${firstFormatted} of ${secondFormatted}${unit != null ? " " + unit : ""}`;
 }
 
 export function formatComparisonNonNumberValues(result: ComparisonValueResult): string {
