@@ -1666,12 +1666,364 @@
     "name": "Finance",
     "suggestions": [
       {
-        "name": "Expenses",
-        "icon": "shoes"
+        "name": "Expense",
+        "icon": "\uD83D\uDCC9",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "34a207ba-98e8-4234-afa1-2e2edf6b9dcf"
+            }
+          ],
+          "questions": [
+            {
+              "id": "34a207ba-98e8-4234-afa1-2e2edf6b9dcf",
+              "name": "Amount",
+              "dataType": "NUMBER",
+              "unit": "$",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "expense_category",
+              "name": "Category",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Food",
+                    "value": "Food",
+                    "icon": "🍽️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Groceries",
+                    "value": "Groceries",
+                    "icon": "🛒",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Transportation",
+                    "value": "Transportation",
+                    "icon": "🚗",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Utilities",
+                    "value": "Utilities",
+                    "icon": "💡",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Housing / Rent",
+                    "value": "Housing / Rent",
+                    "icon": "🏠",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Healthcare",
+                    "value": "Healthcare",
+                    "icon": "💊",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Entertainment",
+                    "value": "Entertainment",
+                    "icon": "🎬",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Travel",
+                    "value": "Travel",
+                    "icon": "✈️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Clothing",
+                    "value": "Clothing",
+                    "icon": "👕",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Education",
+                    "value": "Education",
+                    "icon": "🎓",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Subscriptions",
+                    "value": "Subscriptions",
+                    "icon": "📺",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Gifts & Donations",
+                    "value": "Gifts & Donations",
+                    "icon": "🎁",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Personal Care",
+                    "value": "Personal Care",
+                    "icon": "💅",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Business Expenses",
+                    "value": "Business Expenses",
+                    "icon": "💼",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Insurance",
+                    "value": "Insurance",
+                    "icon": "🛡️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Taxes",
+                    "value": "Taxes",
+                    "icon": "💰",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Savings",
+                    "value": "Savings",
+                    "icon": "🏦",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Investments",
+                    "value": "Investments",
+                    "icon": "📈",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Pets",
+                    "value": "Pets",
+                    "icon": "🐾",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Miscellaneous",
+                    "value": "Miscellaneous",
+                    "icon": "🧾",
+                    "iconAndText": true
+                  }
+                ],
+                "grid": {
+                  "itemsPerRow": [
+                    5,
+                    4
+                  ],
+                  "border": false
+                }
+              }
+            },
+            {
+              "id": "d4051165-2a34-4643-94cc-835829a85c13",
+              "name": "Description",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "34a207ba-98e8-4234-afa1-2e2edf6b9dcf"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
         "name": "Income",
-        "icon": "shoes"
+        "icon": "\uD83D\uDCC8",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "34a207ba-98e8-4234-afa1-2e2edf6b9dcf"
+            }
+          ],
+          "questions": [
+            {
+              "id": "34a207ba-98e8-4234-afa1-2e2edf6b9dcf",
+              "name": "Amount",
+              "dataType": "NUMBER",
+              "unit": "$",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "income_category",
+              "name": "Category",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Salary",
+                    "value": "Salary",
+                    "icon": "💼",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Freelance",
+                    "value": "Freelance",
+                    "icon": "🧑‍💻",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Business",
+                    "value": "Business",
+                    "icon": "🏢",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Investments",
+                    "value": "Investments",
+                    "icon": "📈",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Dividends",
+                    "value": "Dividends",
+                    "icon": "💹",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Rental Income",
+                    "value": "Rental Income",
+                    "icon": "🏘️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Interest",
+                    "value": "Interest",
+                    "icon": "🏦",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Gifts",
+                    "value": "Gifts",
+                    "icon": "🎁",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Cashback & Rewards",
+                    "value": "Cashback & Rewards",
+                    "icon": "💳",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Refunds",
+                    "value": "Refunds",
+                    "icon": "🔁",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Grants",
+                    "value": "Grants",
+                    "icon": "📄",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Scholarships",
+                    "value": "Scholarships",
+                    "icon": "🎓",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Royalties",
+                    "value": "Royalties",
+                    "icon": "🎶",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Pension",
+                    "value": "Pension",
+                    "icon": "👴",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Social Benefits",
+                    "value": "Social Benefits",
+                    "icon": "🏛️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Side Hustle",
+                    "value": "Side Hustle",
+                    "icon": "🛠️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Lottery / Gambling",
+                    "value": "Lottery / Gambling",
+                    "icon": "🎰",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Crypto Income",
+                    "value": "Crypto Income",
+                    "icon": "🪙",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Alimony / Support",
+                    "value": "Alimony / Support",
+                    "icon": "⚖️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Miscellaneous",
+                    "value": "Miscellaneous",
+                    "icon": "💵",
+                    "iconAndText": true
+                  }
+                ],
+                "grid": {
+                  "itemsPerRow": [
+                    5,
+                    4
+                  ],
+                  "border": false
+                }
+              }
+            },
+            {
+              "id": "d4051165-2a34-4643-94cc-835829a85c13",
+              "name": "Description",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "34a207ba-98e8-4234-afa1-2e2edf6b9dcf"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       }
     ]
   },
@@ -1716,7 +2068,214 @@
       },
       {
         "name": "Weather",
-        "icon": "heart"
+        "icon": "☀",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "location"
+            }
+          ],
+          "questions": [
+            {
+              "id": "weather",
+              "name": "Weather",
+              "dataType": "TEXT",
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Sunny",
+                    "value": "Sunny",
+                    "icon": "☀️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Mainly Sunny",
+                    "value": "Mainly Sunny",
+                    "icon": "🌤️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Partly Cloudy",
+                    "value": "Partly Cloudy",
+                    "icon": "⛅",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Cloudy",
+                    "value": "Cloudy",
+                    "icon": "☁️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Foggy",
+                    "value": "Foggy",
+                    "icon": "🌫️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Rime Fog",
+                    "value": "Rime Fog",
+                    "icon": "🌫️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Drizzle",
+                    "value": "Light Drizzle",
+                    "icon": "🌦️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Drizzle",
+                    "value": "Drizzle",
+                    "icon": "🌦️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Heavy Drizzle",
+                    "value": "Heavy Drizzle",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Freezing Drizzle",
+                    "value": "Light Freezing Drizzle",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Freezing Drizzle",
+                    "value": "Freezing Drizzle",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Rain",
+                    "value": "Light Rain",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Rain",
+                    "value": "Rain",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Heavy Rain",
+                    "value": "Heavy Rain",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Freezing Rain",
+                    "value": "Light Freezing Rain",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Freezing Rain",
+                    "value": "Freezing Rain",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Snow",
+                    "value": "Light Snow",
+                    "icon": "🌨️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Snow",
+                    "value": "Snow",
+                    "icon": "❄️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Heavy Snow",
+                    "value": "Heavy Snow",
+                    "icon": "🌨️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Snow Grains",
+                    "value": "Snow Grains",
+                    "icon": "🌨️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Showers",
+                    "value": "Light Showers",
+                    "icon": "🌦️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Showers",
+                    "value": "Showers",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Heavy Showers",
+                    "value": "Heavy Showers",
+                    "icon": "🌧️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Snow Showers",
+                    "value": "Light Snow Showers",
+                    "icon": "🌨️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Snow Showers",
+                    "value": "Snow Showers",
+                    "icon": "🌨️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Thunderstorm",
+                    "value": "Thunderstorm",
+                    "icon": "⛈️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Light Thunderstorms With Hail",
+                    "value": "Light Thunderstorms With Hail",
+                    "icon": "🌩️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Thunderstorm With Hail",
+                    "value": "Thunderstorm With Hail",
+                    "icon": "⛈️",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": true,
+                "grid": {
+                  "itemsPerRow": [
+                    5,
+                    4
+                  ],
+                  "border": true
+                }
+              }
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "value": "weather",
+              "dynamic": true
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
         "name": "Air quality",
