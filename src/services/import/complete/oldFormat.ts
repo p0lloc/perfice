@@ -152,32 +152,22 @@ export class OldFormatImporter {
         this.formService = formService;
     }
 
-    async import(data: OldImportFormat) {
-        console.log(data);
+    async importCollection(data: OldImportFormat, key: string, callback: (value: any) => Promise<void>) {
+        for (const entity of data.collections[key] ?? []) {
+            await callback(entity);
+        }
+    }
 
+    async import(data: OldImportFormat) {
         for (const table of Object.values(this.tables)) {
             await table.clear();
         }
 
-        for (const tag of data.collections?.tags ?? []) {
-            await this.importTag(tag);
-        }
-
-        for (const tag of data.collections?.tag_categories ?? []) {
-            await this.importTagCategory(tag);
-        }
-
-        for (const tag of data.collections?.measurement_categories ?? []) {
-            await this.importTrackableCategory(tag);
-        }
-
-        for (const tag of data.collections?.forms ?? []) {
-            await this.importForm(tag);
-        }
-
-        for (const tag of data.collections?.measurements ?? []) {
-            await this.importTrackable(tag);
-        }
+        await this.importCollection(data, "tags", async (e) => await this.importTag(e));
+        await this.importCollection(data, "tag_categories", async (e) => await this.importTagCategory(e));
+        await this.importCollection(data, "measurement_categories", async (e) => await this.importTrackableCategory(e));
+        await this.importCollection(data, "forms", async (e) => await this.importForm(e));
+        await this.importCollection(data, "measurements", async (e) => await this.importTrackable(e));
 
         let habitCollection = data.collections?.habits ?? [];
         let habitCategoryId = "";
@@ -189,13 +179,8 @@ export class OldFormatImporter {
             await this.importHabit(tag, habitCategoryId);
         }
 
-        for (const tag of data.collections?.form_snapshots ?? []) {
-            await this.importFormSnapshot(tag);
-        }
-
-        for (const tag of data.collections?.journal_entries ?? []) {
-            await this.importJournalEntry(tag);
-        }
+        await this.importCollection(data, "form_snapshots", async (e) => await this.importFormSnapshot(e));
+        await this.importCollection(data, "journal_entries", async (e) => await this.importJournalEntry(e));
     }
 
     private constructDisplayFromAllAnswers(answers: Record<string, any>): string {
