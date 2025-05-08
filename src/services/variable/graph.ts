@@ -1,5 +1,10 @@
 import type {IndexCollection, JournalCollection, TagEntryCollection} from "@perfice/db/collections";
-import type {Variable, VariableEvaluator, VariableIndex} from "@perfice/model/variable/variable";
+import {
+    FIXED_TIME_SCOPE_VARIABLES,
+    type Variable,
+    type VariableEvaluator,
+    type VariableIndex
+} from "@perfice/model/variable/variable";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {
     isTimestampInRange,
@@ -64,6 +69,7 @@ function isTagEntryDependent(v: any): v is TagEntryDependent {
     return (v as TagEntryDependent).onTagEntryAction !== undefined;
 }
 
+
 /**
  * A DAG that can be used to evaluate variables, and updates dependent variables when a variable is updated.
  */
@@ -109,6 +115,11 @@ export class VariableGraph {
     }
 
     async evaluateVariable(variable: Variable, timeScope: TimeScope, skipCache: boolean, evaluating: string[]): Promise<PrimitiveValue> {
+        // If variable has a fixed time scope, use that instead of the passed in time scope
+        let fixedTimeScope = FIXED_TIME_SCOPE_VARIABLES.get(variable.type.type);
+        if (fixedTimeScope != null)
+            timeScope = fixedTimeScope;
+
         if (!skipCache) {
             let cached = await this.indexCollection.getIndexByVariableAndTimeScope(variable.id,
                 serializeTimeScope(timeScope));
@@ -328,6 +339,7 @@ export class VariableGraph {
         }
     }
 
+
     /**
      * Reevaluates any dependent variables that are affected by the given variable.
      */
@@ -482,6 +494,10 @@ export class BaseVariableEvaluator implements VariableEvaluator {
 
     getTimeScope(): TimeScope {
         return this.timeContext;
+    }
+
+    getVariableById(id: string): Variable | undefined {
+        return this.graph.getVariableById(id);
     }
 
 }

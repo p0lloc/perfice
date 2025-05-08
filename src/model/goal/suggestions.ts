@@ -17,6 +17,7 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import type {Goal} from "@perfice/model/goal/goal";
 import {pNumber, pString} from "@perfice/model/primitive/primitive";
 import {ListVariableType} from "@perfice/services/variable/types/list";
+import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export interface GoalSuggestion {
     name: string;
@@ -122,7 +123,19 @@ export async function createGoalSuggestion(suggestion: GoalSuggestion, goalServi
     };
 
     await variableService.createVariable(variable);
-    return goalService.createGoal(suggestion.name, suggestion.color, variable);
+
+    let streakVariable: Variable = {
+        id: crypto.randomUUID(),
+        name: suggestion.name,
+        type: {
+            type: VariableTypeName.GOAL_STREAK,
+            value: new GoalStreakVariableType(variable.id)
+        }
+    };
+
+    await variableService.createVariable(streakVariable);
+
+    return goalService.createGoal(suggestion.name, suggestion.color, variable, streakVariable);
 }
 
 export const GOAL_SUGGESTIONS: GoalSuggestion[] = [

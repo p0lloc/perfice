@@ -19,6 +19,7 @@
     import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
     import {type TimeScope} from "@perfice/model/variable/time/time";
     import {back} from "@perfice/app";
+    import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -26,6 +27,7 @@
 
     let goal = $state<Goal | undefined>(undefined);
     let goalVariable = $state<Variable | undefined>(undefined);
+    let goalStreakVariable = $state<Variable | undefined>(undefined);
     let goalData = $state<GoalVariableType | null>(null);
 
     let creating = $state<boolean>(false);
@@ -37,13 +39,20 @@
         let variable = variableEditProvider.createVariableFromType(VariableTypeName.GOAL);
         if (variable.type.type != VariableTypeName.GOAL) return;
 
+        let streakVariable = variableEditProvider.createVariableFromType(VariableTypeName.GOAL_STREAK);
+        if (streakVariable.type.type != VariableTypeName.GOAL_STREAK) return;
+
+        streakVariable.type.value = new GoalStreakVariableType(variable.id);
+
         goal = {
             id: crypto.randomUUID(),
             name: "New goal",
             color: "#ff0000",
             variableId: variable.id,
+            streakVariableId: streakVariable.id,
         };
         goalVariable = variable;
+        goalStreakVariable = streakVariable;
         goalData = variable.type.value;
     }
 
@@ -109,7 +118,10 @@
         let goalSnapshot: Goal = $state.snapshot(goal);
         if (creating) {
             variable.name = goalSnapshot.name;
-            await goals.createGoal(goalSnapshot.name, goalSnapshot.color, variable);
+            if (goalStreakVariable == null) return;
+            // @ts-ignore
+            let streakVariable: Variable = $state.snapshot<Variable>(goalStreakVariable);
+            await goals.createGoal(goalSnapshot.name, goalSnapshot.color, variable, streakVariable);
         } else {
             await goals.updateGoal(goalSnapshot);
         }

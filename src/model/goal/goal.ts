@@ -3,4 +3,5 @@ export interface Goal {
     name: string;
     color: string;
     variableId: string;
+    streakVariableId: string;
 }

@@ -1,4 +1,4 @@
-import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
+import {SimpleTimeScope, SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
 
 export function dateToMidnight(now: Date) {
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -171,6 +171,10 @@ export function dateToEndOfTimeScope(date: Date, scope: SimpleTimeScopeType, wee
     return dateToLastSecondOfDay(result);
 }
 
+export function offsetSimpleTimeScope(timeScope: SimpleTimeScope, count: number): SimpleTimeScope {
+    let newDate = offsetDateByTimeScope(new Date(timeScope.getTimestamp()), timeScope.getType(), count);
+    return new SimpleTimeScope(timeScope.getType(), timeScope.getWeekStart(), newDate.getTime());
+}
 
 export function offsetDateByTimeScope(
     timestampToOffset: Date,

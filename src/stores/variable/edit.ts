@@ -21,6 +21,7 @@ import {LatestVariableType} from "@perfice/services/variable/types/latest";
 import {GroupVariableType} from "@perfice/services/variable/types/group";
 import {type Form, type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
 import {formatValueAsDataType} from "@perfice/model/form/data";
+import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export enum VariableChangeType {
     CREATE,
@@ -130,6 +131,17 @@ export class VariableEditProvider implements VariableProvider {
                         type: {
                             type: VariableTypeName.GROUP,
                             value: new GroupVariableType("", {}, "", [])
+                        }
+                    }
+                };
+            case VariableTypeName.GOAL_STREAK:
+                return {
+                    variable: {
+                        id: crypto.randomUUID(),
+                        name: "Goal streak",
+                        type: {
+                            type: VariableTypeName.GOAL_STREAK,
+                            value: new GoalStreakVariableType("")
                         }
                     }
                 };

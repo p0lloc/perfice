@@ -57,8 +57,8 @@ export class GoalStore extends AsyncStore<Goal[]> {
         await this.goalService.deleteGoalById(id);
     }
 
-    createGoal(name: string, color: string, variable: Variable): Promise<Goal> {
-        return this.goalService.createGoal(name, color, variable);
+    createGoal(name: string, color: string, variable: Variable, streakVariable: Variable): Promise<Goal> {
+        return this.goalService.createGoal(name, color, variable, streakVariable);
     }
 
     private async onGoalCreated(goal: Goal) {

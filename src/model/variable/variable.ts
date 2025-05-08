@@ -8,6 +8,7 @@ import type {CalculationVariableType} from "@perfice/services/variable/types/cal
 import type {TagVariableType} from "@perfice/services/variable/types/tag";
 import type {LatestVariableType} from "@perfice/services/variable/types/latest";
 import type {GroupVariableType} from "@perfice/services/variable/types/group";
+import {GOAL_STREAK_TIME_SCOPE, type GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export interface StoredVariable {
     id: string;
@@ -36,7 +37,8 @@ export enum VariableTypeName {
     CALCULATION = "CALCULATION",
     TAG = "TAG",
     LATEST = "LATEST",
-    GROUP = "GROUP"
+    GROUP = "GROUP",
+    GOAL_STREAK = "GOAL_STREAK"
 }
 
 export interface VT<T extends VariableTypeName, V extends VariableType> {
@@ -62,6 +64,8 @@ export interface VariableEvaluator {
     overrideTimeScope(timeScope: TimeScope): VariableEvaluator;
 
     getTimeScope(): TimeScope;
+
+    getVariableById(id: string): Variable | undefined;
 }
 
 export type VariableTypeDef =
@@ -72,6 +76,7 @@ export type VariableTypeDef =
     | VT<VariableTypeName.TAG, TagVariableType>
     | VT<VariableTypeName.LATEST, LatestVariableType>
     | VT<VariableTypeName.GROUP, GroupVariableType>
+    | VT<VariableTypeName.GOAL_STREAK, GoalStreakVariableType>
     ;
 
 
@@ -81,3 +86,8 @@ export interface VariableIndex {
     timeScope: string;
     value: PrimitiveValue;
 }
+
+// Some variables use fixed time scopes that are independent of the time scopes of the variables they depend on.
+// They will always update when the variable they depend on is updated.
+export const FIXED_TIME_SCOPE_VARIABLES: Map<VariableTypeName, TimeScope> =
+    new Map([[VariableTypeName.GOAL_STREAK, GOAL_STREAK_TIME_SCOPE]]);

@@ -5,7 +5,7 @@ import {VariableStore} from "@perfice/stores/variable/variable";
 import {TagDate, TagStore} from "@perfice/stores/tag/tag";
 import {GoalDate, GoalStore} from "@perfice/stores/goal/goal";
 import {type Readable, type Writable, writable} from "svelte/store";
-import {SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
+import {SimpleTimeScopeType, type TimeScope, WeekStart} from "@perfice/model/variable/time/time";
 import {TrackableCategoryStore} from "@perfice/stores/trackable/category";
 import {TagCategoryStore} from "@perfice/stores/tag/category";
 import {JournalEntryStore} from "@perfice/stores/journal/entry";
@@ -53,6 +53,7 @@ import {TrackableAnalytics, TrackableDetailedAnalytics} from "@perfice/stores/an
 import {CompleteExportStore} from "@perfice/stores/export/complete";
 import {CompleteImportStore} from "@perfice/stores/import/complete";
 import {WeekStartStore} from "@perfice/stores/ui/weekStart";
+import {VariableValueStore} from "@perfice/stores/variable/value";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -199,8 +200,13 @@ export class StoreProvider {
         return GoalWidget(settings, date, weekStart, key);
     }
 
+
     tagValue(tag: Tag, date: Date, weekStart: WeekStart, key: string) {
         return TagValueStore(tag, date, weekStart, key, this.services.variable);
+    }
+
+    variableValue(variableId: string, timeContext: TimeScope, key: string) {
+        return VariableValueStore(variableId, timeContext, this.services.variable, key);
     }
 
     goalValue(goalVariableId: string, date: Date, weekStart: WeekStart, key: string) {
@@ -268,6 +274,10 @@ export function goalWidget(settings: DashboardGoalWidgetSettings, date: Date, we
 
 export function tagValue(tag: Tag, date: Date, weekStart: WeekStart, key: string) {
     return storeProvider.tagValue(tag, date, weekStart, key);
+}
+
+export function variableValue(variableId: string, timeContext: TimeScope, key: string) {
+    return storeProvider.variableValue(variableId, timeContext, key);
 }
 
 export function goalValue(goalVariableId: string, date: Date, weekStart: WeekStart, key: string) {

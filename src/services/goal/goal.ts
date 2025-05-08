@@ -26,12 +26,13 @@ export class GoalService {
         return await this.goalCollection.getGoalById(id);
     }
 
-    async createGoal(name: string, color: string, variable: Variable): Promise<Goal> {
+    async createGoal(name: string, color: string, variable: Variable, streakVariable: Variable): Promise<Goal> {
         let goal: Goal = {
             id: crypto.randomUUID(),
             variableId: variable.id,
             color,
             name,
+            streakVariableId: streakVariable.id,
         };
 
         await this.goalCollection.createGoal(goal);

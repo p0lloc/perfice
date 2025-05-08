@@ -15,6 +15,7 @@ import {CalculationVariableType} from "@perfice/services/variable/types/calculat
 import {TagVariableType} from "@perfice/services/variable/types/tag";
 import {LatestVariableType} from "@perfice/services/variable/types/latest";
 import {GroupVariableType} from "@perfice/services/variable/types/group";
+import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export const GOAL_CONDITION_DESERIALIZERS:
     Record<string, (value: any) => GoalConditionValue> = {
@@ -103,6 +104,9 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<VariableTypeName, (value: any) 
         value.groupBy,
         value.filters
     ),
+    [VariableTypeName.GOAL_STREAK]: (value: any) => new GoalStreakVariableType(
+        value.goalVariableId
+    ),
 };
 
 export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: VariableType) => object> = {
@@ -156,6 +160,12 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
             fields: groupType.getFields(),
             groupBy: groupType.getGroupBy(),
             filters: groupType.getFilters(),
+        }
+    },
+    [VariableTypeName.GOAL_STREAK]: (value: VariableType) => {
+        let goalStreakType = value as GoalStreakVariableType;
+        return {
+            goalVariableId: goalStreakType.getGoalVariableId()
         }
     },
 }
