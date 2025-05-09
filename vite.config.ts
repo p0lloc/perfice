@@ -23,14 +23,14 @@ export default defineConfig({
                 name: 'Perfice',
                 short_name: 'Perfice',
                 description: 'Track everything and see how different choices affect your life.',
-                theme_color: '#16A34A',
+                theme_color: '#2adb71',
                 start_url: "/",
                 display: "fullscreen",
                 display_override: ["window-controls-overlay"],
                 screenshots: [
                     {
                         src: "dashboard-onboarding.png",
-                        sizes: "1337x874",
+                        sizes: "1336x874",
                         type: "image/png",
                         form_factor: "wide",
                         label: "Perfice app"
