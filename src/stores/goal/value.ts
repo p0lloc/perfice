@@ -16,6 +16,7 @@ import {type Form, FormQuestionDataType} from "@perfice/model/form/form";
 import {extractFormQuestionFromVariable} from "@perfice/stores/variable/edit";
 import {forms} from "@perfice/stores";
 import {formatValueAsDataType} from "@perfice/model/form/data";
+import {GOAL_STREAK_TIME_SCOPE} from "@perfice/services/variable/types/goalStreak";
 
 export type GoalConditionValueResult =
     GV<GoalConditionType.GOAL_MET, GoalMetValueResult>
@@ -112,9 +113,10 @@ function mapGoalResult(resultMap: Record<string, PrimitiveValue>, condition: Goa
 export interface GoalValueResult {
     timeScope: TimeScope;
     results: GoalConditionValueResult[];
+    streak: PrimitiveValue;
 }
 
-export function GoalValueStore(variableId: string, date: Date,
+export function GoalValueStore(variableId: string, streakVariableId: string, date: Date,
                                weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<GoalValueResult>> {
 
     let goalVariable = variableService.getVariableById(variableId);
@@ -128,14 +130,15 @@ export function GoalValueStore(variableId: string, date: Date,
     // otherwise we will get an incorrect "DAILY" time scope for RANGED/FOREVER time scopes.
     let convertedTimeScope = convertTimeScopeToGoalTimeScope(timeScope, goalData.getTimeScope());
 
-    let store = VariableValueStore(variableId,
-        convertedTimeScope, variableService, key);
+    let goalValueStore = VariableValueStore(variableId, convertedTimeScope, variableService, key);
+    let goalStreakStore = VariableValueStore(streakVariableId, GOAL_STREAK_TIME_SCOPE, variableService, key + ":streak");
 
-    return derived(store, (value, set) => {
+    return derived([goalValueStore, goalStreakStore], ([value, streak], set) => {
         set(new Promise(async (resolve) => {
-
             let resolved = await value;
             if (resolved.type != PrimitiveValueType.MAP) return;
+
+            let streakValue = await streak;
 
             let availableForms = await forms.get();
 
@@ -149,9 +152,9 @@ export function GoalValueStore(variableId: string, date: Date,
                 results.push(result);
             }
 
-            resolve({timeScope: goalData.getTimeScope(), results});
+            resolve({timeScope: goalData.getTimeScope(), results, streak: streakValue});
         }));
-    });
+    }, emptyPromise());
 }
 
 

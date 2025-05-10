@@ -3,6 +3,9 @@
     import type {Form} from "@perfice/model/form/form";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {goals} from "@perfice/stores";
+    import {onMount} from "svelte";
+    import type {Goal} from "@perfice/model/goal/goal";
+    import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
 
     let {settings, onChange}: {
         settings: DashboardGoalWidgetSettings,
@@ -11,22 +14,26 @@
         dependencies: Record<string, string>
     } = $props();
 
+    let loadedGoals = $state<Goal[]>([]);
     // This is done to avoid caching all goals unnecessarily in the store
-    let availableGoals = $derived.by(async () => (await goals.fetchGoals()).map(v => {
-        return {value: v.variableId, name: v.name}
+    let availableGoals = $derived<DropdownMenuItem<string>[]>(loadedGoals.map(v => {
+        return {value: v.variableId, name: v.name};
     }));
 
-    function onGoalChange(goalId: string) {
-        onChange({...settings, goalVariableId: goalId});
+    function onGoalChange(variableId: string) {
+        let goal = loadedGoals.find(g => g.variableId == variableId);
+        if (goal == null) return;
+
+        onChange({...settings, goalVariableId: goal.variableId, goalStreakVariableId: goal.streakVariableId});
     }
+
+    onMount(async () => {
+        loadedGoals = await goals.fetchGoals();
+    });
 </script>
 
-{#await availableGoals}
-    Loading...
-{:then value}
-    <div class="row-between">
-        Goal
-        <BindableDropdownButton value={settings.goalVariableId} items={value}
-                                onChange={onGoalChange}/>
-    </div>
-{/await}
+<div class="row-between">
+    Goal
+    <BindableDropdownButton value={settings.goalVariableId} items={availableGoals}
+                            onChange={onGoalChange}/>
+</div>

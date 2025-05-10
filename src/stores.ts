@@ -209,8 +209,8 @@ export class StoreProvider {
         return VariableValueStore(variableId, timeContext, this.services.variable, key);
     }
 
-    goalValue(goalVariableId: string, date: Date, weekStart: WeekStart, key: string) {
-        return GoalValueStore(goalVariableId, date, weekStart, key, this.services.variable);
+    goalValue(goalVariableId: string, goalStreakVariableId: string, date: Date, weekStart: WeekStart, key: string) {
+        return GoalValueStore(goalVariableId, goalStreakVariableId, date, weekStart, key, this.services.variable);
     }
 
     tagAnalytics() {
@@ -280,8 +280,8 @@ export function variableValue(variableId: string, timeContext: TimeScope, key: s
     return storeProvider.variableValue(variableId, timeContext, key);
 }
 
-export function goalValue(goalVariableId: string, date: Date, weekStart: WeekStart, key: string) {
-    return storeProvider.goalValue(goalVariableId, date, weekStart, key);
+export function goalValue(goalVariableId: string, goalStreakVariableId: string, date: Date, weekStart: WeekStart, key: string) {
+    return storeProvider.goalValue(goalVariableId, goalStreakVariableId, date, weekStart, key);
 }
 
 export function tagAnalytics() {

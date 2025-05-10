@@ -7,14 +7,12 @@
     import PopupIconButton from "@perfice/components/base/button/PopupIconButton.svelte";
     import type {ContextMenuButton} from "@perfice/model/ui/context-menu";
     import GoalCardBase from "@perfice/components/goal/GoalCardBase.svelte";
-    import {goalValue, variableValue, weekStart} from "@perfice/stores";
-    import {GOAL_STREAK_TIME_SCOPE} from "@perfice/services/variable/types/goalStreak";
+    import {goalValue, weekStart} from "@perfice/stores";
 
     let {goal, date, onDelete}: { goal: Goal; date: Date, onDelete: () => void } = $props();
     let cardId = crypto.randomUUID();
 
-    let res = $derived(goalValue(goal.variableId, date, $weekStart, cardId));
-    let streakRes = $derived(variableValue(goal.streakVariableId, GOAL_STREAK_TIME_SCOPE, `${cardId}:streak`));
+    let res = $derived(goalValue(goal.variableId, goal.streakVariableId, date, $weekStart, cardId));
 
     function editGoal() {
         goto(`/goals/${goal.id}`);
@@ -25,22 +23,16 @@
         {name: "Delete", action: onDelete, icon: faTrash},
     ];
 
-    const data = $derived.by(async () => {
-        let value = await $res;
-        let streak = await $streakRes;
-        return {value, streak};
-    });
-
     onDestroy(() => disposeCachedStoreKey(cardId));
 </script>
 
 <div
         class="border aspect-auto rounded-xl flex flex-col items-center min-h-48 max-h-48 bg-white"
 >
-    {#await data}
+    {#await $res}
         Loading...
     {:then value}
-        <GoalCardBase {goal} value={value.value} streak={value.streak}>
+        <GoalCardBase {goal} value={value} streak={value.streak}>
             {#snippet suffix()}
                 <PopupIconButton buttons={EDIT_POPUP} icon={faEllipsisV}/>
             {/snippet}
