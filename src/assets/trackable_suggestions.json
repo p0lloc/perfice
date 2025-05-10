@@ -796,6 +796,136 @@
           "type": "TABLE",
           "settings": {}
         }
+      },
+      {
+        "name": "Bowel movement",
+        "icon": "💩",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "27a0282b-5a52-424f-b3bb-b8bec42dd1c5"
+            }
+          ],
+          "questions": [
+            {
+              "id": "27a0282b-5a52-424f-b3bb-b8bec42dd1c5",
+              "name": "Type",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Hard lumps",
+                    "value": "Hard lumps",
+                    "iconAndText": false
+                  },
+                  {
+                    "text": "Lumpy sausage",
+                    "value": "Lumpy sausage",
+                    "iconAndText": false
+                  },
+                  {
+                    "text": "Cracked sausage",
+                    "value": "Cracked sausage",
+                    "iconAndText": false
+                  },
+                  {
+                    "text": "Smooth snake",
+                    "value": "Smooth snake",
+                    "iconAndText": false
+                  },
+                  {
+                    "text": "Soft blobs",
+                    "value": "Soft blobs",
+                    "iconAndText": false
+                  },
+                  {
+                    "text": "Fluffy pieces",
+                    "value": "Fluffy pieces",
+                    "iconAndText": false
+                  },
+                  {
+                    "text": "Liquid/watery",
+                    "value": "Liquid/watery",
+                    "iconAndText": false
+                  }
+                ],
+                "multiple": false,
+                "grid": {
+                  "itemsPerRow": 4,
+                  "border": false
+                }
+              }
+            },
+            {
+              "id": "e71c50b7-fd9f-49f3-8c5d-c64d8697d7b4",
+              "name": "Size",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "max": 5
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "65337fa0-1b66-4737-8cc9-ab3953ec34d1",
+              "name": "Color",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Light brown",
+                    "value": "Light brown",
+                    "icon": "🟧",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Brown",
+                    "value": "Brown",
+                    "icon": "🟫",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Dark brown",
+                    "value": "Dark brown",
+                    "icon": "⬛️",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Yellow",
+                    "value": "Yellow",
+                    "icon": "🟨",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Red",
+                    "value": "Red",
+                    "icon": "🟥",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": false
+              }
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "27a0282b-5a52-424f-b3bb-b8bec42dd1c5"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       }
     ]
   },
@@ -2338,19 +2468,153 @@
     "suggestions": [
       {
         "name": "Gratitude",
-        "icon": "heart"
+        "icon": "\uD83D\uDC9D",
+        "default": true,
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "gratitude"
+            }
+          ],
+          "questions": [
+            {
+              "id": "gratitude",
+              "name": "What are you grateful for?",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "value": "gratitude",
+              "dynamic": true
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
         "name": "Meditation",
-        "icon": "yin_yang"
+        "icon": "🧘",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "6da3fbe0-b1fe-4181-b63d-8d0f8d776535"
+            }
+          ],
+          "questions": [
+            {
+              "id": "6da3fbe0-b1fe-4181-b63d-8d0f8d776535",
+              "name": "Duration",
+              "dataType": "TIME_ELAPSED",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "06947fac-a825-4560-9e2e-4d12654ff9f8",
+              "name": "Presence",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 1,
+                "max": 10
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "d7b3a7db-062c-4e9f-884b-f42572739105",
+              "name": "Notes",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "6da3fbe0-b1fe-4181-b63d-8d0f8d776535"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       },
       {
         "name": "Anxiety",
-        "icon": "exclamation"
-      },
-      {
-        "name": "Journaling",
-        "icon": "book"
+        "icon": "😟",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "b2bbdf2e-e2d0-46fe-9b89-a40f85264636"
+            }
+          ],
+          "questions": [
+            {
+              "id": "b2bbdf2e-e2d0-46fe-9b89-a40f85264636",
+              "name": "Rating",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 1,
+                "max": 10
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "550459ec-d2fb-4a48-b3bd-d06144110fb9",
+              "name": "Situation",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "7941524d-9caa-4e11-85b1-5b859114236c",
+              "name": "Thoughts",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            },
+            {
+              "id": "ab89f0c3-777c-4ab0-95bf-9916da282d07",
+              "name": "Physical sensations",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "TEXT_AREA",
+              "displaySettings": {}
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "b2bbdf2e-e2d0-46fe-9b89-a40f85264636"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
       }
     ]
   }
