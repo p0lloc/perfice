@@ -30,7 +30,7 @@
 </script>
 
 <MobileTopBar title="Analytics"/>
-<div class="main-content mx-auto md:w-1/2 p-4 md:px-0">
+<div class="main-content center-view p-4 md:px-0">
     {#if RendererComponent != null}
         <RendererComponent id={entityId}/>
     {/if}

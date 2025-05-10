@@ -6,12 +6,22 @@ import {offsetDateByTimeScope} from "@perfice/util/time/simple";
 // Goal streak is always calculated based on the CURRENT date, regardless of passed in time scope.
 export const GOAL_STREAK_TIME_SCOPE = tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0);
 
+export function createDefaultWeekDays(): number[] {
+    let weekDays: number[] = [];
+    for (let i = 0; i < 7; i++) {
+        weekDays.push(i);
+    }
+    return weekDays;
+}
+
 export class GoalStreakVariableType implements VariableType {
 
     private readonly goalVariableId: string;
+    private readonly weekDays: number[] | null;
 
-    constructor(goalVariableId: string) {
+    constructor(goalVariableId: string, weekDays: number[] | null) {
         this.goalVariableId = goalVariableId;
+        this.weekDays = weekDays;
     }
 
     async evaluate(evaluator: VariableEvaluator): Promise<PrimitiveValue> {
@@ -26,9 +36,18 @@ export class GoalStreakVariableType implements VariableType {
             return pNumber(0.0);
         }
 
+        if (this.weekDays != null && this.weekDays.length == 0) {
+            // Having all days as off-day is not supported
+            return pNumber(0.0);
+        }
+
         let streak = 0;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1000; i++) {
             let offset = offsetDateByTimeScope(new Date(), scope.value.getType(), -(i + 1)); // Don't include the current date for checking streak
+
+            // Don't calculate streak for off-days
+            if (this.weekDays != null && !this.weekDays.includes(offset.getDay())) continue;
+
             let value = await evaluator.overrideTimeScope(tSimple(scope.value.getType(),
                 evaluatorTimeScope.value.getWeekStart(), offset.getTime())).evaluateVariable(this.goalVariableId);
 
@@ -56,6 +75,10 @@ export class GoalStreakVariableType implements VariableType {
 
     getGoalVariableId(): string {
         return this.goalVariableId;
+    }
+
+    getWeekDays(): number[] | null {
+        return this.weekDays;
     }
 
 }

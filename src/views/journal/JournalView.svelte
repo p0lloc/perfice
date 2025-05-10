@@ -144,7 +144,7 @@
     {/snippet}
 </MobileTopBar>
 <FormModal largeLogButton={false} bind:this={formModal} onDelete={onFormEntryStartDelete}/>
-<div class="mx-auto w-screen md:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content">
+<div class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content">
     {#await $groupedJournal}
         Loading...
     {:then days}

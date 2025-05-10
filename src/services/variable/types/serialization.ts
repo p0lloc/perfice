@@ -105,7 +105,8 @@ export const VARIABLE_TYPE_DESERIALIZERS: Record<VariableTypeName, (value: any) 
         value.filters
     ),
     [VariableTypeName.GOAL_STREAK]: (value: any) => new GoalStreakVariableType(
-        value.goalVariableId
+        value.goalVariableId,
+        value.weekDays
     ),
 };
 
@@ -165,7 +166,8 @@ export const VARIABLE_TYPE_SERIALIZERS: Record<VariableTypeName, (value: Variabl
     [VariableTypeName.GOAL_STREAK]: (value: VariableType) => {
         let goalStreakType = value as GoalStreakVariableType;
         return {
-            goalVariableId: goalStreakType.getGoalVariableId()
+            goalVariableId: goalStreakType.getGoalVariableId(),
+            weekDays: goalStreakType.getWeekDays()
         }
     },
 }

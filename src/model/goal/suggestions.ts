@@ -17,7 +17,7 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import type {Goal} from "@perfice/model/goal/goal";
 import {pNumber, pString} from "@perfice/model/primitive/primitive";
 import {ListVariableType} from "@perfice/services/variable/types/list";
-import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
+import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export interface GoalSuggestion {
     name: string;
@@ -129,7 +129,7 @@ export async function createGoalSuggestion(suggestion: GoalSuggestion, goalServi
         name: suggestion.name,
         type: {
             type: VariableTypeName.GOAL_STREAK,
-            value: new GoalStreakVariableType(variable.id)
+            value: new GoalStreakVariableType(variable.id, createDefaultWeekDays())
         }
     };
 

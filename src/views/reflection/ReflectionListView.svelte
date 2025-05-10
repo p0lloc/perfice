@@ -45,7 +45,7 @@
 <MobileTopBar title="Reflections"/>
 
 <GenericDeleteModal subject="this reflection" onDelete={onDeleteReflection} bind:this={deleteReflectionModal}/>
-<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
+<div class="center-view md:mt-8 md:p-0 p-2 main-content">
     {#await $reflections}
         Loading...
     {:then value}

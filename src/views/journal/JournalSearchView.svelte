@@ -113,7 +113,7 @@
         </button>
     {/snippet}
 </MobileTopBar>
-<div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-2 main-content">
+<div class="center-view md:mt-8 md:p-0 p-2 main-content">
     <div class="row-between">
         <Title title={"Search"} icon={faSearch}/>
         {#await savedSearchItems then value}

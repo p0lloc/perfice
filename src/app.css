@@ -119,6 +119,14 @@ body {
     @apply h-screen md:h-auto overflow-y-scroll md:overflow-auto pb-40 md:pb-20 scrollbar-hide;
 }
 
+.center-view {
+    @apply md:w-3/4 xl:w-1/2 mx-auto;
+}
+
+input[type="checkbox"] {
+    @apply h-6 w-6 rounded-md;
+}
+
 .modal-bg {
     position: fixed;
     z-index: 1400;

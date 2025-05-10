@@ -149,7 +149,7 @@
             </button>
         {/snippet}
     </MobileTopBar>
-    <div class="md:w-1/2 mx-auto md:mt-8 md:p-0 p-4 main-content">
+    <div class="center-view md:mt-8 md:p-0 p-4 main-content">
         <h2 class="text-3xl font-bold hidden md:block">Edit reflection</h2>
 
         <div class="flex md:flex-col justify-between gap-2 md:mt-8 items-center md:items-start">

@@ -19,7 +19,8 @@
     import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
     import {type TimeScope} from "@perfice/model/variable/time/time";
     import {back} from "@perfice/app";
-    import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
+    import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
+    import WeekDays from "@perfice/components/base/weekDays/WeekDays.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -29,6 +30,7 @@
     let goalVariable = $state<Variable | undefined>(undefined);
     let goalStreakVariable = $state<Variable | undefined>(undefined);
     let goalData = $state<GoalVariableType | null>(null);
+    let goalStreakData = $state<GoalStreakVariableType | null>(null);
 
     let creating = $state<boolean>(false);
 
@@ -42,7 +44,7 @@
         let streakVariable = variableEditProvider.createVariableFromType(VariableTypeName.GOAL_STREAK);
         if (streakVariable.type.type != VariableTypeName.GOAL_STREAK) return;
 
-        streakVariable.type.value = new GoalStreakVariableType(variable.id);
+        streakVariable.type.value = new GoalStreakVariableType(variable.id, createDefaultWeekDays());
 
         goal = {
             id: crypto.randomUUID(),
@@ -51,8 +53,10 @@
             variableId: variable.id,
             streakVariableId: streakVariable.id,
         };
+
         goalVariable = variable;
         goalStreakVariable = streakVariable;
+        goalStreakData = streakVariable.type.value;
         goalData = variable.type.value;
     }
 
@@ -73,7 +77,13 @@
 
         if (goalVariable.type.type != VariableTypeName.GOAL) return;
 
+        goalStreakVariable = variableEditProvider.getVariableById(goal.streakVariableId);
+        if (goalStreakVariable == null) return;
+
+        if (goalStreakVariable.type.type != VariableTypeName.GOAL_STREAK) return;
+
         goalData = goalVariable.type.value;
+        goalStreakData = goalStreakVariable.type.value;
     }
 
     function addCondition() {
@@ -106,21 +116,22 @@
     }
 
     async function save() {
-        if (goal == null || goalData == null || goalVariable == null) return;
+        if (goal == null || goalData == null || goalStreakData == null || goalVariable == null || goalStreakVariable == null) return;
 
         // @ts-ignore
         let variable: Variable = $state.snapshot<Variable>(goalVariable);
         variable.type.value = goalData;
         variable.name = goal.name;
+        // @ts-ignore
+        let streakVariable: Variable = $state.snapshot<Variable>(goalStreakVariable);
+        streakVariable.type.value = goalStreakData;
         variableEditProvider.updateVariable(variable);
+        variableEditProvider.updateVariable(streakVariable);
         await variableEditProvider.save();
 
         let goalSnapshot: Goal = $state.snapshot(goal);
         if (creating) {
             variable.name = goalSnapshot.name;
-            if (goalStreakVariable == null) return;
-            // @ts-ignore
-            let streakVariable: Variable = $state.snapshot<Variable>(goalStreakVariable);
             await goals.createGoal(goalSnapshot.name, goalSnapshot.color, variable, streakVariable);
         } else {
             await goals.updateGoal(goalSnapshot);
@@ -131,6 +142,10 @@
 
     function updateTimeScope(value: TimeScope) {
         goalData = new GoalVariableType(goalData!.getConditions(), value);
+    }
+
+    function updateWeekDays(value: number[]) {
+        goalStreakData = new GoalStreakVariableType(goalStreakData!.getGoalVariableId(), value);
     }
 
     function discard() {
@@ -145,7 +160,7 @@
 </script>
 
 <svelte:body onclick={closeSidebar}/>
-<div class="md:w-1/2 mx-auto md:mt-8 pb-10">
+<div class="center-view mx-auto md:mt-8 pb-10">
     <MobileTopBar title={creating ? "New goal" : "Edit goal"}>
         {#snippet leading()}
             <button class="icon-button" onclick={discard}>
@@ -159,7 +174,7 @@
         {/snippet}
     </MobileTopBar>
     <h1 class="text-4xl font-bold hidden md:block">{creating ? "New goal" : "Edit goal"}</h1>
-    {#if goal != null && goalData != null}
+    {#if goal != null && goalData != null && goalStreakData != null}
         <div class="pb-32 main-content scrollbar-hide">
             <div class="md:w-1/2 md:p-0 p-4">
                 <p class="block mb-2 label mt-4">Name & color</p>
@@ -186,6 +201,12 @@
             <div class="inline-block px-4 md:px-0 w-full md:w-auto">
                 <p class="block mb-2 label mt-4">Time scope</p>
                 <TimeScopePicker value={goalData.getTimeScope()} onChange={updateTimeScope}/>
+            </div>
+            <div class="px-4 md:px-0">
+                <div class="flex flex-col mb-2"><p class="block label mt-4">Streak week days</p>
+                    <p class="text-xs">Unchecked days are off-days</p>
+                </div>
+                <WeekDays value={goalStreakData.getWeekDays()} onChange={updateWeekDays}/>
             </div>
         </div>
     {:else}

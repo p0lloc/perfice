@@ -21,7 +21,7 @@ import {LatestVariableType} from "@perfice/services/variable/types/latest";
 import {GroupVariableType} from "@perfice/services/variable/types/group";
 import {type Form, type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
 import {formatValueAsDataType} from "@perfice/model/form/data";
-import {GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
+import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export enum VariableChangeType {
     CREATE,
@@ -141,7 +141,7 @@ export class VariableEditProvider implements VariableProvider {
                         name: "Goal streak",
                         type: {
                             type: VariableTypeName.GOAL_STREAK,
-                            value: new GoalStreakVariableType("")
+                            value: new GoalStreakVariableType("", createDefaultWeekDays())
                         }
                     }
                 };

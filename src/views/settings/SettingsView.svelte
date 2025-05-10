@@ -18,7 +18,7 @@
 </script>
 
 <MobileTopBar title="Settings"/>
-<div class="md:w-1/2 mx-auto md:mt-8 md:px-0 p-4 pb-20 main-content">
+<div class="center-view md:mt-8 md:px-0 p-4 pb-20 main-content">
     <h1 class="text-4xl font-bold hidden md:block">Settings</h1>
     <div class="bg-white border p-4 rounded-xl mt-4 flex flex-col gap-4">
         <div class="row-between">

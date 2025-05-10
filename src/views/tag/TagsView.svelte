@@ -102,7 +102,7 @@
 <GenericDeleteModal bind:this={deleteTagCategoryModal} onDelete={onTagCategoryDeleted}
                     subject="this category and all associated tags"/>
 
-<div class="mx-auto w-screen main-content md:w-1/2 md:px-0 px-4 md:py-10 py-2">
+<div class="mx-auto w-screen main-content center-view md:px-0 px-4 md:py-10 py-2">
     <TitleAndCalendar
             date={$tagDate}
             {onDateChange}
