@@ -1,7 +1,6 @@
 import {App as CapacitorApp} from '@capacitor/app';
 import {setupDb} from "@perfice/db/dexie/db";
 import {routingNavigatorState} from './model/ui/router.svelte.js';
-import {goto} from '@mateothegreat/svelte5-router';
 import {Capacitor} from '@capacitor/core';
 import {closableState} from './model/ui/modal';
 import {LocalNotifications} from "@capacitor/local-notifications";
@@ -11,6 +10,9 @@ import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
 import {MigrationService} from "@perfice/db/migration/migration";
 import {loadStoredWeekStart} from "@perfice/stores/ui/weekStart";
+import {goto} from "@mateothegreat/svelte5-router";
+
+export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform) ? "/new" : "";
 
 // Main entry point of the application
 (async () => {
@@ -49,6 +51,10 @@ CapacitorApp.addListener('appStateChange', ({isActive}) => {
     onAppOpened();
 });
 
+export function navigate(route: string) {
+    goto(BASE_URL + route);
+}
+
 /**
  * Goes to the previous route (or closes the opened modal).
  * Exits the app on mobile if there are no more routes in history.
@@ -64,7 +70,7 @@ export async function back() {
     if (currentRoute != null) {
         let previousRoute = routingNavigatorState.pop();
         if (previousRoute != null) {
-            goto(previousRoute);
+            navigate(previousRoute);
             return;
         }
     }
@@ -73,7 +79,7 @@ export async function back() {
     if (Capacitor.getPlatform() != "web") {
         await CapacitorApp.exitApp();
     } else {
-        goto("/");
+        navigate("/");
     }
 }
 

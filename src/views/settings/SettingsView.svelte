@@ -5,6 +5,7 @@
     import SettingsDataImport from "@perfice/components/settings/SettingsDataImport.svelte";
     import SettingsDataExport from "@perfice/components/settings/SettingsDataExport.svelte";
     import {weekStart} from "@perfice/stores";
+    import SettingsDeleteData from "@perfice/components/settings/SettingsDeleteData.svelte";
 
     const WEEK_START_ITEMS = [
         {value: WeekStart.MONDAY, name: "Monday"},
@@ -14,6 +15,10 @@
 
     function onWeekStartChange(newValue: WeekStart) {
         weekStart.setWeekStart(newValue);
+    }
+
+    function onDeleteData() {
+
     }
 </script>
 
@@ -28,11 +33,18 @@
                             items={WEEK_START_ITEMS} onChange={onWeekStartChange}/>
         </div>
 
-        <div>
-            <SettingsDataImport/>
+        <div class="flex gap-4 md:gap-8 flex-wrap">
+            <div>
+                <SettingsDataImport/>
+            </div>
+
+            <div>
+                <SettingsDataExport/>
+            </div>
         </div>
+
         <div>
-            <SettingsDataExport/>
+            <SettingsDeleteData/>
         </div>
     </div>
 </div>

@@ -12,7 +12,7 @@
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
     import {NEW_FORM_ROUTE} from "@perfice/model/form/ui";
-    import {goto} from "@mateothegreat/svelte5-router";
+    import {navigate} from "@perfice/app";
 
     let modal: Modal;
 
@@ -42,12 +42,12 @@
         singleValue = true;
     }
 
-    function createForm(){
+    function createForm() {
         let route = `/forms/${NEW_FORM_ROUTE}:${TRACKABLE_FORM_ENTITY_TYPE}`;
-        if(categoryId != null)
+        if (categoryId != null)
             route += `${TRACKABLE_FORM_CATEGORY_DELIM}${categoryId}`;
 
-        goto(route);
+        navigate(route);
     }
 
     function onSelected(categoryId: string | null, suggestion: TrackableSuggestion) {
@@ -56,10 +56,11 @@
     }
 </script>
 
-<Modal bind:this={modal} title="Create trackable" onConfirm={onSave} type={singleValue ? ModalType.CONFIRM_CANCEL : ModalType.CANCEL}>
+<Modal bind:this={modal} title="Create trackable" onConfirm={onSave}
+       type={singleValue ? ModalType.CONFIRM_CANCEL : ModalType.CANCEL}>
     <div class="md:max-h-96 overflow-y-scroll scrollbar-hide">
         {#if singleValue}
-            <CreateSingleValueTrackable bind:this={singleValueModal} />
+            <CreateSingleValueTrackable bind:this={singleValueModal}/>
         {:else}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CardButton iconClass="w-14" icon={faHashtag} title="Single value"

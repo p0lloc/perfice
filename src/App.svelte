@@ -24,6 +24,7 @@
     import OnboardingView from "@perfice/views/onboarding/OnboardingView.svelte";
     import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
     import SettingsView from "@perfice/views/settings/SettingsView.svelte";
+    import {BASE_URL} from "@perfice/app";
 
     type AppRoute = Route & { hideBottomBar?: boolean };
 
@@ -77,6 +78,7 @@
     let customLayout = $state<boolean>(false);
     let hideBottomBar = $state<boolean>(false);
 
+
     function onBodyClick(e: MouseEvent) {
         closeContextMenus(e.target as HTMLElement);
     }
@@ -112,7 +114,7 @@
             <QuickLogField/>
         {/if}
         <div class="flex-1">
-            <Router post={onRouterRoute} {routes}/>
+            <Router basePath={BASE_URL} post={onRouterRoute} {routes}/>
         </div>
     </div>
 {/if}

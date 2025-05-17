@@ -1,12 +1,13 @@
 <script lang="ts">
     import type {OnboardingImagePage} from "@perfice/model/onboarding/onboarding";
+    import {BASE_URL} from "@perfice/app.js";
 
     let {page}: { page: OnboardingImagePage } = $props();
 </script>
 
 <div class="bg-gray-300 rounded-xl w-full h-[60vh] md:h-[50vh] border-2 shadow-md">
-    <img src={page.desktopImage} alt="Onboarding" class="image hidden md:block"/>
-    <img src={page.mobileImage} alt="Onboarding" class="image md:hidden"/>
+    <img src={`${BASE_URL}/${page.desktopImage}`} alt="Onboarding" class="image hidden md:block"/>
+    <img src={`${BASE_URL}/${page.mobileImage}`} alt="Onboarding" class="image md:hidden"/>
 </div>
 <div class="flex-col flex justify-between mt-4">
     <div class="md:text-center">

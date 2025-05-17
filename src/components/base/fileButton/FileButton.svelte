@@ -1,7 +1,11 @@
 <script lang="ts">
     let fileInputElement: HTMLInputElement;
 
-    let {onChange, displayFile}: { onChange: (files: FileList) => void, displayFile?: boolean } = $props();
+    let {onChange, displayFile, class: className = 'md:w-1/2'}: {
+        onChange: (files: FileList) => void,
+        displayFile?: boolean,
+        class?: string
+    } = $props();
 
     let selectedFile: File | null = $state<File | null>(null);
 
@@ -18,7 +22,7 @@
     }
 </script>
 
-<button class="border-dashed text-gray-500 border-2 w-full md:w-1/2 h-40 flex-center mt-2 rounded-xl pointer-feedback:bg-gray-100"
+<button class="{className} border-dashed text-gray-500 border-2 w-full h-40 flex-center mt-2 rounded-xl pointer-feedback:bg-gray-100"
         onclick={onButtonClick}>
     {#if selectedFile != null && displayFile}
         {selectedFile.name}

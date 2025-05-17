@@ -5,10 +5,11 @@
     import {completeExport} from "@perfice/stores";
 
     async function onExport() {
-        downloadTextFile("complete-export.json", ExportFileType.JSON,
+        await downloadTextFile("complete-export.json", ExportFileType.JSON,
             JSON.stringify(await completeExport.export()));
     }
 </script>
+
 <h3 class="settings-label">Export data</h3>
 <div class="row-gap mt-2">
     <Button onClick={onExport}>Export</Button>

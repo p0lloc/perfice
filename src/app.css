@@ -16,6 +16,12 @@
     overflow-y: visible !important;
 }
 
+input:not([type="checkbox"]):not([type="color"]), textarea {
+    appearance: none;
+    border-style: solid;
+    outline: none;
+}
+
 /* For IE, Edge and Firefox */
 .scrollbar-hide {
     -ms-overflow-style: none;

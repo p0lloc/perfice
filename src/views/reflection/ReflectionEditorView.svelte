@@ -18,13 +18,13 @@
     import {ButtonColor} from "@perfice/model/ui/button";
     import Button from "@perfice/components/base/button/Button.svelte";
     import ReflectionEditorSidebar from "@perfice/components/reflection/editor/sidebar/ReflectionEditorSidebar.svelte";
-    import {goto} from "@mateothegreat/svelte5-router";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import type {StoredNotification} from "@perfice/model/notification/notification";
     import EditReflectionNotifications
         from "@perfice/components/reflection/editor/notifications/EditReflectionNotifications.svelte";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {forms, reflections} from "@perfice/stores";
+    import {navigate} from "@perfice/app";
 
     let {params}: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);
@@ -38,7 +38,7 @@
     })
 
     function back() {
-        goto("/reflections");
+        navigate("/reflections");
     }
 
     async function save() {
@@ -50,7 +50,7 @@
             await reflections.createReflection(value);
         }
 
-        goto("/reflections");
+        navigate("/reflections");
     }
 
     function createPage() {

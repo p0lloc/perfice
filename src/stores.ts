@@ -19,7 +19,6 @@ import type {CategoryList} from "./util/category";
 import type {Trackable, TrackableCategory} from "./model/trackable/trackable";
 import type {Tag, TagCategory} from "./model/tag/tag";
 import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
-import {goto} from "@mateothegreat/svelte5-router";
 import {NotificationType} from "@perfice/model/notification/notification";
 import {DashboardStore, DashboardWidgetStore} from "@perfice/stores/dashboard/dashboard";
 import {EntryImportStore} from "@perfice/stores/import/formEntry";
@@ -54,6 +53,8 @@ import {CompleteExportStore} from "@perfice/stores/export/complete";
 import {CompleteImportStore} from "@perfice/stores/import/complete";
 import {WeekStartStore} from "@perfice/stores/ui/weekStart";
 import {VariableValueStore} from "@perfice/stores/variable/value";
+import {navigate} from "@perfice/app";
+import {DeletionStore} from "@perfice/stores/deletion/deletion";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -75,6 +76,7 @@ export let paginatedJournal: PaginatedJournal;
 export let categorizedTags: Readable<Promise<CategoryList<TagCategory, Tag>[]>>;
 export let variableEditProvider: VariableEditProvider;
 export let reflections: ReflectionStore;
+export let deletion: DeletionStore;
 
 export let dashboards: DashboardStore;
 export let dashboardWidgets: DashboardWidgetStore;
@@ -127,13 +129,14 @@ export class StoreProvider {
         categorizedTags = CategorizedTags();
         variableEditProvider = new VariableEditProvider(this.services.variable, this.services.form, this.services.trackable);
         reflections = new ReflectionStore(this.services.reflection);
+        deletion = new DeletionStore(this.services.deletion);
 
         forms.addEntityFormCreateListener((entityType, form) => {
             if (!entityType.startsWith(TRACKABLE_FORM_ENTITY_TYPE)) return;
 
             let parts = entityType.split(TRACKABLE_FORM_CATEGORY_DELIM);
             trackables.onTrackableFromFormCreated(form, parts.length == 2 ? parts[1] : null);
-            goto("/trackables");
+            navigate("/trackables");
         })
 
         this.services.notification.addNotificationClickedListener(NotificationType.REFLECTION, async (entityId) => {

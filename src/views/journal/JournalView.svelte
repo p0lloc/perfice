@@ -19,10 +19,10 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
     import type {SearchEntity} from "@perfice/model/journal/search/search";
-    import {goto} from "@mateothegreat/svelte5-router";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {onMount} from "svelte";
     import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
+    import {navigate} from "@perfice/app";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
@@ -117,11 +117,11 @@
 
     function goToSearch() {
         if (currentSearch != null) {
-            goto(`/journal/search/${constructSearchParam(currentSearch)}`);
+            navigate(`/journal/search/${constructSearchParam(currentSearch)}`);
             return;
         }
 
-        goto("/journal/search");
+        navigate("/journal/search");
     }
 
     // Scroll might already be at bottom, give time for the initial page load to finish

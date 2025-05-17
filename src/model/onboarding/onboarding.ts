@@ -76,7 +76,7 @@ export const ONBOARDING: OnboardingPage[] = [
     {
         pageType: OnboardingPageType.IMAGE,
         title: "Goals",
-        description: "Set goals and stay accountable",
+        description: "Set goals and stay on track",
         desktopImage: "goals-onboarding.png",
         mobileImage: "goals-onboarding-mobile.png"
     },

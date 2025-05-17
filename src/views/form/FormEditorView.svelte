@@ -28,7 +28,6 @@
         questionDataTypeRegistry,
     } from "@perfice/model/form/data";
     import {type FormQuestionDisplaySettings, questionDisplayTypeRegistry,} from "@perfice/model/form/display";
-    import {goto} from "@mateothegreat/svelte5-router";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
@@ -36,6 +35,7 @@
     import {onMount} from "svelte";
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
     import {forms} from "@perfice/stores";
+    import {back} from "@perfice/app";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -140,10 +140,6 @@
     function onFormatChange(v: TextOrDynamic[]) {
         if (form == undefined) return;
         form.format = v;
-    }
-
-    function back() {
-        goto("/");
     }
 
     function onSidebarQuestionChange(question: FormQuestion | null) {

@@ -55,7 +55,7 @@
 </script>
 
 <SwipeDetector onGoLeft={() => navigate(page - 1)} onGoRight={() => navigate(page + 1)}/>
-<div class="flex flex-col p-10 mx-auto w-screen lg:w-1/2 md:w-[70%] md:mt-10 gap-[3rem]">
+<div class="flex flex-col p-10 mx-auto w-screen 2xl:w-1/2 md:w-[70%] md:mt-10 gap-[3rem]">
     <div class="md:h-[55vh] h-[65vh]">
         <RendererComponent page={current} selectState={currentSelectState} updateSelectState={updateSelectState}/>
     </div>

@@ -5,7 +5,6 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import type {Reflection} from "@perfice/model/reflection/reflection";
-    import {goto} from "@mateothegreat/svelte5-router";
     import {NEW_REFLECTION_ROUTE, openReflectionEvents} from "@perfice/model/reflection/ui";
     import HorizontalPlusButton from "@perfice/components/base/button/HorizontalPlusButton.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
@@ -14,6 +13,7 @@
     import ReflectionModal from "@perfice/components/reflection/modal/ReflectionModal.svelte";
     import {publishToEventStore} from "@perfice/util/event";
     import {reflections} from "@perfice/stores";
+    import {navigate} from "@perfice/app";
 
     let deleteReflectionModal: GenericDeleteModal<Reflection>;
     let reflectionModal: ReflectionModal;
@@ -21,7 +21,7 @@
     reflections.load();
 
     function createReflection() {
-        goto(`/reflections/${NEW_REFLECTION_ROUTE}`);
+        navigate(`/reflections/${NEW_REFLECTION_ROUTE}`);
     }
 
     function onStartDeleteReflection(reflection: Reflection) {
@@ -34,7 +34,7 @@
     }
 
     function onEditReflection(reflection: Reflection) {
-        goto(`/reflections/${reflection.id}`);
+        navigate(`/reflections/${reflection.id}`);
     }
 
     function onPlayReflection(reflection: Reflection) {

@@ -2,13 +2,13 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import type {SidebarLink} from "@perfice/model/ui/sidebar";
-    import {goto} from "@mateothegreat/svelte5-router";
     import {toggleDrawer} from "@perfice/stores/ui/drawer";
+    import {navigate} from "@perfice/app";
 
     let {link, active}: { link: SidebarLink, active: boolean } = $props();
 
     function onClick() {
-        goto(link.path);
+        navigate(link.path);
         toggleDrawer();
     }
 </script>

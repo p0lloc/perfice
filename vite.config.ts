@@ -1,10 +1,11 @@
+/// <reference types="vite/client" />
 import {defineConfig} from 'vite'
 import {svelte} from '@sveltejs/vite-plugin-svelte'
 import {fileURLToPath, URL} from "node:url";
 import {VitePWA} from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig((v) => ({
     test: {
         setupFiles: ['vitest-localstorage-mock'],
         mockReset: false,
@@ -24,7 +25,7 @@ export default defineConfig({
                 short_name: 'Perfice',
                 description: 'Track everything and see how different choices affect your life.',
                 theme_color: '#2adb71',
-                start_url: "/",
+                start_url: v.command === 'serve' ? '/' : '/new/',
                 display: "fullscreen",
                 display_override: ["window-controls-overlay"],
                 screenshots: [
@@ -71,4 +72,4 @@ export default defineConfig({
             "@perfice": fileURLToPath(new URL("./src", import.meta.url)),
         },
     },
-})
+}));

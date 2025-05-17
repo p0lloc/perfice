@@ -1,5 +1,4 @@
 import {type OnboardingSelection, OnboardingSelectType} from "@perfice/model/onboarding/onboarding";
-import {goto} from "@mateothegreat/svelte5-router";
 import {TRACKABLE_SUGGESTIONS} from "@perfice/model/trackable/suggestions";
 import type {TrackableService} from "@perfice/services/trackable/trackable";
 import type {TrackableCategoryService} from "@perfice/services/trackable/category";
@@ -7,7 +6,6 @@ import type {TagService} from "@perfice/services/tag/tag";
 import type {TagCategoryService} from "@perfice/services/tag/category";
 import type {Trackable} from "@perfice/model/trackable/trackable";
 import type {Form} from "@perfice/model/form/form";
-import {Capacitor} from "@capacitor/core";
 import type {DashboardService} from "@perfice/services/dashboard/dashboard";
 import type {DashboardWidgetService} from "@perfice/services/dashboard/widget";
 import {DASHBOARD_SUGGESTIONS, manipulateSuggestionWidgetSettings} from "@perfice/model/dashboard/suggestions";
@@ -22,6 +20,8 @@ import {
 } from "@perfice/model/reflection/suggestions";
 import type {ReflectionService} from "@perfice/services/reflection/reflection";
 import {ReflectionAutoOpenType} from "@perfice/model/reflection/reflection";
+import {Capacitor} from "@capacitor/core";
+import {navigate} from "@perfice/app";
 
 const ONBOARDING_KEY = "onboarded";
 const FINISH_ROUTE = "/";
@@ -62,7 +62,7 @@ export class OnboardingStore {
 
     onboardNewUser() {
         if (localStorage.getItem(ONBOARDING_KEY) == null) {
-            goto(ONBOARDING_ROUTE);
+            navigate(ONBOARDING_ROUTE);
         }
     }
 
@@ -130,7 +130,7 @@ export class OnboardingStore {
         await analytics.reload();
 
         localStorage.setItem(ONBOARDING_KEY, "true");
-        goto(FINISH_ROUTE);
+        navigate(FINISH_ROUTE);
     }
 
     private async createDefaultReflections(createdTrackables: Map<string, {

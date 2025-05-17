@@ -15,10 +15,9 @@
     import GoalEditorSidebar from "@perfice/components/goal/editor/sidebar/GoalEditorSidebar.svelte";
     import GoalConditionCard from "@perfice/components/goal/editor/GoalConditionCard.svelte";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
-    import {goto} from "@mateothegreat/svelte5-router";
     import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
     import {type TimeScope} from "@perfice/model/variable/time/time";
-    import {back} from "@perfice/app";
+    import {back, navigate} from "@perfice/app";
     import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
     import WeekDays from "@perfice/components/base/weekDays/WeekDays.svelte";
 
@@ -137,7 +136,7 @@
             await goals.updateGoal(goalSnapshot);
         }
 
-        goto("/goals");
+        navigate("/goals");
     }
 
     function updateTimeScope(value: TimeScope) {

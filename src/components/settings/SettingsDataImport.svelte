@@ -32,5 +32,5 @@
     ]} value={newFormat} onChange={(v) => newFormat = v}/>
 </div>
 
-<FileButton displayFile={true} onChange={onFileChange}/>
+<FileButton class="w-full" displayFile={true} onChange={onFileChange}/>
 <Button class="mt-2" onClick={onImport}>Import</Button>

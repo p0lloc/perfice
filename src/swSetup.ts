@@ -1,8 +1,10 @@
+import {BASE_URL} from "@perfice/app";
+
 export function setupServiceWorker() {
     if ("serviceWorker" in navigator) {
         let registration = navigator.serviceWorker
             .register(
-                "/sw.js",
+                BASE_URL + "/sw.js",
                 // import.meta.env.MODE === "production"
                 //     ? "/app/sw.js"
                 //     : "/dev-sw.js?dev-sw",

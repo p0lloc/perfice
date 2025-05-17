@@ -8,9 +8,9 @@
     import EditTrackableImportExport from "@perfice/components/trackable/modals/edit/EditTrackableImportExport.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
-    import {goto} from "@mateothegreat/svelte5-router";
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import {trackables} from "@perfice/stores";
+    import {navigate} from "@perfice/app";
 
     let viewType: TrackableEditViewType = $state(TrackableEditViewType.GENERAL);
     let editState: EditTrackableState = $state({} as EditTrackableState);
@@ -43,11 +43,15 @@
 
     const SEGMENTS: SegmentedItem<string>[] = [
         {name: "General", value: TrackableEditViewType.GENERAL},
-        {name: "Form", suffix: faArrowUpRightFromSquare, onClick: () => goto(`/forms/${editState.trackable.formId}`)},
+        {
+            name: "Form",
+            suffix: faArrowUpRightFromSquare,
+            onClick: () => navigate(`/forms/${editState.trackable.formId}`)
+        },
         // {
         //     name: "Analytics",
         //     suffix: faArrowUpRightFromSquare,
-        //     onClick: () => goto(`/forms/${editState.trackable.formId}`)
+        //     onClick: () => navigate(`/forms/${editState.trackable.formId}`)
         // },
         {name: "Import/Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];

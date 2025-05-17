@@ -14,7 +14,6 @@
     import {faArrowLeft, faExclamationTriangle, faPlus, faSave, faSearch} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
-    import {goto} from "@mateothegreat/svelte5-router";
     import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
     import HorizontalPlusButton from "@perfice/components/base/button/HorizontalPlusButton.svelte";
     import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
@@ -27,7 +26,7 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {emptyPromise, resolvedUpdatePromise} from "@perfice/util/promise";
     import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
-    import {back} from "@perfice/app";
+    import {back, navigate} from "@perfice/app";
 
     let search = $state<JournalSearch>({} as JournalSearch);
     let dependencies = $state({} as Promise<JournalSearchUiDependencies>);
@@ -57,7 +56,7 @@
 
     function onSearch() {
         let encoded = constructSearchParam(search.entities);
-        goto(`/journal/${encoded}`);
+        navigate(`/journal/${encoded}`);
     }
 
     function addEntity(type: SearchEntityType) {

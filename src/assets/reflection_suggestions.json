@@ -30,6 +30,33 @@
         ]
       },
       {
+        "name": "Energy levels",
+        "icon": "\uD83D\uDD0B",
+        "description": "How energised have you been today?",
+        "widgets": [
+          {
+            "type": "TABLE",
+            "settings": {
+              "formId": "Energy levels",
+              "prefix": [
+                {
+                  "value": "energy",
+                  "dynamic": true
+                }
+              ],
+              "suffix": [
+                {
+                  "value": "timestamp",
+                  "dynamic": true
+                }
+              ],
+              "timeScope": "DAILY",
+              "groupBy": null
+            }
+          }
+        ]
+      },
+      {
         "name": "Food",
         "icon": "🍋",
         "description": "What did you eat today?",
