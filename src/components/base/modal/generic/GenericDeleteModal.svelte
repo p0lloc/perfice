@@ -13,6 +13,6 @@
     }
 </script>
 
-<GenericEntityModal message={message ?? "Are you sure you want to delete {subject}?"} title="Confirm deletion"
+<GenericEntityModal message={message ?? `Are you sure you want to delete ${subject}?`} title="Confirm deletion"
                     onConfirm={onDelete}
                     bind:this={modal} confirmText="Delete"/>

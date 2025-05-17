@@ -2203,7 +2203,7 @@
           "format": [
             {
               "dynamic": true,
-              "value": "location"
+              "value": "weather"
             }
           ],
           "questions": [
@@ -2383,7 +2383,7 @@
                     "iconAndText": true
                   }
                 ],
-                "multiple": true,
+                "multiple": false,
                 "grid": {
                   "itemsPerRow": [
                     5,
