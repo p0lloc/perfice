@@ -111,7 +111,9 @@
                             onChange={(v) => date = new Date(v)} disabled={false}/>
             </div>
         {/if}
-        <FormEmbed bind:this={nestedFormEmbed} questions={nestedForm.questions} answers={nestedFormAnswers}/>
+        <div class="pb-20 md:pb-0">
+            <FormEmbed bind:this={nestedFormEmbed} questions={nestedForm.questions} answers={nestedFormAnswers}/>
+        </div>
     {:else}
         <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage}
                                 states={answerStates}
@@ -119,7 +121,7 @@
     {/if}
 
     {#snippet customFooter()}
-        <div class="w-full border-t justify-center items-center gap-2 py-2 fixed md:static bottom-0 flex">
+        <div class="w-full border-t justify-center items-center gap-2 py-2 fixed md:static bottom-0 flex bg-white">
             {#if nestedForm != null}
                 <Button onClick={logNestedForm}>Log</Button>
                 <Button color={ButtonColor.RED} onClick={cancelNestedForm}>Cancel</Button>

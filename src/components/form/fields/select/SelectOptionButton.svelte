@@ -20,7 +20,7 @@
         <Icon class="text-4xl" name={option.icon}/>
     {/if}
     {#if option.icon == null || option.iconAndText}
-        <span class="overflow-hidden w-full text-xs">{option.text} {unit ?? ""}</span>
+        <span class="whitespace-nowrap overflow-hidden w-full text-xs">{option.text} {unit ?? ""}</span>
     {/if}
 </button>
 
