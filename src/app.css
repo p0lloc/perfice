@@ -18,7 +18,6 @@
 
 input:not([type="checkbox"]):not([type="color"]), textarea {
     appearance: none;
-    border-style: solid;
     outline: none;
 }
 

@@ -12,7 +12,7 @@ import {MigrationService} from "@perfice/db/migration/migration";
 import {loadStoredWeekStart} from "@perfice/stores/ui/weekStart";
 import {goto} from "@mateothegreat/svelte5-router";
 
-export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform) ? "/new" : "";
+export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform()) ? "/new" : "";
 
 // Main entry point of the application
 (async () => {
