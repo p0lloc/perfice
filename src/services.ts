@@ -30,6 +30,7 @@ import type {Form} from "@perfice/model/form/form";
 import {CompleteImportService} from "@perfice/services/import/complete/complete";
 import type {MigrationService} from "@perfice/db/migration/migration";
 import {DeletionService} from "@perfice/services/deletion/deletion";
+import {IntegrationService} from "./services/integration/integration";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -57,6 +58,7 @@ export interface Services {
     readonly completeExport: CompleteExportService;
     readonly completeImport: CompleteImportService;
     readonly deletion: DeletionService;
+    readonly integration: IntegrationService;
 }
 
 export function setupServices(db: Collections, tables: Record<string, Table>,
@@ -115,6 +117,7 @@ export function setupServices(db: Collections, tables: Record<string, Table>,
 
     const completeExportService = new CompleteExportService(tables, analyticsHistoryService, ignoreService, migrationService);
     const deletionService = new DeletionService(tables);
+    const integrationService = new IntegrationService("http://localhost:3000", journalService, formService);
 
     return {
         trackable: trackableService,
@@ -141,6 +144,7 @@ export function setupServices(db: Collections, tables: Record<string, Table>,
         analyticsHistory: analyticsHistoryService,
         completeExport: completeExportService,
         completeImport: completeImportService,
-        deletion: deletionService
+        deletion: deletionService,
+        integration: integrationService
     }
 }

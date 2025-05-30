@@ -24,7 +24,7 @@ export interface JournalService {
 
     getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
 
-    logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry>;
+    logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry>;
 
     updateEntry(entry: JournalEntry, format: TextOrDynamic[]): Promise<void>;
 
@@ -47,6 +47,8 @@ export interface JournalService {
     getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]>;
 
     deleteEntriesByFormId(id: string): Promise<void>;
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined>;
 }
 
 export class BaseJournalService implements JournalService {
@@ -71,13 +73,14 @@ export class BaseJournalService implements JournalService {
         return this.collection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
     }
 
-    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry> {
+    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry> {
         let entry: JournalEntry = {
             id: crypto.randomUUID(),
             formId: form.id,
             snapshotId: form.snapshotId,
             answers,
             timestamp,
+            integration: integration ?? null,
             displayValue: formatAnswersIntoRepresentation(answers, format)
         }
 
@@ -146,6 +149,11 @@ export class BaseJournalService implements JournalService {
 
     getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]> {
         return this.collection.getEntriesByFormIdFromTime(formId, lower);
+    }
+
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined> {
+        return this.collection.getEntryByIntegrationIdentifier(identifier);
     }
 
 }

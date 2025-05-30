@@ -1,15 +1,15 @@
-import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
-import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
-import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
-import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
-import type {Goal} from "@perfice/model/goal/goal";
-import type {Tag, TagCategory} from "@perfice/model/tag/tag";
+import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
+import type { Trackable, TrackableCategory } from "@perfice/model/trackable/trackable";
+import type { StoredVariable, VariableIndex } from "@perfice/model/variable/variable";
+import type { Form, FormSnapshot, FormTemplate } from "@perfice/model/form/form";
+import type { Goal } from "@perfice/model/goal/goal";
+import type { Tag, TagCategory } from "@perfice/model/tag/tag";
 
-import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
-import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
-import type {Reflection} from "@perfice/model/reflection/reflection";
-import type {JournalSearch} from "@perfice/model/journal/search/search";
-import type {StoredNotification} from "@perfice/model/notification/notification";
+import type { AnalyticsSettings } from "@perfice/model/analytics/analytics";
+import type { Dashboard, DashboardWidget } from "@perfice/model/dashboard/dashboard";
+import type { Reflection } from "@perfice/model/reflection/reflection";
+import type { JournalSearch } from "@perfice/model/journal/search/search";
+import type { StoredNotification } from "@perfice/model/notification/notification";
 
 export interface Collections {
     entries: JournalCollection;
@@ -199,6 +199,8 @@ export interface JournalCollection {
     getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]>;
 
     getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined>;
 }
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;

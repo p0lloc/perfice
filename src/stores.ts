@@ -55,6 +55,7 @@ import {WeekStartStore} from "@perfice/stores/ui/weekStart";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {navigate} from "@perfice/app";
 import {DeletionStore} from "@perfice/stores/deletion/deletion";
+import {IntegrationStore} from "./stores/integration/integration";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -83,6 +84,7 @@ export let dashboardWidgets: DashboardWidgetStore;
 
 export let entryImports: EntryImportStore;
 export let entryExports: EntryExportStore;
+export let integrations: IntegrationStore;
 export let completeExport: CompleteExportStore;
 export let completeImport: CompleteImportStore;
 export let onboarding: OnboardingStore;
@@ -130,6 +132,8 @@ export class StoreProvider {
         variableEditProvider = new VariableEditProvider(this.services.variable, this.services.form, this.services.trackable);
         reflections = new ReflectionStore(this.services.reflection);
         deletion = new DeletionStore(this.services.deletion);
+        integrations = new IntegrationStore(this.services.integration);
+        integrations.load();
 
         forms.addEntityFormCreateListener((entityType, form) => {
             if (!entityType.startsWith(TRACKABLE_FORM_ENTITY_TYPE)) return;

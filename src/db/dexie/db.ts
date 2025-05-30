@@ -1,32 +1,32 @@
-import Dexie, {type EntityTable, type Table} from "dexie";
-import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
-import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
-import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
-import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
-import type {Collections, TrackableCollection, VariableCollection} from "@perfice/db/collections";
-import {DexieTrackableCategoryCollection, DexieTrackableCollection} from "@perfice/db/dexie/trackable";
-import {DexieVariableCollection} from "@perfice/db/dexie/variable";
-import {DexieJournalCollection} from "@perfice/db/dexie/journal";
-import {DexieFormCollection, DexieFormSnapshotCollection, DexieFormTemplateCollection} from "@perfice/db/dexie/form";
-import {DexieIndexCollection} from "@perfice/db/dexie/index";
-import type {Goal} from "@perfice/model/goal/goal";
-import {DexieGoalCollection} from "./goal";
-import {DexieTagCategoryCollection, DexieTagCollection} from "./tag";
-import {DexieTagEntryCollection} from "@perfice/db/dexie/tag";
-import type {Tag, TagCategory} from "@perfice/model/tag/tag";
+import Dexie, { type EntityTable, type Table } from "dexie";
+import type { Trackable, TrackableCategory } from "@perfice/model/trackable/trackable";
+import type { StoredVariable, VariableIndex } from "@perfice/model/variable/variable";
+import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
+import type { Form, FormSnapshot, FormTemplate } from "@perfice/model/form/form";
+import type { Collections, TrackableCollection, VariableCollection } from "@perfice/db/collections";
+import { DexieTrackableCategoryCollection, DexieTrackableCollection } from "@perfice/db/dexie/trackable";
+import { DexieVariableCollection } from "@perfice/db/dexie/variable";
+import { DexieJournalCollection } from "@perfice/db/dexie/journal";
+import { DexieFormCollection, DexieFormSnapshotCollection, DexieFormTemplateCollection } from "@perfice/db/dexie/form";
+import { DexieIndexCollection } from "@perfice/db/dexie/index";
+import type { Goal } from "@perfice/model/goal/goal";
+import { DexieGoalCollection } from "./goal";
+import { DexieTagCategoryCollection, DexieTagCollection } from "./tag";
+import { DexieTagEntryCollection } from "@perfice/db/dexie/tag";
+import type { Tag, TagCategory } from "@perfice/model/tag/tag";
 
-import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
-import {DexieAnalyticsSettingsCollection} from "@perfice/db/dexie/analytics";
-import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
-import {DexieDashboardCollection, DexieDashboardWidgetCollection} from "@perfice/db/dexie/dashboard";
-import type {Reflection} from "@perfice/model/reflection/reflection";
-import {DexieReflectionCollection} from "@perfice/db/dexie/reflection";
-import type {JournalSearch} from "@perfice/model/journal/search/search";
-import {DexieSavedSearchCollection} from "@perfice/db/dexie/search";
-import {DexieNotificationCollection} from "@perfice/db/dexie/notification";
-import type {StoredNotification} from "@perfice/model/notification/notification";
-import {type Migrator} from "@perfice/db/migration/migration";
-import {DexieMigrator} from "@perfice/db/dexie/migration";
+import type { AnalyticsSettings } from "@perfice/model/analytics/analytics";
+import { DexieAnalyticsSettingsCollection } from "@perfice/db/dexie/analytics";
+import type { Dashboard, DashboardWidget } from "@perfice/model/dashboard/dashboard";
+import { DexieDashboardCollection, DexieDashboardWidgetCollection } from "@perfice/db/dexie/dashboard";
+import type { Reflection } from "@perfice/model/reflection/reflection";
+import { DexieReflectionCollection } from "@perfice/db/dexie/reflection";
+import type { JournalSearch } from "@perfice/model/journal/search/search";
+import { DexieSavedSearchCollection } from "@perfice/db/dexie/search";
+import { DexieNotificationCollection } from "@perfice/db/dexie/notification";
+import type { StoredNotification } from "@perfice/model/notification/notification";
+import { type Migrator } from "@perfice/db/migration/migration";
+import { DexieMigrator } from "@perfice/db/dexie/migration";
 
 export type DexieDB = Dexie & {
     trackables: EntityTable<Trackable, 'id'>;
@@ -51,10 +51,10 @@ export type DexieDB = Dexie & {
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(20).stores({
+    db.version(21).stores({
         "trackables": "id, categoryId",
         "variables": "id",
-        "entries": "id, formId, snapshotId, timestamp, [formId+timestamp], [timestamp+id]",
+        "entries": "id, formId, snapshotId, timestamp, integration, [formId+timestamp], [timestamp+id]",
         "indices": "id, variableId, [variableId+timeScope]",
         "trackableCategories": "id",
         "tagCategories": "id",

@@ -3,7 +3,7 @@
     import Modal from "@perfice/components/base/modal/Modal.svelte";
     import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
     import type {Component} from "svelte";
-    import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
+    import {type EditTrackableState, TrackableEditViewType,} from "@perfice/model/trackable/ui";
     import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/general/EditTrackableGeneral.svelte";
     import EditTrackableImportExport from "@perfice/components/trackable/modals/edit/EditTrackableImportExport.svelte";
     import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
@@ -46,19 +46,19 @@
         {
             name: "Form",
             suffix: faArrowUpRightFromSquare,
-            onClick: () => navigate(`/forms/${editState.trackable.formId}`)
+            onClick: () => navigate(`/forms/${editState.trackable.formId}`),
         },
-        // {
-        //     name: "Analytics",
-        //     suffix: faArrowUpRightFromSquare,
-        //     onClick: () => navigate(`/forms/${editState.trackable.formId}`)
-        // },
+        {
+            name: "Integrations",
+            suffix: faArrowUpRightFromSquare,
+            onClick: () => navigate(`/integrations/${editState.trackable.formId}`),
+        },
         {name: "Import/Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 
     function getViewComponent(e: TrackableEditViewType): Component<{
-        editState: EditTrackableState,
-        close: () => void
+        editState: EditTrackableState;
+        close: () => void;
     }> {
         switch (e) {
             case TrackableEditViewType.GENERAL:
@@ -66,19 +66,27 @@
             case TrackableEditViewType.IMPORT_EXPORT:
                 return EditTrackableImportExport;
             default:
-                throw new Error("Invalid view!")
+                throw new Error("Invalid view!");
         }
     }
 
     const RendererComponent = $derived(getViewComponent(viewType));
 </script>
 
-<Modal type={ModalType.DELETE_CONFIRM_CANCEL} title="Edit trackable" bind:this={modal} {onDelete} onConfirm={save}>
+<Modal
+        type={ModalType.DELETE_CONFIRM_CANCEL}
+        title="Edit trackable"
+        bind:this={modal}
+        {onDelete}
+        onConfirm={save}
+>
     {#snippet header()}
-        <InvertedSegmentedControl value={viewType}
-                                  onChange={(t) => switchView(t)}
-                                  segments={SEGMENTS}/>
+        <InvertedSegmentedControl
+                value={viewType}
+                onChange={(t) => switchView(t)}
+                segments={SEGMENTS}
+        />
     {/snippet}
 
-    <RendererComponent bind:editState={editState} {close}/>
+    <RendererComponent bind:editState {close}/>
 </Modal>

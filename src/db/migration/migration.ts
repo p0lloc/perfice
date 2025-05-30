@@ -63,4 +63,15 @@ export class MigrationService {
         console.log("Migration complete");
     }
 
+    async migrateSingleEntity(entity: any, entityType: string, version: number) {
+        let relevantMigrations = MIGRATIONS
+            .filter(m => m.getVersion() > version
+                && m.getEntityType() == entityType
+                && m.getVersion() <= CURRENT_DATA_VERSION);
+
+        for (let migration of relevantMigrations) {
+            await this.migrator.applyMigration(migration);
+        }
+    }
+
 }

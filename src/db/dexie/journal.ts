@@ -1,6 +1,6 @@
-import type {JournalCollection} from "@perfice/db/collections";
-import type {EntityTable} from "dexie";
-import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
+import type { JournalCollection } from "@perfice/db/collections";
+import type { EntityTable } from "dexie";
+import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
 
 export class DexieJournalCollection implements JournalCollection {
 
@@ -96,6 +96,10 @@ export class DexieJournalCollection implements JournalCollection {
             .limit(limit)
             .reverse()
             .toArray();
+    }
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined> {
+        return this.table.where("integration").equals(identifier).first();
     }
 
 }

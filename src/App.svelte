@@ -25,6 +25,9 @@
     import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
     import SettingsView from "@perfice/views/settings/SettingsView.svelte";
     import {BASE_URL} from "@perfice/app";
+    import IntegrationTypesView from "@perfice/views/integration/IntegrationTypesView.svelte";
+    import IntegrationEditView from "@perfice/views/integration/IntegrationEditView.svelte";
+    import IntegrationCreateView from "@perfice/views/integration/IntegrationCreateView.svelte";
 
     type AppRoute = Route & { hideBottomBar?: boolean };
 
@@ -60,6 +63,20 @@
             component: AnalyticsDetailView,
             hideBottomBar: true,
         },
+
+        {
+            path: "/integrations/(?<formId>.*)/create/(?<integrationType>.*)",
+            component: IntegrationCreateView,
+        },
+        {
+            path: "/integrations/edit/(?<integrationId>.*)",
+            component: IntegrationEditView,
+        },
+        {
+            path: "/integrations/(?<formId>.*)",
+            component: IntegrationTypesView,
+        },
+
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
         {path: "/trackables", component: TrackableView},

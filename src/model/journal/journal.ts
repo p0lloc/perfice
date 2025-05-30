@@ -1,4 +1,4 @@
-import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
+import type { PrimitiveValue } from "@perfice/model/primitive/primitive";
 
 export interface JournalEntry {
     id: string;
@@ -6,6 +6,7 @@ export interface JournalEntry {
 
     formId: string;
     snapshotId: string;
+    integration: string | null;
 
     displayValue: string;
     answers: Record<string, PrimitiveValue>;
