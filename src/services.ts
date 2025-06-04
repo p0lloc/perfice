@@ -31,6 +31,9 @@ import {CompleteImportService} from "@perfice/services/import/complete/complete"
 import type {MigrationService} from "@perfice/db/migration/migration";
 import {DeletionService} from "@perfice/services/deletion/deletion";
 import {IntegrationService} from "./services/integration/integration";
+import {AuthService} from "@perfice/services/auth/auth";
+import {EncryptionService} from "@perfice/services/encryption/encryption";
+import {SyncService} from "./services/sync/sync";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -59,10 +62,13 @@ export interface Services {
     readonly completeImport: CompleteImportService;
     readonly deletion: DeletionService;
     readonly integration: IntegrationService;
+    readonly auth: AuthService;
+    readonly encryption: EncryptionService;
+    readonly sync: SyncService;
 }
 
-export function setupServices(db: Collections, tables: Record<string, Table>,
-                              migrationService: MigrationService, weekStart: WeekStart): Services {
+export async function setupServices(db: Collections, tables: Record<string, Table>,
+                                    migrationService: MigrationService, weekStart: WeekStart): Promise<Services> {
 
     const journalService = new BaseJournalService(db.entries);
     const tagEntryService = new TagEntryService(db.tagEntries);
@@ -104,6 +110,12 @@ export function setupServices(db: Collections, tables: Record<string, Table>,
     const notificationService = new NotificationService(db.notifications);
 
     const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService, notificationService);
+    const authService = new AuthService();
+    try {
+        await authService.checkAuth();
+    } catch (_) {
+        await authService.login("test@gmail.com", "testtest");
+    }
 
     const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
         trackableService, tagService, formService, db.savedSearches);
@@ -117,7 +129,24 @@ export function setupServices(db: Collections, tables: Record<string, Table>,
 
     const completeExportService = new CompleteExportService(tables, analyticsHistoryService, ignoreService, migrationService);
     const deletionService = new DeletionService(tables);
-    const integrationService = new IntegrationService("http://localhost:3000", journalService, formService);
+    const integrationService = new IntegrationService(journalService, formService);
+
+    const encryptionService = new EncryptionService(db.encryptionKey);
+
+    const syncService = new SyncService(encryptionService, migrationService, db.updateQueue, db.transaction, tables);
+
+    try {
+        await encryptionService.load();
+    } catch (_) {
+        await encryptionService.setPassword(prompt("Encryption key") ?? "123", new Uint8Array(32));
+        await syncService.fullPull();
+    }
+
+    try {
+        await syncService.load();
+    } catch (_) {
+
+    }
 
     return {
         trackable: trackableService,
@@ -145,6 +174,9 @@ export function setupServices(db: Collections, tables: Record<string, Table>,
         completeExport: completeExportService,
         completeImport: completeImportService,
         deletion: deletionService,
-        integration: integrationService
+        integration: integrationService,
+        auth: authService,
+        encryption: encryptionService,
+        sync: syncService
     }
 }

@@ -2,15 +2,23 @@
     import {faGears} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import {integrations} from "@perfice/stores.js";
+    import {forms, integrations} from "@perfice/stores.js";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import type {Integration, IntegrationType} from "@perfice/model/integration/integration.js";
     import IntegrationTypeCard from "@perfice/components/integration/IntegrationTypeCard.svelte";
     import {navigate} from "@perfice/app";
     import {App as CapacitorApp} from "@capacitor/app";
+    import type {Form} from "@perfice/model/form/form";
+    import {onMount} from "svelte";
 
     let {params}: { params: Record<string, string> } = $props();
+
+    let form = $state<Form | undefined>(undefined);
+
+    onMount(async () => {
+        form = await forms.getFormById(params.formId);
+    });
 
     function getConnectedIntegration(integrations: Integration[], integrationType: string) {
         return integrations.find(i => i.integrationType == integrationType && i.formId == params.formId);
@@ -46,7 +54,7 @@
 
 <MobileTopBar title="Integrations"/>
 <div class="center-view md:mt-8 md:p-0 p-2 main-content">
-    <Title title={"Integrations"} icon={faGears}/>
+    <Title title={`Integrations for ${form?.name ?? "Form"}`} icon={faGears}/>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
         {#await $integrations then integrationData}
             {#each integrationData.integrationTypes as type}

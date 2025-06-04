@@ -1,12 +1,12 @@
 import type {AnalyticsSettingsCollection} from "@perfice/db/collections";
-import type {EntityTable} from "dexie";
+import type {Table} from "dexie";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 
 export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollection {
 
-    private table: EntityTable<AnalyticsSettings, "formId">;
+    private table: Table<AnalyticsSettings>;
 
-    constructor(table: EntityTable<AnalyticsSettings, "formId">) {
+    constructor(table: Table<AnalyticsSettings>) {
         this.table = table;
     }
 

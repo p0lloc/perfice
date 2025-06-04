@@ -16,8 +16,7 @@
     } = $props();
 
     let hours = $derived(Math.floor(time / 60));
-    let minutes = $derived(time % 60);
-
+    let minutes = $derived(Math.floor(time % 60));
 
     function formatDayText(value: number) {
         return value.toString().padStart(2, "0");

@@ -1,15 +1,17 @@
-import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
-import type { Trackable, TrackableCategory } from "@perfice/model/trackable/trackable";
-import type { StoredVariable, VariableIndex } from "@perfice/model/variable/variable";
-import type { Form, FormSnapshot, FormTemplate } from "@perfice/model/form/form";
-import type { Goal } from "@perfice/model/goal/goal";
-import type { Tag, TagCategory } from "@perfice/model/tag/tag";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
+import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
+import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
+import type {Form, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
+import type {Goal} from "@perfice/model/goal/goal";
+import type {Tag, TagCategory} from "@perfice/model/tag/tag";
 
-import type { AnalyticsSettings } from "@perfice/model/analytics/analytics";
-import type { Dashboard, DashboardWidget } from "@perfice/model/dashboard/dashboard";
-import type { Reflection } from "@perfice/model/reflection/reflection";
-import type { JournalSearch } from "@perfice/model/journal/search/search";
-import type { StoredNotification } from "@perfice/model/notification/notification";
+import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
+import type {Reflection} from "@perfice/model/reflection/reflection";
+import type {JournalSearch} from "@perfice/model/journal/search/search";
+import type {StoredNotification} from "@perfice/model/notification/notification";
+import type {OutgoingUpdate} from "@perfice/model/sync/sync";
+import type {Table} from "dexie";
 
 export interface Collections {
     entries: JournalCollection;
@@ -30,6 +32,10 @@ export interface Collections {
     reflections: ReflectionCollection;
     savedSearches: SavedSearchCollection;
     notifications: NotificationCollection;
+    encryptionKey: EncryptionKeyCollection;
+    updateQueue: UpdateQueueCollection;
+
+    transaction(table: Table<any>, callback: () => Promise<void>): Promise<void>;
 }
 
 export interface TrackableCollection {
@@ -326,4 +332,26 @@ export interface NotificationCollection {
     deleteNotificationById(id: string): Promise<void>;
 
     deleteNotificationsByEntityId(entityId: string): Promise<void>;
+}
+
+export interface EncryptionKeyCollection {
+    getKey(): Promise<CryptoKey | null>;
+
+    put(key: CryptoKey): Promise<void>;
+}
+
+export interface UpdateQueueCollection {
+    getAll(): Promise<OutgoingUpdate[]>;
+
+    create(update: OutgoingUpdate): Promise<void>;
+
+    update(update: OutgoingUpdate): Promise<void>;
+
+    getByEntityId(entityId: string): Promise<OutgoingUpdate | undefined>;
+
+    deleteByEntityType(entityType: string): Promise<void>;
+
+    deleteByIds(ids: string[]): Promise<void>;
+
+    deleteById(id: string): any;
 }

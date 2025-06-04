@@ -3,6 +3,7 @@ import {importPrimitive} from "../export/formEntries/export";
 import type {FormService} from "../form/form";
 import type {JournalService} from "../journal/journal";
 import {convertAnswersToDisplay} from "@perfice/model/form/validation";
+import ky, {type KyInstance} from "ky";
 
 export interface CreateIntegrationRequest {
     integrationType: string;
@@ -15,16 +16,21 @@ const USES_INTEGRATIONS_STORAGE_KEY = "uses_integrations";
 
 export class IntegrationService {
 
-    private serviceUrl: string;
     private journalService: JournalService;
     private formService: FormService;
 
     private integrations: Integration[] = [];
+    private client: KyInstance;
 
-    constructor(serviceUrl: string, journalService: JournalService, formService: FormService) {
-        this.serviceUrl = serviceUrl;
+    constructor(journalService: JournalService, formService: FormService) {
         this.journalService = journalService;
         this.formService = formService;
+
+        this.client = ky.extend({
+            prefixUrl: `${import.meta.env.VITE_BACKEND_URL}/`,
+            retry: 0,
+            credentials: "include"
+        })
     }
 
     // TODO: support local integrations
@@ -40,13 +46,8 @@ export class IntegrationService {
     }
 
     async createIntegration(request: CreateIntegrationRequest) {
-        let response = await fetch(`${this.serviceUrl}/integrations`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer 123"
-            },
-            body: JSON.stringify(request)
+        let response = await this.client.post("integrations", {
+            json: request
         });
 
         localStorage.setItem(USES_INTEGRATIONS_STORAGE_KEY, "true");
@@ -55,65 +56,40 @@ export class IntegrationService {
         return created;
     }
 
-    formatIntegrationIdentifier(integrationType: string, identifier: string): string {
-        return `${integrationType}:${identifier}`;
+    formatIntegrationIdentifier(integrationId: string, identifier: string): string {
+        return `${integrationId}:${identifier}`;
     }
 
     async fetchIntegrations(): Promise<Integration[]> {
-        let response = await fetch(`${this.serviceUrl}/integrations`, {
-            headers: {
-                "Authorization": "Bearer 123"
-            }
-        });
-
-        let integrations: Integration[] = await response.json();
+        let integrations = await this.client.get("integrations").json<Integration[]>();
         this.integrations = integrations;
         return integrations;
     }
 
     async authenticateIntegration(integrationType: string) {
-        let response = await fetch(`${this.serviceUrl}/${integrationType}/redirect`, {
-            headers: {
-                "Authorization": "Bearer 123"
-            }
-        });
-
-        let url = await response.text();
+        let url = await this.client.get(`integrationTypes/${integrationType}/redirect`).text();
         window.open(url, "_blank");
     }
 
     async fetchTypes(): Promise<IntegrationType[]> {
-        let response = await fetch(`${this.serviceUrl}/integrationTypes`, {
-            headers: {
-                "Authorization": "Bearer 123"
-            }
-        });
-        return await response.json();
+        return await this.client.get("integrationTypes").json<IntegrationType[]>();
     }
 
     async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
-        let response = await fetch(`${this.serviceUrl}/integrationTypes/${integrationType}/authenticated`, {
-            headers: {
-                "Authorization": "Bearer 123"
-            }
-        });
-        return response.status == 200;
+        return (await this.client.get(`integrationTypes/${integrationType}/authenticated`, {
+            throwHttpErrors: false
+        })).ok;
     }
 
     async fetchUpdates() {
-        let response = await fetch(`${this.serviceUrl}/updates`, {
-            headers: {
-                "Authorization": "Bearer 123"
-            }
-        });
-        let updates: IntegrationUpdate[] = await response.json();
+        let updates = await this.client.get("updates").json<IntegrationUpdate[]>();
 
         let acknowledgedUpdates: string[] = [];
         for (let update of updates) {
             let integration = this.integrations.find(i => i.id == update.integrationId);
             if (integration == null) continue;
 
-            let formattedIdentifier = this.formatIntegrationIdentifier(integration.integrationType, update.identifier);
+            let formattedIdentifier = this.formatIntegrationIdentifier(integration.id, update.identifier);
             let existingEntry = await this.journalService.getEntryByIntegrationIdentifier(formattedIdentifier);
 
             let answers = Object.fromEntries(
@@ -150,37 +126,22 @@ export class IntegrationService {
     }
 
     private async acknowledgeUpdates(updates: string[]) {
-        await fetch(`${this.serviceUrl}/updates/ack`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer 123"
-            },
-            body: JSON.stringify({
+        await this.client.post("updates/ack", {
+            json: {
                 updates: updates
-            })
+            }
         });
     }
 
     async updateIntegration(id: string, fields: Record<string, string>) {
-        await fetch(`${this.serviceUrl}/integrations/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer 123"
-            },
-            body: JSON.stringify({
+        await this.client.put(`integrations/${id}`, {
+            json: {
                 fields: fields
-            })
+            }
         });
     }
 
     async deleteIntegrationById(id: string) {
-        await fetch(`${this.serviceUrl}/integrations/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": "Bearer 123"
-            }
-        });
+        await this.client.delete(`integrations/${id}`);
     }
 }

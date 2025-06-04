@@ -1,12 +1,12 @@
-import type { JournalCollection } from "@perfice/db/collections";
-import type { EntityTable } from "dexie";
-import type { JournalEntry, TagEntry } from "@perfice/model/journal/journal";
+import type {JournalCollection} from "@perfice/db/collections";
+import type {JournalEntry} from "@perfice/model/journal/journal";
+import {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieJournalCollection implements JournalCollection {
 
-    private readonly table: EntityTable<JournalEntry, "id">;
+    private readonly table: SyncedTable<JournalEntry>;
 
-    constructor(table: EntityTable<JournalEntry, "id">) {
+    constructor(table: SyncedTable<JournalEntry>) {
         this.table = table;
     }
 
@@ -42,7 +42,7 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async createEntry(entry: JournalEntry): Promise<void> {
-        await this.table.add(entry);
+        await this.table.put(entry);
     }
 
     async updateEntry(entry: JournalEntry): Promise<void> {
@@ -50,15 +50,16 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async deleteEntryById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
     async deleteEntriesByFormId(formId: string): Promise<void> {
-        await this.table.where("formId").equals(formId).delete();
+        let byForm = await this.table.where("formId").equals(formId).toArray();
+        await this.table.deleteByIds(byForm.map(e => e.id));
     }
 
     async getEntryById(id: string): Promise<JournalEntry | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async getEntriesBySnapshotId(snapshotId: string): Promise<JournalEntry[]> {
@@ -70,11 +71,11 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async createEntries(entries: JournalEntry[]): Promise<void> {
-        await this.table.bulkAdd(entries);
+        await this.table.bulkPut(entries);
     }
 
     async getAllEntries(): Promise<JournalEntry[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getEntriesByFormId(formId: string): Promise<JournalEntry[]> {

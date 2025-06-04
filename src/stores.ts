@@ -56,6 +56,7 @@ import {VariableValueStore} from "@perfice/stores/variable/value";
 import {navigate} from "@perfice/app";
 import {DeletionStore} from "@perfice/stores/deletion/deletion";
 import {IntegrationStore} from "./stores/integration/integration";
+import {SyncStore} from "@perfice/stores/sync/sync";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -94,6 +95,7 @@ export let analytics: AnalyticsStore;
 export let appReady: Writable<boolean> = writable(false);
 
 export let journalSearch: JournalSearchStore;
+export let sync: SyncStore;
 
 export class StoreProvider {
 
@@ -133,7 +135,6 @@ export class StoreProvider {
         reflections = new ReflectionStore(this.services.reflection);
         deletion = new DeletionStore(this.services.deletion);
         integrations = new IntegrationStore(this.services.integration);
-        integrations.load();
 
         forms.addEntityFormCreateListener((entityType, form) => {
             if (!entityType.startsWith(TRACKABLE_FORM_ENTITY_TYPE)) return;
@@ -162,6 +163,9 @@ export class StoreProvider {
 
         journalSearch = new JournalSearchStore(this.services.journalSearch, this.services.form, this.services.trackable,
             this.services.trackableCategory, this.services.tag, this.services.tagCategory);
+
+        sync = new SyncStore(this.services.sync);
+        integrations.load();
     }
 
     trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {

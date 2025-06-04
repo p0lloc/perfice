@@ -29,3 +29,6 @@ Perfice.drawio
 dev-dist
 deploy-apk.sh
 deploy.sh
+
+.env.development
+.env

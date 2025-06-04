@@ -1,24 +1,24 @@
-import type {EntityTable} from "dexie";
 import type {StoredNotification} from "@perfice/model/notification/notification";
 import type {NotificationCollection} from "@perfice/db/collections";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieNotificationCollection implements NotificationCollection {
-    private table: EntityTable<StoredNotification, "id">;
+    private table: SyncedTable<StoredNotification>;
 
-    constructor(table: EntityTable<StoredNotification, "id">) {
+    constructor(table: SyncedTable<StoredNotification>) {
         this.table = table;
     }
 
     async getNotifications(): Promise<StoredNotification[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getNotificationById(id: string): Promise<StoredNotification | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async createNotification(notification: StoredNotification): Promise<void> {
-        await this.table.add(notification);
+        await this.table.put(notification);
     }
 
     async updateNotification(notification: StoredNotification): Promise<void> {
@@ -26,7 +26,7 @@ export class DexieNotificationCollection implements NotificationCollection {
     }
 
     async deleteNotificationById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
     async getNotificationsByEntityId(entityId: string): Promise<StoredNotification[]> {
@@ -34,6 +34,7 @@ export class DexieNotificationCollection implements NotificationCollection {
     }
 
     async deleteNotificationsByEntityId(entityId: string): Promise<void> {
-        await this.table.where("entityId").equals(entityId).delete();
+        let byEntity = await this.table.where("entityId").equals(entityId).toArray();
+        await this.table.deleteByIds(byEntity.map(n => n.id));
     }
 }

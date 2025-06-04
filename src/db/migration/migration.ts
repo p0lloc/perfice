@@ -45,6 +45,14 @@ export class MigrationService {
         localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, value.toString());
     }
 
+    getCurrentDataVersion(): number {
+        return CURRENT_DATA_VERSION;
+    }
+
+    isOutdated(version: number): boolean {
+        return version < CURRENT_DATA_VERSION;
+    }
+
     async migrate() {
         let userVersion = this.getUserVersion();
         if (userVersion >= CURRENT_DATA_VERSION) return;

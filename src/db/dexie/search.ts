@@ -1,21 +1,21 @@
 import type {SavedSearchCollection} from "../collections";
 import type {JournalSearch} from "@perfice/model/journal/search/search";
-import type {EntityTable} from "dexie";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieSavedSearchCollection implements SavedSearchCollection {
 
-    private readonly table: EntityTable<JournalSearch, "id">;
+    private readonly table: SyncedTable<JournalSearch>;
 
-    constructor(table: EntityTable<JournalSearch, "id">) {
+    constructor(table: SyncedTable<JournalSearch>) {
         this.table = table;
     }
 
     async getSavedSearches(): Promise<JournalSearch[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getSavedSearchById(id: string): Promise<JournalSearch | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async putSavedSearch(search: JournalSearch): Promise<void> {
@@ -23,7 +23,7 @@ export class DexieSavedSearchCollection implements SavedSearchCollection {
     }
 
     async deleteSavedSearchById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
 }
