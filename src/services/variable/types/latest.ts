@@ -5,10 +5,10 @@ import {
     VariableIndexActionType
 } from "@perfice/services/variable/graph";
 import {
-    VariableTypeName,
     type VariableEvaluator,
     type VariableIndex,
-    type VariableType
+    type VariableType,
+    VariableTypeName
 } from "@perfice/model/variable/variable";
 import {pJournalEntry, pNull, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import type {JournalEntry} from "@perfice/model/journal/journal";
@@ -75,7 +75,7 @@ export class LatestVariableType implements VariableType, JournalEntryDependent {
     async onEntryUpdated(entry: JournalEntry, indices: VariableIndex[]): Promise<VariableIndexAction[]> {
         let updates: VariableIndexAction[] = [];
         for (let index of indices) {
-            if(!this.isIndexMatchingEntry(index, entry))
+            if (!this.isIndexMatchingEntry(index, entry))
                 continue;
 
             if (shouldFilterOutEntry(entry, this.filters)) {
@@ -116,7 +116,7 @@ export class LatestVariableType implements VariableType, JournalEntryDependent {
                 shouldUpdate = entry.timestamp > value.value.timestamp;
             }
 
-            if(!shouldUpdate) continue;
+            if (!shouldUpdate) continue;
 
             // Update to use current entry if it is newer than previous one
             updates.push({

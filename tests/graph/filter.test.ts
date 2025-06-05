@@ -19,6 +19,7 @@ test("simple list variable with filter", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
+                integration: null,
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -29,6 +30,7 @@ test("simple list variable with filter", async () => {
                 formId: "ok",
                 timestamp: 0,
                 snapshotId: "",
+                integration: null,
                 displayValue: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -73,6 +75,7 @@ test("simple list variable with list filter", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
+                integration: null,
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0")),
@@ -83,6 +86,7 @@ test("simple list variable with list filter", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
+                integration: null,
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -93,6 +97,7 @@ test("simple list variable with list filter", async () => {
             {
                 id: "entry_three",
                 formId: "ok",
+                integration: null,
                 timestamp: 0,
                 displayValue: "",
                 snapshotId: "",
@@ -138,6 +143,7 @@ test("filtered list variable new entry", async () => {
             {
                 id: "entry_one",
                 formId: "ok",
+                integration: null,
                 timestamp: 0,
                 displayValue: "",
                 snapshotId: "",
@@ -149,6 +155,7 @@ test("filtered list variable new entry", async () => {
             {
                 id: "entry_two",
                 formId: "ok",
+                integration: null,
                 timestamp: 0,
                 displayValue: "",
                 snapshotId: "",
@@ -159,6 +166,7 @@ test("filtered list variable new entry", async () => {
             },
             {
                 id: "entry_three",
+                integration: null,
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
@@ -199,7 +207,7 @@ test("filtered list variable new entry", async () => {
     // Adding an entry with incorrect "beverage_type" should not affect the list
     let newEntry: JournalEntry = mockEntry("entry_four", "ok", {"ok": pNumber(10.0)});
     await journal.createEntry(newEntry);
-    await graph.onJournalEntryAction(newEntry, EntryAction.CREATED);
+    await graph.onJournalEntryAction(newEntry, null, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -216,7 +224,7 @@ test("filtered list variable new entry", async () => {
         "beverage_type": pString("beer")
     });
     await journal.createEntry(newEntry2);
-    await graph.onJournalEntryAction(newEntry2, EntryAction.CREATED);
+    await graph.onJournalEntryAction(newEntry2, null, EntryAction.CREATED);
 
     let val3 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -238,6 +246,7 @@ test("simple list variable with multiple filters", async () => {
                 formId: "ok",
                 timestamp: 0,
                 displayValue: "",
+                integration: null,
                 snapshotId: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -249,6 +258,7 @@ test("simple list variable with multiple filters", async () => {
                 timestamp: 0,
                 displayValue: "",
                 snapshotId: "",
+                integration: null,
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
                 }
@@ -260,6 +270,7 @@ test("simple list variable with multiple filters", async () => {
                 timestamp: 0,
                 displayValue: "",
                 snapshotId: "",
+                integration: null,
                 answers: {
                     "ok": pDisplay(pNumber(20.0), pString("20.0"))
                 }
@@ -309,6 +320,7 @@ test("filtered list - update entry to be matching", async () => {
             timestamp: 0,
             displayValue: "",
             snapshotId: "",
+            integration: null,
             answers: {
                 "ok": pDisplay(pNumber(10.0), pString("10.0"))
             }
@@ -321,6 +333,7 @@ test("filtered list - update entry to be matching", async () => {
                 formId: "ok",
                 timestamp: 0,
                 snapshotId: "",
+                integration: null,
                 displayValue: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -357,19 +370,19 @@ test("filtered list - update entry to be matching", async () => {
     // Entry is now > 10 so it should be included
     firstEntry.answers["ok"] = pDisplay(pNumber(11.0), pString("11.0"));
     await journal.updateEntry(firstEntry);
-    await graph.onJournalEntryAction(firstEntry, EntryAction.UPDATED);
+    await graph.onJournalEntryAction(firstEntry, firstEntry, EntryAction.UPDATED);
 
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
     expect(val2).toEqual(pList([
+        pJournalEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))}),
         pJournalEntry("entry_one", 0, {"ok": pDisplay(pNumber(11.0), pString("11.0"))}),
-        pJournalEntry("entry_two", 0, {"ok": pDisplay(pNumber(13.0), pString("13.0"))})
     ]));
 })
 
 
 // Returns all entries with field > 10
-test("filtered list - update entry to be matching", async () => {
+test("filtered list - update entry to be filtered out", async () => {
     const index = new DummyIndexCollection();
     let firstEntry =
         {
@@ -377,6 +390,7 @@ test("filtered list - update entry to be matching", async () => {
             formId: "ok",
             timestamp: 0,
             displayValue: "",
+            integration: null,
             snapshotId: "",
             answers: {
                 "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -390,6 +404,7 @@ test("filtered list - update entry to be matching", async () => {
                 formId: "ok",
                 timestamp: 0,
                 snapshotId: "",
+                integration: null,
                 displayValue: "",
                 answers: {
                     "ok": pDisplay(pNumber(13.0), pString("13.0"))
@@ -427,7 +442,7 @@ test("filtered list - update entry to be matching", async () => {
     // Entry is now < 9 so it should be filtered out
     firstEntry.answers["ok"] = pDisplay(pNumber(8.0), pString("8.0"));
     await journal.updateEntry(firstEntry);
-    await graph.onJournalEntryAction(firstEntry, EntryAction.UPDATED);
+    await graph.onJournalEntryAction(firstEntry, null, EntryAction.UPDATED);
 
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);

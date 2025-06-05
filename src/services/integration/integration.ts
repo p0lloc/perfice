@@ -133,6 +133,11 @@ export class IntegrationService {
         });
     }
 
+    async fetchHistorical(id: string) {
+        await this.client.post(`integrations/${id}/historical`);
+        await this.fetchUpdates();
+    }
+
     async updateIntegration(id: string, fields: Record<string, string>) {
         await this.client.put(`integrations/${id}`, {
             json: {

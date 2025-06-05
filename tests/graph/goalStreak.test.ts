@@ -162,15 +162,20 @@ test("simple goal streak with off days", async () => {
                     type: GoalConditionType.COMPARISON,
                     value: comparison
                 },
-            ], tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0))
+            ], tSimple(SimpleTimeScopeType.DAILY, WeekStart.SUNDAY, 0))
         }
     });
 
     let currentWeekDay = now.getDay();
+
+    function mod(n, m) {
+        return ((n % m) + m) % m;
+    }
+
     let weekDays: number[] = [
-        (currentWeekDay - 1) % 7,
-        (currentWeekDay - 3) % 7,
-        (currentWeekDay - 5) % 7,
+        mod(currentWeekDay - 1, 7),
+        mod(currentWeekDay - 3, 7),
+        mod(currentWeekDay - 5, 7),
     ];
 
     graph.onVariableCreated({
@@ -183,7 +188,7 @@ test("simple goal streak with off days", async () => {
 
 
     let streak_result = await graph.evaluateVariable(graph.getVariableById("goal_streak_variable")!,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.SUNDAY, 0), false, []);
 
     expect(streak_result).toEqual(pNumber(3.0));
 })

@@ -62,6 +62,10 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         }));
     }
 
+    async fetchHistorical(id: string) {
+        await this.integrationService.fetchHistorical(id);
+    }
+
     async updateIntegration(id: string, fields: Record<string, string>) {
         await this.integrationService.updateIntegration(id, fields);
         this.updateResolved(v => ({

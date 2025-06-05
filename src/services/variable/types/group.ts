@@ -191,21 +191,7 @@ export class GroupVariableType implements VariableType, JournalEntryDependent {
                         .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
                 }
 
-                // if (newGroup != previousGroup) {
-                //     // Entry was moved to a new group, remove it from the old group
-                //     let existing = index.value.value[previousGroup];
-                //     if (existing == undefined || existing.type != PrimitiveValueType.LIST) continue;
-                //
-                //     existing.value = existing.value
-                //         .filter(v => v.type != PrimitiveValueType.JOURNAL_ENTRY || v.value.id != entry.id)
-                //
-                //     // Add it to the new group
-                //     existing.value.push({
-                //         type: PrimitiveValueType.JOURNAL_ENTRY,
-                //         value: foundEntry
-                //     });
-                // }
-            } else {
+            } else if (!filterOut) {
                 // Entry went from being filtered to not filtered, add it to its group (potentially creating a new group)
                 for (let group of newGroup) {
                     let existing = index.value.value[group];

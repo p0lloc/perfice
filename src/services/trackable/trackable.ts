@@ -381,7 +381,6 @@ export class TrackableService implements TrackableEntityProvider {
     async onTrackableCategoryDeleted(category: TrackableCategory) {
         let trackables = await this.collection.getTrackablesByCategoryId(category.id);
         for (let trackable of trackables) {
-            console.log("Deleting trackable", trackable);
             await this.deleteTrackable(trackable);
         }
     }

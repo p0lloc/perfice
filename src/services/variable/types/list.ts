@@ -105,6 +105,7 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
                 }
             }
 
+
             actions.push({
                 type: VariableIndexActionType.UPDATE,
                 index

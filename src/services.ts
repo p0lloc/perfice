@@ -79,7 +79,8 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     tagEntryService.addObserver(EntityObserverType.DELETED, async (e: TagEntry) => await variableService.onTagEntryDeleted(e));
     journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => await variableService.onEntryCreated(e));
     journalService.addEntryObserver(JournalEntryObserverType.DELETED, async (e: JournalEntry) => await variableService.onEntryDeleted(e));
-    journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry) => await variableService.onEntryUpdated(e));
+    journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry, previous: JournalEntry | null) =>
+        await variableService.onEntryUpdated(e, previous));
 
     const formService = new BaseFormService(db.forms, db.formSnapshots);
     formService.initLazyDependencies(journalService);

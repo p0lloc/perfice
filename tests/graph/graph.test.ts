@@ -66,6 +66,7 @@ test("simple multiple list variable", async () => {
                 formId: "ok",
                 timestamp: 0,
                 snapshotId: "",
+                integration: null,
                 displayValue: "",
                 answers: {
                     "ok": pDisplay(pNumber(10.0), pString("10.0"))
@@ -75,6 +76,7 @@ test("simple multiple list variable", async () => {
                 id: "entry_two",
                 formId: "ok",
                 timestamp: 0,
+                integration: null,
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -111,6 +113,7 @@ test("simple multiple fields list variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                integration: null,
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -148,6 +151,7 @@ test("simple aggregate sum variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                integration: null,
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -158,6 +162,7 @@ test("simple aggregate sum variable", async () => {
                 id: "entry_two",
                 formId: "ok",
                 displayValue: "",
+                integration: null,
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -196,6 +201,7 @@ test("simple aggregate mean variable", async () => {
                 id: "entry_one",
                 formId: "ok",
                 displayValue: "",
+                integration: null,
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -206,6 +212,7 @@ test("simple aggregate mean variable", async () => {
                 displayValue: "",
                 snapshotId: "",
                 id: "entry_two",
+                integration: null,
                 formId: "ok",
                 timestamp: 0,
                 answers: {
@@ -245,6 +252,7 @@ test("simple single list variable new entry", async () => {
                 id: "entry_one",
                 formId: "ok",
                 timestamp: 0,
+                integration: null,
                 displayValue: "",
                 snapshotId: "",
                 answers: {
@@ -274,7 +282,7 @@ test("simple single list variable new entry", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(13.0)});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, null, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -282,6 +290,58 @@ test("simple single list variable new entry", async () => {
     expect(val2).toEqual(pList([
         pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)}),
         pJournalEntry("entry_two", 0, {"ok": pNumber(13.0)})
+    ]));
+})
+
+
+test("list variable update timestamp", async () => {
+    const index = new DummyIndexCollection();
+    let entry = {
+        id: "entry_one",
+        formId: "ok",
+        timestamp: 0,
+        integration: null,
+        displayValue: "",
+        snapshotId: "",
+        answers: {
+            "ok": pDisplay(pNumber(10.0), pString("10.0"))
+        }
+    };
+    const journal = new DummyJournalCollection(
+        [
+            entry
+        ]
+    );
+    const tagEntries = new DummyTagEntryCollection();
+    const graph = new VariableGraph(index, journal, tagEntries, WeekStart.MONDAY);
+    let variable: Variable = {
+        name: "test",
+        id: "test",
+        type: {
+            type: VariableTypeName.LIST,
+            value: new ListVariableType("ok", {ok: false}, [])
+        }
+    }
+    graph.onVariableCreated(variable);
+    let val = await graph.evaluateVariable(variable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+
+    expect(val).toEqual(pList([
+        pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)})
+    ]));
+
+    let update = {...entry, timestamp: 1000 * 60 * 60 * 24};
+    await journal.updateEntry(update);
+    await graph.onJournalEntryAction(update, entry, EntryAction.UPDATED);
+
+    let val2 = await graph.evaluateVariable(variable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+    let val3 = await graph.evaluateVariable(variable,
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 1000 * 60 * 60 * 24), false, []);
+
+    expect(val2).toEqual(pList([]));
+    expect(val3).toEqual(pList([
+        pJournalEntry("entry_one", 1000 * 60 * 60 * 24, {"ok": pNumber(10.0)})
     ]));
 })
 
@@ -323,7 +383,7 @@ test("simple aggregate sum new entry", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(13.0)});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, null, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(graph.getVariableById("aggregate_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -365,7 +425,7 @@ test("simple aggregate mean new entry", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(43.0)});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
 
     let val2 = await graph.evaluateVariable(graph.getVariableById("aggregate_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
@@ -403,6 +463,7 @@ test("calculation variable between two dynamic variables", async () => {
                 displayValue: "",
                 snapshotId: "",
                 timestamp: 0,
+                integration: null,
                 answers: {
                     "ok": pDisplay(pNumber(1500.0), pString("1500.0"))
                 }
@@ -411,6 +472,7 @@ test("calculation variable between two dynamic variables", async () => {
                 id: "entry_two",
                 formId: "expense",
                 displayValue: "",
+                integration: null,
                 snapshotId: "",
                 timestamp: 0,
                 answers: {
@@ -471,6 +533,7 @@ test("calculation variable between two dynamic variables", async () => {
         id: "entry_two",
         formId: "income",
         timestamp: 0,
+        integration: null,
         displayValue: "",
         snapshotId: "",
         answers: {
@@ -479,7 +542,7 @@ test("calculation variable between two dynamic variables", async () => {
     };
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, null, EntryAction.CREATED);
 
 
     let val2 = await graph.evaluateVariable(graph.getVariableById("calculation_variable")!,

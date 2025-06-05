@@ -207,7 +207,7 @@ test("group variable new entry", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_four", "ok", {"ok": pNumber(13.0), "bro": pString("test")});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
@@ -286,7 +286,7 @@ test("group variable new entry, new group", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_four", "ok", {"ok": pNumber(13.0), "bro": pString("new-group")});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
@@ -367,15 +367,15 @@ test("group variable new entry, move group", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(13.0), "bro": pString("ok")});
 
     await journal.updateEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.UPDATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.UPDATED);
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
     expect(val2).toEqual(
         pMap({
             "ok": pList([
-                pJournalEntry("entry_two", 0, {"ok": pNumber(13.0)}),
                 pJournalEntry("entry_three", 0, {"ok": pNumber(10.0)}),
+                pJournalEntry("entry_two", 0, {"ok": pNumber(13.0)}),
             ]),
             "test": pList([
                 pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)}),
@@ -437,7 +437,7 @@ test("group variable new entry, filtered out", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(9.0), "bro": pString("ok")});
 
     await journal.updateEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.UPDATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.UPDATED);
     let val2 = await graph.evaluateVariable(variable,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 

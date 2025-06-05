@@ -2,11 +2,12 @@ import {expect, test} from "vitest";
 import {
     DummyFormService,
     DummyIndexCollection,
-    DummyJournalCollection, DummyTagEntryCollection,
+    DummyJournalCollection,
+    DummyTagEntryCollection,
     DummyTrackableCollection,
     DummyVariableCollection
 } from "../dummy-collections";
-import {BaseJournalService, JournalEntryObserverType, JournalService} from "../../src/services/journal/journal";
+import {BaseJournalService, JournalEntryObserverType} from "../../src/services/journal/journal";
 import {VariableGraph} from "../../src/services/variable/graph";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {VariableService} from "../../src/services/variable/variable";
@@ -33,6 +34,7 @@ import {
     GoalConditionType,
     GoalVariableType
 } from "../../src/services/variable/types/goal";
+import {AnalyticsSettingsService} from "../../src/services/analytics/settings";
 
 test("test basic edit + entry created", async () => {
     const indices = new DummyIndexCollection();
@@ -50,13 +52,13 @@ test("test basic edit + entry created", async () => {
     journalService.addEntryObserver(JournalEntryObserverType.DELETED, async (e: JournalEntry) => {
         await variableService.onEntryDeleted(e);
     });
-    journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry) => {
-        await variableService.onEntryUpdated(e);
+    journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry, previous: JournalEntry | null) => {
+        await variableService.onEntryUpdated(e, previous);
     });
 
 
     const editProvider = new VariableEditProvider(variableService, new DummyFormService(),
-        new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService()));
+        new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService(), null as AnalyticsSettingsService));
 
     editProvider.newEdit();
     let goal = editProvider.createVariableFromType(VariableTypeName.GOAL);
@@ -123,12 +125,12 @@ test("goal edit + entry created", async () => {
     journalService.addEntryObserver(JournalEntryObserverType.DELETED, async (e: JournalEntry) => {
         await variableService.onEntryDeleted(e);
     });
-    journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry) => {
-        await variableService.onEntryUpdated(e);
+    journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry, previous: JournalEntry | null) => {
+        await variableService.onEntryUpdated(e, previous);
     });
 
     const editProvider = new VariableEditProvider(variableService, new DummyFormService(),
-        new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService()));
+        new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService(), null as AnalyticsSettingsService));
 
     editProvider.newEdit();
     let goal = editProvider.createVariableFromType(VariableTypeName.GOAL);

@@ -199,15 +199,15 @@ export class VariableService implements VariableProvider {
     }
 
     async onEntryCreated(e: JournalEntry) {
-        await this.graph.onJournalEntryAction(e, EntryAction.CREATED);
+        await this.graph.onJournalEntryAction(e, null, EntryAction.CREATED);
     }
 
     async onEntryDeleted(e: JournalEntry) {
-        await this.graph.onJournalEntryAction(e, EntryAction.DELETED);
+        await this.graph.onJournalEntryAction(e, null, EntryAction.DELETED);
     }
 
-    async onEntryUpdated(e: JournalEntry) {
-        await this.graph.onJournalEntryAction(e, EntryAction.UPDATED);
+    async onEntryUpdated(e: JournalEntry, previous: JournalEntry | null) {
+        await this.graph.onJournalEntryAction(e, previous, EntryAction.UPDATED);
     }
 
     async deleteVariableById(variableId: string) {

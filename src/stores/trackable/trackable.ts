@@ -67,63 +67,9 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
     async getEditTrackableState(rawTrackable: Trackable): Promise<EditTrackableState | null> {
         let trackable = structuredClone(rawTrackable);
         let form = await forms.getFormById(trackable.formId);
-        console.log(form);
         if (form == null) return null;
 
         let categories = await trackableCategories.get();
-
-        /*
-        let cardState: EditTrackableCardState;
-        switch (trackable.cardType) {
-            case TrackableCardType.CHART: {
-                let aggregateVariable = await variables.getVariableById(trackable.dependencies["aggregate"]);
-                if (aggregateVariable == null) return null;
-
-                let type = aggregateVariable.type;
-                if (type.type != VariableTypeName.AGGREGATE) return null;
-
-                let value = type.value;
-                cardState = {
-                    cardType: TrackableCardType.CHART,
-                    cardSettings: {
-                        aggregateType: value.getAggregateType(),
-                        field: value.getField(),
-                        color: trackable.cardSettings.color
-                    }
-                };
-                break;
-            }
-            case TrackableCardType.VALUE: {
-                cardState = {
-                    cardType: TrackableCardType.VALUE,
-                    cardSettings: {
-                        representation: trackable.cardSettings.representation,
-                        type: trackable.cardSettings.type,
-                        settings: trackable.cardSettings.settings
-                    }
-                };
-                break;
-            }
-            case TrackableCardType.TALLY: {
-
-                let listVariable = await variables.getVariableById(trackable.dependencies["value"]);
-                if (listVariable == null) return null;
-
-                let type = listVariable.type;
-                if (type.type != VariableTypeName.LIST) return null;
-
-                let fieldIds = Object.keys(type.value.getFields());
-                if (fieldIds.length != 1) return null;
-
-                cardState = {
-                    cardType: TrackableCardType.TALLY,
-                    cardSettings: {
-                        questionId: fieldIds[0]
-                    }
-                };
-                break;
-            }
-        }*/
 
         return {
             trackable,

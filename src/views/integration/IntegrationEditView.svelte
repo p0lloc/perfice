@@ -71,6 +71,10 @@
         await integrations.updateIntegration(integration.id, fields);
         back();
     }
+
+    async function fetchHistorical() {
+        await integrations.fetchHistorical(integration!.id);
+    }
 </script>
 
 <GenericDeleteModal subject="this integration" {onDelete} bind:this={deleteModal}/>
@@ -101,5 +105,6 @@
             <Button onClick={save}>Save</Button>
             <Button color={ButtonColor.RED} onClick={back}>Cancel</Button>
         </div>
+        <Button onClick={fetchHistorical}>Fetch historical</Button>
     </div>
 {/if}

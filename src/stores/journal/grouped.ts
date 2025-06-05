@@ -29,23 +29,23 @@ export interface JournalDayGroup {
     id: string;
     name: string;
     icon: string;
-    entries: TransformedJournalEntry[];
+    entries: JournalEntry[];
 }
 
-function newGroup(entry: TransformedJournalEntry): JournalDayGroup {
+function newGroup(entry: JournalEntry, form: Form): JournalDayGroup {
     return {
         id: entry.formId,
-        name: entry.form.name,
-        icon: entry.form.icon,
+        name: form.name,
+        icon: form.icon,
         entries: [
             entry
         ]
     }
 }
 
-function newGroupMap(entry: TransformedJournalEntry): Map<string, JournalDayGroup> {
+function newGroupMap(entry: JournalEntry, form: Form): Map<string, JournalDayGroup> {
     let map: Map<string, JournalDayGroup> = new Map();
-    map.set(entry.formId, newGroup(entry));
+    map.set(entry.formId, newGroup(entry, form));
 
     return map;
 }
@@ -129,24 +129,19 @@ export function GroupedJournal(): Readable<Promise<JournalDay[]>> {
 
                     let mapping: Map<number, JournalDayData> = new Map();
 
-                    for (let rawEntry of journalEntries) {
-                        let timestamp = timestampToMidnight(rawEntry.timestamp);
+                    for (let entry of journalEntries) {
+                        let timestamp = timestampToMidnight(entry.timestamp);
                         let day = mapping.get(timestamp);
 
-                        let form = forms.find(f => f.id == rawEntry.formId);
+                        let form = forms.find(f => f.id == entry.formId);
                         if (form == undefined) continue;
 
-                        let entry: TransformedJournalEntry = {
-                            ...rawEntry,
-                            form
-                        }
-
                         if (day == undefined) {
-                            mapping.set(timestamp, newJournalDayData(newGroupMap(entry)));
+                            mapping.set(timestamp, newJournalDayData(newGroupMap(entry, form)));
                         } else {
                             let group = day.formGroups.get(entry.formId);
                             if (group == undefined) {
-                                day.formGroups.set(entry.formId, newGroup(entry));
+                                day.formGroups.set(entry.formId, newGroup(entry, form));
                             } else {
                                 group.entries.push(entry);
                             }

@@ -12,7 +12,7 @@ export enum JournalEntryObserverType {
     ANY,
 }
 
-export type JournalEntryObserverCallback = (e: JournalEntry) => Promise<void>;
+export type JournalEntryObserverCallback = (e: JournalEntry, previous: JournalEntry | null) => Promise<void>;
 
 export interface JournalEntryObserver {
     type: JournalEntryObserverType;
@@ -85,20 +85,22 @@ export class BaseJournalService implements JournalService {
         }
 
         await this.collection.createEntry(entry);
-        await this.notifyObservers(JournalEntryObserverType.CREATED, entry);
+        await this.notifyObservers(JournalEntryObserverType.CREATED, entry, null);
         return entry;
     }
 
     async updateEntry(entry: JournalEntry, format: TextOrDynamic[]) {
+        let previous = await this.collection.getEntryById(entry.id);
+        if (previous == undefined) return;
         entry.displayValue = formatAnswersIntoRepresentation(entry.answers, format);
 
         await this.collection.updateEntry(entry);
-        await this.notifyObservers(JournalEntryObserverType.UPDATED, entry);
+        await this.notifyObservers(JournalEntryObserverType.UPDATED, entry, previous);
     }
 
     async deleteEntry(entry: JournalEntry) {
         await this.collection.deleteEntryById(entry.id);
-        await this.notifyObservers(JournalEntryObserverType.DELETED, entry);
+        await this.notifyObservers(JournalEntryObserverType.DELETED, entry, null);
     }
 
     async deleteEntryById(id: string) {
@@ -112,13 +114,13 @@ export class BaseJournalService implements JournalService {
         return this.collection.getEntriesBySnapshotId(snapshotId);
     }
 
-    private async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry) {
+    private async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry, previous: JournalEntry | null) {
         let observers = this.observers
             .filter(o => o.type == JournalEntryObserverType.ANY || o.type == type);
 
         for (const o of observers) {
             // TODO: are there any implications of awaiting async observers?
-            await o.callback(entry);
+            await o.callback(entry, previous);
         }
     }
 

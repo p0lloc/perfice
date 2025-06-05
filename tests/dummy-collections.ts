@@ -24,6 +24,10 @@ export class DummyJournalCollection implements JournalCollection {
         this.entries = entries;
     }
 
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined> {
+        throw new Error("Method not implemented.");
+    }
+
     async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
         return this.entries.filter(e => e.timestamp <= untilTimestamp).sort((a, b) => a.timestamp - b.timestamp).slice(0, limit);
     }
