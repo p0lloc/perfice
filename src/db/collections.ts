@@ -354,4 +354,8 @@ export interface UpdateQueueCollection {
     deleteByIds(ids: string[]): Promise<void>;
 
     deleteById(id: string): any;
+
+    bulkPut(updates: OutgoingUpdate[]): Promise<void>;
+
+    clear(): Promise<void>;
 }

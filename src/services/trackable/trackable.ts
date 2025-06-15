@@ -229,64 +229,6 @@ export class TrackableService implements TrackableEntityProvider {
         return fields;
     }
 
-    /*
-    async updateTrackableChartSettings(trackable: Trackable, aggregateType: AggregateType, field: string, color: string) {
-        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
-
-        listVariable.type = {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, {
-                [field]: false
-            }, listVariable.type.value.getFilters())
-        }
-
-        let chartVariable = this.variableService.getVariableById(trackable.dependencies["aggregate"]);
-        if (chartVariable == null) return;
-
-        chartVariable.type = {
-            type: VariableTypeName.AGGREGATE,
-            value: new AggregateVariableType(aggregateType, listVariable.id, field)
-        }
-
-        trackable.cardSettings = {
-            color
-        }
-
-        // TODO: could we update both variables in conjunction to avoid spamming index listeners?
-        await this.variableService.updateVariable(listVariable);
-        await this.variableService.updateVariable(chartVariable);
-    }
-    async updateTrackableValueSettings(trackable: Trackable, cardSettings: EditTrackableValueSettings) {
-        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
-
-        let fields = this.extractFieldsFromRepresentation(cardSettings.representation);
-        listVariable.type = {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, fields, listVariable.type.value.getFilters())
-        }
-
-        await this.variableService.updateVariable(listVariable);
-        trackable.cardSettings = cardSettings;
-    }
-
-    async updateTrackableTallySettings(trackable: Trackable, cardSettings: EditTrackableTallySettings) {
-        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
-
-        // Update list variable to fetch answer for the specified question id
-        listVariable.type = {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, {
-                [cardSettings.questionId]: false
-            }, [])
-        }
-
-        await this.variableService.updateVariable(listVariable);
-        trackable.cardSettings = cardSettings;
-    }*/
-
     async reorderTrackables(category: TrackableCategory | null, trackables: Trackable[]) {
         for (let i = 0; i < trackables.length; i++) {
             trackables[i].order = i;
@@ -297,7 +239,6 @@ export class TrackableService implements TrackableEntityProvider {
 
         await this.collection.updateTrackables(trackables);
     }
-
 
     private createListVariableTypeDef(formId: string, card: TrackableCardSettings): VariableTypeDef {
         switch (card.cardType) {

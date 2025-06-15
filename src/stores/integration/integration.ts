@@ -21,15 +21,11 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
     async load(): Promise<IntegrationData> {
         if (this.loaded) return this.get();
 
-        let integrations = await this.integrationService.fetchIntegrations();
-        let types = await this.integrationService.fetchTypes();
-
-        let value = {
-            integrations: integrations,
-            integrationTypes: types
-        }
-
-        await this.integrationService.fetchUpdates();
+        let value = await this.integrationService.load();
+        if (!value) return {
+            integrations: [],
+            integrationTypes: []
+        };
 
         this.set(resolvedPromise(value));
         this.loaded = true;
@@ -83,5 +79,9 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
             ...v,
             integrations: v.integrations.filter(i => i.id != id)
         }));
+    }
+
+    async refresh() {
+        await this.integrationService.fetchUpdates();
     }
 }

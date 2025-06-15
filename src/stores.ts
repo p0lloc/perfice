@@ -56,7 +56,9 @@ import {VariableValueStore} from "@perfice/stores/variable/value";
 import {navigate} from "@perfice/app";
 import {DeletionStore} from "@perfice/stores/deletion/deletion";
 import {IntegrationStore} from "./stores/integration/integration";
-import {SyncStore} from "@perfice/stores/sync/sync";
+import {SyncStore} from "@perfice/stores/remote/sync";
+import {AuthStore} from "@perfice/stores/remote/auth";
+import {RemoteStore} from "@perfice/stores/remote/remote";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -95,7 +97,10 @@ export let analytics: AnalyticsStore;
 export let appReady: Writable<boolean> = writable(false);
 
 export let journalSearch: JournalSearchStore;
+
 export let sync: SyncStore;
+export let auth: AuthStore;
+export let remote: RemoteStore;
 
 export class StoreProvider {
 
@@ -107,8 +112,18 @@ export class StoreProvider {
 
     async setup(loadedWeekStart: WeekStart) {
         trackables = new TrackableStore(this.services.trackable);
+        this.services.sync.addObserver("trackables", async (updates) => {
+            trackables.applySyncUpdates(updates);
+        });
+
         forms = new FormStore(this.services.form, this.services.formTemplate);
+        this.services.sync.addObserver("forms", async (updates) => {
+            forms.applySyncUpdates(updates);
+        });
         variables = new VariableStore(this.services.variable);
+        this.services.sync.addObserver("variables", async (updates) => {
+            variables.applySyncUpdates(updates);
+        });
 
         trackableDate = TrackableDate();
         tagDate = TagDate();
@@ -124,6 +139,9 @@ export class StoreProvider {
         trackableCategories = new TrackableCategoryStore(this.services.trackableCategory);
         tagCategories = new TagCategoryStore(this.services.tagCategory);
         journal = new JournalEntryStore(this.services.journal);
+        this.services.sync.addObserver("entries", async (updates) => {
+            journal.applySyncUpdates(updates);
+        });
         tagEntries = new TagEntryStore(this.services.tagEntry);
         categorizedTrackables = CategorizedTrackables();
         goals = new GoalStore(this.services.goal);
@@ -164,8 +182,9 @@ export class StoreProvider {
         journalSearch = new JournalSearchStore(this.services.journalSearch, this.services.form, this.services.trackable,
             this.services.trackableCategory, this.services.tag, this.services.tagCategory);
 
-        sync = new SyncStore(this.services.sync);
-        integrations.load();
+        sync = new SyncStore(this.services.sync, this.services.encryption);
+        auth = new AuthStore(this.services.auth);
+        remote = new RemoteStore(this.services.remote);
     }
 
     trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {

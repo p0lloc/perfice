@@ -18,6 +18,7 @@
     import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import {forms, trackableCategories, trackableDate, trackables, weekStart} from "@perfice/stores";
+    import {pullToRefresh} from "@perfice/util/pullToRefresh";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
@@ -113,7 +114,7 @@
 
 <EntryImportResultModal bind:this={importResultModal}/>
 
-<div class="w-screen main-content center-view md:px-0 px-4 md:py-10 py-2">
+<div class="w-screen main-content center-view md:px-0 px-4 md:py-10 py-2" use:pullToRefresh>
     <TitleAndCalendar
             date={$trackableDate}
             {onDateChange}

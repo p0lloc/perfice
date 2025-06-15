@@ -15,14 +15,8 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async getEntriesByFormIdAndTimeRange(formId: string, start: number, end: number): Promise<JournalEntry[]> {
-
-
-        let res = await this.table.where("[formId+timestamp]").between([formId, start], [formId, end], true, true)
+        return this.table.where("[formId+timestamp]").between([formId, start], [formId, end], true, true)
             .toArray();
-        if (formId == "958e72c5-4329-4ae0-bc91-9af147882bd0") {
-            console.log(start, end, res)
-        }
-        return res;
     }
 
     // TODO: should we filter by formId first and instead do time filtering in javascript?

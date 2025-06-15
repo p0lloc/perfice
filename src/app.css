@@ -94,8 +94,28 @@ input[type="color"]::-webkit-color-swatch {
     border: none;
 }
 
+.spinner {
+    position: absolute;
+    left: calc(50% - 20px);
+    right: 0;
+    top: 0;
+    height: 40px;
+    width: 40px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: none;
+    border: 1px solid gainsboro;
+    background-color: white;
+    border-radius: 100%;
+    font-size: 1.3rem;
+    color: #15cd1d;
+    z-index: 100;
+    animation: spin 1s linear infinite;
+}
 
 input[type="text"],
+input[type="password"],
 input[type="number"],
 textarea {
     @apply border py-1 px-2 rounded-md;
@@ -112,6 +132,7 @@ textarea {
 
 body {
     @apply overflow-hidden md:overflow-auto;
+    touch-action: manipulation
 }
 
 .lock-screen {
@@ -148,6 +169,15 @@ input[type="checkbox"] {
 
     background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.4);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @font-face {

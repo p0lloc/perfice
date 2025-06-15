@@ -271,7 +271,6 @@ export class VariableGraph {
         let variable = this.getVariableById(variableId);
         if (variable == undefined) return;
 
-        console.log(variableId)
         let indices = await this.indexCollection.getIndicesByVariableId(variableId);
         let {result, updatedTimestamp} = this.filterIndicesByTimestamp(indices, timestamp, previousTimestamp);
 

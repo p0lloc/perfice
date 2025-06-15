@@ -31,6 +31,11 @@ export class DexieIndexCollection implements IndexCollection {
 
     async updateIndices(indices: VariableIndex[]): Promise<void> {
         await this.table.bulkPut(indices);
+        for (let index of indices) {
+            for (const callback of this.updateListeners) {
+                await callback(index);
+            }
+        }
     }
 
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {

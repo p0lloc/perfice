@@ -12,7 +12,10 @@ import type {EncryptionService} from "../encryption/encryption";
 import type {MigrationService} from "@perfice/db/migration/migration";
 import type {UpdateQueueCollection} from "@perfice/db/collections";
 import type {Table, WhereClause} from "dexie";
-import ky, {type KyInstance} from "ky";
+import {type KyInstance} from "ky";
+import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+import type {AuthService} from "@perfice/services/auth/auth";
+import type {AuthenticatedUser} from "@perfice/model/auth/auth";
 
 export class LazySyncServiceProvider {
     private syncService: SyncService | null = null;
@@ -53,6 +56,26 @@ async function calculateChecksum(array: any[]) {
     const checksum = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     return checksum;
 }
+
+export const SYNCED_ENTITY_TYPES = [
+    "trackables",
+    "variables",
+    "entries",
+    "trackableCategories",
+    "forms",
+    "formSnapshots",
+    "indices",
+    "goals",
+    "tags",
+    "tagEntries",
+    "formTemplates",
+    "tagCategories",
+    "dashboards",
+    "dashboardWidgets",
+    "reflections",
+    "savedSearches",
+    "notifications",
+];
 
 export class SyncedTable<T extends { id: string }> {
     private table: Table<T, string>;
@@ -169,28 +192,36 @@ export class SyncService {
     private updateQueueCollection: UpdateQueueCollection;
     private updateQueue: OutgoingUpdate[] = [];
 
-    private transaction: (table: Table<any>, callback: () => Promise<void>) => Promise<void>;
+    private readonly transaction: (table: Table<any>, callback: () => Promise<void>) => Promise<void>;
     private readonly tables: Record<string, Table<any>> = {};
+    private readonly decryptionErrorCallbacks: Set<(newKey: boolean) => void> = new Set();
 
     private observers: Map<string, SyncObserver> = new Map();
 
     private syncTimer: ReturnType<typeof setTimeout> | null = null;
-    private client: KyInstance;
+
+    private remoteService: RemoteService;
+    private authService: AuthService;
 
     constructor(encryptionService: EncryptionService, migrationService: MigrationService,
                 updateQueueCollection: UpdateQueueCollection, transaction: (table: Table<any>, callback: () => Promise<void>) => Promise<void>,
-                tables: Record<string, Table<any>>) {
+                tables: Record<string, Table<any>>, remoteService: RemoteService, authService: AuthService) {
         this.encryptionService = encryptionService;
         this.migrationService = migrationService;
         this.updateQueueCollection = updateQueueCollection;
         this.transaction = transaction;
         this.tables = tables;
-        this.client = ky.extend({
-            prefixUrl: `${import.meta.env.VITE_BACKEND_URL}/api/sync`,
-            timeout: 50000,
-            retry: 0,
-            credentials: "include"
+        this.remoteService = remoteService;
+        this.authService = authService;
+
+        this.authService.addAuthStatusCallback(async (user: AuthenticatedUser | null) => {
+            if (user == null) return;
+            await this.load();
         });
+    }
+
+    private getClient(): KyInstance {
+        return this.remoteService.getRemoteClient(RemoteType.SYNC)!;
     }
 
     async calculateChecksums() {
@@ -204,8 +235,10 @@ export class SyncService {
     }
 
     async load(): Promise<void> {
-        this.updateQueue = await this.updateQueueCollection.getAll();
+        if (!(this.remoteService.isRemoteEnabled(RemoteType.SYNC)))
+            return;
 
+        this.updateQueue = await this.updateQueueCollection.getAll();
         await this.sync();
     }
 
@@ -224,10 +257,12 @@ export class SyncService {
         await this.updateQueueCollection.deleteByEntityType(entityType);
     }
 
-    async createFullSyncUpdate(entityType: string, entities: any[]) {
-        await this.removeUpdatesByEntityType(entityType);
+    private isEnabled() {
+        return this.remoteService.isRemoteEnabled(RemoteType.SYNC);
+    }
 
-        let update: OutgoingUpdate = {
+    private constructFullUpdateObject(entityType: string, entities: any[]): OutgoingUpdate {
+        return {
             id: crypto.randomUUID(),
             operation: UpdateOperation.FULL_SYNC,
             entityType,
@@ -239,6 +274,14 @@ export class SyncService {
                 data: e,
             }))
         };
+    }
+
+    async createFullSyncUpdate(entityType: string, entities: any[]) {
+        if (!this.isEnabled()) return;
+
+        await this.removeUpdatesByEntityType(entityType);
+
+        let update: OutgoingUpdate = this.constructFullUpdateObject(entityType, entities);
 
         this.updateQueue.push(update);
         await this.updateQueueCollection.create(update);
@@ -246,6 +289,7 @@ export class SyncService {
     }
 
     async createMultiUpdate(entities: any[], operation: UpdateOperation, entityType: string) {
+        if (!this.isEnabled()) return;
         let deleteOperation = operation === UpdateOperation.DELETE;
         let update: OutgoingUpdate = {
             id: crypto.randomUUID(),
@@ -266,6 +310,7 @@ export class SyncService {
     }
 
     async createSingleUpdate(entity: any, operation: UpdateOperation, entityType: string) {
+        if (!this.isEnabled()) return;
         let deleteOperation = operation === UpdateOperation.DELETE;
         let entityId = deleteOperation ? entity : entity.id;
         //let existing = this.getUpdatesByEntityId(entity.id);
@@ -312,44 +357,67 @@ export class SyncService {
         await this.queueSync();
     }
 
-    async sync() {
+    async sync(): Promise<void> {
+        if (!this.authService.isAuthenticated()) return;
         this.syncTimer = null;
-        await this.pull();
+        if (!await this.pull()) return;
         await this.push();
     }
 
     async push(): Promise<string[]> {
-        const response = await this.client.post('push', {
-            json: {updates: await this.encryptUpdates(this.updateQueue)}
-        });
+        try {
+            const response = await this.getClient().post('push', {
+                json: {updates: await this.encryptUpdates(this.updateQueue)}
+            });
 
-        if (!response.ok) {
-            throw new Error('Failed to push updates');
+            if (!response.ok) {
+                return [];
+            }
+
+            const {ack} = await response.json<{ ack: string[] }>();
+            await this.removeAcknowledgedUpdates(ack);
+            return ack;
+        } catch (e) {
+            console.error(e);
+            return [];
         }
-
-        const {ack} = await response.json<{ ack: string[] }>();
-        await this.removeAcknowledgedUpdates(ack);
-        return ack;
     }
 
-    async pull(): Promise<void> {
-        const response = await this.client.post('pull');
-
-        if (!response.ok) {
-            throw new Error('Failed to pull updates');
+    private async verifyKey(key: string | null) {
+        if (key == null) {
+            this.decryptionErrorCallbacks.forEach(callback => callback(true));
+            throw new Error("Encryption key verifier not found");
         }
 
-        const {updates} = await response.json<{ updates: IncomingUpdate[] }>();
-        await this.processUpdates(updates);
+        await this.decryptEntity(key);
+    }
+
+    async pull(): Promise<boolean> {
+        try {
+            const response = await this.getClient().post('pull');
+
+            if (!response.ok) {
+                return false;
+            }
+
+            const {key, updates} = await response.json<{ key: string | null, updates: IncomingUpdate[] }>();
+            await this.verifyKey(key);
+            await this.processUpdates(updates);
+            return true;
+        } catch (e) {
+            console.error(e);
+        }
+
+        return false;
     }
 
     async fullPull(entityTypes?: string[], overwrite: boolean = true): Promise<void> {
-        const response = await this.client.post('fullPull', {
+        const response = await this.getClient().post('fullPull', {
             json: {entityTypes},
         });
 
         if (!response.ok) {
-            throw new Error('Failed to pull updates');
+            return;
         }
 
         const data: { entities: Record<string, { id: string, data: string }[]> } = await response.json();
@@ -363,7 +431,7 @@ export class SyncService {
                 for (let entity of await table.toArray()) {
                     let matching = savedEntities.find(e => e.id == entity.id);
                     if (matching != null) {
-                        let decrypted = await this.encryptionService.decrypt(matching.data);
+                        let decrypted = await this.decryptEntity(matching.data);
                         let serverCs = await calculateChecksum([decrypted]);
                         let clientCs = await calculateChecksum([entity]);
 
@@ -378,7 +446,7 @@ export class SyncService {
                 }
 
                 for (let entity of savedEntities) {
-                    let decrypted = await this.encryptionService.decrypt(entity.data);
+                    let decrypted = await this.decryptEntity(entity.data);
                     console.log("Server has entity that client does not", entityType, decrypted);
                 }
             } else {
@@ -386,7 +454,7 @@ export class SyncService {
 
                 const entities: any[] = [];
                 for (let savedEntity of savedEntities) {
-                    let decrypted = await this.encryptionService.decrypt(savedEntity.data);
+                    let decrypted = await this.decryptEntity(savedEntity.data);
                     entities.push(decrypted);
                 }
 
@@ -396,28 +464,23 @@ export class SyncService {
     }
 
     async fullPush() {
-        const all = [
-            "trackables",
-            "variables",
-            "entries",
-            "trackableCategories",
-            "forms",
-            "formSnapshots",
-            "indices",
-            "goals",
-            "tags",
-            "tagEntries",
-            "formTemplates",
-            "tagCategories",
-            "dashboards",
-            "dashboardWidgets",
-            "reflections",
-            "savedSearches",
-            "notifications",
-        ];
+        let updates: OutgoingUpdate[] = [];
+        for (let table of SYNCED_ENTITY_TYPES) {
+            updates.push(this.constructFullUpdateObject(table, await this.tables[table].toArray()));
+        }
 
-        for (let table of all) {
-            await this.createFullSyncUpdate(table, await this.tables[table].toArray());
+        this.updateQueue = updates;
+        await this.updateQueueCollection.clear();
+        await this.updateQueueCollection.bulkPut(updates);
+        await this.push();
+    }
+
+    private async decryptEntity(data: string): Promise<any> {
+        try {
+            return await this.encryptionService.decrypt(data);
+        } catch (e) {
+            this.decryptionErrorCallbacks.forEach(callback => callback(false));
+            throw new Error("Failed to decrypt entity");
         }
     }
 
@@ -439,7 +502,7 @@ export class SyncService {
         switch (update.operation) {
             case UpdateOperation.FULL_SYNC:
             case UpdateOperation.PUT:
-                let decrypted = await this.encryptionService.decrypt(entity.data);
+                let decrypted = await this.decryptEntity(entity.data);
 
                 let migrated = this.migrationService.isOutdated(entity.version);
                 if (migrated) {
@@ -568,7 +631,7 @@ export class SyncService {
 
         if (acknowledgedUpdates.length > 0) {
             // Acknowledge processed updates
-            await this.client.post('ack', {
+            await this.getClient().post('ack', {
                 json: {
                     updates: acknowledgedUpdates
                 }
@@ -576,7 +639,7 @@ export class SyncService {
         }
     }
 
-    private async queueSync() {
+    async queueSync() {
         if (this.syncTimer != null) {
             clearTimeout(this.syncTimer);
         }
@@ -615,30 +678,20 @@ export class SyncService {
         this.observers.set(entityType, observer);
     }
 
-}
+    addDecryptionErrorCallback(callback: (newKey: boolean) => void) {
+        this.decryptionErrorCallbacks.add(callback);
+    }
 
-// export let migrationService: MigrationService;
-// export let encryptionService: EncryptionService;
-// export let syncService: SyncService;
-// export let journalEntryTable: SyncedTable<JournalEntry, string>;
-//
-// let resolver: (() => void) = () => {
-// };
-//
-// export const resole = new Promise<void>(resolve => {
-//     resolver = resolve;
-// });
-//
-// (async () => {
-//     migrationService = new MigrationService();
-//     encryptionService = new EncryptionService(new AuthKeyCollection(db.auth_key));
-//     await encryptionService.load();
-//     const tables: Record<string, Table<any>> = {
-//         journal_entries: db.journal_entries
-//     };
-//
-//     syncService = new SyncService(encryptionService,
-//         migrationService, new UpdateQueueCollection(db.update_queue), db, tables);
-//     journalEntryTable = new SyncedTable(db.journal_entries, syncService, 'journal_entries');
-//     resolver?.();
-// })();
+    async updateKey() {
+        const blob = await this.encryptionService.encrypt({key: crypto.randomUUID()});
+        const response = await this.getClient().put('key', {
+            json: {key: blob},
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        await this.fullPush();
+    }
+}

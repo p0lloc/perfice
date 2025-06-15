@@ -10,6 +10,7 @@ export class DexieUpdateQueueCollection implements UpdateQueueCollection {
         this.table = table;
     }
 
+
     async getAll(): Promise<OutgoingUpdate[]> {
         return this.table.toArray();
     }
@@ -36,6 +37,14 @@ export class DexieUpdateQueueCollection implements UpdateQueueCollection {
 
     async deleteById(id: string): Promise<void> {
         await this.table.delete(id);
+    }
+
+    async bulkPut(updates: OutgoingUpdate[]): Promise<void> {
+        await this.table.bulkPut(updates);
+    }
+
+    clear(): Promise<void> {
+        return this.table.clear();
     }
 
 }

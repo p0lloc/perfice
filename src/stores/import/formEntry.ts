@@ -44,7 +44,6 @@ export class EntryImportStore {
     async confirmImport(overwrite: boolean) {
         if (this.currentImport == null) return;
 
-        // TODO: update variable indices
         await this.importService.finishImport(this.currentImport, overwrite);
     }
 

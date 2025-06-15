@@ -34,6 +34,7 @@ import {IntegrationService} from "./services/integration/integration";
 import {AuthService} from "@perfice/services/auth/auth";
 import {EncryptionService} from "@perfice/services/encryption/encryption";
 import {SyncService} from "./services/sync/sync";
+import {RemoteService} from "@perfice/services/remote/remote";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -65,10 +66,11 @@ export interface Services {
     readonly auth: AuthService;
     readonly encryption: EncryptionService;
     readonly sync: SyncService;
+    readonly remote: RemoteService;
 }
 
 export async function setupServices(db: Collections, tables: Record<string, Table>,
-                                    migrationService: MigrationService, weekStart: WeekStart): Promise<Services> {
+                                    migrationService: MigrationService, weekStart: WeekStart, provideSyncService: (s: SyncService) => void): Promise<Services> {
 
     const journalService = new BaseJournalService(db.entries);
     const tagEntryService = new TagEntryService(db.tagEntries);
@@ -81,6 +83,9 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     journalService.addEntryObserver(JournalEntryObserverType.DELETED, async (e: JournalEntry) => await variableService.onEntryDeleted(e));
     journalService.addEntryObserver(JournalEntryObserverType.UPDATED, async (e: JournalEntry, previous: JournalEntry | null) =>
         await variableService.onEntryUpdated(e, previous));
+
+    // Variables must be loaded if they are going to be updated by integration updates
+    await variableService.loadVariables();
 
     const formService = new BaseFormService(db.forms, db.formSnapshots);
     formService.initLazyDependencies(journalService);
@@ -111,12 +116,8 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const notificationService = new NotificationService(db.notifications);
 
     const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService, notificationService);
-    const authService = new AuthService();
-    try {
-        await authService.checkAuth();
-    } catch (_) {
-        await authService.login("test@gmail.com", "testtest");
-    }
+    const remoteService = new RemoteService();
+    const authService = new AuthService(remoteService);
 
     const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
         trackableService, tagService, formService, db.savedSearches);
@@ -128,26 +129,18 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const completeImportService = new CompleteImportService(tables, analyticsHistoryService, ignoreService, migrationService,
         tagService, tagCategoryService, trackableService, trackableCategoryService, formService);
 
-    const completeExportService = new CompleteExportService(tables, analyticsHistoryService, ignoreService, migrationService);
-    const deletionService = new DeletionService(tables);
-    const integrationService = new IntegrationService(journalService, formService);
-
     const encryptionService = new EncryptionService(db.encryptionKey);
 
-    const syncService = new SyncService(encryptionService, migrationService, db.updateQueue, db.transaction, tables);
+    const completeExportService = new CompleteExportService(tables, analyticsHistoryService, ignoreService, migrationService);
+    const deletionService = new DeletionService(tables);
+    const syncService = new SyncService(encryptionService, migrationService, db.updateQueue,
+        db.transaction, tables, remoteService, authService);
 
-    try {
-        await encryptionService.load();
-    } catch (_) {
-        await encryptionService.setPassword(prompt("Encryption key") ?? "123", new Uint8Array(32));
-        await syncService.fullPull();
-    }
+    // This is quite order dependent, sync service should ideally be synced before fetching integration updates
+    provideSyncService(syncService);
 
-    try {
-        await syncService.load();
-    } catch (_) {
-
-    }
+    const integrationService = new IntegrationService(journalService, formService, remoteService, authService);
+    await authService.load();
 
     return {
         trackable: trackableService,
@@ -178,6 +171,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
         integration: integrationService,
         auth: authService,
         encryption: encryptionService,
-        sync: syncService
+        sync: syncService,
+        remote: remoteService
     }
 }

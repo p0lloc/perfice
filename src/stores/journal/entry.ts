@@ -39,7 +39,6 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
     }
 
     async updateEntry(entry: JournalEntry, format: TextOrDynamic[]) {
-        console.log(entry);
         await this.journalService.updateEntry(entry, format);
         this.updateResolved(v => updateIdentifiedInArray(v, entry));
     }

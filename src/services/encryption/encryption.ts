@@ -13,13 +13,9 @@ export class EncryptionService {
         this.authKeyCollection = authKeyCollection;
     }
 
-    async setPassword(password: string, salt: Uint8Array): Promise<void> {
-        this.encryptionKey = await this.loadKey(password, salt);
+    async setPassword(password: string): Promise<void> {
+        this.encryptionKey = await this.loadKey(password, new Uint8Array(32));
         await this.authKeyCollection.put(this.encryptionKey);
-    }
-
-    async load() {
-        await this.getEncryptionKey();
     }
 
     private async loadKey(password: string, salt: Uint8Array): Promise<CryptoKey> {

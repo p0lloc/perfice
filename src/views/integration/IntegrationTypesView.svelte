@@ -17,6 +17,7 @@
     let form = $state<Form | undefined>(undefined);
 
     onMount(async () => {
+        await integrations.load();
         form = await forms.getFormById(params.formId);
     });
 

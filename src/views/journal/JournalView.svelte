@@ -23,6 +23,7 @@
     import {onMount} from "svelte";
     import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
     import {navigate} from "@perfice/app";
+    import {pullToRefresh} from "@perfice/util/pullToRefresh";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
@@ -144,7 +145,7 @@
     {/snippet}
 </MobileTopBar>
 <FormModal largeLogButton={false} bind:this={formModal} onDelete={onFormEntryStartDelete}/>
-<div class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content">
+<div class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content" use:pullToRefresh>
     {#await $groupedJournal}
         Loading...
     {:then days}
@@ -167,7 +168,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-4" id="mainContainer">
+        <div class="flex flex-col gap-4">
             {#each days as day}
                 <JournalDayCard {selectedEntities}
                                 onEntryClick={(e) => onEntityClick(jeForm(e))}

@@ -28,8 +28,9 @@
     import IntegrationTypesView from "@perfice/views/integration/IntegrationTypesView.svelte";
     import IntegrationEditView from "@perfice/views/integration/IntegrationEditView.svelte";
     import IntegrationCreateView from "@perfice/views/integration/IntegrationCreateView.svelte";
+    import GlobalSyncModals from "@perfice/components/sync/GlobalSyncModals.svelte";
 
-    type AppRoute = Route & { hideBottomBar?: boolean };
+    type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
 
     const routes: AppRoute[] = [
         {
@@ -86,15 +87,13 @@
             hideBottomBar: true,
         },
         {path: "/reflections", component: ReflectionListView},
-        {path: ONBOARDING_ROUTE, component: OnboardingView},
+        {path: ONBOARDING_ROUTE, component: OnboardingView, customLayout: true},
         {path: "/settings", component: SettingsView},
         {path: "/", component: DashboardView},
     ];
 
-    const CUSTOM_LAYOUT_ROUTES = [ONBOARDING_ROUTE];
     let customLayout = $state<boolean>(false);
     let hideBottomBar = $state<boolean>(false);
-
 
     function onBodyClick(e: MouseEvent) {
         closeContextMenus(e.target as HTMLElement);
@@ -112,7 +111,7 @@
             path = fillRegexGroups(path, r.params);
         }
 
-        customLayout = CUSTOM_LAYOUT_ROUTES.includes(path);
+        customLayout = r.customLayout ?? false;
         hideBottomBar = r.hideBottomBar ?? false;
 
         clearClosables(); // Any overlays like modals don't matter if we move to a new route
@@ -124,6 +123,7 @@
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
     <div class="flex main-container">
+        <GlobalSyncModals/>
         {#if !customLayout}
             <GlobalReflectionModal/>
             <NavigationSidebar {hideBottomBar}/>

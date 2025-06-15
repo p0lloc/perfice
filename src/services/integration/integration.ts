@@ -3,7 +3,10 @@ import {importPrimitive} from "../export/formEntries/export";
 import type {FormService} from "../form/form";
 import type {JournalService} from "../journal/journal";
 import {convertAnswersToDisplay} from "@perfice/model/form/validation";
-import ky, {type KyInstance} from "ky";
+import {type KyInstance} from "ky";
+import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+import type {AuthService} from "@perfice/services/auth/auth";
+import type {AuthenticatedUser} from "@perfice/model/auth/auth";
 
 export interface CreateIntegrationRequest {
     integrationType: string;
@@ -20,33 +23,46 @@ export class IntegrationService {
     private formService: FormService;
 
     private integrations: Integration[] = [];
-    private client: KyInstance;
 
-    constructor(journalService: JournalService, formService: FormService) {
+    private authService: AuthService;
+    private remoteService: RemoteService;
+
+    constructor(journalService: JournalService, formService: FormService, remoteService: RemoteService, authService: AuthService) {
         this.journalService = journalService;
         this.formService = formService;
+        this.remoteService = remoteService;
+        this.authService = authService;
 
-        this.client = ky.extend({
-            prefixUrl: `${import.meta.env.VITE_BACKEND_URL}/`,
-            retry: 0,
-            credentials: "include"
-        })
+        this.remoteService.addRemoteEnableCallback(RemoteType.INTEGRATION, async () => {
+            await this.load();
+        });
+
+        this.authService.addAuthStatusCallback(async (user: AuthenticatedUser | null) => {
+            if (user == null) return;
+            await this.load();
+        });
     }
 
-    // TODO: support local integrations
-
-    private usesIntegrations() {
-        return localStorage.getItem(USES_INTEGRATIONS_STORAGE_KEY) != null;
+    private getClient(): KyInstance {
+        return this.remoteService.getRemoteClient(RemoteType.INTEGRATION)!;
     }
 
     async load() {
-        if (!this.usesIntegrations()) return;
+        if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)))
+            return;
 
-        this.integrations = await this.fetchIntegrations();
+        let integrations = await this.fetchIntegrations();
+        let integrationTypes = await this.fetchTypes();
+
+        await this.fetchUpdates();
+        return {
+            integrations,
+            integrationTypes
+        }
     }
 
     async createIntegration(request: CreateIntegrationRequest) {
-        let response = await this.client.post("integrations", {
+        let response = await this.getClient().post("integrations", {
             json: request
         });
 
@@ -61,28 +77,28 @@ export class IntegrationService {
     }
 
     async fetchIntegrations(): Promise<Integration[]> {
-        let integrations = await this.client.get("integrations").json<Integration[]>();
-        this.integrations = integrations;
-        return integrations;
+        this.integrations = await this.getClient().get("integrations").json<Integration[]>();
+        return this.integrations;
     }
 
     async authenticateIntegration(integrationType: string) {
-        let url = await this.client.get(`integrationTypes/${integrationType}/redirect`).text();
+        let url = await this.getClient().get(`integrationTypes/${integrationType}/redirect`).text();
         window.open(url, "_blank");
     }
 
     async fetchTypes(): Promise<IntegrationType[]> {
-        return await this.client.get("integrationTypes").json<IntegrationType[]>();
+        return await this.getClient().get("integrationTypes").json<IntegrationType[]>();
     }
 
     async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
-        return (await this.client.get(`integrationTypes/${integrationType}/authenticated`, {
+        return (await this.getClient().get(`integrationTypes/${integrationType}/authenticated`, {
             throwHttpErrors: false
         })).ok;
     }
 
     async fetchUpdates() {
-        let updates = await this.client.get("updates").json<IntegrationUpdate[]>();
+        if (!this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)) return;
+        let updates = await this.getClient().get("updates").json<IntegrationUpdate[]>();
 
         let acknowledgedUpdates: string[] = [];
         for (let update of updates) {
@@ -126,7 +142,7 @@ export class IntegrationService {
     }
 
     private async acknowledgeUpdates(updates: string[]) {
-        await this.client.post("updates/ack", {
+        await this.getClient().post("updates/ack", {
             json: {
                 updates: updates
             }
@@ -134,12 +150,12 @@ export class IntegrationService {
     }
 
     async fetchHistorical(id: string) {
-        await this.client.post(`integrations/${id}/historical`);
+        await this.getClient().post(`integrations/${id}/historical`);
         await this.fetchUpdates();
     }
 
     async updateIntegration(id: string, fields: Record<string, string>) {
-        await this.client.put(`integrations/${id}`, {
+        await this.getClient().put(`integrations/${id}`, {
             json: {
                 fields: fields
             }
@@ -147,6 +163,6 @@ export class IntegrationService {
     }
 
     async deleteIntegrationById(id: string) {
-        await this.client.delete(`integrations/${id}`);
+        await this.getClient().delete(`integrations/${id}`);
     }
 }

@@ -5,13 +5,15 @@ import {Capacitor} from '@capacitor/core';
 import {closableState} from './model/ui/modal';
 import {LocalNotifications} from "@capacitor/local-notifications";
 import {registerDataTypes} from "@perfice/model/form/data";
-import {appReady, onboarding, reflections, setupStores, variables} from "@perfice/stores";
+import {appReady, onboarding, reflections, setupStores} from "@perfice/stores";
 import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
 import {MigrationService} from "@perfice/db/migration/migration";
 import {loadStoredWeekStart} from "@perfice/stores/ui/weekStart";
 import {goto} from "@mateothegreat/svelte5-router";
-import {LazySyncServiceProvider} from "@perfice/services/sync/sync";
+import {LazySyncServiceProvider, SyncService} from "@perfice/services/sync/sync";
+import {publishToEventStore} from "@perfice/util/event";
+import {confirmEncryptionEvents} from "@perfice/stores/remote/sync";
 
 export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform()) ? "/new" : "";
 
@@ -24,11 +26,15 @@ export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform()) 
 
     const weekStart = loadStoredWeekStart();
 
-    let services = await setupServices(collections, tables, migrationService, weekStart);
-    syncServiceProvider.setSyncService(services.sync);
-    await setupStores(services, weekStart);
     registerDataTypes();
-    await variables.get();
+    let services = await setupServices(collections, tables, migrationService, weekStart,
+        (s: SyncService) => {
+            syncServiceProvider.setSyncService(s);
+            s.addDecryptionErrorCallback((v) => publishToEventStore(confirmEncryptionEvents, v));
+        });
+
+    await setupStores(services, weekStart);
+    // await variables.get();
     setupServiceWorker();
     onboarding.onboardNewUser();
     appReady.set(true);

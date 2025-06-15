@@ -1,32 +1,71 @@
-import ky, {type KyInstance} from "ky";
+import {type KyInstance} from "ky";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
+import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+
+export type AuthStatusChangeCallback = (user: AuthenticatedUser | null) => Promise<void>;
 
 export class AuthService {
 
-    private client: KyInstance;
+    private authStatusChangeCallbacks: AuthStatusChangeCallback[] = [];
+    private remoteService: RemoteService;
 
-    constructor() {
-        this.client = ky.extend({
-            prefixUrl: `${import.meta.env.VITE_BACKEND_URL}/auth`,
-            retry: 0,
-            timeout: 2000,
-            credentials: "include"
-        })
+    private user: AuthenticatedUser | null = null;
+
+    constructor(remoteService: RemoteService) {
+        this.remoteService = remoteService;
+        this.remoteService.setRefreshCallback(async () => await this.refresh());
+        this.remoteService.addRemoteEnableCallback(RemoteType.AUTH, async () => {
+            await this.load();
+        });
+    }
+
+    async load() {
+        if (!(this.remoteService.isRemoteEnabled(RemoteType.AUTH)))
+            return;
+
+        await this.checkAuth();
+    }
+
+    private getClient(): KyInstance {
+        return this.remoteService.getRemoteClient(RemoteType.AUTH)!;
+    }
+
+    addAuthStatusCallback(callback: AuthStatusChangeCallback) {
+        this.authStatusChangeCallbacks.push(callback);
+    }
+
+    getUser(): AuthenticatedUser | null {
+        return this.user;
+    }
+
+    isAuthenticated(): boolean {
+        return this.user != null;
     }
 
     async login(email: string, password: string) {
-        let response = await this.client.post("login", {
+        let response = await this.getClient().post("login", {
             json: {
                 email,
                 password
             }
         });
 
+        if (!response.ok) {
+            return false;
+        }
+
+        await this.checkAuth();
+        return this.isAuthenticated();
+    }
+
+    async logout() {
+        let response = await this.getClient().post("logout");
+        await this.checkAuth();
         return response.ok;
     }
 
     async register(email: string, password: string) {
-        let response = await this.client.post("register", {
+        let response = await this.getClient().post("register", {
             json: {
                 email,
                 password
@@ -37,12 +76,36 @@ export class AuthService {
     }
 
     async refresh() {
-        let response = await this.client.post("refresh");
-        return response.ok;
+        let response = await this.getClient().post("refresh");
+        if (!response.ok) {
+            await this.setUser(null);
+            return false;
+        }
+
+        return true;
     }
 
     async checkAuth() {
-        let response = await this.client.get("me").json<AuthenticatedUser>();
+        try {
+            let response = await this.getClient().get("me");
+            if (!response.ok) {
+                await this.setUser(null);
+                return;
+            }
+
+            let user = await response.json<AuthenticatedUser>();
+            await this.setUser(user);
+        } catch (e) {
+            console.error(e);
+            this.setUser(null);
+        }
+    }
+
+    private async setUser(user: AuthenticatedUser | null) {
+        this.user = user;
+        for (let callback of this.authStatusChangeCallbacks) {
+            await callback(user);
+        }
     }
 
 }
