@@ -14,7 +14,6 @@ import type {AnalyticsSettingsService} from "@perfice/services/analytics/setting
 import type {AnalyticsHistoryEntry, AnalyticsHistoryService} from "@perfice/services/analytics/history";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
 import type {CorrelationIgnoreService} from "@perfice/services/analytics/ignore";
-import dayjs from "dayjs";
 
 export interface AnalyticsResult {
     correlations: Map<SimpleTimeScopeType, Map<string, CorrelationResult>>;
@@ -26,13 +25,13 @@ export interface AnalyticsResult {
     allSettings: AnalyticsSettings[];
 
     range: number;
-    date: dayjs.Dayjs;
+    date: Date;
 }
 
 
 async function fetchAnalytics(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
                               historyService: AnalyticsHistoryService | null, ignoreService: CorrelationIgnoreService,
-                              date: dayjs.Dayjs, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+                              date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
 
     let allSettings = await settingsService.getAllSettings();
     let [forms, entries] = await analyticsService.fetchFormsAndEntries(date, range);
@@ -132,13 +131,13 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
     private readonly historyService: AnalyticsHistoryService;
     private readonly ignoreService: CorrelationIgnoreService;
 
-    private readonly date: dayjs.Dayjs;
+    private readonly date: Date;
     private readonly range: number;
     private readonly minimumSampleSize: number;
 
     constructor(analyticsService: AnalyticsService, settingsService: AnalyticsSettingsService,
                 historyService: AnalyticsHistoryService, ignoreService: CorrelationIgnoreService,
-                date: dayjs.Dayjs, range: number, minimumSampleSize: number) {
+                date: Date, range: number, minimumSampleSize: number) {
 
         super(fetchAnalytics(analyticsService, settingsService, historyService, ignoreService, date, range, minimumSampleSize));
         this.settingsService = settingsService;
@@ -155,7 +154,7 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
             this.date, this.range, this.minimumSampleSize));
     }
 
-    async getSpecificAnalytics(date: dayjs.Dayjs, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
+    async getSpecificAnalytics(date: Date, range: number, minimumSampleSize: number): Promise<AnalyticsResult> {
         let analytics = await this.get();
         if (analytics.range == range) {
             return analytics;
@@ -179,7 +178,7 @@ export class AnalyticsStore extends AsyncStore<AnalyticsResult> {
         })
     }
 
-    async findHistoricalQuantitativeInsights(result: AnalyticsResult, timeScope: SimpleTimeScopeType, date: dayjs.Dayjs) {
+    async findHistoricalQuantitativeInsights(result: AnalyticsResult, timeScope: SimpleTimeScopeType, date: Date) {
         let basicAnalytics = result.basicAnalytics.get(timeScope);
         if (basicAnalytics == null) return [];
 

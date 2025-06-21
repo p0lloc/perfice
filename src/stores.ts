@@ -55,10 +55,10 @@ import {WeekStartStore} from "@perfice/stores/ui/weekStart";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {navigate} from "@perfice/app";
 import {DeletionStore} from "@perfice/stores/deletion/deletion";
-import {IntegrationStore} from "./stores/integration/integration";
 import {SyncStore} from "@perfice/stores/remote/sync";
 import {AuthStore} from "@perfice/stores/remote/auth";
 import {RemoteStore} from "@perfice/stores/remote/remote";
+import {IntegrationStore} from "@perfice/stores/remote/integration";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;

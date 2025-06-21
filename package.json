@@ -42,7 +42,6 @@
     "@mateothegreat/svelte5-router": "^0.1.38",
     "@nozbe/microfuzz": "^1.0.0",
     "chart.js": "^4.4.7",
-    "dayjs": "^1.11.13",
     "dexie": "^4.0.10",
     "es-iterator-helpers": "^1.2.1",
     "gridstack": "^11.5.0",

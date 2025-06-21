@@ -16,7 +16,6 @@ import {type KyInstance} from "ky";
 import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
 import type {AuthService} from "@perfice/services/auth/auth";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
-import dayjs from "dayjs";
 
 export class LazySyncServiceProvider {
     private syncService: SyncService | null = null;
@@ -284,7 +283,7 @@ export class SyncService {
             entityType,
             id: crypto.randomUUID(),
             operation: UpdateOperation.FULL_SYNC,
-            timestamp: dayjs.tz().valueOf()
+            timestamp: Date.now()
         };
     }
 
@@ -308,7 +307,7 @@ export class SyncService {
             operation,
             entityType,
             entityId: null,
-            timestamp: dayjs.tz().valueOf(),
+            timestamp: Date.now(),
             entities: entities.map(e => ({
                 id: deleteOperation ? e : e.id,
                 version: this.migrationService.getCurrentDataVersion(),
@@ -332,31 +331,12 @@ export class SyncService {
             data: !deleteOperation ? entity : null,
         }
 
-        /*existing.sort((a, b) => a.timestamp - b.timestamp);
-        if (existing.length > 0) {
-            // Updates still need to be in the same order, it could be problematic if they were assigned the same timestamp
-            let start = dayjs.tz().valueOf() - existing.length;
-            // Update all existing updates to use the new entity
-            for (let i = 0; i < existing.length; i++) {
-                let existingUpdate = existing[i];
-                if (existingUpdate.operation == UpdateOperation.DELETE && operation != UpdateOperation.DELETE) {
-                    // Any deleted entity should stay deleted
-                    continue;
-                }
-
-                existingUpdate.operation = operation;
-                existingUpdate.timestamp = start + i;
-                existingUpdate.entities = existingUpdate.entities.map(e => e.id == entity.id ? updateEntity : e);
-
-                await this.updateQueueCollection.update(existingUpdate);
-            }
-        } else {*/
         let update: OutgoingUpdate = {
             id: crypto.randomUUID(),
             operation,
             entityType,
             entityId: entityId,
-            timestamp: dayjs.tz().valueOf(),
+            timestamp: Date.now(),
             entities: [
                 updateEntity
             ]

@@ -3,3 +3,7 @@ export interface SelectedField {
     questionId: string;
 }
 
+export interface UnauthenticatedIntegrationError {
+    integrationTypeName: string;
+    forms: string[];
+}
