@@ -35,6 +35,8 @@ import {AuthService} from "@perfice/services/auth/auth";
 import {EncryptionService} from "@perfice/services/encryption/encryption";
 import {SyncService} from "./services/sync/sync";
 import {RemoteService} from "@perfice/services/remote/remote";
+import {UpdateOperation} from "./model/sync/sync";
+import type {Variable} from "@perfice/model/variable/variable";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -77,6 +79,10 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const graph = new VariableGraph(db.indices, db.entries, db.tagEntries, weekStart);
 
     const variableService = new VariableService(db.variables, db.indices, graph);
+    variableService.addObserver(EntityObserverType.CREATED, async (v: Variable) => graph.onVariableCreated(v));
+    variableService.addObserver(EntityObserverType.UPDATED, async (v: Variable) => graph.onVariableUpdated(v));
+    variableService.addObserver(EntityObserverType.DELETED, async (v: Variable) => graph.onVariableDeleted(v.id));
+
     tagEntryService.addObserver(EntityObserverType.CREATED, async (e: TagEntry) => await variableService.onTagEntryCreated(e));
     tagEntryService.addObserver(EntityObserverType.DELETED, async (e: TagEntry) => await variableService.onTagEntryDeleted(e));
     journalService.addEntryObserver(JournalEntryObserverType.CREATED, async (e: JournalEntry) => await variableService.onEntryCreated(e));
@@ -94,6 +100,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const analyticsSettingsService = new AnalyticsSettingsService(db.analyticsSettings);
     formService.addObserver(EntityObserverType.DELETED,
         async (e: Form) => await analyticsSettingsService.onFormDeleted(e));
+    formService.addObserver(EntityObserverType.DELETED, async (e: Form) => await integrationService.onFormDeleted(e));
 
     const ignoreService = new CorrelationIgnoreService();
     ignoreService.load();
@@ -135,6 +142,44 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const deletionService = new DeletionService(tables);
     const syncService = new SyncService(encryptionService, migrationService, db.updateQueue,
         db.transaction, tables, remoteService, authService);
+
+    syncService.addObserver("entries", async (updates) => {
+        for (let update of updates) {
+            switch (update.operation) {
+                case UpdateOperation.CREATE:
+                    await journalService.notifyObservers(JournalEntryObserverType.CREATED, update.data, null);
+                    break;
+                case UpdateOperation.DELETE:
+                    await journalService.notifyObservers(JournalEntryObserverType.DELETED, update.previous, null);
+                    break;
+                case UpdateOperation.PUT:
+                    await journalService.notifyObservers(JournalEntryObserverType.UPDATED, update.data, update.previous);
+                    break;
+                case UpdateOperation.FULL_SYNC:
+                    await graph.deleteIndices();
+                    break;
+            }
+        }
+    });
+
+    syncService.addObserver("variables", async (updates) => {
+        for (let update of updates) {
+            switch (update.operation) {
+                case UpdateOperation.CREATE:
+                    await variableService.notifyObservers(EntityObserverType.CREATED, update.data);
+                    break;
+                case UpdateOperation.DELETE:
+                    await variableService.notifyObservers(EntityObserverType.DELETED, update.previous);
+                    break;
+                case UpdateOperation.PUT:
+                    await variableService.notifyObservers(EntityObserverType.UPDATED, update.data);
+                    break;
+                case UpdateOperation.FULL_SYNC:
+                    await graph.deleteIndices();
+                    break;
+            }
+        }
+    });
 
     // This is quite order dependent, sync service should ideally be synced before fetching integration updates
     provideSyncService(syncService);

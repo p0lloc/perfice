@@ -29,6 +29,7 @@
     import IntegrationEditView from "@perfice/views/integration/IntegrationEditView.svelte";
     import IntegrationCreateView from "@perfice/views/integration/IntegrationCreateView.svelte";
     import GlobalSyncModals from "@perfice/components/sync/GlobalSyncModals.svelte";
+    import GlobalIntegrationModals from "@perfice/components/integration/modals/GlobalIntegrationModals.svelte";
 
     type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
 
@@ -124,6 +125,7 @@
 {#if $appReady}
     <div class="flex main-container">
         <GlobalSyncModals/>
+        <GlobalIntegrationModals/>
         {#if !customLayout}
             <GlobalReflectionModal/>
             <NavigationSidebar {hideBottomBar}/>

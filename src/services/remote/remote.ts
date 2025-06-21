@@ -123,7 +123,7 @@ export class RemoteService {
         if (refresh != null) {
             let refreshed = await refresh();
             if (!refreshed) {
-                alert("Refresh failed");
+                alert("Unable to log you back in, please log in again or disable account in settings.");
                 throw new Error("Refresh failed");
             }
 

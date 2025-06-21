@@ -42,7 +42,7 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async createEntry(entry: JournalEntry): Promise<void> {
-        await this.table.put(entry);
+        await this.table.create(entry);
     }
 
     async updateEntry(entry: JournalEntry): Promise<void> {
@@ -71,7 +71,7 @@ export class DexieJournalCollection implements JournalCollection {
     }
 
     async createEntries(entries: JournalEntry[]): Promise<void> {
-        await this.table.bulkPut(entries);
+        await this.table.bulkCreate(entries);
     }
 
     async getAllEntries(): Promise<JournalEntry[]> {

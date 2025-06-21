@@ -23,7 +23,7 @@ export class DexieGoalCollection implements GoalCollection {
     }
 
     async createGoal(goal: Goal): Promise<void> {
-        await this.table.put(goal);
+        await this.table.create(goal);
     }
 
     async updateGoal(goal: Goal): Promise<void> {

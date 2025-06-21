@@ -1,12 +1,11 @@
-import type {Integration, IntegrationType} from "@perfice/model/integration/integration";
-import type {IntegrationService} from "@perfice/services/integration/integration";
+import type {IntegrationType} from "@perfice/model/integration/integration";
+import type {IntegrationData, IntegrationService} from "@perfice/services/integration/integration";
 import {AsyncStore} from "@perfice/stores/store";
 import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
+import {writable} from "svelte/store";
+import type {UnauthenticatedIntegrationError} from "@perfice/model/integration/ui";
 
-export interface IntegrationData {
-    integrations: Integration[];
-    integrationTypes: IntegrationType[];
-}
+export const unauthenticatedIntegrationEvents = writable<UnauthenticatedIntegrationError[][]>([]);
 
 export class IntegrationStore extends AsyncStore<IntegrationData> {
 
@@ -22,10 +21,6 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         if (this.loaded) return this.get();
 
         let value = await this.integrationService.load();
-        if (!value) return {
-            integrations: [],
-            integrationTypes: []
-        };
 
         this.set(resolvedPromise(value));
         this.loaded = true;

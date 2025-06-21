@@ -19,7 +19,7 @@ export class DexieTrackableCollection implements TrackableCollection {
     }
 
     async createTrackable(trackable: Trackable): Promise<void> {
-        await this.table.put(trackable);
+        await this.table.create(trackable);
     }
 
     async updateTrackable(trackable: Trackable): Promise<void> {
@@ -61,7 +61,7 @@ export class DexieTrackableCategoryCollection implements TrackableCategoryCollec
     }
 
     async createCategory(category: TrackableCategory): Promise<void> {
-        await this.table.put(category);
+        await this.table.create(category);
     }
 
     async updateCategory(category: TrackableCategory): Promise<void> {

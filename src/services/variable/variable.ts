@@ -154,8 +154,11 @@ export class VariableService implements VariableProvider {
 
         let stored = this.serializeVariable(variable);
         await this.variableCollection.createVariable(stored);
-        this.graph.onVariableCreated(variable);
-        await this.observers.notifyObservers(EntityObserverType.CREATED, variable);
+        await this.notifyObservers(EntityObserverType.CREATED, variable);
+    }
+
+    async notifyObservers(type: EntityObserverType, variable: Variable) {
+        await this.observers.notifyObservers(type, variable);
     }
 
     private detectCircularDependencies(variable: Variable): boolean {
@@ -215,15 +218,14 @@ export class VariableService implements VariableProvider {
         if (variable == null) return;
 
         await this.variableCollection.deleteVariableById(variableId);
-        await this.graph.onVariableDeleted(variableId);
-        await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
+        await this.notifyObservers(EntityObserverType.DELETED, variable);
     }
 
     async deleteVariableAndDependencies(variableId: string, shouldDelete: (v: Variable) => boolean) {
-        let variablesToDelete = await this.graph.deleteVariableAndDependencies(variableId, shouldDelete);
+        let variablesToDelete = await this.graph.getVariablesToDeleteWhenDeletingVariable(variableId, shouldDelete);
         for (let variable of variablesToDelete) {
             await this.variableCollection.deleteVariableById(variable.id);
-            await this.observers.notifyObservers(EntityObserverType.DELETED, variable);
+            await this.notifyObservers(EntityObserverType.DELETED, variable);
         }
     }
 
@@ -233,8 +235,7 @@ export class VariableService implements VariableProvider {
         }
 
         await this.variableCollection.updateVariable(this.serializeVariable(variable));
-        await this.graph.onVariableUpdated(variable);
-        await this.observers.notifyObservers(EntityObserverType.UPDATED, variable);
+        await this.notifyObservers(EntityObserverType.UPDATED, variable);
     }
 
     public addObserver(type: EntityObserverType, callback: EntityObserverCallback<Variable>) {

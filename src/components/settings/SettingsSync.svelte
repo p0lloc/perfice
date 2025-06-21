@@ -39,10 +39,10 @@
 
                 <Button class="w-full md:w-auto" onClick={configureEncryption}>Set password</Button>
             </div>
+            <div class="flex gap-2 justify-between items-center flex-wrap">
+                <h3 class="settings-label">Overwrite data</h3>
+                <Button class="self-start" onClick={() => onboardSyncModal.open()}>Pull/Push</Button>
+            </div>
         {/if}
-        <div class="flex gap-2 justify-between items-center flex-wrap">
-            <h3 class="settings-label">Overwrite data</h3>
-            <Button class="self-start" onClick={() => onboardSyncModal.open()}>Pull/Push</Button>
-        </div>
     </div>
 {/if}

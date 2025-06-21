@@ -27,12 +27,12 @@ export class SyncStore {
     }
 
     async confirmEncryptionPassword(password: string) {
-        await this.encryptionService.setPassword(password);
+        await this.encryptionService.setPassword(password, await this.syncService.getSalt());
         return await this.syncService.pull();
     }
 
     async resetEncryptionPassword(password: string) {
-        await this.encryptionService.setPassword(password);
+        await this.encryptionService.setPassword(password, await this.syncService.getSalt());
         await this.syncService.updateKey();
     }
 
@@ -42,5 +42,9 @@ export class SyncStore {
 
     async refresh() {
         await this.syncService.queueSync();
+    }
+
+    async onAppOpened() {
+        await this.refresh();
     }
 }

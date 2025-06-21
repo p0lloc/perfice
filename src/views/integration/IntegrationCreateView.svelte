@@ -60,9 +60,11 @@
             </button>
         {/snippet}
         {#snippet actions()}
-            <button class="icon-button" onclick={save}>
-                <Fa icon={faCheck}/>
-            </button>
+            {#if selectedEntity}
+                <button class="icon-button" onclick={save}>
+                    <Fa icon={faCheck}/>
+                </button>
+            {/if}
         {/snippet}
     </MobileTopBar>
     <div class="center-view md:mt-8 md:p-0 p-2 main-content">

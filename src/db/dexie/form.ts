@@ -19,7 +19,7 @@ export class DexieFormCollection implements FormCollection {
     }
 
     async createForm(form: Form): Promise<void> {
-        await this.table.put(form);
+        await this.table.create(form);
     }
 
     async updateForm(form: Form): Promise<void> {
@@ -49,7 +49,7 @@ export class DexieFormSnapshotCollection implements FormSnapshotCollection {
     }
 
     async createFormSnapshot(snapshot: FormSnapshot): Promise<void> {
-        await this.table.put(snapshot);
+        await this.table.create(snapshot);
     }
 
     async deleteFormSnapshotsByFormId(formId: string): Promise<void> {
@@ -72,7 +72,7 @@ export class DexieFormTemplateCollection implements FormTemplateCollection {
     }
 
     async createFormTemplate(template: FormTemplate): Promise<void> {
-        await this.table.put(template);
+        await this.table.create(template);
     }
 
     async getTemplatesByFormId(formId: string): Promise<FormTemplate[]> {

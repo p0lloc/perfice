@@ -1,15 +1,14 @@
 import type {IndexCollection, IndexUpdateListener} from "@perfice/db/collections";
-import type {Collection} from "dexie";
+import type {Collection, Table} from "dexie";
 import type {VariableIndex} from "@perfice/model/variable/variable";
-import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieIndexCollection implements IndexCollection {
 
-    private table: SyncedTable<VariableIndex>;
+    private table: Table<VariableIndex>;
     private updateListeners: IndexUpdateListener[] = [];
     private deleteListeners: IndexUpdateListener[] = [];
 
-    constructor(table: SyncedTable<VariableIndex>) {
+    constructor(table: Table<VariableIndex>) {
         this.table = table;
     }
 
@@ -18,7 +17,7 @@ export class DexieIndexCollection implements IndexCollection {
     }
 
     async createIndex(index: VariableIndex): Promise<void> {
-        await this.table.put(index);
+        await this.table.add(index);
     }
 
     async updateIndex(index: VariableIndex): Promise<void> {
@@ -63,7 +62,7 @@ export class DexieIndexCollection implements IndexCollection {
     private async performBulkDeleteQuery(query: Collection<VariableIndex>): Promise<void> {
         let indices = await query.toArray();
 
-        await this.table.deleteByIds(indices.map(e => e.id));
+        await this.table.bulkDelete(indices.map(e => e.id));
         await this.notifyDeletion(indices);
     }
 

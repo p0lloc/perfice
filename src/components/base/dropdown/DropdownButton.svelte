@@ -101,3 +101,9 @@
 <ContextMenu bind:this={contextMenu}>
     <ContextMenuButtons buttons={menuItems}/>
 </ContextMenu>
+
+<style>
+    input::placeholder {
+        color: black;
+    }
+</style>

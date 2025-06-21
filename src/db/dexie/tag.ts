@@ -16,7 +16,7 @@ export class DexieTagEntryCollection implements TagEntryCollection {
     }
 
     async createEntry(entry: TagEntry): Promise<void> {
-        await this.table.put(entry);
+        await this.table.create(entry);
     }
 
     getTagEntriesByTagId(tagId: string): Promise<TagEntry[]> {
@@ -93,7 +93,7 @@ export class DexieTagCollection implements TagCollection {
     }
 
     async createTag(tag: Tag): Promise<void> {
-        await this.table.put(tag);
+        await this.table.create(tag);
     }
 
     async updateTag(tag: Tag): Promise<void> {
@@ -135,7 +135,7 @@ export class DexieTagCategoryCollection implements TagCategoryCollection {
     }
 
     async createCategory(category: TagCategory): Promise<void> {
-        await this.table.put(category);
+        await this.table.create(category);
     }
 
     async updateCategory(category: TagCategory): Promise<void> {

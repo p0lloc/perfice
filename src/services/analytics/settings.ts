@@ -33,9 +33,9 @@ export class AnalyticsSettingsService {
         return this.analyticsSettingsCollection.getSettingsByFormId(formId);
     }
 
-    async createAnalyticsSettingsFromForm(formId: string, questions: FormQuestion[]) {
+    async createAnalyticsSettingsFromForm(formId: string, questions: FormQuestion[]): Promise<AnalyticsSettings> {
         let settings: AnalyticsSettings = {
-            formId,
+            id: formId,
             questionId: questions.length > 0 ? questions[0].id : "",
             useMeanValue: Object.fromEntries(questions.map(q => [q.id, true])),
             interpolate: false
@@ -43,6 +43,7 @@ export class AnalyticsSettingsService {
 
         await this.analyticsSettingsCollection.insertSettings(settings);
         await this.observers.notifyObservers(EntityObserverType.CREATED, settings);
+        return settings;
     }
 
     async onFormDeleted(e: Form) {

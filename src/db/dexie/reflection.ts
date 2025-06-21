@@ -19,7 +19,7 @@ export class DexieReflectionCollection implements ReflectionCollection {
     }
 
     async createReflection(reflection: Reflection): Promise<void> {
-        await this.table.put(reflection);
+        await this.table.create(reflection);
     }
 
     async updateReflection(reflection: Reflection): Promise<void> {

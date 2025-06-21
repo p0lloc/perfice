@@ -324,7 +324,7 @@ export class VariableGraph {
         return result;
     }
 
-    async deleteVariableAndDependencies(id: string, shouldDeleteChild: (v: Variable) => boolean): Promise<Variable[]> {
+    async getVariablesToDeleteWhenDeletingVariable(id: string, shouldDeleteChild: (v: Variable) => boolean): Promise<Variable[]> {
         let variable = this.getVariableById(id);
         if (variable == null) return [];
 
@@ -345,12 +345,6 @@ export class VariableGraph {
 
                 stack.push(child);
             }
-        }
-
-        // This could be more optimized by deleting all variables at once
-        // But then we would need to keep the logic in sync with onVariableDeleted
-        for (const v of variablesToDelete) {
-            await this.onVariableDeleted(v.id);
         }
 
         return variablesToDelete;
@@ -433,6 +427,10 @@ export class VariableGraph {
 
         // Changing week start will break old indices that haven't been updated for the new week start
         // It's easiest to just delete all indices and recreate them as needed
+        await this.deleteIndices();
+    }
+
+    async deleteIndices() {
         await this.indexCollection.deleteAllIndices();
     }
 

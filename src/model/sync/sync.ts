@@ -1,4 +1,5 @@
 export enum UpdateOperation {
+    CREATE = 'create',
     PUT = 'put',
     DELETE = 'delete',
     FULL_SYNC = 'fullSync'
@@ -39,6 +40,7 @@ export interface PreprocessedEntity {
     operation: UpdateOperation;
     migrated: boolean;
     data: any | null;
+    previous?: any;
 }
 
 export interface IncomingUpdate {

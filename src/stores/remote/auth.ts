@@ -25,4 +25,9 @@ export class AuthStore extends CustomStore<AuthenticatedUser | null> {
     async register(email: string, password: string) {
         return await this.authService.register(email, password);
     }
+
+    async setTimezone(timezone: string) {
+        return await this.authService.setTimezone(timezone);
+    }
+
 }

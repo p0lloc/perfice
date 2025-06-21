@@ -16,6 +16,7 @@ import {type KyInstance} from "ky";
 import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
 import type {AuthService} from "@perfice/services/auth/auth";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
+import dayjs from "dayjs";
 
 export class LazySyncServiceProvider {
     private syncService: SyncService | null = null;
@@ -64,7 +65,7 @@ export const SYNCED_ENTITY_TYPES = [
     "trackableCategories",
     "forms",
     "formSnapshots",
-    "indices",
+    //"indices",
     "goals",
     "tags",
     "tagEntries",
@@ -75,7 +76,10 @@ export const SYNCED_ENTITY_TYPES = [
     "reflections",
     "savedSearches",
     "notifications",
+    "analyticSettings"
 ];
+
+const SALT_STORAGE_KEY = "salt";
 
 export class SyncedTable<T extends { id: string }> {
     private table: Table<T, string>;
@@ -98,12 +102,19 @@ export class SyncedTable<T extends { id: string }> {
 
     async create(entity: T): Promise<void> {
         await this.table.add(entity);
-        await this.sync(entity, UpdateOperation.PUT);
+        await this.sync(entity, UpdateOperation.CREATE);
     }
 
     async put(entity: T): Promise<void> {
         await this.table.put(entity);
         await this.sync(entity, UpdateOperation.PUT);
+    }
+
+    async bulkCreate(entities: T[]): Promise<void> {
+        await this.table.bulkAdd(entities);
+        await this.syncServiceProvider
+            .getSyncService()
+            .createMultiUpdate(entities, UpdateOperation.CREATE, this.entityType);
     }
 
     async bulkPut(entities: T[]): Promise<void> {
@@ -182,6 +193,7 @@ export function applyUpdates(existing: any[], updates: PreprocessedEntity[]): an
 }
 
 const SYNC_DELAY = 1000;
+const PREVIOUS_ENTITY_TYPES = ["entries"];
 
 export type SyncObserver = (entities: PreprocessedEntity[]) => void;
 
@@ -263,16 +275,16 @@ export class SyncService {
 
     private constructFullUpdateObject(entityType: string, entities: any[]): OutgoingUpdate {
         return {
-            id: crypto.randomUUID(),
-            operation: UpdateOperation.FULL_SYNC,
-            entityType,
-            entityId: null,
-            timestamp: Date.now(),
             entities: entities.map(e => ({
                 id: e.id,
                 version: this.migrationService.getCurrentDataVersion(),
                 data: e,
-            }))
+            })),
+            entityId: null,
+            entityType,
+            id: crypto.randomUUID(),
+            operation: UpdateOperation.FULL_SYNC,
+            timestamp: dayjs.tz().valueOf()
         };
     }
 
@@ -296,7 +308,7 @@ export class SyncService {
             operation,
             entityType,
             entityId: null,
-            timestamp: Date.now(),
+            timestamp: dayjs.tz().valueOf(),
             entities: entities.map(e => ({
                 id: deleteOperation ? e : e.id,
                 version: this.migrationService.getCurrentDataVersion(),
@@ -323,7 +335,7 @@ export class SyncService {
         /*existing.sort((a, b) => a.timestamp - b.timestamp);
         if (existing.length > 0) {
             // Updates still need to be in the same order, it could be problematic if they were assigned the same timestamp
-            let start = Date.now() - existing.length;
+            let start = dayjs.tz().valueOf() - existing.length;
             // Update all existing updates to use the new entity
             for (let i = 0; i < existing.length; i++) {
                 let existingUpdate = existing[i];
@@ -344,7 +356,7 @@ export class SyncService {
             operation,
             entityType,
             entityId: entityId,
-            timestamp: Date.now(),
+            timestamp: dayjs.tz().valueOf(),
             entities: [
                 updateEntity
             ]
@@ -475,6 +487,27 @@ export class SyncService {
         await this.push();
     }
 
+    async getSalt(): Promise<string> {
+        let stored = localStorage.getItem(SALT_STORAGE_KEY);
+        if (stored != null) {
+            return stored;
+        }
+
+        let salt = await this.fetchSalt();
+        localStorage.setItem(SALT_STORAGE_KEY, salt);
+
+        return salt;
+    }
+
+    private async fetchSalt() {
+        let response = await this.getClient().get('salt');
+        if (!response.ok) {
+            throw new Error("Failed to get salt");
+        }
+
+        return (await response.json<{ salt: string }>()).salt;
+    }
+
     private async decryptEntity(data: string): Promise<any> {
         try {
             return await this.encryptionService.decrypt(data);
@@ -485,6 +518,12 @@ export class SyncService {
     }
 
     private async preprocessEntity(entity: IncomingUpdateEntity, update: IncomingUpdate, table: Table<any>): Promise<PreprocessedEntity | null> {
+
+        let previous: any = undefined;
+        if (PREVIOUS_ENTITY_TYPES.includes(update.entityType) && update.operation != UpdateOperation.CREATE) {
+            previous = await table.get(entity.id);
+        }
+
         if (entity.data == null) {
             if (update.operation === UpdateOperation.DELETE) {
                 return {
@@ -493,6 +532,7 @@ export class SyncService {
                     operation: update.operation,
                     data: null,
                     migrated: false,
+                    previous
                 };
             }
 
@@ -502,6 +542,7 @@ export class SyncService {
         switch (update.operation) {
             case UpdateOperation.FULL_SYNC:
             case UpdateOperation.PUT:
+            case UpdateOperation.CREATE:
                 let decrypted = await this.decryptEntity(entity.data);
 
                 let migrated = this.migrationService.isOutdated(entity.version);
@@ -515,6 +556,7 @@ export class SyncService {
                     operation: update.operation,
                     data: decrypted,
                     migrated,
+                    previous
                 };
         }
 
@@ -525,6 +567,7 @@ export class SyncService {
         switch (entity.operation) {
             case UpdateOperation.FULL_SYNC:
             case UpdateOperation.PUT:
+            case UpdateOperation.CREATE:
                 await table.put(entity.data);
                 break;
             case UpdateOperation.DELETE:
@@ -614,6 +657,15 @@ export class SyncService {
             }
         }
 
+        if (acknowledgedUpdates.length > 0) {
+            // Acknowledge processed updates
+            await this.getClient().post('ack', {
+                json: {
+                    updates: acknowledgedUpdates
+                }
+            });
+        }
+
         for (const [entityType, entities] of processedEntities) {
             for (let entity of entities) {
                 // Let other clients know about migrated entities
@@ -627,15 +679,6 @@ export class SyncService {
             if (callback != null) {
                 callback(entities);
             }
-        }
-
-        if (acknowledgedUpdates.length > 0) {
-            // Acknowledge processed updates
-            await this.getClient().post('ack', {
-                json: {
-                    updates: acknowledgedUpdates
-                }
-            });
         }
     }
 

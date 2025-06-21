@@ -70,6 +70,7 @@ export class EntryImportService {
             snapshotId: form.snapshotId,
             answers: answers,
             timestamp,
+            integration: null,
             displayValue: formatAnswersIntoRepresentation(answers, form.format)
         };
     }

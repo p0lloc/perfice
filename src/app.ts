@@ -5,7 +5,7 @@ import {Capacitor} from '@capacitor/core';
 import {closableState} from './model/ui/modal';
 import {LocalNotifications} from "@capacitor/local-notifications";
 import {registerDataTypes} from "@perfice/model/form/data";
-import {appReady, onboarding, reflections, setupStores} from "@perfice/stores";
+import {appReady, onboarding, reflections, setupStores, sync} from "@perfice/stores";
 import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
 import {MigrationService} from "@perfice/db/migration/migration";
@@ -52,6 +52,7 @@ export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform()) 
 function onAppOpened() {
     // Give precedence to any reflections opened by notifications
     setTimeout(() => reflections?.onAppOpened(), 500);
+    sync.onAppOpened();
 }
 
 CapacitorApp.addListener('appStateChange', ({isActive}) => {

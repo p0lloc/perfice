@@ -108,4 +108,17 @@ export class AuthService {
         }
     }
 
+    async setTimezone(timezone: string): Promise<boolean> {
+        let res = await this.getClient().put("timezone", {
+            json: {
+                timezone
+            }
+        });
+
+        if (!res.ok || !this.user)
+            return false;
+
+        this.user.timezone = timezone;
+        return true;
+    }
 }

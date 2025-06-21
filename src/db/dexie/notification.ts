@@ -18,7 +18,7 @@ export class DexieNotificationCollection implements NotificationCollection {
     }
 
     async createNotification(notification: StoredNotification): Promise<void> {
-        await this.table.put(notification);
+        await this.table.create(notification);
     }
 
     async updateNotification(notification: StoredNotification): Promise<void> {

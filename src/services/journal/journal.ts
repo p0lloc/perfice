@@ -114,7 +114,7 @@ export class BaseJournalService implements JournalService {
         return this.collection.getEntriesBySnapshotId(snapshotId);
     }
 
-    private async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry, previous: JournalEntry | null) {
+    async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry, previous: JournalEntry | null) {
         let observers = this.observers
             .filter(o => o.type == JournalEntryObserverType.ANY || o.type == type);
 

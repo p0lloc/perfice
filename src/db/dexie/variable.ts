@@ -19,7 +19,7 @@ export class DexieVariableCollection implements VariableCollection {
     }
 
     async createVariable(variable: StoredVariable): Promise<void> {
-        await this.table.put(variable);
+        await this.table.create(variable);
     }
 
     async updateVariable(variable: StoredVariable): Promise<void> {

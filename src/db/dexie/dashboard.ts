@@ -19,7 +19,7 @@ export class DexieDashboardCollection implements DashboardCollection {
     }
 
     async createDashboard(dashboard: Dashboard): Promise<void> {
-        await this.table.put(dashboard);
+        await this.table.create(dashboard);
     }
 
     async updateDashboard(dashboard: Dashboard): Promise<void> {
@@ -48,7 +48,7 @@ export class DexieDashboardWidgetCollection implements DashboardWidgetCollection
     }
 
     async createWidget(widget: DashboardWidget): Promise<void> {
-        await this.table.put(widget);
+        await this.table.create(widget);
     }
 
     async updateWidget(widget: DashboardWidget): Promise<void> {

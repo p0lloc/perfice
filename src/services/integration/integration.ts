@@ -7,6 +7,12 @@ import {type KyInstance} from "ky";
 import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
 import type {AuthService} from "@perfice/services/auth/auth";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
+import type {UnauthenticatedIntegrationError} from "@perfice/model/integration/ui";
+import {publishToEventStore} from "@perfice/util/event";
+import {unauthenticatedIntegrationEvents} from "@perfice/stores/remote/integration";
+import {Capacitor} from "@capacitor/core";
+import {Browser} from "@capacitor/browser";
+import type {Form} from "@perfice/model/form/form";
 
 export interface CreateIntegrationRequest {
     integrationType: string;
@@ -47,15 +53,52 @@ export class IntegrationService {
         return this.remoteService.getRemoteClient(RemoteType.INTEGRATION)!;
     }
 
-    async load() {
+    private async checkUnauthenticatedIntegrations(integrations: Integration[], integrationTypes: IntegrationType[]): Promise<UnauthenticatedIntegrationError[]> {
+        let unauthenticatedErrors: UnauthenticatedIntegrationError[] = [];
+        for (let integration of integrations) {
+            let type = integrationTypes.find(t => t.integrationType == integration.integrationType);
+            if (type == null) continue;
+
+            if (type.authenticated)
+                continue;
+
+            let form = await this.formService.getFormById(integration.formId);
+            if (form == null) continue;
+
+            let existing = unauthenticatedErrors.find(e => e.integrationType == integration.integrationType);
+            if (existing == null) {
+                unauthenticatedErrors.push({
+                    integrationType: integration.integrationType,
+                    integrationTypeName: type.name,
+                    forms: [form.name]
+                });
+            } else {
+                existing.forms.push(form.name);
+            }
+        }
+
+        return unauthenticatedErrors;
+    }
+
+    async load(): Promise<IntegrationData> {
         if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)))
-            return;
+            return {
+                enabled: false,
+                integrations: [],
+                integrationTypes: []
+            };
 
         let integrations = await this.fetchIntegrations();
         let integrationTypes = await this.fetchTypes();
 
+        let errors = await this.checkUnauthenticatedIntegrations(integrations, integrationTypes);
+        if (errors.length > 0) {
+            publishToEventStore(unauthenticatedIntegrationEvents, errors);
+        }
+
         await this.fetchUpdates();
         return {
+            enabled: true,
             integrations,
             integrationTypes
         }
@@ -83,7 +126,11 @@ export class IntegrationService {
 
     async authenticateIntegration(integrationType: string) {
         let url = await this.getClient().get(`integrationTypes/${integrationType}/redirect`).text();
-        window.open(url, "_blank");
+        if (Capacitor.isNativePlatform()) {
+            await Browser.open({url: url});
+        } else {
+            window.open(url, "_blank");
+        }
     }
 
     async fetchTypes(): Promise<IntegrationType[]> {
@@ -91,9 +138,10 @@ export class IntegrationService {
     }
 
     async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
-        return (await this.getClient().get(`integrationTypes/${integrationType}/authenticated`, {
+        let res = (await this.getClient().get(`integrationTypes/${integrationType}/authenticated`, {
             throwHttpErrors: false
-        })).ok;
+        }));
+        return res.ok;
     }
 
     async fetchUpdates() {
@@ -165,4 +213,19 @@ export class IntegrationService {
     async deleteIntegrationById(id: string) {
         await this.getClient().delete(`integrations/${id}`);
     }
+
+    async onFormDeleted(e: Form) {
+        if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION))) return;
+
+        // Delete all integrations that use this form
+        for (const integration of this.integrations.filter(i => i.formId == e.id)) {
+            await this.deleteIntegrationById(integration.id);
+        }
+    }
+}
+
+export interface IntegrationData {
+    enabled: boolean;
+    integrations: Integration[];
+    integrationTypes: IntegrationType[];
 }

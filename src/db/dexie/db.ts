@@ -45,7 +45,7 @@ export type DexieDB = Dexie & {
     tagEntries: Table<TagEntry>;
     formTemplates: Table<FormTemplate>;
     tagCategories: Table<TagCategory>;
-    analyticsSettings: Table<AnalyticsSettings, 'formId'>;
+    analyticSettings: Table<AnalyticsSettings>;
     dashboards: Table<Dashboard>;
     dashboardWidgets: Table<DashboardWidget>;
     reflections: Table<Reflection>;
@@ -57,7 +57,7 @@ export type DexieDB = Dexie & {
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(23).stores({
+    db.version(24).stores({
         "trackables": "id, categoryId",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, integration, [formId+timestamp], [timestamp+id]",
@@ -70,7 +70,7 @@ function loadDb(): DexieDB {
         "tags": "id, categoryId",
         "tagEntries": "id, tagId, timestamp, [tagId+timestamp], [timestamp+id]",
         "formTemplates": "id, formId",
-        "analyticsSettings": "formId",
+        "analyticSettings": "id",
         "dashboards": "id",
         "dashboardWidgets": "id, dashboardId",
         "reflections": "id",
@@ -96,7 +96,7 @@ export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
     const formCollection = new DexieFormCollection(new SyncedTable(db.forms, "forms", syncServiceProvider));
     const formSnapshotCollection = new DexieFormSnapshotCollection(new SyncedTable(db.formSnapshots, "formSnapshots", syncServiceProvider));
 
-    const indexCollection = new DexieIndexCollection(new SyncedTable(db.indices, "indices", syncServiceProvider));
+    const indexCollection = new DexieIndexCollection(db.indices);
     const goalCollection = new DexieGoalCollection(new SyncedTable(db.goals, "goals", syncServiceProvider));
 
     const tagCollection = new DexieTagCollection(new SyncedTable(db.tags, "tags", syncServiceProvider));
@@ -105,8 +105,7 @@ export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
     const formTemplateCollection = new DexieFormTemplateCollection(new SyncedTable(db.formTemplates, "formTemplates", syncServiceProvider));
     const tagCategoryCollection = new DexieTagCategoryCollection(new SyncedTable(db.tagCategories, "tagCategories", syncServiceProvider));
 
-    // TODO: Should this be synced?
-    const analyticsSettingsCollection = new DexieAnalyticsSettingsCollection(db.analyticsSettings);
+    const analyticsSettingsCollection = new DexieAnalyticsSettingsCollection(new SyncedTable(db.analyticSettings, "analyticSettings", syncServiceProvider));
 
     const dashboardCollection = new DexieDashboardCollection(new SyncedTable(db.dashboards, "dashboards", syncServiceProvider));
     const dashboardWidgetCollection = new DexieDashboardWidgetCollection(new SyncedTable(db.dashboardWidgets, "dashboardWidgets", syncServiceProvider));

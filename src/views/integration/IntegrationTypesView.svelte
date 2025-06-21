@@ -32,11 +32,11 @@
             let appStateRan = false;
             // When user returns back to app, check if integration was successfully authenticated
             // If so, re-rerun the click action
-            CapacitorApp.addListener('appStateChange', ({isActive}) => {
+            CapacitorApp.addListener('appStateChange', async ({isActive}) => {
                 if (!isActive || appStateRan) return;
                 appStateRan = true; // There is no way to unregister listeners, so we need to make sure we don't run this twice
 
-                if (!integrations.fetchAuthenticationStatus(integrationType.integrationType)) return;
+                if (!(await integrations.fetchAuthenticationStatus(integrationType.integrationType))) return;
                 integrationType.authenticated = true;
                 onTypeClick(integrationType, integration);
             });
@@ -50,20 +50,30 @@
             navigate(`/integrations/edit/${integration.id}`);
         }
     }
+
+    function onTypeDeleteClick(integration: Integration | undefined) {
+        if (integration == null) return;
+        integrations.deleteIntegrationById(integration?.id ?? "");
+    }
 </script>
 
 
 <MobileTopBar title="Integrations"/>
 <div class="center-view md:mt-8 md:p-0 p-2 main-content">
     <Title title={`Integrations for ${form?.name ?? "Form"}`} icon={faGears}/>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-        {#await $integrations then integrationData}
-            {#each integrationData.integrationTypes as type}
-                <IntegrationTypeCard integrationType={type}
-                                     formId={params.formId}
-                                     onClick={(integration) => onTypeClick(type, integration)}
-                                     integration={getConnectedIntegration(integrationData.integrations, type.integrationType)}/>
-            {/each}
-        {/await}
-    </div>
+    {#await $integrations then integrationData}
+        {#if !integrationData.enabled}
+            <p class="text-center mt-4">Integrations must first be enabled in settings.</p>
+        {:else}
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+                {#each integrationData.integrationTypes as type}
+                    <IntegrationTypeCard integrationType={type}
+                                         formId={params.formId}
+                                         onClick={(integration) => onTypeClick(type, integration)}
+                                         onDelete={(integration) => onTypeDeleteClick(integration)}
+                                         integration={getConnectedIntegration(integrationData.integrations, type.integrationType)}/>
+                {/each}
+            </div>
+        {/if}
+    {/await}
 </div>
