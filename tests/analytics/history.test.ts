@@ -17,13 +17,13 @@ import {AnalyticsSettings} from "../../src/model/analytics/analytics";
 function mockAnalyticsSettings(): AnalyticsSettings[] {
     return [
         {
-            formId: "test_form",
+            id: "test_form",
             questionId: "test",
             useMeanValue: {"test": true},
             interpolate: false
         },
         {
-            formId: "test_form2",
+            id: "test_form2",
             questionId: "test",
             useMeanValue: {"test": true},
             interpolate: false
@@ -33,17 +33,17 @@ function mockAnalyticsSettings(): AnalyticsSettings[] {
 
 test("saves history successfully", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 1),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 5).getTime()),
 
-        mockEntry("test_form2", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 1),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 5).getTime()),
     ]);
 
     const tagEntries = new DummyTagEntryCollection([]);
@@ -59,10 +59,11 @@ test("saves history successfully", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let date = new Date(1000 * 60 * 60 * 24 * 7);
+    let date = new Date(1970, 0, 8);
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(date, 7);
     let [rawValues] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
+    console.log(rawValues)
 
     let [tagValues] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7);
     let results = await analytics.runBasicCorrelations(rawValues, tagValues, mockAnalyticsSettings(), date, 7, 3);
@@ -85,17 +86,17 @@ test("saves history successfully", async () => {
 
 test("timestamp remains same", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 1),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 5).getTime()),
 
-        mockEntry("test_form2", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 1),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 5).getTime()),
     ]);
 
     const tagEntries = new DummyTagEntryCollection([]);
@@ -112,7 +113,7 @@ test("timestamp remains same", async () => {
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     // Process and store in history
-    let date1 = new Date(1000 * 60 * 60 * 24 * 7);
+    let date1 = new Date(1970, 0, 8);
     let [forms, entries] = await analytics.fetchFormsAndEntries(date1, 7);
     let [rawValues1] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let [tagValues1] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, date1, 7);
@@ -122,7 +123,7 @@ test("timestamp remains same", async () => {
     history.processResult(results1, date1);
 
     // Calculate correlations the next day
-    let date2 = new Date(1000 * 60 * 60 * 24 * 8);
+    let date2 = new Date(1970, 0, 9);
     let [forms2, entries2] = await analytics.fetchFormsAndEntries(date2, 8);
     let [rawValues2] = await analytics.constructRawValues(forms2, entries2, SimpleTimeScopeType.DAILY);
     let [tagValues2] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, date2, 8);
@@ -144,20 +145,20 @@ test("timestamp remains same", async () => {
 });
 
 test("timestamp changes for drastic coefficient change", async () => {
-    let firstMismatch = mockEntry("test_form", {"test": pNumber(14.5)}, 1000 * 60 * 60 * 24 * 3);
-    let secondMismatch = mockEntry("test_form", {"test": pNumber(13.0)}, 1000 * 60 * 60 * 24 * 4);
+    let firstMismatch = mockEntry("test_form", {"test": pNumber(14.5)}, new Date(1970, 0, 4).getTime());
+    let secondMismatch = mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 5).getTime());
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 1),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
         firstMismatch,
         secondMismatch,
 
-        mockEntry("test_form2", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 1),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 5).getTime()),
     ]);
 
     const tagEntries = new DummyTagEntryCollection([]);
@@ -174,7 +175,7 @@ test("timestamp changes for drastic coefficient change", async () => {
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
     // Process and store in history
-    let date1 = new Date(1000 * 60 * 60 * 24 * 7);
+    let date1 = new Date(1970, 0, 8);
     let [forms1, entries1] = await analytics.fetchFormsAndEntries(date1, 7);
     let [rawValues1] = await analytics.constructRawValues(forms1, entries1, SimpleTimeScopeType.DAILY);
     let [tagValues1] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, date1, 7);
@@ -201,13 +202,13 @@ test("timestamp changes for drastic coefficient change", async () => {
     journal.updateEntry({...firstMismatch, answers: {"test": pNumber(16.0)}});
     journal.updateEntry({...secondMismatch, answers: {"test": pNumber(16.0)}});
 
-    journal.createEntry(mockEntry("test_form", {"test": pNumber(13.0)}, 1000 * 60 * 60 * 24 * 5));
-    journal.createEntry(mockEntry("test_form2", {"test": pNumber(13.0)}, 1000 * 60 * 60 * 24 * 5));
+    journal.createEntry(mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 6).getTime()));
+    journal.createEntry(mockEntry("test_form2", {"test": pNumber(13.0)}, new Date(1970, 0, 6).getTime()));
 
-    journal.createEntry(mockEntry("test_form", {"test": pNumber(13.0)}, 1000 * 60 * 60 * 24 * 6));
-    journal.createEntry(mockEntry("test_form2", {"test": pNumber(13.0)}, 1000 * 60 * 60 * 24 * 6));
+    journal.createEntry(mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 7).getTime()));
+    journal.createEntry(mockEntry("test_form2", {"test": pNumber(13.0)}, new Date(1970, 0, 7).getTime()));
 
-    let date2 = new Date(1000 * 60 * 60 * 24 * 8);
+    let date2 = new Date(1970, 0, 9);
     let [forms2, entries2] = await analytics.fetchFormsAndEntries(date2, 8);
     let [rawValues2] = await analytics.constructRawValues(forms2, entries2, SimpleTimeScopeType.DAILY);
     let [tagValues2] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, date2, 8);

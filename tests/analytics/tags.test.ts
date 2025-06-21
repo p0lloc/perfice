@@ -14,12 +14,12 @@ test("basic tag values", async () => {
         {
             id: crypto.randomUUID(),
             tagId: "test_tag",
-            timestamp: 0,
+            timestamp: new Date(1970, 0, 1).getTime(),
         },
         {
             id: crypto.randomUUID(),
             tagId: "test_tag",
-            timestamp: -1000 * 60 * 60 * 24 * 5 + 13337,
+            timestamp: new Date(1970, 0, -5).getTime(),
         },
     ]);
     const tags = new DummyTagCollection([
@@ -35,17 +35,17 @@ test("basic tag values", async () => {
         [],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [values] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(0), 7);
+    let [values] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(1970, 0, 1), 7);
 
     expect(values).toEqual(new Map([
         ["tag_test_tag", new Map([
-            [0, 1],
-            [-1000 * 60 * 60 * 24 * 1, 0],
-            [-1000 * 60 * 60 * 24 * 2, 0],
-            [-1000 * 60 * 60 * 24 * 3, 0],
-            [-1000 * 60 * 60 * 24 * 4, 0],
-            [-1000 * 60 * 60 * 24 * 5, 1],
-            [-1000 * 60 * 60 * 24 * 6, 0],
+            [new Date(1970, 0, 1).getTime(), 1],
+            [new Date(1970, 0, 0).getTime(), 0],
+            [new Date(1970, 0, -1).getTime(), 0],
+            [new Date(1970, 0, -2).getTime(), 0],
+            [new Date(1970, 0, -3).getTime(), 0],
+            [new Date(1970, 0, -4).getTime(), 0],
+            [new Date(1970, 0, -5).getTime(), 1],
         ])]
     ]));
 })
@@ -56,17 +56,17 @@ test("tag weekday analytics", async () => {
         {
             id: crypto.randomUUID(),
             tagId: "test_tag",
-            timestamp: 0, // Week day Thursday
+            timestamp: new Date(1970, 0, 1).getTime(), // Week day Thursday
         },
         {
             id: crypto.randomUUID(),
             tagId: "test_tag",
-            timestamp: -1000 * 60 * 60 * 24 * 7, // Also Week day Thursday
+            timestamp: new Date(1970, 0, -6).getTime(), // Also Week day Thursday
         },
         {
             id: crypto.randomUUID(),
             tagId: "test_tag",
-            timestamp: -1000 * 60 * 60 * 24 * 5 + 13337, // Thursday - 5 is Saturday
+            timestamp: new Date(1970, 0, -4).getTime(), // Saturday
         },
     ]);
     const tags = new DummyTagCollection([
@@ -82,7 +82,7 @@ test("tag weekday analytics", async () => {
         [],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [values] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(0), 10);
+    let [values] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, new Date(1970, 0, 1), 10);
     let weekDayAnalytics = await analytics.calculateTagWeekDayAnalytics(values.get("tag_test_tag"));
 
     expect(weekDayAnalytics).toEqual({

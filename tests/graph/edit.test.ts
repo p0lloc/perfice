@@ -14,7 +14,7 @@ import {VariableService} from "../../src/services/variable/variable";
 import type {JournalEntry} from "../../src/model/journal/journal";
 import {VariableEditProvider} from "../../src/stores/variable/edit";
 import {TrackableService} from "../../src/services/trackable/trackable";
-import {VariableTypeName} from "../../src/model/variable/variable";
+import {type Variable, VariableTypeName} from "../../src/model/variable/variable";
 import {EditAggregationVariableState} from "../../src/stores/variable/editState";
 import {ListVariableType} from "../../src/services/variable/types/list";
 import {Form} from "../../src/model/form/form";
@@ -35,6 +35,7 @@ import {
     GoalVariableType
 } from "../../src/services/variable/types/goal";
 import {AnalyticsSettingsService} from "../../src/services/analytics/settings";
+import {EntityObserverType} from "../../src/services/observer";
 
 test("test basic edit + entry created", async () => {
     const indices = new DummyIndexCollection();
@@ -59,6 +60,9 @@ test("test basic edit + entry created", async () => {
 
     const editProvider = new VariableEditProvider(variableService, new DummyFormService(),
         new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService(), null as AnalyticsSettingsService));
+    variableService.addObserver(EntityObserverType.CREATED, async (v: Variable) => graph.onVariableCreated(v));
+    variableService.addObserver(EntityObserverType.UPDATED, async (v: Variable) => graph.onVariableUpdated(v));
+    variableService.addObserver(EntityObserverType.DELETED, async (v: Variable) => graph.onVariableDeleted(v.id));
 
     editProvider.newEdit();
     let goal = editProvider.createVariableFromType(VariableTypeName.GOAL);
@@ -131,6 +135,9 @@ test("goal edit + entry created", async () => {
 
     const editProvider = new VariableEditProvider(variableService, new DummyFormService(),
         new TrackableService(new DummyTrackableCollection(), variableService, new DummyFormService(), null as AnalyticsSettingsService));
+    variableService.addObserver(EntityObserverType.CREATED, async (v: Variable) => graph.onVariableCreated(v));
+    variableService.addObserver(EntityObserverType.UPDATED, async (v: Variable) => graph.onVariableUpdated(v));
+    variableService.addObserver(EntityObserverType.DELETED, async (v: Variable) => graph.onVariableDeleted(v.id));
 
     editProvider.newEdit();
     let goal = editProvider.createVariableFromType(VariableTypeName.GOAL);

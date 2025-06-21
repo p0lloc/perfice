@@ -231,7 +231,7 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
 
                 let res: TrackableAnalyticsResult[] = [];
                 for (let trackable of trackableList) {
-                    let settings = allSettings.find(s => s.formId == trackable.formId);
+                    let settings = allSettings.find(s => s.id == trackable.formId);
                     if (settings == null) continue;
 
                     let valuesByTimeScope = result.rawValues.get(SimpleTimeScopeType.DAILY);

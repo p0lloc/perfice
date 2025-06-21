@@ -227,7 +227,7 @@ export class AnalyticsService {
         let res: Map<string, FlattenedDataSet> = new Map();
 
         for (let [formId, questionIds] of raw.entries()) {
-            let settings = allSettings.find(s => s.formId == formId);
+            let settings = allSettings.find(s => s.id == formId);
             if (settings == null) continue;
 
             for (let [questionId, bag] of questionIds.entries()) {
@@ -405,7 +405,7 @@ export class AnalyticsService {
     async calculateAllBasicAnalytics(values: RawAnalyticsValues, allSettings: AnalyticsSettings[]): Promise<Map<string, Map<string, BasicAnalytics>>> {
         let res: Map<string, Map<string, BasicAnalytics>> = new Map();
         for (let [formId, questionIdToValues] of values.entries()) {
-            let settings = allSettings.find(s => s.formId == formId);
+            let settings = allSettings.find(s => s.id == formId);
             if (settings == null) continue;
 
             let map = new Map();
@@ -425,7 +425,7 @@ export class AnalyticsService {
             let forForm = allBasicAnalytics.get(formId);
             if (forForm == null) continue;
 
-            let settings = allSettings.find(s => s.formId == formId);
+            let settings = allSettings.find(s => s.id == formId);
             if (settings == null) continue;
 
             for (let [questionId, values] of questionIdToValues.entries()) {
@@ -896,7 +896,7 @@ export class AnalyticsService {
 
             res.set(form.id, map);
 
-            let settingsForForm = settings.find(s => s.formId == form.id);
+            let settingsForForm = settings.find(s => s.id == form.id);
             if (settingsForForm != null && settingsForForm.interpolate) {
                 interpolateTimestamps.set(form.id, []);
             }
