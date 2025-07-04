@@ -31,7 +31,7 @@
 
     function filterAvailableCategories(categories: CategoryList<TrackableCategory, Trackable>[]): ReorderableCategoryList[] {
         return categories
-            .filter(category => category.category != null || category.items.length > 0)
+            .filter(category => category.category != null || category.items.length > 0 || categories.length == 1)
             .map(category => {
                 return {
                     ...category,

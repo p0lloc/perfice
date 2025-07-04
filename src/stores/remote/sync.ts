@@ -44,7 +44,5 @@ export class SyncStore {
         await this.syncService.queueSync();
     }
 
-    async onAppOpened() {
-        await this.refresh();
-    }
+
 }

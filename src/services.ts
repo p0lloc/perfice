@@ -125,6 +125,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const reflectionService = new ReflectionService(db.reflections, formService, journalService, tagService, variableService, notificationService);
     const remoteService = new RemoteService();
     const authService = new AuthService(remoteService);
+    remoteService.setAuthService(authService);
 
     const journalSearchService = new JournalSearchService(db.entries, db.tagEntries,
         trackableService, tagService, formService, db.savedSearches);
@@ -143,47 +144,12 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const syncService = new SyncService(encryptionService, migrationService, db.updateQueue,
         db.transaction, tables, remoteService, authService);
 
-    syncService.addObserver("entries", async (updates) => {
-        for (let update of updates) {
-            switch (update.operation) {
-                case UpdateOperation.CREATE:
-                    await journalService.notifyObservers(JournalEntryObserverType.CREATED, update.data, null);
-                    break;
-                case UpdateOperation.DELETE:
-                    await journalService.notifyObservers(JournalEntryObserverType.DELETED, update.previous, null);
-                    break;
-                case UpdateOperation.PUT:
-                    await journalService.notifyObservers(JournalEntryObserverType.UPDATED, update.data, update.previous);
-                    break;
-                case UpdateOperation.FULL_SYNC:
-                    await graph.deleteIndices();
-                    break;
-            }
-        }
-    });
+    setupSyncObservers(syncService, journalService, tagEntryService, graph, variableService);
 
-    syncService.addObserver("variables", async (updates) => {
-        for (let update of updates) {
-            switch (update.operation) {
-                case UpdateOperation.CREATE:
-                    await variableService.notifyObservers(EntityObserverType.CREATED, update.data);
-                    break;
-                case UpdateOperation.DELETE:
-                    await variableService.notifyObservers(EntityObserverType.DELETED, update.previous);
-                    break;
-                case UpdateOperation.PUT:
-                    await variableService.notifyObservers(EntityObserverType.UPDATED, update.data);
-                    break;
-                case UpdateOperation.FULL_SYNC:
-                    await graph.deleteIndices();
-                    break;
-            }
-        }
-    });
-
-    // This is quite order dependent, sync service should ideally be synced before fetching integration updates
+    // This is quite order dependent, sync service must be synced before fetching integration updates
     provideSyncService(syncService);
 
+    // Integration service is instantiated after sync service, so it will register its observer after the sync service.
     const integrationService = new IntegrationService(journalService, formService, remoteService, authService);
     await authService.load();
 
@@ -219,4 +185,63 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
         sync: syncService,
         remote: remoteService
     }
+}
+
+function setupSyncObservers(syncService: SyncService, journalService: JournalService, tagEntryService: TagEntryService, graph: VariableGraph, variableService: VariableService) {
+    syncService.addObserver("entries", async (updates) => {
+        for (let update of updates) {
+            switch (update.operation) {
+                case UpdateOperation.CREATE:
+                    await journalService.notifyObservers(JournalEntryObserverType.CREATED, update.data, null);
+                    break;
+                case UpdateOperation.DELETE:
+                    await journalService.notifyObservers(JournalEntryObserverType.DELETED, update.previous, null);
+                    break;
+                case UpdateOperation.PUT:
+                    await journalService.notifyObservers(JournalEntryObserverType.UPDATED, update.data, update.previous);
+                    break;
+                case UpdateOperation.FULL_SYNC:
+                    await graph.deleteIndices();
+                    break;
+            }
+        }
+    });
+
+    syncService.addObserver("tagEntries", async (updates) => {
+        for (let update of updates) {
+            switch (update.operation) {
+                case UpdateOperation.CREATE:
+                    await tagEntryService.notifyObservers(EntityObserverType.CREATED, update.data);
+                    break;
+                case UpdateOperation.DELETE:
+                    await tagEntryService.notifyObservers(EntityObserverType.DELETED, update.previous);
+                    break;
+                case UpdateOperation.PUT:
+                    await tagEntryService.notifyObservers(EntityObserverType.UPDATED, update.data);
+                    break;
+                case UpdateOperation.FULL_SYNC:
+                    await graph.deleteIndices();
+                    break;
+            }
+        }
+    });
+
+    syncService.addObserver("variables", async (updates) => {
+        for (let update of updates) {
+            switch (update.operation) {
+                case UpdateOperation.CREATE:
+                    await variableService.notifyObservers(EntityObserverType.CREATED, update.data);
+                    break;
+                case UpdateOperation.DELETE:
+                    await variableService.notifyObservers(EntityObserverType.DELETED, update.previous);
+                    break;
+                case UpdateOperation.PUT:
+                    await variableService.notifyObservers(EntityObserverType.UPDATED, update.data);
+                    break;
+                case UpdateOperation.FULL_SYNC:
+                    await graph.deleteIndices();
+                    break;
+            }
+        }
+    });
 }

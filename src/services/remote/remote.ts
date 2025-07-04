@@ -1,5 +1,6 @@
 import ky, {type KyInstance, type KyRequest, type KyResponse, type NormalizedOptions} from "ky";
 import {parseJsonFromLocalStorage} from "@perfice/util/local";
+import type {AuthService} from "@perfice/services/auth/auth";
 
 const REMOTE_URLS_KEY = "remote_urls";
 const ENABLED_REMOTES_KEY = "enabled_remotes";
@@ -27,6 +28,8 @@ export class RemoteService {
 
     private refreshCallback: (() => Promise<boolean>) | null = null;
 
+    private authService: AuthService | null = null;
+
     constructor() {
         this.enabledRemotes = parseJsonFromLocalStorage<RemoteType[]>(ENABLED_REMOTES_KEY) ?? [];
         let remotes = parseJsonFromLocalStorage<Record<RemoteType, string>>(REMOTE_URLS_KEY);
@@ -36,7 +39,10 @@ export class RemoteService {
             let url = remotes?.[type];
             this.urls[type] = url ?? "";
         });
+    }
 
+    setAuthService(authService: AuthService) {
+        this.authService = authService;
         for (let enabledRemote of [...this.enabledRemotes, RemoteType.AUTH]) {
             this.clients.set(enabledRemote, this.createClient(enabledRemote, this.urls[enabledRemote]));
         }
@@ -139,6 +145,9 @@ export class RemoteService {
             throwHttpErrors: false,
             credentials: "include",
             hooks: {
+                beforeRequest: [
+                    this.authService!.accessTokenHook.bind(this.authService)
+                ],
                 afterResponse: [
                     this.refreshHook.bind(this)
                 ]
@@ -169,6 +178,9 @@ export class RemoteService {
             credentials: "include",
             retry: 0,
             hooks: {
+                beforeRequest: [
+                    this.authService!.accessTokenHook.bind(this.authService)
+                ],
                 afterResponse: [
                     this.refreshHook.bind(this)
                 ]

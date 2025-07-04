@@ -5,5 +5,6 @@ export interface SelectedField {
 
 export interface UnauthenticatedIntegrationError {
     integrationTypeName: string;
+    integrationType: string;
     forms: string[];
 }

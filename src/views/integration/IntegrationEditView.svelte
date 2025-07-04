@@ -17,6 +17,7 @@
     import {ButtonColor} from "@perfice/model/ui/button";
     import Button from "@perfice/components/base/button/Button.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
+    import IntegrationOptionEditor from "@perfice/components/integration/IntegrationOptionEditor.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -26,6 +27,7 @@
     let integration: Integration | undefined = $state<Integration | undefined>(undefined);
 
     let fieldEditor: IntegrationFieldEditor;
+    let optionEditor: IntegrationOptionEditor;
     let deleteModal: GenericDeleteModal<Integration>;
 
     onMount(async () => {
@@ -67,8 +69,13 @@
         if (integration == null) return;
 
         let fields = fieldEditor.save();
+        let options = optionEditor.save();
+        if (options == null) {
+            alert("Invalid options");
+            return;
+        }
 
-        await integrations.updateIntegration(integration.id, fields);
+        await integrations.updateIntegration(integration.id, fields, options);
         back();
     }
 
@@ -101,6 +108,8 @@
             </Button>
         </div>
         <IntegrationFieldEditor {form} {selectedEntity} fields={integration.fields} bind:this={fieldEditor}/>
+        <IntegrationOptionEditor definition={selectedEntity.options} options={integration.options}
+                                 bind:this={optionEditor}/>
         <div class="hidden md:flex justify-end gap-2 items-center mt-4">
             <Button onClick={save}>Save</Button>
             <Button color={ButtonColor.RED} onClick={back}>Cancel</Button>

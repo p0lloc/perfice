@@ -19,6 +19,7 @@ export interface CreateIntegrationRequest {
     entityType: string;
     formId: string;
     fields: Record<string, string>;
+    options: Record<string, string | number>;
 }
 
 const USES_INTEGRATIONS_STORAGE_KEY = "uses_integrations";
@@ -156,6 +157,15 @@ export class IntegrationService {
             let formattedIdentifier = this.formatIntegrationIdentifier(integration.id, update.identifier);
             let existingEntry = await this.journalService.getEntryByIntegrationIdentifier(formattedIdentifier);
 
+            if (update.data == null) {
+                if (existingEntry != null) {
+                    await this.journalService.deleteEntry(existingEntry);
+                }
+
+                acknowledgedUpdates.push(update.id);
+                continue;
+            }
+
             let answers = Object.fromEntries(
                 Object.entries(update.data).map(([k, v]) => [k, importPrimitive(v)]));
 
@@ -202,10 +212,11 @@ export class IntegrationService {
         await this.fetchUpdates();
     }
 
-    async updateIntegration(id: string, fields: Record<string, string>) {
+    async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
         await this.getClient().put(`integrations/${id}`, {
             json: {
-                fields: fields
+                fields,
+                options,
             }
         });
     }

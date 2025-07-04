@@ -49,6 +49,8 @@ export interface JournalService {
     deleteEntriesByFormId(id: string): Promise<void>;
 
     getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined>;
+
+    notifyObservers(type: JournalEntryObserverType, entry: JournalEntry, previous: JournalEntry | null): Promise<void>;
 }
 
 export class BaseJournalService implements JournalService {

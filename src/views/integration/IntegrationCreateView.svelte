@@ -13,6 +13,7 @@
     import IntegrationFieldEditor from "@perfice/components/integration/IntegrationFieldEditor.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
     import Button from "@perfice/components/base/button/Button.svelte";
+    import IntegrationOptionEditor from "@perfice/components/integration/IntegrationOptionEditor.svelte";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -21,6 +22,7 @@
     let form: Form | undefined = $state<Form | undefined>(undefined);
 
     let fieldEditor: IntegrationFieldEditor;
+    let optionEditor: IntegrationOptionEditor;
 
     onMount(async () => {
         let formById = await forms.getFormById(params.formId);
@@ -47,7 +49,13 @@
         if (selectedEntity == null || form == null) return;
 
         let fields = fieldEditor.save();
-        integrations.createIntegration(params.integrationType, selectedEntity.entityType, form.id, fields);
+        let options = optionEditor.save();
+        if (options == null) {
+            alert("Invalid options");
+            return;
+        }
+
+        integrations.createIntegration(params.integrationType, selectedEntity.entityType, form.id, fields, options);
         back();
     }
 </script>
@@ -71,6 +79,8 @@
         <Title title={integrationType.name} icon={faGears}/>
         {#if selectedEntity}
             <IntegrationFieldEditor bind:this={fieldEditor} {form} {selectedEntity}/>
+            <IntegrationOptionEditor definition={selectedEntity.options} options={{}}
+                                     bind:this={optionEditor}/>
             <div class="hidden md:flex justify-end gap-2 items-center mt-4">
                 <Button onClick={save}>Save</Button>
                 <Button color={ButtonColor.RED} onClick={back}>Cancel</Button>

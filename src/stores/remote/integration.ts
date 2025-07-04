@@ -39,12 +39,13 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         return this.integrationService.fetchAuthenticationStatus(integrationType);
     }
 
-    async createIntegration(integrationType: string, entityType: string, formId: string, fields: Record<string, string>) {
+    async createIntegration(integrationType: string, entityType: string, formId: string, fields: Record<string, string>, options: Record<string, string | number>) {
         let created = await this.integrationService.createIntegration({
             integrationType: integrationType,
             entityType: entityType,
             formId: formId,
-            fields: fields
+            fields: fields,
+            options,
         });
 
         this.updateResolved(v => ({
@@ -57,13 +58,14 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         await this.integrationService.fetchHistorical(id);
     }
 
-    async updateIntegration(id: string, fields: Record<string, string>) {
-        await this.integrationService.updateIntegration(id, fields);
+    async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
+        await this.integrationService.updateIntegration(id, fields, options);
         this.updateResolved(v => ({
             ...v,
             integrations: v.integrations.map(i => i.id == id ? {
                 ...i,
-                fields: fields
+                fields: fields,
+                options,
             } : i)
         }));
     }

@@ -192,7 +192,7 @@ export function applyUpdates(existing: any[], updates: PreprocessedEntity[]): an
 }
 
 const SYNC_DELAY = 1000;
-const PREVIOUS_ENTITY_TYPES = ["entries"];
+const PREVIOUS_ENTITY_TYPES = ["entries", "tagEntries"];
 
 export type SyncObserver = (entities: PreprocessedEntity[]) => void;
 
@@ -207,7 +207,7 @@ export class SyncService {
     private readonly tables: Record<string, Table<any>> = {};
     private readonly decryptionErrorCallbacks: Set<(newKey: boolean) => void> = new Set();
 
-    private observers: Map<string, SyncObserver> = new Map();
+    private observers: Map<string, SyncObserver[]> = new Map();
 
     private syncTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -238,7 +238,7 @@ export class SyncService {
     async calculateChecksums() {
         let results: Record<string, string> = {};
         for (let [tableName, table] of Object.entries(this.tables)
-            .filter(([k, v]) => k != "analyticsSettings" && k != "encryptionKey")) {
+            .filter(([k, v]) => k != "analyticsSettings" && k != "encryptionKey" && k != "indices" && k != "updateQueue")) {
             results[tableName] = await calculateChecksum(await table.toArray());
         }
 
@@ -655,9 +655,9 @@ export class SyncService {
             }
 
             // Let observers know about the entity updates
-            let callback = this.observers.get(entityType);
-            if (callback != null) {
-                callback(entities);
+            let callbacks = this.observers.get(entityType);
+            if (callbacks != null) {
+                callbacks.forEach(callback => callback(entities));
             }
         }
     }
@@ -698,7 +698,12 @@ export class SyncService {
     }
 
     addObserver(entityType: string, observer: SyncObserver) {
-        this.observers.set(entityType, observer);
+        let existing = this.observers.get(entityType);
+        if (existing == undefined) {
+            this.observers.set(entityType, [observer]);
+        } else {
+            existing.push(observer);
+        }
     }
 
     addDecryptionErrorCallback(callback: (newKey: boolean) => void) {

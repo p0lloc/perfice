@@ -40,7 +40,7 @@
     }
 
 
-    let emojis = $derived(icons.filter(e => e.annotation.includes(search) || e.tags.includes(search)));
+    let emojis = $derived(icons.filter(e => e.annotation.toLowerCase().includes(search.toLowerCase()) || e.tags.toLowerCase().includes(search.toLowerCase())));
 </script>
 
 {#if opened}

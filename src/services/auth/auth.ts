@@ -1,8 +1,17 @@
-import {type KyInstance} from "ky";
+import {type KyInstance, type KyRequest, type KyResponse} from "ky";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
 import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+import {clearSecureStorage, getItemFromSecureStorage, setItemInSecureStorage} from "capacitor-secure-storage";
 
 export type AuthStatusChangeCallback = (user: AuthenticatedUser | null) => Promise<void>;
+
+export interface SessionResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
+const ACCESS_TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
 
 export class AuthService {
 
@@ -10,6 +19,9 @@ export class AuthService {
     private remoteService: RemoteService;
 
     private user: AuthenticatedUser | null = null;
+
+    private accessToken: string | null = null;
+    private refreshToken: string | null = null;
 
     constructor(remoteService: RemoteService) {
         this.remoteService = remoteService;
@@ -23,6 +35,8 @@ export class AuthService {
         if (!(this.remoteService.isRemoteEnabled(RemoteType.AUTH)))
             return;
 
+        this.accessToken = await getItemFromSecureStorage(ACCESS_TOKEN_KEY);
+        this.refreshToken = await getItemFromSecureStorage(REFRESH_TOKEN_KEY);
         await this.checkAuth();
     }
 
@@ -50,7 +64,8 @@ export class AuthService {
             }
         });
 
-        if (!response.ok) {
+        if (!await this.handleSessionResponse(response)) {
+            await this.setUser(null);
             return false;
         }
 
@@ -58,10 +73,40 @@ export class AuthService {
         return this.isAuthenticated();
     }
 
+    private async handleSessionResponse(response: KyResponse): Promise<boolean> {
+        if (!response.ok) {
+            return false;
+        }
+
+        // We cannot use Secure + HttpOnly cookies because Chrome has started phasing out third-party cookies
+        // Which is necessary since the backend server is hosted on a different domain.
+        // This leads to access/refresh tokens not being always set, creating unpredictable behaviour.
+        let json = await response.json<SessionResponse>();
+        this.accessToken = json.accessToken;
+        this.refreshToken = json.refreshToken;
+        await setItemInSecureStorage(ACCESS_TOKEN_KEY, json.accessToken);
+        await setItemInSecureStorage(REFRESH_TOKEN_KEY, json.refreshToken);
+        return true;
+    }
+
     async logout() {
-        let response = await this.getClient().post("logout");
+        let response = await this.getClient().post("logout", {
+            hooks: {
+                beforeRequest: [this.accessTokenHook.bind(this)]
+            }
+        });
+
+        if (!response.ok) return false;
+
+        await clearSecureStorage();
+        this.accessToken = null;
+        this.refreshToken = null;
         await this.checkAuth();
-        return response.ok;
+        return true;
+    }
+
+    accessTokenHook(request: KyRequest) {
+        request.headers.set("Authorization", `Bearer ${this.accessToken}`);
     }
 
     async register(email: string, password: string) {
@@ -76,8 +121,14 @@ export class AuthService {
     }
 
     async refresh() {
-        let response = await this.getClient().post("refresh");
-        if (!response.ok) {
+        let response = await this.getClient().post("refresh", {
+            json: {
+                accessToken: this.accessToken,
+                refreshToken: this.refreshToken
+            }
+        });
+
+        if (!await this.handleSessionResponse(response)) {
             await this.setUser(null);
             return false;
         }
@@ -86,8 +137,17 @@ export class AuthService {
     }
 
     async checkAuth() {
+        if (this.accessToken == null || this.refreshToken == null) {
+            await this.setUser(null);
+            return;
+        }
+
         try {
-            let response = await this.getClient().get("me");
+            let response = await this.getClient().get("me", {
+                hooks: {
+                    beforeRequest: [this.accessTokenHook.bind(this)]
+                }
+            });
             if (!response.ok) {
                 await this.setUser(null);
                 return;
@@ -97,7 +157,7 @@ export class AuthService {
             await this.setUser(user);
         } catch (e) {
             console.error(e);
-            this.setUser(null);
+            await this.setUser(null);
         }
     }
 
@@ -110,6 +170,9 @@ export class AuthService {
 
     async setTimezone(timezone: string): Promise<boolean> {
         let res = await this.getClient().put("timezone", {
+            hooks: {
+                beforeRequest: [this.accessTokenHook.bind(this)]
+            },
             json: {
                 timezone
             }

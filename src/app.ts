@@ -5,7 +5,7 @@ import {Capacitor} from '@capacitor/core';
 import {closableState} from './model/ui/modal';
 import {LocalNotifications} from "@capacitor/local-notifications";
 import {registerDataTypes} from "@perfice/model/form/data";
-import {appReady, onboarding, reflections, setupStores, sync} from "@perfice/stores";
+import {appReady, integrations, onboarding, reflections, setupStores, sync} from "@perfice/stores";
 import {setupServices} from "@perfice/services";
 import {setupServiceWorker} from './swSetup.js';
 import {MigrationService} from "@perfice/db/migration/migration";
@@ -39,7 +39,7 @@ export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform()) 
     onboarding.onboardNewUser();
     appReady.set(true);
     await services.notification.scheduleStoredNotifications();
-    onAppOpened();
+    onAppOpened(true);
 
     LocalNotifications.addListener('localNotificationActionPerformed', async (data) => {
         await services.notification.onNotificationClicked(data.notification.extra);
@@ -49,10 +49,13 @@ export const BASE_URL = (import.meta.env.PROD && !Capacitor.isNativePlatform()) 
 /**
  * Called when the app is opened, either on page load (web) or moved into foreground (mobile)
  */
-function onAppOpened() {
+async function onAppOpened(init: boolean = false) {
     // Give precedence to any reflections opened by notifications
     setTimeout(() => reflections?.onAppOpened(), 500);
-    sync.onAppOpened();
+    if (!init) {
+        await sync.refresh();
+        await integrations.refresh();
+    }
 }
 
 CapacitorApp.addListener('appStateChange', ({isActive}) => {

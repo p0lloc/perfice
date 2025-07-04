@@ -46,7 +46,7 @@ export const pullToRefresh: Action<HTMLDivElement, {
         }
     }
 
-    function onTouchEnd(e: TouchEvent) {
+    async function onTouchEnd(e: TouchEvent) {
         spinner.style.display = "none";
         let n = e.target as HTMLElement;
         n.removeEventListener("touchend", onTouchEnd);
@@ -56,8 +56,8 @@ export const pullToRefresh: Action<HTMLDivElement, {
             active = false;
 
             if (moved == threshold) {
-                integrations.refresh();
-                sync.refresh();
+                await sync.refresh();
+                await integrations.refresh();
             }
         }
     }
