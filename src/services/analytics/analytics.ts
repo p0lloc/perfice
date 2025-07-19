@@ -724,6 +724,11 @@ export class AnalyticsService {
                 let firstIncludeEmpty = secondType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(firstType);
                 let secondIncludeEmpty = firstType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(secondType);
 
+                if (firstIncludeEmpty && secondIncludeEmpty) {
+                    firstIncludeEmpty = false;
+                    secondIncludeEmpty = false;
+                }
+
                 let matching = this.filterMatchingTimestamps(
                     firstDataset,
                     secondDataset,

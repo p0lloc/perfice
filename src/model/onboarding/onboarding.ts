@@ -3,7 +3,8 @@ import {TAG_SUGGESTIONS} from "@perfice/model/tag/suggestions";
 
 export enum OnboardingPageType {
     IMAGE = "IMAGE",
-    SELECT = "SELECT"
+    SELECT = "SELECT",
+    REGISTER = "REGISTER"
 }
 
 export interface OnboardingCategoryItem {
@@ -38,7 +39,11 @@ export interface OnboardingImagePage {
     mobileImage: string;
 }
 
-export type OnboardingPage = OnboardingImagePage | OnboardingSelectPage;
+export interface OnboardingRegisterPage {
+    pageType: OnboardingPageType.REGISTER;
+}
+
+export type OnboardingPage = OnboardingImagePage | OnboardingSelectPage | OnboardingRegisterPage;
 
 export const ONBOARDING: OnboardingPage[] = [
     {
@@ -111,6 +116,9 @@ export const ONBOARDING: OnboardingPage[] = [
         desktopImage: "analytics-onboarding.png",
         mobileImage: "analytics-onboarding-mobile.png"
     },
+    {
+        pageType: OnboardingPageType.REGISTER,
+    }
 ]
 
 export interface OnboardingSelection {

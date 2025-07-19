@@ -6,7 +6,7 @@
     import {faAddressCard, faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import EditTrackableValueRepresentation
-        from "@perfice/components/trackable/modals/edit/general/value/EditTrackableValueRepresentation.svelte";
+        from "@perfice/components/trackable/edit/general/value/EditTrackableValueRepresentation.svelte";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";

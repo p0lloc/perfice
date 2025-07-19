@@ -138,6 +138,7 @@ export class TrackableService implements TrackableEntityProvider {
             order: trackableCount, // Place the trackable at the end of the list
             formId: form.id,
             categoryId: categoryId,
+            goalId: null,
             ...cardSettings,
             dependencies
         };

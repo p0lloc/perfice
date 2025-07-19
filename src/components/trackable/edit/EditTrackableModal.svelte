@@ -4,13 +4,13 @@
     import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
     import type {Component} from "svelte";
     import {type EditTrackableState, TrackableEditViewType,} from "@perfice/model/trackable/ui";
-    import EditTrackableGeneral from "@perfice/components/trackable/modals/edit/general/EditTrackableGeneral.svelte";
-    import EditTrackableImportExport from "@perfice/components/trackable/modals/edit/EditTrackableImportExport.svelte";
-    import {faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
+    import EditTrackableGeneral from "@perfice/components/trackable/edit/general/EditTrackableGeneral.svelte";
+    import EditTrackableImportExport from "@perfice/components/trackable/edit/EditTrackableImportExport.svelte";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import {trackables} from "@perfice/stores";
     import {navigate} from "@perfice/app";
+    import EditTrackableGoal from "@perfice/components/trackable/edit/EditTrackableGoal.svelte";
 
     let viewType: TrackableEditViewType = $state(TrackableEditViewType.GENERAL);
     let editState: EditTrackableState = $state({} as EditTrackableState);
@@ -45,12 +45,14 @@
         {name: "General", value: TrackableEditViewType.GENERAL},
         {
             name: "Form",
-            suffix: faArrowUpRightFromSquare,
             onClick: () => navigate(`/forms/${editState.trackable.formId}`),
         },
         {
+            name: "Goal",
+            value: TrackableEditViewType.GOAL
+        },
+        {
             name: "Integrations",
-            suffix: faArrowUpRightFromSquare,
             onClick: () => navigate(`/integrations/${editState.trackable.formId}`),
         },
         {name: "Import/Export", value: TrackableEditViewType.IMPORT_EXPORT},
@@ -65,6 +67,8 @@
                 return EditTrackableGeneral;
             case TrackableEditViewType.IMPORT_EXPORT:
                 return EditTrackableImportExport;
+            case TrackableEditViewType.GOAL:
+                return EditTrackableGoal;
             default:
                 throw new Error("Invalid view!");
         }

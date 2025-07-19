@@ -106,6 +106,7 @@ export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trac
         icon: suggestion.icon,
         formId: "",
         order: 0,
+        goalId: null,
         categoryId: null,
         dependencies: {},
         ...parseCardSettings(suggestion, assignedQuestions)

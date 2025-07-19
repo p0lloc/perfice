@@ -194,7 +194,7 @@ export function applyUpdates(existing: any[], updates: PreprocessedEntity[]): an
 const SYNC_DELAY = 1000;
 const PREVIOUS_ENTITY_TYPES = ["entries", "tagEntries"];
 
-export type SyncObserver = (entities: PreprocessedEntity[]) => void;
+export type SyncObserver = (entities: PreprocessedEntity[]) => Promise<void>;
 
 export class SyncService {
     private encryptionService: EncryptionService;
@@ -657,7 +657,9 @@ export class SyncService {
             // Let observers know about the entity updates
             let callbacks = this.observers.get(entityType);
             if (callbacks != null) {
-                callbacks.forEach(callback => callback(entities));
+                for (let callback of callbacks) {
+                    await callback(entities);
+                }
             }
         }
     }

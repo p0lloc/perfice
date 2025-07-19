@@ -26,6 +26,7 @@
 
     onMount(async () => {
         let formById = await forms.getFormById(params.formId);
+        console.log(params.formId)
         let status = await integrations.fetchAuthenticationStatus(params.integrationType);
         if (!status || !formById) {
             back();

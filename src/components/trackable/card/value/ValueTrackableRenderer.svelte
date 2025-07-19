@@ -1,9 +1,6 @@
 <script lang="ts">
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import {
-        type TrackableValueSettings,
-        TrackableValueType
-    } from "@perfice/model/trackable/trackable";
+    import {type TrackableValueSettings, TrackableValueType} from "@perfice/model/trackable/trackable";
     import type {Component} from "svelte";
     import TableTrackableRenderer from "@perfice/components/trackable/card/value/table/TableTrackableRenderer.svelte";
     import LatestTrackableRenderer
@@ -12,7 +9,8 @@
     let {value, cardSettings, date}: {
         value: PrimitiveValue,
         cardSettings: TrackableValueSettings,
-        date: Date
+        date: Date,
+        preview: boolean
     } = $props();
 
     let values = $derived(value.value as PrimitiveValue[]);

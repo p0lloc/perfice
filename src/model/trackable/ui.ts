@@ -9,9 +9,14 @@ import {
 import {AggregateType} from "@perfice/services/variable/types/aggregate";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
 import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import type {GoalVariableType} from "@perfice/services/variable/types/goal";
 
 export enum TrackableEditViewType {
+    BACK = "BACK",
     GENERAL = "GENERAL",
+    FORM = "FORM",
+    GOAL = "GOAL",
+    ANALYTICS = "ANALYTICS",
     IMPORT_EXPORT = "IMPORT_EXPORT",
 }
 
@@ -19,6 +24,7 @@ export interface EditTrackableState {
     trackable: Trackable;
     categories: TrackableCategory[];
     form: Form;
+    goalVariableData: GoalVariableType | null;
 }
 
 export const TRACKABLE_FORM_ENTITY_TYPE = "trackable";

@@ -45,8 +45,6 @@
     ];
 </script>
 
-<h3>Import data</h3>
-<FileButton onChange={onFileChange}/>
 <h3 class="mt-4">Export data</h3>
 
 <div class="row-gap items-center mt-4 flex-wrap">
@@ -57,6 +55,9 @@
         Export
     </Button>
 </div>
+
+<h3 class="mt-4">Import data</h3>
+<FileButton onChange={onFileChange}/>
 
 {#if dev}
     <Button class="mt-8" onClick={exportSuggestion}>Export suggestion</Button>

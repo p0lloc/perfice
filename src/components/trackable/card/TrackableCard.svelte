@@ -9,12 +9,13 @@
     import TallyTrackableRenderer from "@perfice/components/trackable/card/tally/TallyTrackableRenderer.svelte";
     import {trackableValue} from "@perfice/stores";
 
-    let {trackable, date, weekStart, onEdit, onLog, class: className = 'max-h-40 min-h-40'}: {
+    let {trackable, date, weekStart, onEdit, onLog, class: className = 'max-h-40 min-h-40', preview = false}: {
         trackable: Trackable,
         date: Date,
         weekStart: WeekStart,
-        onEdit: () => void
-        onLog: () => void,
+        onEdit?: () => void
+        onLog?: () => void,
+        preview?: boolean,
         class?: string
     } = $props();
 
@@ -24,7 +25,8 @@
         value: PrimitiveValue,
         cardSettings: any,
         trackable: Trackable,
-        date: Date
+        date: Date,
+        preview: boolean
     }>> = {
         [TrackableCardType.CHART]: ChartTrackableRenderer,
         [TrackableCardType.VALUE]: ValueTrackableRenderer,
@@ -32,14 +34,14 @@
     }
 
     function onEditClick() {
-        onEdit();
+        onEdit?.();
     }
 
     function onInnerClick() {
         // Tally has custom logging logic
         if (trackable.cardType == TrackableCardType.TALLY) return;
 
-        onLog();
+        onLog?.();
     }
 
     const RendererComponent = $derived(CARD_TYPE_RENDERERS[trackable.cardType]);
@@ -47,7 +49,8 @@
 
 
 <div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch text-gray-500 {className}">
-    <button class="border-b rounded-t-xl p-2 flex gap-1 items-center hover-feedback overflow-hidden text-ellipsis"
+    <button class="border-b rounded-t-xl p-2 flex gap-1 items-center overflow-hidden text-ellipsis"
+            class:hover-feedback={onEdit != null}
             onclick={onEditClick}>
         <Icon name={trackable.icon} class="text-green-500 text-xl"/>
         <span class="text-left font-semibold text-gray-700 overflow-hidden text-ellipsis">{trackable.name}</span>
@@ -58,7 +61,8 @@
     {:then value}
         {#if value != null}
             <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onInnerClick}>
-                <RendererComponent value={value} cardSettings={trackable.cardSettings} date={date} {trackable}/>
+                <RendererComponent {preview} value={value} cardSettings={trackable.cardSettings} date={date}
+                                   {trackable}/>
             </button>
         {/if}
     {/await}

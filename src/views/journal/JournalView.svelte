@@ -21,7 +21,7 @@
     import type {SearchEntity} from "@perfice/model/journal/search/search";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {onMount} from "svelte";
-    import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
+    import {gotoEditSearch, parseSearchFromUrl} from "@perfice/stores/journal/search";
     import {navigate} from "@perfice/app";
     import {pullToRefresh} from "@perfice/util/pullToRefresh";
 
@@ -118,7 +118,7 @@
 
     function goToSearch() {
         if (currentSearch != null) {
-            navigate(`/journal/search/${constructSearchParam(currentSearch)}`);
+            gotoEditSearch(currentSearch);
             return;
         }
 

@@ -1,8 +1,8 @@
 <script lang="ts">
     import type {EditTrackableState} from "@perfice/model/trackable/ui";
-    import EditTrackableCard from "@perfice/components/trackable/modals/edit/general/EditTrackableCard.svelte";
+    import EditTrackableCard from "@perfice/components/trackable/edit/general/EditTrackableCard.svelte";
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
-    import EditTrackableCategory from "@perfice/components/trackable/modals/edit/general/EditTrackableCategory.svelte";
+    import EditTrackableCategory from "@perfice/components/trackable/edit/general/EditTrackableCategory.svelte";
 
     let {editState = $bindable()}: { editState: EditTrackableState } = $props();
 

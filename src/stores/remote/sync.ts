@@ -41,7 +41,7 @@ export class SyncStore {
     }
 
     async refresh() {
-        await this.syncService.queueSync();
+        await this.syncService.sync();
     }
 
 

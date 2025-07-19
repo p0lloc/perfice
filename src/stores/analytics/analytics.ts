@@ -50,7 +50,7 @@ async function fetchAnalytics(analyticsService: AnalyticsService, settingsServic
     let [dailyValues, interpolated] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY, allSettings);
     analyticsService.interpolateValues(dailyValues, interpolated, SimpleTimeScopeType.DAILY, date, range);
 
-    let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7 * 14);
+    let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, range);
     let dailyBasicAnalytics = await analyticsService.calculateAllBasicAnalytics(dailyValues, allSettings);
     let dailyCorrelations = await analyticsService.runBasicCorrelations(dailyValues, tagValues, allSettings, date, range, minimumSampleSize, true);
 

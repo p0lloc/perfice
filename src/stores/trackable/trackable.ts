@@ -11,7 +11,10 @@ import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
 import {resolvedPromise} from "@perfice/util/promise";
 import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 import type {Form, FormQuestionDataType} from "@perfice/model/form/form";
-import {forms, journal, trackableCategories} from "@perfice/stores";
+import {forms, goals, journal, trackableCategories, variableEditProvider, variables} from "@perfice/stores";
+import {GoalVariableType} from "@perfice/services/variable/types/goal";
+import {VariableTypeName} from "@perfice/model/variable/variable";
+import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export function TrackableDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
@@ -70,10 +73,21 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         if (form == null) return null;
 
         let categories = await trackableCategories.get();
+        let goalVariableData: GoalVariableType | null = null;
+        if (rawTrackable.goalId != null) {
+            let goal = await goals.getGoalById(rawTrackable.goalId) ?? null;
+            if (goal != null) {
+                let goalVariable = await variables.getVariableById(goal?.variableId);
+                if (goalVariable != null && goalVariable.type.type == VariableTypeName.GOAL) {
+                    goalVariableData = goalVariable.type.value;
+                }
+            }
+        }
 
         return {
             trackable,
             categories,
+            goalVariableData,
             form,
         }
     }
@@ -156,6 +170,24 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         type: FormQuestionDataType
     }) {
         await this.trackableService.createSingleValueTrackable(categoryId, name, icon, type);
+    }
+
+    async createTrackableGoalInEditState(trackable: Trackable): Promise<GoalVariableType | null> {
+
+        variableEditProvider.newEdit();
+        let variable = variableEditProvider.createVariableFromType(VariableTypeName.GOAL);
+        if (variable.type.type != VariableTypeName.GOAL) return null;
+
+        let streakVariable = variableEditProvider.createVariableFromType(VariableTypeName.GOAL_STREAK);
+        if (streakVariable.type.type != VariableTypeName.GOAL_STREAK) return null;
+
+        streakVariable.type.value = new GoalStreakVariableType(variable.id, createDefaultWeekDays());
+
+        let goal = await goals.createGoal(trackable.name, "#ff0000", variable, streakVariable);
+        trackable.goalId = goal.id;
+        console.log(goal.id);
+
+        return variable.type.value;
     }
 }
 

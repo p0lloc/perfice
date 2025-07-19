@@ -72,7 +72,9 @@
     >
         {#if val.basicAnalytics.quantitative}
             <BasicQuantitativeAnalyticsRow dataType={val.questionType}
-                                           timeScope={val.timeScope} analytics={val.basicAnalytics.value}/>
+                                           timeScope={val.timeScope} analytics={val.basicAnalytics.value}
+                                           clickable={val.timeScope === SimpleTimeScopeType.DAILY}
+            />
         {:else}
             <BasicCategoricalAnalyticsRow analytics={val.basicAnalytics.value}/>
         {/if}

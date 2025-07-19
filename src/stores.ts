@@ -59,6 +59,7 @@ import {SyncStore} from "@perfice/stores/remote/sync";
 import {AuthStore} from "@perfice/stores/remote/auth";
 import {RemoteStore} from "@perfice/stores/remote/remote";
 import {IntegrationStore} from "@perfice/stores/remote/integration";
+import {FeedbackStore} from "@perfice/stores/feedback/feedback";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -101,6 +102,8 @@ export let journalSearch: JournalSearchStore;
 export let sync: SyncStore;
 export let auth: AuthStore;
 export let remote: RemoteStore;
+
+export let feedback: FeedbackStore;
 
 export class StoreProvider {
 
@@ -177,7 +180,7 @@ export class StoreProvider {
             this.services.dashboardWidget, this.services.variable, this.services.goal, this.services.reflection);
 
         analyticsSettings = new AnalyticsSettingsStore(this.services.analyticsSettings);
-        analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 60, 6);
+        analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 600, 30);
 
         journalSearch = new JournalSearchStore(this.services.journalSearch, this.services.form, this.services.trackable,
             this.services.trackableCategory, this.services.tag, this.services.tagCategory);
@@ -185,6 +188,7 @@ export class StoreProvider {
         sync = new SyncStore(this.services.sync, this.services.encryption);
         auth = new AuthStore(this.services.auth);
         remote = new RemoteStore(this.services.remote);
+        feedback = new FeedbackStore();
     }
 
     trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {

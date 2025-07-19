@@ -7,11 +7,12 @@
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list.js";
     import {trackables} from "@perfice/stores";
 
-    let {trackable, value, cardSettings, date}: {
+    let {trackable, value, cardSettings, date, preview}: {
         trackable: Trackable,
         value: PrimitiveValue,
         cardSettings: TrackableValueSettings,
-        date: Date
+        date: Date,
+        preview: boolean
     } = $props();
 
     let entryValue = $derived.by(() => {
@@ -48,11 +49,11 @@
 </script>
 
 <div class="flex justify-center items-center h-full">
-    <button class="tally-btn" onclick={decrement}>
+    <button {preview} class="tally-btn" onclick={decrement}>
         <Fa icon={faMinus}/>
     </button>
     <span class="text-3xl flex-1">{getTallyValue(entryValue)}</span>
-    <button class="tally-btn" onclick={increment}>
+    <button {preview} class="tally-btn" onclick={increment}>
         <Fa icon={faPlus}/>
     </button>
 </div>

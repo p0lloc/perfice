@@ -4,9 +4,20 @@
     import {getChartColors} from "@perfice/util/color";
     import SingleChart from "@perfice/components/chart/SingleChart.svelte";
 
-    let {value, cardSettings}: { value: PrimitiveValue, cardSettings: TrackableChartSettings, date: Date } = $props();
+    let {value, cardSettings, preview}: {
+        value: PrimitiveValue,
+        cardSettings: TrackableChartSettings,
+        date: Date,
+        preview: boolean
+    } = $props();
+
+    const PLACEHOLDER_DATA = [130.0, 73.0, 69.0, 110.0, 90.0];
 
     let dataPoints = $derived.by(() => {
+        if (preview) {
+            return PLACEHOLDER_DATA;
+        }
+
         if (value.type == PrimitiveValueType.LIST) {
             return value.value
                 .map(v => v?.value as number ?? 0)

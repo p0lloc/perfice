@@ -16,7 +16,7 @@
     overflow-y: visible !important;
 }
 
-input:not([type="checkbox"]):not([type="color"]), textarea {
+input:not([type="checkbox"]):not([type="color"]):not([type="range"]), textarea {
     appearance: none;
     outline: none;
 }
@@ -132,7 +132,11 @@ textarea {
 
 body {
     @apply overflow-hidden md:overflow-auto;
-    touch-action: manipulation
+    touch-action: manipulation;
+}
+
+html {
+    scrollbar-gutter: stable;
 }
 
 .lock-screen {
@@ -143,6 +147,7 @@ body {
 
 .main-content {
     @apply h-screen md:h-auto overflow-y-scroll md:overflow-auto pb-40 md:pb-20 scrollbar-hide;
+    scrollbar-gutter: stable;
 }
 
 .center-view {

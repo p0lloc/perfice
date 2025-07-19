@@ -126,9 +126,20 @@ export class ListVariableType implements VariableType, JournalEntryDependent {
             if (index.value.type != PrimitiveValueType.LIST)
                 continue;
 
-            // Entry was created, add it to the list
-            index.value.value
-                .push(pJournalEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields)));
+            let existing = index.value.value.find(q => q.type == PrimitiveValueType.JOURNAL_ENTRY
+                && q.value.id == entry.id);
+
+            let pEntry = pJournalEntry(entry.id, entry.timestamp, extractFieldsFromAnswers(entry.answers, this.fields));
+            if (existing != null) {
+                // If for some reason it already exists, update it instead
+                index.value.value = index.value.value.map(other =>
+                    other.type == PrimitiveValueType.JOURNAL_ENTRY
+                    && other.value.id == entry.id ? pEntry : other);
+            } else {
+                // Entry was created, add it to the list
+                index.value.value
+                    .push(pEntry);
+            }
 
             actions.push({
                 type: VariableIndexActionType.UPDATE,

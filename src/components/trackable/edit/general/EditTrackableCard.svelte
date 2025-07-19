@@ -5,13 +5,12 @@
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {TrackableCardType} from "@perfice/model/trackable/trackable";
     import type {FormQuestion} from "@perfice/model/form/form";
-    import EditTrackableChartCard
-        from "@perfice/components/trackable/modals/edit/general/chart/EditTrackableChartCard.svelte";
+    import EditTrackableChartCard from "@perfice/components/trackable/edit/general/chart/EditTrackableChartCard.svelte";
     import type {Component} from "svelte";
-    import EditTrackableValueCard
-        from "@perfice/components/trackable/modals/edit/general/value/EditTrackableValueCard.svelte";
-    import EditTrackableTallyCard
-        from "@perfice/components/trackable/modals/edit/general/tally/EditTrackableTallyCard.svelte";
+    import EditTrackableValueCard from "@perfice/components/trackable/edit/general/value/EditTrackableValueCard.svelte";
+    import EditTrackableTallyCard from "@perfice/components/trackable/edit/general/tally/EditTrackableTallyCard.svelte";
+    import TrackableCard from "@perfice/components/trackable/card/TrackableCard.svelte";
+    import {weekStart} from "@perfice/stores";
 
     const CARD_TYPES = [
         {value: TrackableCardType.CHART, name: "Chart", icon: faChartLine},
@@ -50,14 +49,23 @@
     let RendererComponent = $derived(getCardSettingsRenderer(editState.trackable.cardType));
 </script>
 
-<IconLabelBetween title="Card type" icon={faDiamond}>
-    <BindableDropdownButton value={editState.trackable.cardType}
-                            onChange={onCardTypeChange}
-                            items={CARD_TYPES}/>
-</IconLabelBetween>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16 justify-center">
+    <div class="flex-1">
+        <IconLabelBetween title="Card type" icon={faDiamond}>
+            <BindableDropdownButton value={editState.trackable.cardType}
+                                    onChange={onCardTypeChange}
+                                    items={CARD_TYPES}/>
+        </IconLabelBetween>
 
-{#if RendererComponent != null}
-    <hr class="mt-4">
-    <RendererComponent cardSettings={editState.trackable.cardSettings}
-                       availableQuestions={availableQuestions} onChange={onCardSettingsChange}/>
-{/if}
+        {#if RendererComponent != null}
+            <hr class="mt-4">
+            <RendererComponent cardSettings={editState.trackable.cardSettings}
+                               availableQuestions={availableQuestions} onChange={onCardSettingsChange}/>
+        {/if}
+    </div>
+
+    <div class="flex flex-col justify-center items-center w-52 h-52">
+        <h2 class="md:self-start text-xl font-bold mb-4">Preview</h2>
+        <TrackableCard preview={true} weekStart={$weekStart} trackable={editState.trackable} date={new Date()}/>
+    </div>
+</div>

@@ -30,6 +30,9 @@
     import IntegrationCreateView from "@perfice/views/integration/IntegrationCreateView.svelte";
     import GlobalSyncModals from "@perfice/components/sync/GlobalSyncModals.svelte";
     import GlobalIntegrationModals from "@perfice/components/integration/modals/GlobalIntegrationModals.svelte";
+    import FeedbackView from "@perfice/views/feedback/FeedbackView.svelte";
+    import FeedbackBanner from "@perfice/components/FeedbackBanner.svelte";
+    import EditTrackableView from "@perfice/views/trackable/EditTrackableView.svelte";
 
     type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
 
@@ -81,6 +84,10 @@
 
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
+        {
+            path: "/trackables/(?<trackableId>.*)", component: EditTrackableView,
+            hideBottomBar: true
+        },
         {path: "/trackables", component: TrackableView},
         {
             path: "/reflections/(?<reflectionId>.*)",
@@ -90,6 +97,7 @@
         {path: "/reflections", component: ReflectionListView},
         {path: ONBOARDING_ROUTE, component: OnboardingView, customLayout: true},
         {path: "/settings", component: SettingsView},
+        {path: "/feedback", component: FeedbackView},
         {path: "/", component: DashboardView},
     ];
 
@@ -133,6 +141,7 @@
             <QuickLogField/>
         {/if}
         <div class="flex-1">
+            <FeedbackBanner/>
             <Router basePath={BASE_URL} post={onRouterRoute} {routes}/>
         </div>
     </div>
