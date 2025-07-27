@@ -230,13 +230,13 @@ function setupSyncObservers(syncService: SyncService, journalService: JournalSer
         for (let update of updates) {
             switch (update.operation) {
                 case UpdateOperation.CREATE:
-                    await variableService.notifyObservers(EntityObserverType.CREATED, update.data);
+                    await variableService.notifyObservers(EntityObserverType.CREATED, variableService.deserializeVariable(update.data));
                     break;
                 case UpdateOperation.DELETE:
                     await variableService.notifyObservers(EntityObserverType.DELETED, update.previous);
                     break;
                 case UpdateOperation.PUT:
-                    await variableService.notifyObservers(EntityObserverType.UPDATED, update.data);
+                    await variableService.notifyObservers(EntityObserverType.UPDATED, variableService.deserializeVariable(update.data));
                     break;
                 case UpdateOperation.FULL_SYNC:
                     await graph.deleteIndices();

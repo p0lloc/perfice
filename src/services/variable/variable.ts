@@ -181,7 +181,7 @@ export class VariableService implements VariableProvider {
         return false;
     }
 
-    private serializeVariable(variable: Variable): StoredVariable {
+    serializeVariable(variable: Variable): StoredVariable {
         return {
             ...variable,
             type: {
@@ -191,7 +191,7 @@ export class VariableService implements VariableProvider {
         }
     }
 
-    private deserializeVariable(stored: StoredVariable): Variable {
+    deserializeVariable(stored: StoredVariable): Variable {
         return {
             ...stored,
             type: {
