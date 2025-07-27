@@ -14,7 +14,9 @@
         selectedType = newType;
     }
 
-    export function getData(): {name: string, icon: string, type: FormQuestionDataType} {
+    export function getData(): { name: string, icon: string, type: FormQuestionDataType } | null {
+        if (selectedType == "") return null;
+
         return {
             name,
             icon,

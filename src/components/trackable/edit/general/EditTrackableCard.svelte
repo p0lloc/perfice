@@ -64,7 +64,7 @@
         {/if}
     </div>
 
-    <div class="flex flex-col justify-center items-center w-52 h-52">
+    <div class="flex flex-col justify-center items-center w-52 h-52 mx-auto md:mx-0">
         <h2 class="md:self-start text-xl font-bold mb-4">Preview</h2>
         <TrackableCard preview={true} weekStart={$weekStart} trackable={editState.trackable} date={new Date()}/>
     </div>

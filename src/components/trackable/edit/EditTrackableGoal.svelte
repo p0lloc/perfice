@@ -1,12 +1,13 @@
 <script lang="ts">
     import type {EditTrackableState} from "@perfice/model/trackable/ui";
-    import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
-    import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import type {TimeScope} from "@perfice/model/variable/time/time";
     import {trackables, variableEditProvider} from "@perfice/stores";
+    import NumberGoalEditor from "@perfice/components/goal/editor/number/NumberGoalEditor.svelte";
+    import {GoalVariableType} from "@perfice/services/variable/types/goal";
+    import {VariableTypeName} from "@perfice/model/variable/variable";
 
     let {editState, close}: { editState: EditTrackableState, close: () => void } = $props();
 
@@ -14,37 +15,50 @@
     }
 
     async function create() {
-        editState.goalVariableData = await trackables.createTrackableGoalInEditState(editState.trackable);
+        let goalVariable = await trackables.createTrackableGoalInEditState(editState.trackable);
+        if (goalVariable == null) return;
+        editState.goalVariable = goalVariable;
+        editState.goalVariableData = goalVariable.type.value as GoalVariableType;
+    }
+
+    function onGoalChange(v: GoalVariableType) {
+        editState.goalVariableData = v;
     }
 
     export async function save() {
+        if (editState.goalVariable == null || editState.goalVariableData == null) return;
+
+        variableEditProvider.updateVariable({
+            ...$state.snapshot(editState.goalVariable),
+            type: {
+                type: VariableTypeName.GOAL,
+                value: new GoalVariableType(editState.goalVariableData.getConditions(), editState.goalVariableData.getTimeScope())
+            }
+        });
         await variableEditProvider.save();
     }
 </script>
 
 {#if editState.goalVariableData != null}
-    <DropdownButton value="ok" items={[
-    {
-        name: "ok",
-        value: "ok"
-    }
-]}/>
-    <DropdownButton value="ok" items={[
-    {
-        name: "greater than",
-        value: "ok"
-    }
-]}/>
-    <DropdownButton value="ok" items={[
-    {
-        name: "10 min",
-        value: "ok"
-    }
-]}/>
-    <div class="inline-block px-4 md:px-0 w-full md:w-auto">
-        <p class="block mb-2 label mt-4">Time scope</p>
-        <TimeScopePicker value={editState.goalVariableData.getTimeScope()} onChange={updateTimeScope}/>
-    </div>
+    <NumberGoalEditor data={editState.goalVariableData} form={editState.form} onChange={onGoalChange}/>
+    <!--    <DropdownButton value="ok" items={[-->
+    <!--    {-->
+    <!--        name: "ok",-->
+    <!--        value: "ok"-->
+    <!--    }-->
+    <!--]}/>-->
+    <!--    <DropdownButton value="ok" items={[-->
+    <!--    {-->
+    <!--        name: "greater than",-->
+    <!--        value: "ok"-->
+    <!--    }-->
+    <!--]}/>-->
+    <!--    <DropdownButton value="ok" items={[-->
+    <!--    {-->
+    <!--        name: "10 min",-->
+    <!--        value: "ok"-->
+    <!--    }-->
+    <!--]}/>-->
 {:else}
     <div class="flex justify-center items-center">
         <button onclick={create} class="flex items-center justify-center border rounded-xl w-16 h-16 hover-feedback">

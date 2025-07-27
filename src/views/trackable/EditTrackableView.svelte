@@ -69,15 +69,17 @@
         switch (viewType) {
             case TrackableEditViewType.GENERAL: {
                 if (editState == null) return;
-                await trackables.updateTrackableFromState($state.snapshot(editState));
+                await trackables.updateTrackable(
+                    $state.snapshot(editState.trackable)
+                );
                 break;
             }
             case TrackableEditViewType.FORM: {
-                console.log(viewComponent)
                 await viewComponent.save();
                 break;
             }
             case TrackableEditViewType.GOAL: {
+                await viewComponent.save();
                 break;
             }
         }

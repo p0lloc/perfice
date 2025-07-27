@@ -105,12 +105,12 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     const ignoreService = new CorrelationIgnoreService();
     ignoreService.load();
 
-    const trackableService = new TrackableService(db.trackables, variableService, formService, analyticsSettingsService);
+    const goalService = new GoalService(db.goals, variableService);
+    const trackableService = new TrackableService(db.trackables, variableService, formService, analyticsSettingsService, goalService);
     const trackableCategoryService = new TrackableCategoryService(db.trackableCategories);
     trackableCategoryService.addObserver(EntityObserverType.DELETED, async (category) =>
         await trackableService.onTrackableCategoryDeleted(category));
 
-    const goalService = new GoalService(db.goals, variableService);
     const tagService = new TagService(db.tags, variableService, tagEntryService);
     const formTemplateService = new FormTemplateService(db.formTemplates);
 
@@ -183,7 +183,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
         auth: authService,
         encryption: encryptionService,
         sync: syncService,
-        remote: remoteService
+        remote: remoteService,
     }
 }
 

@@ -46,6 +46,7 @@
     "dexie": "^4.0.10",
     "es-iterator-helpers": "^1.2.1",
     "gridstack": "^11.5.0",
+    "groq-sdk": "^0.27.0",
     "hash-wasm": "^4.12.0",
     "papaparse": "^5.5.2",
     "svelte-dnd-action": "^0.9.57",

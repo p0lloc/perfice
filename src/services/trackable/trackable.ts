@@ -21,6 +21,7 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 import {parseTrackableSuggestion, type TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 import {questionDataTypeRegistry} from "@perfice/model/form/data";
+import type {GoalService} from "@perfice/services/goal/goal";
 
 export interface TrackableEntityProvider {
     getTrackables(): Promise<Trackable[]>;
@@ -30,15 +31,17 @@ export class TrackableService implements TrackableEntityProvider {
     private collection: TrackableCollection;
     private variableService: VariableService;
     private formService: FormService;
+    private goalService: GoalService;
 
     private observers: EntityObservers<Trackable>;
     private analyticsSettingsService: AnalyticsSettingsService;
 
     constructor(collection: TrackableCollection, variableService: VariableService,
-                formService: FormService, analyticsSettingsService: AnalyticsSettingsService) {
+                formService: FormService, analyticsSettingsService: AnalyticsSettingsService, goalService: GoalService) {
         this.collection = collection;
         this.variableService = variableService;
         this.formService = formService;
+        this.goalService = goalService;
         this.observers = new EntityObservers();
         this.analyticsSettingsService = analyticsSettingsService;
     }
@@ -203,6 +206,11 @@ export class TrackableService implements TrackableEntityProvider {
         // Delete all variables associated with trackable
         for (let variableId of Object.values(trackable.dependencies)) {
             await this.variableService.deleteVariableById(variableId);
+        }
+
+        if (trackable.goalId != null) {
+            // TODO: move to observer?
+            await this.goalService.deleteGoalById(trackable.goalId);
         }
 
         // Delete form associated with trackable

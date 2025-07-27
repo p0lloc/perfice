@@ -7,7 +7,7 @@ import {
     TrackableValueType,
 } from "./trackable";
 import {AggregateType} from "@perfice/services/variable/types/aggregate";
-import type {TextOrDynamic} from "@perfice/model/variable/variable";
+import type {TextOrDynamic, Variable} from "@perfice/model/variable/variable";
 import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import type {GoalVariableType} from "@perfice/services/variable/types/goal";
 
@@ -24,6 +24,7 @@ export interface EditTrackableState {
     trackable: Trackable;
     categories: TrackableCategory[];
     form: Form;
+    goalVariable: Variable | null;
     goalVariableData: GoalVariableType | null;
 }
 

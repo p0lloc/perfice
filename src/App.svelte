@@ -114,6 +114,10 @@
         });
     }
 
+    function isOnboarding() {
+        return routingNavigatorState.length > 0 && routingNavigatorState[routingNavigatorState.length - 1] == ONBOARDING_ROUTE;
+    }
+
     function onRouterRoute(r: AppRoute) {
         let path = r.path.toString();
         if (r.params != undefined && !Array.isArray(r.params)) {
@@ -141,7 +145,9 @@
             <QuickLogField/>
         {/if}
         <div class="flex-1">
-            <FeedbackBanner/>
+            {#if !isOnboarding()}
+                <FeedbackBanner/>
+            {/if}
             <Router basePath={BASE_URL} post={onRouterRoute} {routes}/>
         </div>
     </div>

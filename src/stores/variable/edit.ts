@@ -188,6 +188,7 @@ export class VariableEditProvider implements VariableProvider {
 
     createVariable(variable: Variable) {
         this.addChange({id: variable.id, type: VariableChangeType.CREATE, data: variable});
+        this.variables.push(variable);
     }
 
     createVariableFromType(variableType: VariableTypeName): Variable {

@@ -13,7 +13,7 @@ import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 import type {Form, FormQuestionDataType} from "@perfice/model/form/form";
 import {forms, goals, journal, trackableCategories, variableEditProvider, variables} from "@perfice/stores";
 import {GoalVariableType} from "@perfice/services/variable/types/goal";
-import {VariableTypeName} from "@perfice/model/variable/variable";
+import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
 
 export function TrackableDate(): Writable<Date> {
@@ -59,10 +59,6 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         this.updateResolved(v => updateIdentifiedInArray(v, trackable));
     }
 
-    async updateTrackableFromState(editState: EditTrackableState) {
-        await this.updateTrackable(editState.trackable);
-    }
-
     async onTrackableFromFormCreated(form: Form, categoryId: string | null) {
         await this.trackableService.createTrackableFromForm(form, categoryId);
     }
@@ -74,10 +70,14 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
 
         let categories = await trackableCategories.get();
         let goalVariableData: GoalVariableType | null = null;
+
+        variableEditProvider.newEdit();
+
+        let goalVariable: Variable | null = null;
         if (rawTrackable.goalId != null) {
-            let goal = await goals.getGoalById(rawTrackable.goalId) ?? null;
+            let goal = await goals.fetchGoalById(rawTrackable.goalId) ?? null;
             if (goal != null) {
-                let goalVariable = await variables.getVariableById(goal?.variableId);
+                goalVariable = await variables.getVariableById(goal?.variableId) ?? null;
                 if (goalVariable != null && goalVariable.type.type == VariableTypeName.GOAL) {
                     goalVariableData = goalVariable.type.value;
                 }
@@ -87,6 +87,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         return {
             trackable,
             categories,
+            goalVariable,
             goalVariableData,
             form,
         }
@@ -172,7 +173,7 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         await this.trackableService.createSingleValueTrackable(categoryId, name, icon, type);
     }
 
-    async createTrackableGoalInEditState(trackable: Trackable): Promise<GoalVariableType | null> {
+    async createTrackableGoalInEditState(trackable: Trackable): Promise<Variable | null> {
 
         variableEditProvider.newEdit();
         let variable = variableEditProvider.createVariableFromType(VariableTypeName.GOAL);
@@ -185,9 +186,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
 
         let goal = await goals.createGoal(trackable.name, "#ff0000", variable, streakVariable);
         trackable.goalId = goal.id;
-        console.log(goal.id);
 
-        return variable.type.value;
+        return variable;
     }
 }
 

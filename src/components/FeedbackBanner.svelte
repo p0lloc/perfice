@@ -19,7 +19,7 @@
 </script>
 
 {#if !dismissed}
-    <div class="border-b py-2 px-4 flex items-center gap-4 justify-between">
+    <div class="border-b py-2 px-4 hidden md:flex items-center gap-4 justify-between">
         <div class="text-xs">
             Perfice is currently under alpha, please let us know of your feedback!
         </div>
