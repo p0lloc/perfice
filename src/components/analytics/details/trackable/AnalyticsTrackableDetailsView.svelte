@@ -82,13 +82,9 @@
 
     <div class="bg-white rounded-xl p-2 border mt-4">
         {#if val.chart.type === AnalyticsChartType.LINE}
-            {#if val.chart.values.length < 2}
-                <p>Not enough data to show chart</p>
-            {:else}
-                <div class="h-48">
-                    <AnalyticsTrackableLineChart name={val.trackable.name} data={val.chart}/>
-                </div>
-            {/if}
+            <div class="h-48">
+                <AnalyticsTrackableLineChart name={val.trackable.name} data={val.chart}/>
+            </div>
         {/if}
 
         {#if val.chart.type === AnalyticsChartType.PIE}

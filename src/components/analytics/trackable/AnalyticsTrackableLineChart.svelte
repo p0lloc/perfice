@@ -15,6 +15,7 @@
         minimal={false}
         legend={false}
         dataPoints={data.values}
+        blur={data.blur}
         labelFormatter={data.labelFormatter}
         {fillColor}
         {borderColor}

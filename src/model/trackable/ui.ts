@@ -68,6 +68,11 @@ export function getDefaultTrackableCardState(cardType: TrackableCardType, availa
                     field: availableQuestions.length > 0 ? availableQuestions[0].id : ""
                 }
             };
+        case TrackableCardType.HABIT:
+            return {
+                cardType: TrackableCardType.HABIT,
+                cardSettings: {}
+            }
     }
 }
 

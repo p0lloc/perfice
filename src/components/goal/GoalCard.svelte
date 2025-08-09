@@ -8,6 +8,7 @@
     import GoalCardBase from "@perfice/components/goal/GoalCardBase.svelte";
     import {goalValue, weekStart} from "@perfice/stores";
     import {navigate} from "@perfice/app";
+    import {pNumber} from "@perfice/model/primitive/primitive";
 
     let {goal, date, onDelete}: { goal: Goal; date: Date, onDelete: () => void } = $props();
     let cardId = crypto.randomUUID();
@@ -32,7 +33,7 @@
     {#await $res}
         Loading...
     {:then value}
-        <GoalCardBase {goal} value={value} streak={value.streak}>
+        <GoalCardBase {goal} value={value} streak={value?.streak ?? pNumber(0)}>
             {#snippet suffix()}
                 <PopupIconButton buttons={EDIT_POPUP} icon={faEllipsisV}/>
             {/snippet}

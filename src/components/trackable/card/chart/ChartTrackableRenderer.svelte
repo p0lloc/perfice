@@ -11,20 +11,33 @@
         preview: boolean
     } = $props();
 
-    const PLACEHOLDER_DATA = [130.0, 73.0, 69.0, 110.0, 90.0];
+    const PLACEHOLDER_DATA = [130.0, 73.0, 69.0, 110.0, 90.0, 130.0, 73.0, 69.0, 110.0, 90.0];
 
-    let dataPoints = $derived.by(() => {
+    let [dataPoints, empty] = $derived.by(() => {
         if (preview) {
-            return PLACEHOLDER_DATA;
+            return [PLACEHOLDER_DATA, false];
         }
 
+        let empty = true;
+        let values = [];
         if (value.type == PrimitiveValueType.LIST) {
-            return value.value
-                .map(v => v?.value as number ?? 0)
-                .toReversed();
+            for (let i = value.value.length - 1; i >= 0; i--) {
+                let v = value.value[i].value as number ?? 0;
+                if (v != 0) {
+                    empty = false;
+                }
+
+                values.push(v);
+            }
+
+            if (empty) {
+                return [PLACEHOLDER_DATA, true];
+            }
+
+            return [values, empty];
         }
 
-        return [];
+        return [[], empty];
     });
 
 
@@ -35,5 +48,6 @@
 <div class="w-full h-full rounded-md">
     <SingleChart type="line" fillColor={fillColor} borderColor={borderColor} hideGrid={true} hideLabels={true}
                  dataPoints={dataPoints}
+                 blur={empty}
                  labels={dataPoints.map((_, i) => i.toString())}/>
 </div>

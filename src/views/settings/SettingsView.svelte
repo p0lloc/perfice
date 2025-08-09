@@ -4,12 +4,13 @@
     import {WeekStart} from "@perfice/model/variable/time/time";
     import SettingsDataImport from "@perfice/components/settings/SettingsDataImport.svelte";
     import SettingsDataExport from "@perfice/components/settings/SettingsDataExport.svelte";
-    import {sync, weekStart} from "@perfice/stores";
+    import {remote, sync, weekStart} from "@perfice/stores";
     import SettingsDeleteData from "@perfice/components/settings/SettingsDeleteData.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import SettingsAccount from "@perfice/components/settings/SettingsAccount.svelte";
     import SettingsSync from "@perfice/components/settings/SettingsSync.svelte";
     import SettingsIntegrations from "@perfice/components/settings/SettingsIntegrations.svelte";
+    import {RemoteType} from "@perfice/services/remote/remote";
 
     const WEEK_START_ITEMS = [
         {value: WeekStart.MONDAY, name: "Monday"},
@@ -35,13 +36,15 @@
     <SettingsSync/>
     <SettingsIntegrations/>
     <div class="bg-white border p-4 rounded-xl mt-4 flex flex-col gap-4">
-        <div class="mt-8 flex flex-col gap-4">
-            <Button onClick={() => sync.fullPull(true)}>Full pull</Button>
-            <Button onClick={() => sync.fullPull(false)}>Check mismatch</Button>
-            <Button onClick={async () => alert(Object.entries(await sync.calculateChecksums()).map(([k, v]) => `${k}: ${v.substring(0,5)}`).join(" "))}>
-                Calculate checksums
-            </Button>
-        </div>
+        {#if import.meta.env.DEV}
+            <div class="mt-8 flex flex-col gap-4">
+                <Button onClick={() => sync.fullPull(true)}>Full pull</Button>
+                <Button onClick={() => sync.fullPull(false)}>Check mismatch</Button>
+                <Button onClick={async () => alert(Object.entries(await sync.calculateChecksums()).map(([k, v]) => `${k}: ${v.substring(0,5)}`).join(" "))}>
+                    Calculate checksums
+                </Button>
+            </div>
+        {/if}
         <div class="row-between">
             <h3 class="settings-label">Week start</h3>
 
@@ -59,9 +62,11 @@
             </div>
         </div>
 
-        <div>
-            <SettingsDeleteData/>
-        </div>
+        {#if !remote.isRemoteEnabled(RemoteType.AUTH)}
+            <div>
+                <SettingsDeleteData/>
+            </div>
+        {/if}
     </div>
 </div>
 

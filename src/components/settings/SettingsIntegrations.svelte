@@ -7,6 +7,5 @@
 {#if $auth}
     <div class="settings-container">
         <RemoteSettingsSection remoteType={RemoteType.INTEGRATION}/>
-        show all authenticated and ability to disconnect
     </div>
 {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import {type EditTrackableState, getDefaultTrackableCardState} from "@perfice/model/trackable/ui";
     import IconLabelBetween from "@perfice/components/base/iconLabel/IconLabelBetween.svelte";
-    import {faChartLine, faDiamond, faListNumeric, faPlusMinus} from "@fortawesome/free-solid-svg-icons";
+    import {faBullseye, faChartLine, faDiamond, faListNumeric, faPlusMinus} from "@fortawesome/free-solid-svg-icons";
     import BindableDropdownButton from "@perfice/components/base/dropdown/BindableDropdownButton.svelte";
     import {TrackableCardType} from "@perfice/model/trackable/trackable";
     import type {FormQuestion} from "@perfice/model/form/form";
@@ -11,11 +11,13 @@
     import EditTrackableTallyCard from "@perfice/components/trackable/edit/general/tally/EditTrackableTallyCard.svelte";
     import TrackableCard from "@perfice/components/trackable/card/TrackableCard.svelte";
     import {weekStart} from "@perfice/stores";
+    import EditTrackableHabitCard from "@perfice/components/trackable/edit/general/habit/EditTrackableHabitCard.svelte";
 
     const CARD_TYPES = [
         {value: TrackableCardType.CHART, name: "Chart", icon: faChartLine},
         {value: TrackableCardType.VALUE, name: "Value", icon: faListNumeric},
-        {value: TrackableCardType.TALLY, name: "Tally", icon: faPlusMinus}
+        {value: TrackableCardType.TALLY, name: "Tally", icon: faPlusMinus},
+        {value: TrackableCardType.HABIT, name: "Habit", icon: faBullseye}
     ];
 
     let {editState = $bindable(), availableQuestions}: {
@@ -39,6 +41,8 @@
                 return EditTrackableValueCard;
             case TrackableCardType.TALLY:
                 return EditTrackableTallyCard;
+            case TrackableCardType.HABIT:
+                return EditTrackableHabitCard;
         }
     }
 

@@ -21,22 +21,35 @@
 
         openFormModal(settings.formId);
     }
+
 </script>
-<button class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col p-2"
+<button class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col"
         onclick={onClick}>
     {#await $result}
         <span class="p-2">
             Please select a form
         </span>
     {:then value}
-        <SingleChart type={value.chartType} fillColor={value.fillColor} borderColor={value.borderColor} hideGrid={false}
-                     hideLabels={false}
-                     dataPoints={value.dataPoints}
-                     minimal={false}
-                     randomColor={settings.groupBy != null}
-                     title={settings.title}
-                     dataSetLabel={value.name}
-                     labelFormatter={value.labelFormatter}
-                     labels={value.labels}/>
+        {#if value.empty}
+            <span class="absolute flex z-[21] w-full h-full items-center justify-center text-white">
+                No data yet
+            </span>
+            <span class="absolute w-full h-full text-white rounded-xl z-[20] p-2"
+                  style="background: rgba(55,55,55,0.3);">
+            </span>
+        {/if}
+        <div class="p-2 w-full h-full">
+            <SingleChart type={value.chartType} fillColor={value.fillColor} borderColor={value.borderColor}
+                         hideGrid={false}
+                         hideLabels={false}
+                         dataPoints={value.dataPoints}
+                         minimal={false}
+                         randomColor={settings.groupBy != null}
+                         title={settings.title}
+                         dataSetLabel={value.name}
+                         blur={value.empty}
+                         labelFormatter={value.labelFormatter}
+                         labels={value.labels}/>
+        </div>
     {/await}
 </button>

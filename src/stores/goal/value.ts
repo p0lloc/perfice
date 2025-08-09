@@ -11,7 +11,7 @@ import {
     GoalConditionType
 } from "@perfice/services/variable/types/goal";
 import {VariableTypeName} from "@perfice/model/variable/variable";
-import {emptyPromise} from "@perfice/util/promise";
+import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 import {type Form, FormQuestionDataType} from "@perfice/model/form/form";
 import {extractFormQuestionFromVariable} from "@perfice/stores/variable/edit";
 import {forms} from "@perfice/stores";
@@ -117,11 +117,11 @@ export interface GoalValueResult {
 }
 
 export function GoalValueStore(variableId: string, streakVariableId: string, date: Date,
-                               weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<GoalValueResult>> {
+                               weekStart: WeekStart, key: string, variableService: VariableService): Readable<Promise<GoalValueResult | null>> {
 
     let goalVariable = variableService.getVariableById(variableId);
     if (goalVariable == null || goalVariable.type.type != VariableTypeName.GOAL)
-        return readable(emptyPromise());
+        return readable(resolvedPromise(null));
 
     let goalData = goalVariable.type.value;
 
@@ -136,7 +136,10 @@ export function GoalValueStore(variableId: string, streakVariableId: string, dat
     return derived([goalValueStore, goalStreakStore], ([value, streak], set) => {
         set(new Promise(async (resolve) => {
             let resolved = await value;
-            if (resolved.type != PrimitiveValueType.MAP) return;
+            if (resolved.type != PrimitiveValueType.MAP) {
+                resolve(null);
+                return;
+            }
 
             let streakValue = await streak;
 

@@ -184,4 +184,14 @@ export class AuthService {
         this.user.timezone = timezone;
         return true;
     }
+
+    async deleteAccount() {
+        let res = await this.getClient().post("delete", {
+            hooks: {
+                beforeRequest: [this.accessTokenHook.bind(this)]
+            },
+        });
+
+        return res.ok;
+    }
 }

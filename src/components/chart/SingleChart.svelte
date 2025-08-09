@@ -17,6 +17,7 @@
         dataSetLabel = "Data",
         title,
         labelFormatter = (v: number) => v.toString(),
+        blur = false
     }: {
         type: ChartType,
         dataPoints: number[],
@@ -31,6 +32,7 @@
         dataSetLabel?: string,
         title?: string | null,
         labelFormatter?: (v: number) => string,
+        blur?: boolean
     } = $props();
 
     const data = $derived({
@@ -114,4 +116,4 @@
     };
 </script>
 
-<CanvasChartRenderer {data} {config}/>
+<CanvasChartRenderer {blur} {data} {config}/>

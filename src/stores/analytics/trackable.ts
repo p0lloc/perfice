@@ -33,6 +33,7 @@ export enum AnalyticsChartType {
 
 export interface LineAnalyticsChartData {
     type: AnalyticsChartType.LINE,
+    blur: boolean,
     values: number[],
     labels: string[],
     labelFormatter: (v: number) => string
@@ -88,9 +89,16 @@ function constructChartFromValues(bag: ValueBag, useMeanValue: boolean,
             labels.push(formatSimpleTimestamp(timestamp, timeScope));
         }
 
+        let blur = values.length < 2;
+        if (blur) {
+            values.push(4.0, 1.0, 3.0, 2.0);
+            labels.push("0", "1", "3", "2");
+        }
+
         return {
             type: AnalyticsChartType.LINE,
             values: values,
+            blur,
             labels: labels,
             labelFormatter: (v: number) => formatValueAsDataType(v, dataType)
         }
@@ -243,6 +251,7 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
                     let form = result.forms.find(f => f.id == trackable.formId);
                     if (form == null) continue;
 
+
                     let mainValues = formData.get(settings.questionId);
                     if (mainValues == null) {
                         // If trackable has incompatible question, still include it so that the user can update the question
@@ -250,9 +259,10 @@ export function TrackableAnalytics(): Readable<Promise<TrackableAnalyticsResult[
                             trackable,
                             chart: {
                                 type: AnalyticsChartType.LINE,
-                                values: [],
+                                values: [1.0, 2.0, 3.0],
+                                blur: true,
                                 labelFormatter: (v: number) => "",
-                                labels: []
+                                labels: ["", "", ""]
                             },
                             settings: settings,
                             questions: form.questions

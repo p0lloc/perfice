@@ -30,4 +30,8 @@ export class AuthStore extends CustomStore<AuthenticatedUser | null> {
         return await this.authService.setTimezone(timezone);
     }
 
+    async deleteAccount() {
+        return await this.authService.deleteAccount();
+    }
+
 }

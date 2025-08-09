@@ -13,7 +13,7 @@
 
     let {goal, value, streak, suffix}: {
         goal: Goal;
-        value: GoalValueResult,
+        value: GoalValueResult | null,
         streak?: PrimitiveValue,
         suffix?: Snippet
     } = $props();
@@ -34,14 +34,18 @@
                     <span class="text-orange-500">{streakNumber}</span></div>
                 {/if}
 
+                {#if value != null}
                 {#if areGoalConditionsMet(value.results)}
                     <Fa icon={faCheck} class="text-green-500"/>
                 {/if}
+                    {/if}
             </span>
     {@render suffix?.()}
 </div>
 
-<GoalValueRenderer value={value.results} color={goal.color}/>
-<div class="border-t w-full text-center text-gray-500">
-    {formatTimeScopeType(value.timeScope)}
-</div>
+{#if value != null}
+    <GoalValueRenderer value={value.results} color={goal.color}/>
+    <div class="border-t w-full text-center text-gray-500">
+        {formatTimeScopeType(value.timeScope)}
+    </div>
+{/if}

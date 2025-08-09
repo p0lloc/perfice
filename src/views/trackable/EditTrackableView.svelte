@@ -7,7 +7,7 @@
     import EditTrackableImportExport from "@perfice/components/trackable/edit/EditTrackableImportExport.svelte";
     import EditTrackableGoal from "@perfice/components/trackable/edit/EditTrackableGoal.svelte";
     import {faArrowLeft, faCheck} from "@fortawesome/free-solid-svg-icons";
-    import {back} from "@perfice/app";
+    import {navigate} from "@perfice/app";
     import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
     import EditTrackableForm from "@perfice/components/trackable/edit/EditTrackableForm.svelte";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -63,6 +63,8 @@
         for (let visitedView of visitedViews) {
             await handleViewSave(visitedView);
         }
+
+        back();
     }
 
     async function handleViewSave(viewType: TrackableEditViewType) {
@@ -84,7 +86,10 @@
             }
         }
 
-        await back();
+    }
+
+    function back() {
+        navigate("/trackables");
     }
 
     let RendererComponent = $derived(getView(viewType));

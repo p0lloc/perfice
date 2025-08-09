@@ -27,21 +27,22 @@
                     ]}/>
     </div>
     {#if value.chart.type === AnalyticsChartType.LINE}
-        {#if value.chart.values.length < 3}
-            <p>Not enough data to show chart</p>
-        {:else}
-            <div class="h-32">
-                <AnalyticsTrackableLineChart name={value.trackable.name} data={value.chart}/>
-            </div>
-        {/if}
+        <div class="h-32">
+            <AnalyticsTrackableLineChart name={value.trackable.name} data={value.chart}/>
+        </div>
     {/if}
 
     {#if value.chart.type === AnalyticsChartType.PIE}
-        <div class="h-32">
-            <PieChart
-                    hideLabels={true}
-                    hideGrid={true}
-                    dataPoints={value.chart.values}/>
-        </div>
+        {#if Object.keys(value.chart.values).length < 1}
+            <p>Not enough data to show chart</p>
+        {:else}
+            ok
+            <div class="h-32">
+                <PieChart
+                        hideLabels={true}
+                        hideGrid={true}
+                        dataPoints={value.chart.values}/>
+            </div>
+        {/if}
     {/if}
 </div>

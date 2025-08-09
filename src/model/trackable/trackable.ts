@@ -5,6 +5,7 @@ export enum TrackableCardType {
     CHART = "CHART",
     VALUE = "VALUE",
     TALLY = "TALLY",
+    HABIT = "HABIT"
 }
 
 export type Trackable = {
@@ -22,7 +23,8 @@ export type Trackable = {
 export type TrackableCardSettings =
     CS<TrackableCardType.CHART, TrackableChartSettings>
     | CS<TrackableCardType.VALUE, TrackableValueSettings>
-    | CS<TrackableCardType.TALLY, TrackableTallySettings>;
+    | CS<TrackableCardType.TALLY, TrackableTallySettings>
+    | CS<TrackableCardType.HABIT, TrackableHabitSettings>;
 
 export interface CS<K extends TrackableCardType, V> {
     cardType: K;
@@ -31,6 +33,9 @@ export interface CS<K extends TrackableCardType, V> {
 
 export interface TrackableTallySettings {
     field: string;
+}
+
+export interface TrackableHabitSettings {
 }
 
 export interface TrackableChartSettings {

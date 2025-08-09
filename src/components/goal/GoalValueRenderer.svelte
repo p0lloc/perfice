@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
+    import {pNull} from "@perfice/model/primitive/primitive";
     import type {Component} from "svelte";
     import SingleConditionRenderer from "@perfice/components/goal/single/SingleConditionRenderer.svelte";
     import MultiConditionRenderer from "@perfice/components/goal/multi/MultiConditionRenderer.svelte";

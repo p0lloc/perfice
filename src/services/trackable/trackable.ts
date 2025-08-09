@@ -277,6 +277,12 @@ export class TrackableService implements TrackableEntityProvider {
                     value: new ListVariableType(formId, fields, [])
                 }
             }
+            case TrackableCardType.HABIT: {
+                return {
+                    type: VariableTypeName.LIST,
+                    value: new ListVariableType(formId, {}, [])
+                };
+            }
         }
     }
 

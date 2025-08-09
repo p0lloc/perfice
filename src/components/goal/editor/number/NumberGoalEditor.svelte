@@ -8,7 +8,7 @@
     } from "@perfice/services/variable/types/goal";
     import TimeScopePicker from "@perfice/components/base/timeScope/TimeScopePicker.svelte";
     import type {TimeScope} from "@perfice/model/variable/time/time";
-    import {type Form, isFormQuestionNumberRepresentable} from "@perfice/model/form/form";
+    import {type Form} from "@perfice/model/form/form";
     import NumberGoalCondition from "@perfice/components/goal/editor/number/NumberGoalCondition.svelte";
     import {pNumber, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
@@ -25,16 +25,15 @@
     } = $props();
 
     function updateTimeScope(v: TimeScope) {
+        onChange(
+            new GoalVariableType(
+                data.getConditions(),
+                v
+            ),
+        );
     }
 
-    let questions = $derived(form.questions.filter(q => isFormQuestionNumberRepresentable(q.dataType)));
-
-    let dropdownQuestions = $derived(questions?.map(v => {
-        return {
-            value: v.id,
-            name: v.name,
-        }
-    }));
+    let questions = $derived(form.questions);
 
     function addCondition() {
 
@@ -110,7 +109,7 @@
         <IconButton icon={faPlus} onClick={addCondition}/>
     </div>
     {#each data.getConditions() as condition(condition.id)}
-        <NumberGoalCondition questions={form.questions} {dropdownQuestions} onChange={onConditionChange}
+        <NumberGoalCondition questions={form.questions} onChange={onConditionChange}
                              condition={condition} onRemove={() => removeCondition(condition)}/>
     {/each}
 

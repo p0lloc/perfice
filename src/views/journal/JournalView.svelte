@@ -174,6 +174,8 @@
                                 onEntryClick={(e) => onEntityClick(jeForm(e))}
                                 onTagEntryClick={(e) => onEntityClick(jeTag(e))}
                                 onFormEntryDelete={(e) => onEntityStartDelete(jeForm(e))} {day}/>
+            {:else}
+                You haven't tracked anything yet.
             {/each}
         </div>
     {/await}
