@@ -51,6 +51,7 @@
 </div>
 
 <style>
+    @reference "@perfice/app.css";
     .journal-grid {
         @apply grid grid-cols-1 md:grid-cols-2 gap-2;
     }

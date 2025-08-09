@@ -12,6 +12,7 @@
 </button>
 
 <style>
+    @reference "../../../../app.css";
     .selected {
         @apply border-green-600;
     }

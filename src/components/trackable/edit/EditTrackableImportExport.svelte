@@ -64,6 +64,7 @@
 {/if}
 
 <style>
+    @reference "@perfice/app.css";
     h3 {
         @apply font-bold text-xl text-gray-600;
     }

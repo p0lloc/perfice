@@ -71,6 +71,7 @@
 </div>
 
 <style>
+    @reference "@perfice/app.css";
     :global(.settings-label) {
         @apply font-bold text-gray-500 text-xl;
     }

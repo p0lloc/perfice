@@ -33,6 +33,7 @@
 </div>
 
 <style>
+    @reference "@perfice/app.css";
     .btn-size {
         @apply text-xl px-5 py-2;
     }

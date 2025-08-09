@@ -3,6 +3,7 @@ import {defineConfig} from 'vite'
 import {svelte} from '@sveltejs/vite-plugin-svelte'
 import {fileURLToPath, URL} from "node:url";
 import {VitePWA} from 'vite-plugin-pwa'
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig((v) => ({
@@ -12,6 +13,7 @@ export default defineConfig((v) => ({
     },
     plugins: [
         svelte(),
+        tailwindcss(),
         VitePWA({
             registerType: 'autoUpdate',
             devOptions: {

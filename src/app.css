@@ -1,6 +1,35 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+
+
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility flex-center {
+    @apply flex justify-center items-center;
+}
+
+@utility flex-col-center {
+    @apply flex flex-col justify-center items-center;
+}
 
 .main-container {
     background-color: rgb(250, 250, 250);
@@ -22,7 +51,7 @@ input:not([type="checkbox"]):not([type="color"]):not([type="range"]), textarea {
 }
 
 /* For IE, Edge and Firefox */
-.scrollbar-hide {
+@utility scrollbar-hide {
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -49,13 +78,7 @@ select {
     @apply flex justify-between items-center;
 }
 
-.flex-center {
-    @apply flex justify-center items-center;
-}
 
-.flex-col-center {
-    @apply flex flex-col justify-center items-center;
-}
 
 .label {
     @apply text-lg font-bold text-gray-700;
@@ -69,17 +92,36 @@ input[type="checkbox"] {
     @apply h-5 w-5;
 }
 
-.horizontal-add-button {
-    @apply border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center hover-feedback;
+button {
+    @apply cursor-pointer;
 }
 
-.right-sidebar {
-    @apply fixed top-0 right-0 z-[101] border-l bg-white h-full min-h-screen w-screen max-h-full;
+@custom-variant pointer-feedback {
+    @media (pointer: fine) {
+        &:hover {
+            @slot;
+        }
+    }
+    @media (pointer: coarse) {
+        &:active {
+            @slot;
+        }
+    }
 }
 
-.hover-feedback {
+@utility hover-feedback {
     @apply pointer-feedback:bg-gray-100;
 }
+
+@utility horizontal-add-button {
+    @apply border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center pointer-feedback:bg-gray-100;
+}
+
+@utility right-sidebar {
+    @apply fixed top-0 right-0 z-101 border-l bg-white h-full min-h-screen w-screen max-h-full;
+}
+
+
 
 input[type="color"]::-moz-color-swatch {
     border: none;
@@ -94,7 +136,7 @@ input[type="color"]::-webkit-color-swatch {
     border: none;
 }
 
-.spinner {
+@utility spinner {
     position: absolute;
     left: calc(50% - 20px);
     right: 0;
@@ -121,11 +163,11 @@ textarea {
     @apply border py-1 px-2 rounded-md;
 }
 
-.dragging {
+@utility dragging {
     @apply opacity-50 shadow-lg ring-2 ring-green-800;
 }
 
-.drag-over {
+@utility drag-over {
     outline: 2px solid limegreen;
     outline-offset: -2px;
 }

@@ -17,6 +17,7 @@
 </div>
 
 <style>
+    @reference "@perfice/app.css";
     .image {
         @apply rounded-xl object-cover w-full h-full;
     }

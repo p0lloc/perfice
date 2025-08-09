@@ -27,6 +27,7 @@
 </button>
 
 <style>
+    @reference "@perfice/app.css";
     .active {
         @apply bg-green-600 text-white;
     }

@@ -1,6 +1,6 @@
 import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type Trackable, TrackableCardType, TrackableValueType} from "@perfice/model/trackable/trackable";
-import {derived, get, type Readable, type Writable, writable} from "svelte/store";
+import {derived, type Readable, type Writable, writable} from "svelte/store";
 import {RangedVariableValueStore, VariableValueStore} from "@perfice/stores/variable/value";
 import {
     SimpleTimeScope,
@@ -59,9 +59,11 @@ export function fetchTrackableGoalValue(trackable: Trackable,
                                         date: Date, weekStart: WeekStart): Writable<Promise<GoalValueResult | null>> {
 
 
+    let unsubscribe: () => void | undefined;
     const {subscribe, set, update} = writable<Promise<GoalValueResult | null>>(emptyPromise(), () => {
         return () => {
             cachedGoalValues.delete(trackable.id);
+            unsubscribe?.();
         }
     });
 
@@ -82,13 +84,11 @@ export function fetchTrackableGoalValue(trackable: Trackable,
             return;
         }
 
-        const value = await get(goalValue(goal.variableId, "", date, weekStart, trackable.id));
-        cachedGoalValues.set(trackable.id, value);
-        if (cached == null) {
-            resolve(resolvedPromise(value));
-        } else {
+        unsubscribe = goalValue(goal.variableId, "", date, weekStart, trackable.id).subscribe(async (v) => {
+            let value = await v;
             set(resolvedPromise(value));
-        }
+            cachedGoalValues.set(trackable.id, value);
+        });
     });
 
     set(promise);

@@ -27,7 +27,9 @@
     } = $props();
 
     let res = $derived(trackableValue(trackable, date, weekStart, trackable.id));
-    let goalStatus = $derived(fetchTrackableGoalValue(trackable, date, weekStart))
+    let goalStatus = $derived(fetchTrackableGoalValue(trackable, date, weekStart));
+
+    let data = $derived.by(async () => await Promise.all([$res, $goalStatus]));
 
     let CARD_TYPE_RENDERERS: Record<TrackableCardType, Component<{
         value: PrimitiveValue,
@@ -60,7 +62,9 @@
 
 
 <div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch text-gray-500 {className}">
-    {#await $goalStatus then goalResult}
+    {#await data then result}
+        {@const goalResult = result[1]}
+        {@const value = result[0]}
         <button class="border-b rounded-t-xl p-2 flex items-center justify-between"
                 class:hover-feedback={onEdit != null}
                 onclick={onEditClick}>
@@ -76,16 +80,16 @@
             </div>
         </button>
 
-        {#await $res}
-            Loading...
-        {:then value}
-            {#if value != null}
-                <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onInnerClick}>
-                    <RendererComponent {goalResult} {preview} value={value} cardSettings={trackable.cardSettings}
-                                       date={date}
-                                       {trackable} {weekStart}/>
-                </button>
-            {/if}
-        {/await}
+        <!--{#await $res}-->
+        <!--    Loading...-->
+        <!--{:then value}-->
+        {#if value != null}
+            <button class="interactive flex-1 overflow-y-scroll scrollbar-hide" onclick={onInnerClick}>
+                <RendererComponent {goalResult} {preview} value={value} cardSettings={trackable.cardSettings}
+                                   date={date}
+                                   {trackable} {weekStart}/>
+            </button>
+        {/if}
+        <!--{/await}-->
     {/await}
 </div>

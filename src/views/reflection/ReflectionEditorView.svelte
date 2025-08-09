@@ -193,6 +193,7 @@
 {/if}
 
 <style>
+    @reference "../../app.css";
     .label {
         @apply text-lg md:text-2xl font-bold text-gray-700;
     }

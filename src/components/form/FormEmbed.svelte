@@ -65,6 +65,7 @@
 {/each}
 
 <style>
+    @reference "@perfice/app.css";
     .field:not(:last-child) {
         @apply mb-4;
     }

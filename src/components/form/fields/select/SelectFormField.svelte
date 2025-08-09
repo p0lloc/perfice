@@ -58,6 +58,7 @@
 {/snippet}
 
 <style>
+    @reference "../../../../app.css";
     .select-grid-border {
         @apply border p-4 rounded-xl;
     }
