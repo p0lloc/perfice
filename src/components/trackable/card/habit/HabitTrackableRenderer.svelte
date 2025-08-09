@@ -1,26 +1,23 @@
 <script lang="ts">
-    import type {Trackable, TrackableValueSettings} from "@perfice/model/trackable/trackable";
+    import type {Trackable, TrackableHabitSettings} from "@perfice/model/trackable/trackable";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import {fetchTrackableGoalValue} from "@perfice/stores/trackable/value";
     import type {WeekStart} from "@perfice/model/variable/time/time";
     import GoalValueRenderer from "@perfice/components/goal/GoalValueRenderer.svelte";
+    import type {GoalValueResult} from "@perfice/stores/goal/value";
 
-    let {trackable, value, cardSettings, date, preview, weekStart}: {
+    let {trackable, cardSettings, date, weekStart, goalResult}: {
         trackable: Trackable,
         value: PrimitiveValue,
-        cardSettings: TrackableValueSettings,
+        cardSettings: TrackableHabitSettings,
         date: Date,
         preview: boolean,
-        weekStart: WeekStart
+        weekStart: WeekStart,
+        goalResult: GoalValueResult | null
     } = $props();
-
-    let goalStatus = $derived(fetchTrackableGoalValue(trackable, date, weekStart))
 </script>
 
-{#await $goalStatus then val}
-    {#if val != null}
-        <GoalValueRenderer value={val.results} color={"red"}/>
-    {:else}
-        No goal set
-    {/if}
-{/await}
+{#if goalResult != null}
+    <GoalValueRenderer value={goalResult.results} color={cardSettings.color}/>
+{:else}
+    No goal set
+{/if}

@@ -1,6 +1,6 @@
 import {pList, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {type Trackable, TrackableCardType, TrackableValueType} from "@perfice/model/trackable/trackable";
-import {derived, type Readable, writable} from "svelte/store";
+import {derived, get, type Readable, type Writable, writable} from "svelte/store";
 import {RangedVariableValueStore, VariableValueStore} from "@perfice/stores/variable/value";
 import {
     SimpleTimeScope,
@@ -14,7 +14,7 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import {addDaysDate} from "@perfice/util/time/simple";
 import {goals, goalValue} from "@perfice/stores";
 import type {GoalValueResult} from "@perfice/stores/goal/value";
-import {emptyPromise} from "@perfice/util/promise";
+import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 
 function getTrackableTimeScope(trackable: Trackable, date: Date, weekStart: WeekStart): TimeScope {
     if (trackable.cardType == TrackableCardType.VALUE && trackable.cardSettings.type == TrackableValueType.LATEST) {
@@ -53,21 +53,24 @@ export function TrackableValueStore(trackable: Trackable,
     });
 }
 
+let cachedGoalValues: Map<string, GoalValueResult | null> = new Map();
+
 export function fetchTrackableGoalValue(trackable: Trackable,
-                                        date: Date, weekStart: WeekStart): Readable<Promise<GoalValueResult | null>> {
+                                        date: Date, weekStart: WeekStart): Writable<Promise<GoalValueResult | null>> {
 
 
     const {subscribe, set, update} = writable<Promise<GoalValueResult | null>>(emptyPromise(), () => {
         return () => {
-            // // If there is no custom dispose, dispose the cached value when the store is destroyed
-            // if (!customDispose)
-            //     disposeCachedStoreKey(key);
-            //
-            // onDestroy();
+            cachedGoalValues.delete(trackable.id);
         }
     });
 
     let promise = new Promise<GoalValueResult | null>(async (resolve) => {
+        let cached = cachedGoalValues.get(trackable.id);
+        if (cached != null) {
+            resolve(cached)
+        }
+
         if (trackable.goalId == null) {
             resolve(null);
             return;
@@ -79,18 +82,19 @@ export function fetchTrackableGoalValue(trackable: Trackable,
             return;
         }
 
-        const value = goalValue(goal.variableId, "", date, weekStart, trackable.id);
-        let unsub = value.subscribe((v) => {
-            set(v);
-        });
-
-        return () => {
-            unsub();
+        const value = await get(goalValue(goal.variableId, "", date, weekStart, trackable.id));
+        cachedGoalValues.set(trackable.id, value);
+        if (cached == null) {
+            resolve(resolvedPromise(value));
+        } else {
+            set(resolvedPromise(value));
         }
     });
 
     set(promise);
     return {
         subscribe,
+        set,
+        update
     }
 }

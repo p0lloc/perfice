@@ -102,18 +102,19 @@
     }
 </script>
 
-<div class="flex flex-col gap-2 items-start">
+<div class="flex flex-col gap-2">
     <div class="flex gap-2 items-center">
         <p class="block label">Conditions</p>
 
         <IconButton icon={faPlus} onClick={addCondition}/>
     </div>
-    {#each data.getConditions() as condition(condition.id)}
-        <NumberGoalCondition questions={form.questions} onChange={onConditionChange}
-                             condition={condition} onRemove={() => removeCondition(condition)}/>
-    {/each}
-
-    <div class="inline-block px-4 md:px-0 w-full md:w-auto">
+    <div class="flex flex-col gap-4">
+        {#each data.getConditions() as condition(condition.id)}
+            <NumberGoalCondition questions={form.questions} onChange={onConditionChange}
+                                 condition={condition} onRemove={() => removeCondition(condition)}/>
+        {/each}
+    </div>
+    <div class="inline-block w-full md:w-auto self-start">
         <p class="block mb-2 label mt-4">Time scope</p>
         <TimeScopePicker value={data.getTimeScope()} onChange={updateTimeScope}/>
     </div>

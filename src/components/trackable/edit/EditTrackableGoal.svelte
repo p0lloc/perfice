@@ -41,24 +41,6 @@
 
 {#if editState.goalVariableData != null}
     <NumberGoalEditor data={editState.goalVariableData} form={editState.form} onChange={onGoalChange}/>
-    <!--    <DropdownButton value="ok" items={[-->
-    <!--    {-->
-    <!--        name: "ok",-->
-    <!--        value: "ok"-->
-    <!--    }-->
-    <!--]}/>-->
-    <!--    <DropdownButton value="ok" items={[-->
-    <!--    {-->
-    <!--        name: "greater than",-->
-    <!--        value: "ok"-->
-    <!--    }-->
-    <!--]}/>-->
-    <!--    <DropdownButton value="ok" items={[-->
-    <!--    {-->
-    <!--        name: "10 min",-->
-    <!--        value: "ok"-->
-    <!--    }-->
-    <!--]}/>-->
 {:else}
     <div class="flex justify-center items-center">
         <button onclick={create} class="flex items-center justify-center border rounded-xl w-16 h-16 hover-feedback">

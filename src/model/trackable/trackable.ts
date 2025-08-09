@@ -36,6 +36,7 @@ export interface TrackableTallySettings {
 }
 
 export interface TrackableHabitSettings {
+    color: string;
 }
 
 export interface TrackableChartSettings {

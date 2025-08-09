@@ -4,12 +4,16 @@ import {
     faDivide,
     faEquals,
     faGreaterThan,
-    faGreaterThanEqual, faLessThan, faLessThanEqual, faList,
+    faGreaterThanEqual,
+    faLessThan,
+    faLessThanEqual,
+    faList,
     faMinus,
     faNotEqual,
-    faPlus, faTimes
+    faPlus,
+    faTimes
 } from "@fortawesome/free-solid-svg-icons";
-import {TimeScopeType, type TimeScope, SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import {SimpleTimeScopeType, type TimeScope, TimeScopeType} from "@perfice/model/variable/time/time";
 import {formatDateYYYYMMDD, formatTimestampYYYYMMDD, MONTHS_SHORT, WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 import {CalculationOperator} from "@perfice/services/variable/types/calculation";
 import {FilterComparisonOperator} from "@perfice/services/variable/filtering";
@@ -18,7 +22,7 @@ import {getWeekNumber} from "@perfice/util/time/simple";
 export const AGGREGATE_TYPES = [
     {
         value: AggregateType.COUNT,
-        name: "Count",
+        name: "Count entries",
         icon: faDiceOne
     },
     {

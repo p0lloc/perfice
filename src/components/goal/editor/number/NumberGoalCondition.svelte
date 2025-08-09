@@ -127,12 +127,16 @@
 </script>
 
 <div class="flex gap-2 flex-wrap items-center">
-    <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={onAggregateTypeChange}/>
+    <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={onAggregateTypeChange}
+                    class="w-full md:w-auto"/>
 
-    <DropdownButton items={availableQuestions} value={selectedQuestion.id} onChange={onSourceChange}/>
+    <DropdownButton items={availableQuestions} value={selectedQuestion.id} onChange={onSourceChange}
+                    class="w-full md:w-auto flex-1"/>
 
     <DropdownButton value={comparison.getOperator()} items={COMPARISON_OPERATORS}
-                    onChange={onOperatorChange}/>
+                    onChange={onOperatorChange}
+                    class="w-full md:w-auto"
+    />
 
     <EditConstant value={target.value} onChange={onTargetChange}
                   dataType={aggregateType !== AggregateType.COUNT ? selectedQuestion.dataType : FormQuestionDataType.NUMBER}/>

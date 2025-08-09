@@ -17,7 +17,7 @@
         {value: TrackableCardType.CHART, name: "Chart", icon: faChartLine},
         {value: TrackableCardType.VALUE, name: "Value", icon: faListNumeric},
         {value: TrackableCardType.TALLY, name: "Tally", icon: faPlusMinus},
-        {value: TrackableCardType.HABIT, name: "Habit", icon: faBullseye}
+        {value: TrackableCardType.HABIT, name: "Goal", icon: faBullseye}
     ];
 
     let {editState = $bindable(), availableQuestions}: {
