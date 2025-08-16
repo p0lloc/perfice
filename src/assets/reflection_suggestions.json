@@ -86,7 +86,7 @@
       {
         "name": "Tags",
         "icon": "🏷️",
-        "description": "Add any missing tags now",
+        "description": "Add any tags that you might've missed",
         "widgets": [
           {
             "type": "TAGS",

@@ -13,6 +13,12 @@ export interface SessionResponse {
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
 
+export enum LoginResult {
+    SUCCESS,
+    INVALID_CREDENTIALS,
+    UNCONFIRMED_EMAIL,
+}
+
 export class AuthService {
 
     private authStatusChangeCallbacks: AuthStatusChangeCallback[] = [];
@@ -56,7 +62,7 @@ export class AuthService {
         return this.user != null;
     }
 
-    async login(email: string, password: string) {
+    async login(email: string, password: string): Promise<LoginResult> {
         let response = await this.getClient().post("login", {
             json: {
                 email,
@@ -64,13 +70,21 @@ export class AuthService {
             }
         });
 
+        switch (response.status) {
+            case 401:
+                return LoginResult.INVALID_CREDENTIALS;
+            case 403:
+                return LoginResult.UNCONFIRMED_EMAIL;
+        }
+
         if (!await this.handleSessionResponse(response)) {
             await this.setUser(null);
-            return false;
+            return LoginResult.INVALID_CREDENTIALS;
         }
 
         await this.checkAuth();
-        return this.isAuthenticated();
+
+        return this.isAuthenticated() ? LoginResult.SUCCESS : LoginResult.INVALID_CREDENTIALS;
     }
 
     private async handleSessionResponse(response: KyResponse): Promise<boolean> {

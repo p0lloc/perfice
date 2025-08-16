@@ -163,6 +163,10 @@ textarea {
     @apply border py-1 px-2 rounded-md;
 }
 
+.small-blur {
+    filter: blur(2px);
+}
+
 @utility dragging {
     @apply opacity-50 shadow-lg ring-2 ring-green-800;
 }

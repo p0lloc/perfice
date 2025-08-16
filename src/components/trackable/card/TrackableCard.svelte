@@ -75,7 +75,7 @@
                 {#if goalResult != null}
                     {@const met = areGoalConditionsMet(goalResult.results)}
                     <Fa icon={met ? faCheck : faTimes}
-                        class="{met ? 'text-green-500' : 'text-red-500'}"/>
+                        class={met ? 'text-green-500' : 'text-red-500'}/>
                 {/if}
             </div>
         </button>

@@ -3,6 +3,7 @@
     import {ModalSize, ModalType} from "@perfice/model/ui/modal";
     import {auth, remote} from "@perfice/stores";
     import {RemoteType} from "@perfice/services/remote/remote";
+    import {LoginResult} from "@perfice/services/auth/auth";
 
     let modal: Modal;
 
@@ -15,12 +16,20 @@
     let error = $state("");
 
     async function onConfirm() {
-        if (await auth.login(email, password)) {
-            remote.setRemoteEnabled(RemoteType.AUTH, true);
-            close();
-        } else {
-            registered = false;
-            error = "Invalid email or password";
+        registered = false;
+        let result = await auth.login(email, password);
+
+        switch (result) {
+            case LoginResult.SUCCESS:
+                remote.setRemoteEnabled(RemoteType.AUTH, true);
+                close();
+                break;
+            case LoginResult.INVALID_CREDENTIALS:
+                error = "Invalid email or password";
+                break;
+            case LoginResult.UNCONFIRMED_EMAIL:
+                error = "Please confirm your email before logging in";
+                break;
         }
     }
 
@@ -47,7 +56,7 @@
        size={ModalSize.SMALL}>
     <div class="flex flex-col gap-4">
         {#if registered}
-            <p class="text-green-500">Successfully registered, please log in.</p>
+            <p class="text-green-500">Successfully registered, please confirm your email before logging in.</p>
         {/if}
         <p class="text-red-500" class:hidden={error === ""}>{error}</p>
         <input type="text" bind:value={email} placeholder="Email" class="input"/>

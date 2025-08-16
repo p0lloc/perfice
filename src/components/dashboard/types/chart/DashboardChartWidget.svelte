@@ -31,10 +31,10 @@
         </span>
     {:then value}
         {#if value.empty}
-            <span class="absolute flex z-[21] w-full h-full items-center justify-center text-white">
+            <span class="absolute flex z-[5] w-full h-full items-center justify-center text-white">
                 No data yet
             </span>
-            <span class="absolute w-full h-full text-white rounded-xl z-[20] p-2"
+            <span class="absolute w-full h-full text-white rounded-xl z-[4] p-2"
                   style="background: rgba(55,55,55,0.3);">
             </span>
         {/if}

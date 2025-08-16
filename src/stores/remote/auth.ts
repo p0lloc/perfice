@@ -1,6 +1,6 @@
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
 import {CustomStore} from "@perfice/stores/store";
-import type {AuthService} from "@perfice/services/auth/auth";
+import {type AuthService, LoginResult} from "@perfice/services/auth/auth";
 
 export class AuthStore extends CustomStore<AuthenticatedUser | null> {
 
@@ -14,7 +14,7 @@ export class AuthStore extends CustomStore<AuthenticatedUser | null> {
         });
     }
 
-    async login(email: string, password: string) {
+    async login(email: string, password: string): Promise<LoginResult> {
         return await this.authService.login(email, password);
     }
 

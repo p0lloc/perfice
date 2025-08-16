@@ -30,8 +30,13 @@
             </div>
         </div>
         <div class="flex flex-col overflow-y-scroll scrollbar-hide w-full">
+            {#if value.empty}
+                <span class="absolute z-[21] w-full h-full flex items-center justify-center">
+                    <span>No data yet</span>
+                </span>
+            {/if}
             {#each value.insights as insight}
-                <div class="text-sm border-b p-2 flex justify-between gap-2">
+                <div class="text-sm border-b p-2 flex justify-between gap-2" class:small-blur={value.empty}>
                     <span class="flex flex-wrap gap-1 break-words items-center">Your
                         <QuestionLabel message={`${insight.formName} > ${insight.questionName}`}>
                             <Icon name={insight.icon} class="text-sm"/>
@@ -40,10 +45,8 @@
                             <span>{word}</span>
                         {/each}
                     </span>
-                    <span class={insight.insight.error > 1 ? "text-green-600" : "text-red-500"}>{insight.text.percentage}</span>
+                    <span class={insight.insight.ratio > 1 ? "text-green-600" : "text-red-500"}>{insight.text.percentage}</span>
                 </div>
-            {:else}
-                <span class="p-4">There are no insights yet, try adding more data.</span>
             {/each}
         </div>
     {/await}

@@ -101,8 +101,8 @@ export interface InsightText {
 }
 
 export function getInsightText(insight: HistoricalQuantitativeInsight, questionType: FormQuestionDataType): InsightText {
-    let direction = insight.error > 1 ? "increased" : "decreased";
-    let sign = insight.error > 1 ? "+" : "-";
+    let direction = insight.ratio > 1 ? "increased" : "decreased";
+    let sign = insight.ratio > 1 ? "+" : "-";
 
     let percentage = numberToMaxDecimals(insight.diff * 100, 1);
     let currentFormatted = formatValueAsDataType(insight.current, questionType);

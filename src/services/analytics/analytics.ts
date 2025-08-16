@@ -53,7 +53,8 @@ export interface HistoricalQuantitativeInsight {
     questionId: string;
     current: number;
     average: number;
-    error: number;
+    // current / average
+    ratio: number;
     diff: number;
 }
 
@@ -442,8 +443,8 @@ export class AnalyticsService {
                 let currentNumericalValue = convertValue(currentValue, useMeanValue).value;
                 let average = byQuestion.value.average;
 
-                let error = average != 0 ? currentNumericalValue / average : currentNumericalValue;
-                let diff = error != 0 ? Math.abs(error - 1) : 0;
+                let ratio = average != 0 ? currentNumericalValue / average : currentNumericalValue;
+                let diff = ratio != 0 ? Math.abs(ratio - 1) : 0;
 
                 if (diff < threshold)
                     continue;
@@ -454,7 +455,7 @@ export class AnalyticsService {
                     current: currentNumericalValue,
                     average: average,
                     diff,
-                    error: error
+                    ratio: ratio
                 });
             }
         }
