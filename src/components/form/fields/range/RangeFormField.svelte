@@ -15,7 +15,6 @@
     }
 </script>
 
-{value}
 <RangeSlider
         on:stop={onStop}
         pips

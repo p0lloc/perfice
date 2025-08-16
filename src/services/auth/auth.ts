@@ -1,4 +1,4 @@
-import {type KyInstance, type KyRequest, type KyResponse} from "ky";
+import {type KyInstance, type KyRequest, type KyResponse, type Options} from "ky";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
 import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
 import {clearSecureStorage, getItemFromSecureStorage, setItemInSecureStorage} from "capacitor-secure-storage";
@@ -104,11 +104,7 @@ export class AuthService {
     }
 
     async logout() {
-        let response = await this.getClient().post("logout", {
-            hooks: {
-                beforeRequest: [this.accessTokenHook.bind(this)]
-            }
-        });
+        let response = await this.postAuthenticated("logout");
 
         if (!response.ok) return false;
 
@@ -157,11 +153,7 @@ export class AuthService {
         }
 
         try {
-            let response = await this.getClient().get("me", {
-                hooks: {
-                    beforeRequest: [this.accessTokenHook.bind(this)]
-                }
-            });
+            let response = await this.getAuthenticated("me");
             if (!response.ok) {
                 await this.setUser(null);
                 return;
@@ -183,10 +175,7 @@ export class AuthService {
     }
 
     async setTimezone(timezone: string): Promise<boolean> {
-        let res = await this.getClient().put("timezone", {
-            hooks: {
-                beforeRequest: [this.accessTokenHook.bind(this)]
-            },
+        let res = await this.postAuthenticated("timezone", {
             json: {
                 timezone
             }
@@ -200,12 +189,35 @@ export class AuthService {
     }
 
     async deleteAccount() {
-        let res = await this.getClient().post("delete", {
-            hooks: {
-                beforeRequest: [this.accessTokenHook.bind(this)]
-            },
+        let res = await this.postAuthenticated("delete");
+        return res.ok;
+    }
+
+    async resetPassword(email: string) {
+        let res = await this.getClient().post("resetInit", {
+            searchParams: {
+                email
+            }
         });
 
         return res.ok;
+    }
+
+
+    private async getAuthenticated(endpoint: string, options: Options = {}) {
+        return this.getClient().get(endpoint, this.getAuthenticatedOptions(options));
+    }
+
+    private async postAuthenticated(endpoint: string, options: Options = {}) {
+        return this.getClient().post(endpoint, this.getAuthenticatedOptions(options));
+    }
+
+    private getAuthenticatedOptions(options: Options = {}) {
+        return {
+            hooks: {
+                beforeRequest: [this.accessTokenHook.bind(this)]
+            },
+            ...options
+        };
     }
 }
