@@ -18,11 +18,11 @@
 
     <div class="mt-4">
         <textarea bind:value={message} placeholder="Your feedback" rows="10" cols="10"
-                  class="w-full md:w-1/3"></textarea>
+                  class="w-full md:w-1/3 bg-white"></textarea>
     </div>
 
     {#if !sent}
-        <Button onClick={sendFeedback}>Send feedback</Button>
+        <Button class="mt-2" onClick={sendFeedback}>Send feedback</Button>
     {:else}
         <p class="mt-2"><b>Thank you for your feedback! ❤️</b></p>
     {/if}

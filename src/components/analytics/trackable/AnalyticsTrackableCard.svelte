@@ -6,6 +6,7 @@
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import AnalyticsTrackableLineChart
         from "@perfice/components/analytics/trackable/AnalyticsTrackableLineChart.svelte";
+    import {navigate} from "@perfice/app";
 
     let {value, onEditSettings}: { value: TrackableAnalyticsResult, onEditSettings: () => void } = $props();
 
@@ -16,8 +17,10 @@
 
 <div class="bg-white rounded p-4 border">
     <div class="flex justify-between items-center mb-2">
-        <p><a href={generateLink(value.trackable)}
-              class="text-xl font-bold text-green-600">{value.trackable.name}</a></p>
+        <p>
+            <button onclick={() => navigate(generateLink(value.trackable))}
+                    class="text-xl font-bold text-green-600">{value.trackable.name}</button>
+        </p>
         <PopupIconButton buttons={[
                         {
                             icon: faCog,

@@ -11,6 +11,7 @@
     import SettingsSync from "@perfice/components/settings/SettingsSync.svelte";
     import SettingsIntegrations from "@perfice/components/settings/SettingsIntegrations.svelte";
     import {RemoteType} from "@perfice/services/remote/remote";
+    import {navigate} from "@perfice/app";
 
     const WEEK_START_ITEMS = [
         {value: WeekStart.MONDAY, name: "Monday"},
@@ -20,10 +21,6 @@
 
     function onWeekStartChange(newValue: WeekStart) {
         weekStart.setWeekStart(newValue);
-    }
-
-    function onDeleteData() {
-
     }
 </script>
 
@@ -67,6 +64,9 @@
                 <SettingsDeleteData/>
             </div>
         {/if}
+        <div class="mt-4">
+            <Button onClick={() => navigate("/feedback")}>Send feedback</Button>
+        </div>
     </div>
 </div>
 

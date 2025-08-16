@@ -12,7 +12,7 @@
 
 <div class="h-[65vh] overflow-y-scroll scrollbar-hide flex flex-col justify-center items-center">
     <h1 class="text-4xl font-bold text-center">Disclaimer</h1>
-    <p class="text-center mt-2">Perfice is free to use unlimited locally but can also be <a
+    <p class="text-center mt-2">Perfice is free to use unlimited locally and can also be <a
             href="https://github.com/p0lloc/perfice"
             class="text-green-600">self-hosted</a>.<br> To
         sync data
