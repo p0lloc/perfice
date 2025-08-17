@@ -1,28 +1,24 @@
 <script lang="ts">
-    import {faGears} from "@fortawesome/free-solid-svg-icons";
-    import Title from "@perfice/components/base/title/Title.svelte";
-    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    import {forms, integrations} from "@perfice/stores.js";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
+    import {integrations} from "@perfice/stores.js";
     import type {Integration, IntegrationType} from "@perfice/model/integration/integration.js";
     import IntegrationTypeCard from "@perfice/components/integration/IntegrationTypeCard.svelte";
-    import {navigate} from "@perfice/app";
     import {App as CapacitorApp} from "@capacitor/app";
-    import type {Form} from "@perfice/model/form/form";
     import {onMount} from "svelte";
 
-    let {params}: { params: Record<string, string> } = $props();
-
-    let form = $state<Form | undefined>(undefined);
+    let {formId, create, edit}: {
+        formId: string,
+        create: (integrationType: string) => void,
+        edit: (integrationId: string) => void
+    } = $props();
+    /*let form = $state<Form | undefined>(undefined);*/
 
     onMount(async () => {
         await integrations.load();
-        form = await forms.getFormById(params.formId);
+        // form = await forms.getFormById(formId);
     });
 
     function getConnectedIntegration(integrations: Integration[], integrationType: string) {
-        return integrations.find(i => i.integrationType == integrationType && i.formId == params.formId);
+        return integrations.find(i => i.integrationType == integrationType && i.formId == formId);
     }
 
     function onTypeClick(integrationType: IntegrationType, integration: Integration | undefined) {
@@ -45,9 +41,9 @@
         }
 
         if (integration == null) {
-            navigate(`/integrations/${params.formId}/create/${integrationType.integrationType}`);
+            create(integrationType.integrationType);
         } else {
-            navigate(`/integrations/edit/${integration.id}`);
+            edit(integration.id);
         }
     }
 
@@ -58,17 +54,16 @@
 </script>
 
 
-<MobileTopBar title="Integrations"/>
-<div class="center-view md:mt-8 md:p-0 p-2 main-content">
-    <Title title={`Integrations for ${form?.name ?? "Form"}`} icon={faGears}/>
+<div class="md:mt-8">
+    <!--    <Title title={`Integrations for ${form?.name ?? "Form"}`} icon={faGears}/>-->
     {#await $integrations then integrationData}
         {#if !integrationData.enabled}
-            <p class="text-center mt-4">Integrations must first be enabled in settings.</p>
+            <p class="mt-4">Integrations must first be enabled in settings by creating an account.</p>
         {:else}
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                 {#each integrationData.integrationTypes as type}
                     <IntegrationTypeCard integrationType={type}
-                                         formId={params.formId}
+                                         formId={formId}
                                          onClick={(integration) => onTypeClick(type, integration)}
                                          onDelete={(integration) => onTypeDeleteClick(integration)}
                                          integration={getConnectedIntegration(integrationData.integrations, type.integrationType)}/>

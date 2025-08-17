@@ -16,6 +16,7 @@
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
     import EditTrackableAnalytics from "@perfice/components/trackable/edit/general/EditTrackableAnalytics.svelte";
+    import EditTrackableIntegrations from "@perfice/components/trackable/edit/EditTrackableIntegrations.svelte";
 
     let viewType = $state(TrackableEditViewType.GENERAL);
     let editState = $state<EditTrackableState | null>(null);
@@ -29,6 +30,7 @@
         {name: "Form", value: TrackableEditViewType.FORM},
         {name: "Goal", value: TrackableEditViewType.GOAL},
         {name: "Analytics", value: TrackableEditViewType.ANALYTICS},
+        {name: "Integrations", value: TrackableEditViewType.INTEGRATIONS},
         {name: "Import/export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 
@@ -42,6 +44,8 @@
                 return EditTrackableGoal;
             case TrackableEditViewType.ANALYTICS:
                 return EditTrackableAnalytics;
+            case TrackableEditViewType.INTEGRATIONS:
+                return EditTrackableIntegrations;
             case TrackableEditViewType.IMPORT_EXPORT:
                 return EditTrackableImportExport;
         }
@@ -88,6 +92,10 @@
 
     }
 
+    function showSave(viewType: TrackableEditViewType) {
+        return viewType == TrackableEditViewType.GENERAL || viewType == TrackableEditViewType.FORM;
+    }
+
     function back() {
         navigate("/trackables");
     }
@@ -106,13 +114,15 @@
             </button>
         {/snippet}
         {#snippet actions()}
-            <button class="icon-button" onclick={save}>
-                <Fa icon={faCheck}/>
-            </button>
+            {#if showSave(viewType)}
+                <button class="icon-button" onclick={save}>
+                    <Fa icon={faCheck}/>
+                </button>
+            {/if}
         {/snippet}
     </MobileTopBar>
 {/if}
-<div class="flex gap-4 items-center w-full md:w-1/2 md:mt-8 md:mx-auto">
+<div class="flex gap-4 items-center w-full xl:w-1/2 md:w-3/4 md:mt-8 md:mx-auto">
     <InvertedSegmentedControl
             class="md:rounded-xl w-full md:text-base text-xs"
             value={viewType}
@@ -120,8 +130,10 @@
             segments={ANALYTICS_SEGMENTED_ITEMS}
     />
     <div class="md:flex gap-2 items-center hidden">
-        <Button onClick={save}>Save</Button>
-        <Button color={ButtonColor.RED} onClick={back}>Cancel</Button>
+        {#if showSave(viewType)}
+            <Button onClick={save}>Save</Button>
+        {/if}
+        <Button color={ButtonColor.RED} onClick={back} class="flex-1">Close</Button>
     </div>
 </div>
 <div class="center-view md:mt-2 md:p-0 px-4 py-2 main-content w-full">

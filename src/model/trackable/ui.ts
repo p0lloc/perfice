@@ -12,11 +12,11 @@ import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/
 import type {GoalVariableType} from "@perfice/services/variable/types/goal";
 
 export enum TrackableEditViewType {
-    BACK = "BACK",
     GENERAL = "GENERAL",
     FORM = "FORM",
     GOAL = "GOAL",
     ANALYTICS = "ANALYTICS",
+    INTEGRATIONS = "INTEGRATIONS",
     IMPORT_EXPORT = "IMPORT_EXPORT",
 }
 
@@ -71,7 +71,9 @@ export function getDefaultTrackableCardState(cardType: TrackableCardType, availa
         case TrackableCardType.HABIT:
             return {
                 cardType: TrackableCardType.HABIT,
-                cardSettings: {}
+                cardSettings: {
+                    color: "#ff0000"
+                }
             }
     }
 }

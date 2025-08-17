@@ -31,6 +31,7 @@ export interface IntegrationEntityDefinition {
     entityType: string;
     fields: Record<string, string>;
     options: Record<string, IntegrationOption>;
+    historical: boolean;
 }
 
 export interface IntegrationUpdate {

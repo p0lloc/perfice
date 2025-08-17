@@ -1,8 +1,7 @@
 <script lang="ts">
     import {forms, integrations} from "@perfice/stores";
-    import {faArrowLeft, faCheck, faGears, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faGears} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
-    import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import type {
         Integration,
         IntegrationEntityDefinition,
@@ -18,8 +17,10 @@
     import Button from "@perfice/components/base/button/Button.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import IntegrationOptionEditor from "@perfice/components/integration/IntegrationOptionEditor.svelte";
+    import GenericInfoModal from "@perfice/components/base/modal/generic/GenericInfoModal.svelte";
 
-    let {params}: { params: Record<string, string> } = $props();
+    let {integrationId, back}: { integrationId: string, back: () => void } = $props();
+    let fetchedHistoricalModal: GenericInfoModal;
 
     let integrationType: IntegrationType | undefined = $state(undefined);
     let selectedEntity: IntegrationEntityDefinition | undefined = $state<IntegrationEntityDefinition | undefined>(undefined);
@@ -32,7 +33,7 @@
 
     onMount(async () => {
         let data = await integrations.load();
-        integration = data.integrations.find(i => i.id == params.integrationId);
+        integration = data.integrations.find(i => i.id == integrationId);
         if (integration == null) {
             navigate(`/`);
             return;
@@ -56,10 +57,6 @@
         deleteModal.open(integration!);
     }
 
-    function back() {
-        navigate(`/integrations/${integration!.formId}`);
-    }
-
     async function onDelete() {
         await integrations.deleteIntegrationById(integration!.id);
         back();
@@ -81,39 +78,46 @@
 
     async function fetchHistorical() {
         await integrations.fetchHistorical(integration!.id);
+        fetchedHistoricalModal.open();
     }
 </script>
 
 <GenericDeleteModal subject="this integration" {onDelete} bind:this={deleteModal}/>
+<GenericInfoModal title="Fetched data" message="Successfully fetched historical data for this integration"
+                  bind:this={fetchedHistoricalModal}/>
 {#if integrationType && form && integration && selectedEntity}
-    <MobileTopBar title={integrationType.name}>
-        {#snippet leading()}
-            <button class="icon-button" onclick={back}>
-                <Fa icon={faArrowLeft}/>
-            </button>
-        {/snippet}
-        {#snippet actions()}
-            <button class="icon-button" onclick={deleteIntegration}>
-                <Fa icon={faTrash}/>
-            </button>
-            <button class="icon-button" onclick={save}>
-                <Fa icon={faCheck}/>
-            </button>
-        {/snippet}
-    </MobileTopBar>
-    <div class="center-view md:mt-8 md:p-0 p-2 main-content">
+    <!--    <MobileTopBar title={integrationType.name}>-->
+    <!--        {#snippet leading()}-->
+    <!--            <button class="icon-button" onclick={back}>-->
+    <!--                <Fa icon={faArrowLeft}/>-->
+    <!--            </button>-->
+    <!--        {/snippet}-->
+    <!--        {#snippet actions()}-->
+    <!--            <button class="icon-button" onclick={deleteIntegration}>-->
+    <!--                <Fa icon={faTrash}/>-->
+    <!--            </button>-->
+    <!--            <button class="icon-button" onclick={save}>-->
+    <!--                <Fa icon={faCheck}/>-->
+    <!--            </button>-->
+    <!--        {/snippet}-->
+    <!--    </MobileTopBar>-->
+    <div class="md:mt-8">
         <div class="justify-between flex items-center">
             <Title title={integrationType.name} icon={faGears}/>
-            <Button onClick={deleteIntegration} color={ButtonColor.RED} class="hidden md:flex">Delete integration
+            <Button onClick={deleteIntegration} color={ButtonColor.RED} class="md:flex">Delete integration
             </Button>
         </div>
         <IntegrationFieldEditor {form} {selectedEntity} fields={integration.fields} bind:this={fieldEditor}/>
         <IntegrationOptionEditor definition={selectedEntity.options} options={integration.options}
                                  bind:this={optionEditor}/>
-        <div class="hidden md:flex justify-end gap-2 items-center mt-4">
-            <Button onClick={save}>Save</Button>
-            <Button color={ButtonColor.RED} onClick={back}>Cancel</Button>
+        <div class="flex justify-between gap-2 items-center mt-4">
+            {#if selectedEntity.historical}
+                <Button onClick={fetchHistorical}>Fetch historical</Button>
+            {/if}
+            <div class="flex gap-2 items-center">
+                <Button onClick={save}>Save</Button>
+                <Button color={ButtonColor.RED} onClick={back}>Cancel</Button>
+            </div>
         </div>
-        <Button onClick={fetchHistorical}>Fetch historical</Button>
     </div>
 {/if}

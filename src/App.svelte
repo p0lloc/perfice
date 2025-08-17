@@ -25,9 +25,6 @@
     import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
     import SettingsView from "@perfice/views/settings/SettingsView.svelte";
     import {BASE_URL} from "@perfice/app";
-    import IntegrationTypesView from "@perfice/views/integration/IntegrationTypesView.svelte";
-    import IntegrationEditView from "@perfice/views/integration/IntegrationEditView.svelte";
-    import IntegrationCreateView from "@perfice/views/integration/IntegrationCreateView.svelte";
     import GlobalSyncModals from "@perfice/components/sync/GlobalSyncModals.svelte";
     import GlobalIntegrationModals from "@perfice/components/integration/modals/GlobalIntegrationModals.svelte";
     import FeedbackView from "@perfice/views/feedback/FeedbackView.svelte";
@@ -68,20 +65,6 @@
             component: AnalyticsDetailView,
             hideBottomBar: true,
         },
-
-        {
-            path: "/integrations/(?<formId>.*)/create/(?<integrationType>.*)",
-            component: IntegrationCreateView,
-        },
-        {
-            path: "/integrations/edit/(?<integrationId>.*)",
-            component: IntegrationEditView,
-        },
-        {
-            path: "/integrations/(?<formId>.*)",
-            component: IntegrationTypesView,
-        },
-
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
         {
