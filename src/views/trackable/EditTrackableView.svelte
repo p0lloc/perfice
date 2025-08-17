@@ -133,7 +133,7 @@
         {#if showSave(viewType)}
             <Button onClick={save}>Save</Button>
         {/if}
-        <Button color={ButtonColor.RED} onClick={back} class="flex-1">Close</Button>
+        <Button color={ButtonColor.RED} onClick={back}>Close</Button>
     </div>
 </div>
 <div class="center-view md:mt-2 md:p-0 px-4 py-2 main-content w-full">

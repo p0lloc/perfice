@@ -8,19 +8,22 @@
     import BasicCategoricalAnalyticsRow
         from "@perfice/components/analytics/details/trackable/BasicCategoricalAnalyticsRow.svelte";
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
-    import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+    import {SimpleTimeScopeType, TimeRangeType} from "@perfice/model/variable/time/time";
     import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
     import TrackableWeekDayAnalytics
         from "@perfice/components/analytics/details/trackable/TrackableWeekDayAnalytics.svelte";
     import CorrelationAnalytics from "@perfice/components/analytics/details/CorrelationAnalytics.svelte";
     import type {FormQuestion} from "@perfice/model/form/form";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
-    import {faRuler} from "@fortawesome/free-solid-svg-icons";
+    import {faBook, faRuler} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import AnalyticsTrackableLineChart
         from "@perfice/components/analytics/trackable/AnalyticsTrackableLineChart.svelte";
     import {trackableDetailedAnalytics} from "@perfice/stores";
+    import {type SearchEntity, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
+    import {gotoSearch} from "@perfice/stores/journal/search";
+    import {TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
 
     let {id}: { id: string } = $props();
     let res = $state<Readable<Promise<TrackableDetailedAnalyticsResult>>>(
@@ -43,15 +46,55 @@
             };
         })
     }
+
+    function showEntries() {
+        let search: SearchEntity[] = [
+            {
+                id: crypto.randomUUID(),
+                type: SearchEntityType.TRACKABLE,
+                mode: SearchEntityMode.INCLUDE,
+                value: {
+                    filters: [
+                        {
+                            id: crypto.randomUUID(),
+                            type: TrackableSearchFilterType.ONE_OF,
+                            value: {
+                                values: [id]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                id: crypto.randomUUID(),
+                type: SearchEntityType.DATE,
+                mode: SearchEntityMode.MUST_MATCH,
+                value: {
+                    range: {
+                        type: TimeRangeType.ALL,
+                    }
+                }
+            },
+
+        ];
+
+        gotoSearch(search);
+    }
 </script>
 
 {#await $res}
     There is not enough data to provide analytics for this trackable.
 {:then val}
-    <h3 class="text-3xl md:text-4xl font-bold mt-2 md:mt-8 row-gap">
-        <Fa icon={faRuler}/>
-        {val.trackable.name}
-    </h3>
+    <div class="flex justify-between items-center mt-2 md:mt-8 flex-wrap gap-2">
+        <h3 class="text-3xl md:text-4xl font-bold row-gap">
+            <Fa icon={faRuler}/>
+            {val.trackable.name}
+        </h3>
+        <button class="text-green-600 flex items-center gap-2" onclick={showEntries}>
+            <Fa icon={faBook}/>
+            Show entries
+        </button>
+    </div>
     <div class="mt-4 md:mt-8 flex justify-between gap-2 flex-wrap">
         <SegmentedControl
                 class="w-full md:w-auto"

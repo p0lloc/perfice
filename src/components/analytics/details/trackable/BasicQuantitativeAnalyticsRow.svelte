@@ -18,7 +18,6 @@
         clickable: boolean
     } = $props();
 
-    // TODO: link to journal with filtered entries
     function jumpToDate(timestamp: number) {
         let date = new Date(timestamp);
         let search: SearchEntity[] = [

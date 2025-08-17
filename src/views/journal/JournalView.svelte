@@ -11,7 +11,7 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faBook, faCalendar, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -24,10 +24,12 @@
     import {gotoEditSearch, parseSearchFromUrl} from "@perfice/stores/journal/search";
     import {navigate} from "@perfice/app";
     import {pullToRefresh} from "@perfice/util/pullToRefresh";
+    import {ButtonColor} from "@perfice/model/ui/button";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
     let deleteMultiModal: GenericDeleteModal<JournalEntity[]>;
+    let dateInput: HTMLInputElement;
     let {params}: { params: Record<string, string> } = $props();
 
     let selectMode = $state(false);
@@ -125,6 +127,11 @@
         navigate("/journal/search");
     }
 
+    function openDatePicker() {
+        console.log("ok")
+        dateInput.click();
+    }
+
     // Scroll might already be at bottom, give time for the initial page load to finish
     // Then check if we're at the bottom and load more
     onMount(() => setTimeout(() => onScroll(), 500));
@@ -152,9 +159,6 @@
         <div class="row-between items-center md:mb-8 mb-4 md:flex hidden">
             <Title title={title} icon={currentSearch != null ? faSearch : faBook}/>
             <div class="row-gap md:w-auto w-full flex justify-end">
-                <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
-                    <Fa icon={faSearch}/>
-                </Button>
                 <div class="row-gap bg-white border px-2 rounded-md h-10">
                     {#if selectMode}
                         {selectedEntities.length} selected
@@ -166,6 +170,14 @@
                         <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
                     {/if}
                 </div>
+                <input type="date" class="hidden" bind:this={dateInput}/>
+                <Button onClick={openDatePicker} color={ButtonColor.WHITE} class="hidden md:flex items-center gap-2">
+                    Date
+                    <Fa icon={faCalendar}/>
+                </Button>
+                <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
+                    <Fa icon={faSearch}/>
+                </Button>
             </div>
         </div>
         <div class="flex flex-col gap-4">
