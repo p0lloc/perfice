@@ -72,6 +72,8 @@ const PAGE_SIZE = 20;
 
 export class PaginatedJournal {
     private currentPage = 0;
+    private lastJournalEntryId = "\uffff";
+    private lastTagEntryId = "\uffff";
     private loading = false;
 
     async load() {
@@ -91,24 +93,32 @@ export class PaginatedJournal {
 
         this.loading = true;
 
-        let formEntries = await journal.nextPage(this.currentPage, PAGE_SIZE);
-        let taggedEntries = await tagEntries.nextPage(this.currentPage, PAGE_SIZE);
+        let formEntries = await journal.nextPage(this.currentPage, PAGE_SIZE, this.lastJournalEntryId);
+        let taggedEntries = await tagEntries.nextPage(this.currentPage, PAGE_SIZE, this.lastTagEntryId);
 
-        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1].timestamp : 0;
-        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1].timestamp : 0;
+        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1] : null;
+        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1] : null;
+
+        if (oldestJournalEntry != null)
+            this.lastJournalEntryId = oldestJournalEntry.id;
+        if (oldestTagEntry != null)
+            this.lastTagEntryId = oldestTagEntry.id;
+
+        let oldestJournalEntryTimestamp = oldestJournalEntry?.timestamp ?? 0;
+        let oldestTagEntryTimestamp = oldestTagEntry?.timestamp ?? 0;
 
         if (formEntries.length > 0 && taggedEntries.length > 0) {
             // Entries might be uneven so only include up to the oldest entry even if there are more
-            if (oldestJournalEntry > oldestTagEntry) {
-                taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntry);
-                this.currentPage = oldestJournalEntry;
+            if (oldestJournalEntryTimestamp > oldestTagEntryTimestamp) {
+                taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntryTimestamp);
+                this.currentPage = oldestJournalEntryTimestamp;
             } else {
-                formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntry);
-                this.currentPage = oldestTagEntry;
+                formEntries = formEntries.filter(e => e.timestamp >= oldestTagEntryTimestamp);
+                this.currentPage = oldestTagEntryTimestamp;
             }
         } else {
             // If one of them has no more entries, we still want to load the next page
-            this.currentPage = Math.max(oldestJournalEntry, oldestTagEntry);
+            this.currentPage = Math.max(oldestJournalEntryTimestamp, oldestTagEntryTimestamp);
         }
 
         journal.updateResolved(v => [...v, ...formEntries]);
@@ -174,6 +184,7 @@ export function GroupedJournal(): Readable<Promise<JournalDay[]>> {
                         let singleEntries: JournalDayGroup[] = [];
                         let multiEntries: JournalDayGroup[] = [];
 
+                        // console.log(new Date(timestamp), dayData);
                         for (let group of dayData.formGroups.values()) {
                             if (group.entries.length == 1) {
                                 singleEntries.push(group);

@@ -88,12 +88,12 @@ export class DexieJournalCollection implements JournalCollection {
             .toArray();
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string = "\uffff"): Promise<JournalEntry[]> {
         // We sort by both timestamp and id so that we get deterministic results when entries have the same timestamp
         // This returns the newest entries first
         return this.table
             .where("[timestamp+id]")
-            .belowOrEqual([untilTimestamp, ""])
+            .below([untilTimestamp, lastId]) // If we are exactly at the boundary point we need to compare by id of last journal entry instead
             .limit(limit)
             .reverse()
             .toArray();

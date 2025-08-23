@@ -20,8 +20,8 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
         this.setResolved([]);
     }
 
-    async nextPage(page: number, size: number): Promise<JournalEntry[]> {
-        return await this.journalService.getEntriesUntilTimeAndLimit(page, size);
+    async nextPage(page: number, size: number, lastId: string = "\uffff"): Promise<JournalEntry[]> {
+        return await this.journalService.getEntriesUntilTimeAndLimit(page, size, lastId);
     }
 
     async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<void> {

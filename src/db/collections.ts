@@ -204,7 +204,7 @@ export interface JournalCollection {
 
     getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]>;
 
-    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]>;
 
     getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined>;
 }
@@ -253,7 +253,7 @@ export interface TagEntryCollection {
 
     getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]>;
 
-    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<TagEntry[]>;
 }
 
 export interface IndexCollection {

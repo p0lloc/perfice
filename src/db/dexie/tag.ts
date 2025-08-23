@@ -65,10 +65,10 @@ export class DexieTagEntryCollection implements TagEntryCollection {
         return this.table.getAll();
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]> {
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string = "\uffff"): Promise<TagEntry[]> {
         return this.table
             .where("[timestamp+id]")
-            .belowOrEqual([untilTimestamp, ""])
+            .below([untilTimestamp, lastId])
             .limit(limit)
             .reverse()
             .toArray();

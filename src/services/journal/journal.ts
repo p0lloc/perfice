@@ -22,7 +22,7 @@ export interface JournalEntryObserver {
 export interface JournalService {
     getEntryById(id: string): Promise<JournalEntry | undefined>;
 
-    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]>;
 
     logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry>;
 
@@ -71,8 +71,8 @@ export class BaseJournalService implements JournalService {
         return this.collection.getEntryById(id);
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
-        return this.collection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]> {
+        return this.collection.getEntriesUntilTimeAndLimit(untilTimestamp, limit, lastId);
     }
 
     async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry> {

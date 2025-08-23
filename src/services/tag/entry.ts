@@ -26,8 +26,8 @@ export class TagEntryService {
         await this.notifyObservers(EntityObserverType.CREATED, entry);
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]> {
-        return this.tagEntryCollection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<TagEntry[]> {
+        return this.tagEntryCollection.getEntriesUntilTimeAndLimit(untilTimestamp, limit, lastId);
     }
 
     async deleteEntryById(entryId: string) {
