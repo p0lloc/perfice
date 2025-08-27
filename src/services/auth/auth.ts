@@ -22,6 +22,7 @@ export enum LoginResult {
 export class AuthService {
 
     private authStatusChangeCallbacks: AuthStatusChangeCallback[] = [];
+    private loginCallbacks: (() => void)[] = [];
     private remoteService: RemoteService;
 
     private user: AuthenticatedUser | null = null;
@@ -84,7 +85,12 @@ export class AuthService {
 
         await this.checkAuth();
 
-        return this.isAuthenticated() ? LoginResult.SUCCESS : LoginResult.INVALID_CREDENTIALS;
+        let authenticated = this.isAuthenticated();
+        if (authenticated) {
+            this.loginCallbacks.forEach(callback => callback());
+        }
+
+        return authenticated ? LoginResult.SUCCESS : LoginResult.INVALID_CREDENTIALS;
     }
 
     private async handleSessionResponse(response: KyResponse): Promise<boolean> {
@@ -203,6 +209,9 @@ export class AuthService {
         return res.ok;
     }
 
+    addLoginCallback(callback: () => void) {
+        this.loginCallbacks.push(callback);
+    }
 
     private async getAuthenticated(endpoint: string, options: Options = {}) {
         return this.getClient().get(endpoint, this.getAuthenticatedOptions(options));

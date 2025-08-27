@@ -122,6 +122,10 @@
         return available;
     });
 
+    function showQuestionPicker(aggregateType: AggregateType) {
+        return aggregateType != AggregateType.COUNT;
+    }
+
     let aggregateType = $derived((aggregateVariable?.type.value as AggregateVariableType).getAggregateType() ?? AggregateType.MEAN);
     let selectedQuestion = $derived(questions.find(q => q.id == (aggregateVariable!.type.value as AggregateVariableType).getField())!);
 </script>
@@ -130,8 +134,10 @@
     <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={onAggregateTypeChange}
                     class="w-full md:w-auto"/>
 
-    <DropdownButton items={availableQuestions} value={selectedQuestion.id} onChange={onSourceChange}
-                    class="w-full md:w-auto flex-1"/>
+    {#if showQuestionPicker(aggregateType)}
+        <DropdownButton items={availableQuestions} value={selectedQuestion.id} onChange={onSourceChange}
+                        class="w-full md:w-auto flex-1"/>
+    {/if}
 
     <DropdownButton value={comparison.getOperator()} items={COMPARISON_OPERATORS}
                     onChange={onOperatorChange}

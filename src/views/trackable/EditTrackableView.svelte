@@ -3,7 +3,7 @@
     import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
     import EditTrackableGeneral from "@perfice/components/trackable/edit/general/EditTrackableGeneral.svelte";
     import {onMount} from "svelte";
-    import {trackables} from "@perfice/stores";
+    import {forms, trackables, variableEditProvider} from "@perfice/stores";
     import EditTrackableImportExport from "@perfice/components/trackable/edit/EditTrackableImportExport.svelte";
     import EditTrackableGoal from "@perfice/components/trackable/edit/EditTrackableGoal.svelte";
     import {faArrowLeft, faCheck} from "@fortawesome/free-solid-svg-icons";
@@ -17,13 +17,14 @@
     import {ButtonColor} from "@perfice/model/ui/button";
     import EditTrackableAnalytics from "@perfice/components/trackable/edit/general/EditTrackableAnalytics.svelte";
     import EditTrackableIntegrations from "@perfice/components/trackable/edit/EditTrackableIntegrations.svelte";
+    import {VariableTypeName} from "@perfice/model/variable/variable";
+    import {GoalVariableType} from "@perfice/services/variable/types/goal";
 
     let viewType = $state(TrackableEditViewType.GENERAL);
     let editState = $state<EditTrackableState | null>(null);
     let {params}: { params: Record<string, string> } = $props();
 
     let visitedViews: Set<TrackableEditViewType> = new Set<TrackableEditViewType>([TrackableEditViewType.GENERAL]);
-    let viewComponent: any;
 
     export const ANALYTICS_SEGMENTED_ITEMS: SegmentedItem<TrackableEditViewType>[] = [
         {name: "General", value: TrackableEditViewType.GENERAL},
@@ -72,6 +73,7 @@
     }
 
     async function handleViewSave(viewType: TrackableEditViewType) {
+        if (editState == null) return;
         switch (viewType) {
             case TrackableEditViewType.GENERAL: {
                 if (editState == null) return;
@@ -81,11 +83,20 @@
                 break;
             }
             case TrackableEditViewType.FORM: {
-                await viewComponent.save();
+                await forms.updateForm($state.snapshot(editState.form));
                 break;
             }
             case TrackableEditViewType.GOAL: {
-                await viewComponent.save();
+                if (editState.goalVariable == null || editState.goalVariableData == null) return;
+
+                variableEditProvider.updateVariable({
+                    ...$state.snapshot(editState.goalVariable),
+                    type: {
+                        type: VariableTypeName.GOAL,
+                        value: new GoalVariableType(editState.goalVariableData.getConditions(), editState.goalVariableData.getTimeScope())
+                    }
+                });
+                await variableEditProvider.save();
                 break;
             }
         }
@@ -93,7 +104,7 @@
     }
 
     function showSave(viewType: TrackableEditViewType) {
-        return viewType == TrackableEditViewType.GENERAL || viewType == TrackableEditViewType.FORM;
+        return viewType == TrackableEditViewType.GENERAL || viewType == TrackableEditViewType.FORM || viewType == TrackableEditViewType.GOAL;
     }
 
     function back() {
@@ -139,7 +150,7 @@
 <div class="center-view md:mt-2 md:p-0 px-4 py-2 main-content w-full">
     <div class="mt-8">
         {#if editState != null}
-            <RendererComponent bind:this={viewComponent} close={back} {editState}/>
+            <RendererComponent close={back} bind:editState/>
         {/if}
     </div>
 </div>

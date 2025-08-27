@@ -229,6 +229,11 @@ export class SyncService {
             if (user == null) return;
             await this.load();
         });
+
+        this.authService.addLoginCallback(() => {
+            // When user has logged in to a new account, force refetch of salt since it is user-specific.
+            localStorage.removeItem(SALT_STORAGE_KEY);
+        })
     }
 
     private getClient(): KyInstance {

@@ -3,16 +3,11 @@
     import {faPlus} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import type {TimeScope} from "@perfice/model/variable/time/time";
-    import {trackables, variableEditProvider} from "@perfice/stores";
+    import {trackables} from "@perfice/stores";
     import NumberGoalEditor from "@perfice/components/goal/editor/number/NumberGoalEditor.svelte";
     import {GoalVariableType} from "@perfice/services/variable/types/goal";
-    import {VariableTypeName} from "@perfice/model/variable/variable";
 
-    let {editState, close}: { editState: EditTrackableState, close: () => void } = $props();
-
-    function updateTimeScope(v: TimeScope) {
-    }
+    let {editState}: { editState: EditTrackableState, close: () => void } = $props();
 
     async function create() {
         let goalVariable = await trackables.createTrackableGoalInEditState(editState.trackable);
@@ -23,19 +18,6 @@
 
     function onGoalChange(v: GoalVariableType) {
         editState.goalVariableData = v;
-    }
-
-    export async function save() {
-        if (editState.goalVariable == null || editState.goalVariableData == null) return;
-
-        variableEditProvider.updateVariable({
-            ...$state.snapshot(editState.goalVariable),
-            type: {
-                type: VariableTypeName.GOAL,
-                value: new GoalVariableType(editState.goalVariableData.getConditions(), editState.goalVariableData.getTimeScope())
-            }
-        });
-        await variableEditProvider.save();
     }
 </script>
 
