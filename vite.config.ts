@@ -24,9 +24,11 @@ export default defineConfig((v) => {
                     enabled: true
                 },
                 workbox: {
-                    globPatterns: []
-                    //globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+                    globPatterns: dev ? [] : ['**/*.{js,css,html,ico,png,svg,json,woff2}']
                 },
+                includeAssets: [
+                    "**/*",
+                ],
                 manifest: {
                     name: 'Perfice',
                     short_name: 'Perfice',

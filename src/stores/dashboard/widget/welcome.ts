@@ -1,5 +1,6 @@
-import quotesStr from '@perfice/assets/quotes.json?raw'
+import quotesUrl from '/quotes.json?url';
 
+const quotesStr = await fetch(quotesUrl).then(r => r.text());
 export const quotes = JSON.parse(quotesStr);
 
 export function fetchRandomQuote(): string {
