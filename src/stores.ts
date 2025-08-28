@@ -1,4 +1,4 @@
-import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
+import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable.svelte";
 import type {Services} from "@perfice/services";
 import {FormStore} from "@perfice/stores/form/form";
 import {VariableStore} from "@perfice/stores/variable/variable";

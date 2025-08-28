@@ -3,7 +3,7 @@
     import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
     import EditTrackableGeneral from "@perfice/components/trackable/edit/general/EditTrackableGeneral.svelte";
     import {onMount} from "svelte";
-    import {forms, trackables, variableEditProvider} from "@perfice/stores";
+    import {trackables} from "@perfice/stores";
     import EditTrackableImportExport from "@perfice/components/trackable/edit/EditTrackableImportExport.svelte";
     import EditTrackableGoal from "@perfice/components/trackable/edit/EditTrackableGoal.svelte";
     import {faArrowLeft, faCheck} from "@fortawesome/free-solid-svg-icons";
@@ -17,8 +17,6 @@
     import {ButtonColor} from "@perfice/model/ui/button";
     import EditTrackableAnalytics from "@perfice/components/trackable/edit/general/EditTrackableAnalytics.svelte";
     import EditTrackableIntegrations from "@perfice/components/trackable/edit/EditTrackableIntegrations.svelte";
-    import {VariableTypeName} from "@perfice/model/variable/variable";
-    import {GoalVariableType} from "@perfice/services/variable/types/goal";
 
     let viewType = $state(TrackableEditViewType.GENERAL);
     let editState = $state<EditTrackableState | null>(null);
@@ -65,42 +63,9 @@
     }
 
     async function save() {
-        for (let visitedView of visitedViews) {
-            await handleViewSave(visitedView);
-        }
-
-        back();
-    }
-
-    async function handleViewSave(viewType: TrackableEditViewType) {
         if (editState == null) return;
-        switch (viewType) {
-            case TrackableEditViewType.GENERAL: {
-                if (editState == null) return;
-                await trackables.updateTrackable(
-                    $state.snapshot(editState.trackable)
-                );
-                break;
-            }
-            case TrackableEditViewType.FORM: {
-                await forms.updateForm($state.snapshot(editState.form));
-                break;
-            }
-            case TrackableEditViewType.GOAL: {
-                if (editState.goalVariable == null || editState.goalVariableData == null) return;
-
-                variableEditProvider.updateVariable({
-                    ...$state.snapshot(editState.goalVariable),
-                    type: {
-                        type: VariableTypeName.GOAL,
-                        value: new GoalVariableType(editState.goalVariableData.getConditions(), editState.goalVariableData.getTimeScope())
-                    }
-                });
-                await variableEditProvider.save();
-                break;
-            }
-        }
-
+        await trackables.saveTrackableEdit(visitedViews, editState);
+        back();
     }
 
     function showSave(viewType: TrackableEditViewType) {

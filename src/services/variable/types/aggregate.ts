@@ -60,6 +60,11 @@ export class AggregateVariableType implements VariableType {
         if (list.length == 0)
             return pNumber(0.0);
 
+        if (this.aggregateType == AggregateType.COUNT) {
+            // We do not need to flatten or extract anything, just return the length of the list
+            return pNumber(list.length);
+        }
+
         if (list[0].type == PrimitiveValueType.JOURNAL_ENTRY) {
             list = this.flattenEntryList(list);
         }
@@ -67,9 +72,6 @@ export class AggregateVariableType implements VariableType {
         let numbers = extractNumbers(list);
 
         switch (this.aggregateType) {
-            case AggregateType.COUNT: {
-                return pNumber(list.length);
-            }
             case AggregateType.SUM: {
                 return pNumber(sumNumbers(numbers));
             }

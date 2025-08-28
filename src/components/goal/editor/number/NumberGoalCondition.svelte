@@ -122,19 +122,27 @@
         return available;
     });
 
-    function showQuestionPicker(aggregateType: AggregateType) {
+    function showQuestionPicker(availableQuestions: DropdownMenuItem<string>[], aggregateType: AggregateType) {
+        if (availableQuestions.length == 0) return false;
         return aggregateType != AggregateType.COUNT;
     }
 
     let aggregateType = $derived((aggregateVariable?.type.value as AggregateVariableType).getAggregateType() ?? AggregateType.MEAN);
     let selectedQuestion = $derived(questions.find(q => q.id == (aggregateVariable!.type.value as AggregateVariableType).getField())!);
+
+    let supportedAggregateTypes = $derived.by(() => {
+        if (availableQuestions.length == 0)
+            return [AGGREGATE_TYPES.find(t => t.value == AggregateType.COUNT)];
+
+        return AGGREGATE_TYPES;
+    })
 </script>
 
 <div class="flex gap-2 flex-wrap items-center">
-    <DropdownButton items={AGGREGATE_TYPES} value={aggregateType} onChange={onAggregateTypeChange}
+    <DropdownButton items={supportedAggregateTypes} value={aggregateType} onChange={onAggregateTypeChange}
                     class="w-full md:w-auto"/>
 
-    {#if showQuestionPicker(aggregateType)}
+    {#if showQuestionPicker(availableQuestions, aggregateType)}
         <DropdownButton items={availableQuestions} value={selectedQuestion.id} onChange={onSourceChange}
                         class="w-full md:w-auto flex-1"/>
     {/if}

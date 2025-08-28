@@ -50,6 +50,7 @@
         field = newField;
         editState.listVariableValue = new ListVariableType(editState.listVariableValue.getFormId(),
             {[newField]: useDisplayValues}, editState.listVariableValue.getFilters());
+
         value = new AggregateVariableType(value.getAggregateType(), editState.listVariable.id, newField);
 
         variableEditProvider.updateVariable({
@@ -77,6 +78,10 @@
                 value: editState.listVariableValue
             }
         });
+    }
+
+    function showFieldSetting(aggregateType: AggregateType) {
+        return aggregateType != AggregateType.COUNT;
     }
 
     let entityFormId = $derived(editState.listVariableValue.getFormId());
@@ -107,11 +112,13 @@
         Entity
         <DropdownButton items={entities} value={entityFormId} onChange={onEntityChange}/>
     </div>
-    <div class="row-between">
-        Field
-        {#if dropdownQuestions != null}
-            <DropdownButton items={dropdownQuestions} value={field} onChange={onFieldChange}/>
-        {/if}
-    </div>
+    {#if showFieldSetting(aggregateType)}
+        <div class="row-between">
+            Field
+            {#if dropdownQuestions != null}
+                <DropdownButton items={dropdownQuestions} value={field} onChange={onFieldChange}/>
+            {/if}
+        </div>
+    {/if}
     <EditListFilters fields={questions} filters={filters} onChange={onFilterChange}/>
 </div>

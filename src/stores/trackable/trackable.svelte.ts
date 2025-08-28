@@ -4,7 +4,7 @@ import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
-import type {EditTrackableState} from "@perfice/model/trackable/ui";
+import {type EditTrackableState, TrackableEditViewType} from "@perfice/model/trackable/ui";
 import {EntityObserverType} from "@perfice/services/observer";
 import {type JournalEntryValue, pDisplay, pNumber, PrimitiveValueType} from "@perfice/model/primitive/primitive";
 import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
@@ -43,9 +43,6 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         await this.trackableService.createTrackableFromSuggestion(suggestion, categoryId);
     }
 
-    async updateTrackable(trackable: Trackable): Promise<void> {
-        await this.trackableService.updateTrackable(trackable);
-    }
 
     private async onTrackableCreated(trackable: Trackable) {
         this.updateResolved(v => [...v, trackable]);
@@ -90,6 +87,40 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
             goalVariable,
             goalVariableData,
             form,
+        }
+    }
+
+    async saveTrackableEdit(visitedViews: Set<TrackableEditViewType>, editState: EditTrackableState) {
+        // Only run save logic for views that were visited and might have been changed
+        for (let visitedView of visitedViews) {
+            await this.handleViewSave(visitedView, editState);
+        }
+    }
+
+    private async handleViewSave(viewType: TrackableEditViewType, editState: EditTrackableState) {
+        // EditState is Svelte state-proxied when passed in
+        switch (viewType) {
+            case TrackableEditViewType.GENERAL: {
+                await this.trackableService.updateTrackable($state.snapshot(editState.trackable));
+                break;
+            }
+            case TrackableEditViewType.FORM: {
+                await forms.updateForm($state.snapshot(editState.form));
+                break;
+            }
+            case TrackableEditViewType.GOAL: {
+                if (editState.goalVariable == null || editState.goalVariableData == null) return;
+
+                variableEditProvider.updateVariable({
+                    ...$state.snapshot(editState.goalVariable),
+                    type: {
+                        type: VariableTypeName.GOAL,
+                        value: new GoalVariableType(editState.goalVariableData.getConditions(), editState.goalVariableData.getTimeScope())
+                    }
+                });
+                await variableEditProvider.save();
+                break;
+            }
         }
     }
 
