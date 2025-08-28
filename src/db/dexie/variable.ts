@@ -1,25 +1,25 @@
 import type {VariableCollection} from "@perfice/db/collections";
-import {type EntityTable} from "dexie";
 import type {StoredVariable} from "@perfice/model/variable/variable";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieVariableCollection implements VariableCollection {
 
-    private table: EntityTable<StoredVariable, "id">;
+    private table: SyncedTable<StoredVariable>;
 
-    constructor(table: EntityTable<StoredVariable, "id">) {
+    constructor(table: SyncedTable<StoredVariable>) {
         this.table = table;
     }
 
     getVariableById(id: string): Promise<StoredVariable | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async getVariables(): Promise<StoredVariable[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async createVariable(variable: StoredVariable): Promise<void> {
-        await this.table.add(variable);
+        await this.table.create(variable);
     }
 
     async updateVariable(variable: StoredVariable): Promise<void> {
@@ -27,7 +27,7 @@ export class DexieVariableCollection implements VariableCollection {
     }
 
     async deleteVariableById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
 }

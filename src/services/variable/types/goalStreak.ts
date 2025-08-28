@@ -30,6 +30,12 @@ export class GoalStreakVariableType implements VariableType {
             return pNumber(0.0);
         }
 
+
+        if (goalVariable.type.value.getConditions().length == 0) {
+            // No conditions, always return 0
+            return pNumber(0.0);
+        }
+
         let scope = goalVariable.type.value.getTimeScope();
         let evaluatorTimeScope = evaluator.getTimeScope();
         if (scope.type != TimeScopeType.SIMPLE || evaluatorTimeScope.type != TimeScopeType.SIMPLE) {

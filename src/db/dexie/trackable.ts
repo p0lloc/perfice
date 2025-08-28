@@ -1,25 +1,25 @@
 import type {TrackableCategoryCollection, TrackableCollection} from "@perfice/db/collections";
-import {type EntityTable} from "dexie";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieTrackableCollection implements TrackableCollection {
 
-    private table: EntityTable<Trackable, "id">;
+    private table: SyncedTable<Trackable>;
 
-    constructor(table: EntityTable<Trackable, "id">) {
+    constructor(table: SyncedTable<Trackable>) {
         this.table = table;
     }
 
     getTrackables(): Promise<Trackable[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getTrackableById(id: string): Promise<Trackable | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async createTrackable(trackable: Trackable): Promise<void> {
-        await this.table.add(trackable);
+        await this.table.create(trackable);
     }
 
     async updateTrackable(trackable: Trackable): Promise<void> {
@@ -27,7 +27,7 @@ export class DexieTrackableCollection implements TrackableCollection {
     }
 
     async deleteTrackableById(trackableId: string): Promise<void> {
-        await this.table.delete(trackableId);
+        await this.table.deleteById(trackableId);
     }
 
     async updateTrackables(trackables: Trackable[]): Promise<void> {
@@ -46,22 +46,22 @@ export class DexieTrackableCollection implements TrackableCollection {
 
 export class DexieTrackableCategoryCollection implements TrackableCategoryCollection {
 
-    private table: EntityTable<TrackableCategory, "id">;
+    private table: SyncedTable<TrackableCategory>;
 
-    constructor(table: EntityTable<TrackableCategory, "id">) {
+    constructor(table: SyncedTable<TrackableCategory>) {
         this.table = table;
     }
 
     async getCategories(): Promise<TrackableCategory[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getCategoryById(categoryId: string): Promise<TrackableCategory | undefined> {
-        return this.table.get(categoryId);
+        return this.table.getById(categoryId);
     }
 
     async createCategory(category: TrackableCategory): Promise<void> {
-        await this.table.add(category);
+        await this.table.create(category);
     }
 
     async updateCategory(category: TrackableCategory): Promise<void> {
@@ -69,7 +69,7 @@ export class DexieTrackableCategoryCollection implements TrackableCategoryCollec
     }
 
     async deleteCategoryById(categoryId: string): Promise<void> {
-        await this.table.where("id").equals(categoryId).delete();
+        await this.table.deleteById(categoryId);
     }
 
     async count(): Promise<number> {

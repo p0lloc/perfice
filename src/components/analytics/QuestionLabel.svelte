@@ -18,6 +18,7 @@
 </button>
 
 <style>
+    @reference "@perfice/app.css";
     button {
         @apply bg-gray-100 border rounded-md px-1;
     }

@@ -23,18 +23,22 @@ export class TagEntryService {
         };
 
         await this.tagEntryCollection.createEntry(entry);
-        await this.observers.notifyObservers(EntityObserverType.CREATED, entry);
+        await this.notifyObservers(EntityObserverType.CREATED, entry);
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]> {
-        return this.tagEntryCollection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<TagEntry[]> {
+        return this.tagEntryCollection.getEntriesUntilTimeAndLimit(untilTimestamp, limit, lastId);
     }
 
     async deleteEntryById(entryId: string) {
         let entry = await this.tagEntryCollection.getEntryById(entryId);
         if (entry == undefined) return;
         await this.tagEntryCollection.deleteEntryById(entryId);
-        await this.observers.notifyObservers(EntityObserverType.CREATED, entry);
+        await this.notifyObservers(EntityObserverType.DELETED, entry);
+    }
+
+    async notifyObservers(type: EntityObserverType, entry: TagEntry) {
+        await this.observers.notifyObservers(type, entry);
     }
 
     addObserver(type: EntityObserverType, callback: EntityObserverCallback<TagEntry>) {

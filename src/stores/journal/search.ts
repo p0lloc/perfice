@@ -8,6 +8,7 @@ import type {TrackableCategoryEntityProvider} from "@perfice/services/trackable/
 import type {JournalSearchUiDependencies} from "@perfice/model/journal/search/ui";
 import type {FormEntityProvider} from "@perfice/services/form/form";
 import {journal, tagEntries} from "@perfice/stores";
+import {navigate} from "@perfice/app";
 
 export function parseSearchFromUrl(param: string): SearchEntity[] {
     try {
@@ -21,6 +22,15 @@ export function parseSearchFromUrl(param: string): SearchEntity[] {
 
 export function constructSearchParam(search: SearchEntity[]): string {
     return btoa(JSON.stringify(search));
+}
+
+export function gotoEditSearch(entities: SearchEntity[]) {
+    navigate(`/journal/search/${constructSearchParam(entities)}`);
+}
+
+
+export function gotoSearch(entities: SearchEntity[]) {
+    navigate(`/journal/${constructSearchParam(entities)}`);
 }
 
 export class JournalSearchStore {

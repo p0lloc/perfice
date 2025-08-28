@@ -54,7 +54,10 @@
         currentTemplateName = null;
         modal.open();
 
-        setTimeout(() => embed.focus()); // Give embed time to mount
+        // Don't autofocus fields if we are editing an existing entry
+        if (entry == null) {
+            setTimeout(() => embed.focus()); // Give embed time to mount
+        }
     }
 
     function close() {

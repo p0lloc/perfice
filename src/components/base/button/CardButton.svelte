@@ -6,6 +6,7 @@
 
     let {
         icon, title, description, onClick, cardSuffix,
+        disabled = false,
 
         cardClass = 'hover-feedback bg-white',
         buttonClass = '', iconClass = 'w-8'
@@ -15,14 +16,20 @@
         iconClass?: string,
         description: string,
         onClick: () => void,
+        disabled?: boolean,
         buttonClass?: string,
         cardClass?: string,
         cardSuffix?: Snippet
     } = $props();
+
+    function handleClick() {
+        if (disabled) return;
+        onClick();
+    }
 </script>
 
 
-<button onclick={onClick} class="{buttonClass}">
+<button onclick={handleClick} class="{buttonClass}">
     <TitledCard {iconClass} icon={icon} title={title} description={description} class="{cardClass}">
         {#snippet suffix()}
             {@render cardSuffix?.()}

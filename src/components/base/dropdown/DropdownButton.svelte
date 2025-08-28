@@ -12,6 +12,7 @@
         value,
         items,
         small = false,
+        search = false,
         class: className = '',
         noneText = 'Select value',
         onChange,
@@ -24,9 +25,13 @@
         onChange?: (v: T) => void,
         noneText?: string,
         small?: boolean,
+        search?: boolean,
         disabled?: boolean,
         compareFunction?: (a: T, b: T) => boolean
     } = $props();
+
+    let searchInput: HTMLInputElement;
+    let searchValue = $state("");
 
     function getSelectedItemPosition() {
         if (selectedItem == null) return 0;
@@ -35,14 +40,40 @@
 
     function open(e: MouseEvent) {
         if (disabled) return;
+
+        if (searchInput != null) {
+            searchInput.focus();
+            searchInput.setSelectionRange(-1, -1);
+        }
+
         contextMenu.openFromClick(e.target as HTMLElement, button, true, getSelectedItemPosition());
     }
 
     function onAction(e: DropdownMenuItem<T>) {
         e.action?.();
         onChange?.(e.value);
+        searchValue = e.name;
     }
 
+    function onSearchChange() {
+
+    }
+
+    let menuItems = $derived.by(() => {
+        let filterFunction = search
+            ? (i: DropdownMenuItem<T>) => i.name.toLowerCase().includes(searchValue.toLowerCase()) :
+            (_: DropdownMenuItem<T>) => true;
+
+        return items.filter(filterFunction)
+            .map((item) => {
+                return {
+                    name: item.name,
+                    icon: item.icon ?? null,
+                    action: () => onAction(item),
+                    separated: item.separated,
+                }
+            })
+    });
     let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => compareFunction(i.value, value)));
 </script>
 <button class="border min-h-8 min-w-6 bg-white rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
@@ -52,7 +83,14 @@
             {#if selectedItem.icon != null}
                 <Fa icon={selectedItem.icon} class="w-4"/>
             {/if}
-            {selectedItem.name}
+            {#if search}
+                <input type="text" class="outline-none input border-none"
+                       bind:value={searchValue}
+                       placeholder={selectedItem.name}
+                       bind:this={searchInput}/>
+            {:else}
+                {selectedItem.name}
+            {/if}
         {:else}
             <span class="text-gray-500">{noneText}</span>
         {/if}
@@ -61,13 +99,11 @@
 </button>
 
 <ContextMenu bind:this={contextMenu}>
-    <ContextMenuButtons buttons={
-        items.map((item) => {
-            return {
-            name: item.name,
-            icon: item.icon ?? null,
-            action: () => onAction(item),
-            separated: item.separated,
-        }
-    })}/>
+    <ContextMenuButtons buttons={menuItems}/>
 </ContextMenu>
+
+<style>
+    input::placeholder {
+        color: black;
+    }
+</style>

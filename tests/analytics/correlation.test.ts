@@ -15,9 +15,9 @@ import {AnalyticsSettings} from "../../src/model/analytics/analytics";
 
 test("flatten quantitative values", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24)
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime())
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -29,14 +29,14 @@ test("flatten quantitative values", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings());
 
     expect(flattened).toEqual(new Map([
         ["test_form:test", new Map([
-            [0, 15],
-            [1000 * 60 * 60 * 24, 17]
+            [new Date(1970, 0, 1).getTime(), 15],
+            [new Date(1970, 0, 2).getTime(), 17]
         ])],
     ]));
 });
@@ -44,14 +44,14 @@ test("flatten quantitative values", async () => {
 
 test("filter matching timestamps", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 10),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime() + 10),
 
-        mockEntry("test_form2", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24), // This should not be included since it's not in the first dataset
+        mockEntry("test_form2", {"test": pNumber(17.0)}, new Date(1970, 0, 2).getTime()), // This should not be included since it's not in the first dataset
 
-        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pNumber(10.0)}, 1000 * 60 * 60 * 24 * 3 - 20000),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pNumber(10.0)}, new Date(1970, 0, 4).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -66,14 +66,14 @@ test("filter matching timestamps", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
         false,
         false,
-        new Date(1000 * 60 * 60 * 24 * 7),
+        new Date(1970, 0, 8),
         SimpleTimeScopeType.DAILY,
         7
     );
@@ -81,7 +81,7 @@ test("filter matching timestamps", async () => {
     expect(matching).toEqual({
         first: [15, 45],
         second: [17, 10],
-        timestamps: [0, 1000 * 60 * 60 * 24 * 3]
+        timestamps: [new Date(1970, 0, 1).getTime(), new Date(1970, 0, 4).getTime()]
     });
 });
 
@@ -90,19 +90,19 @@ test("filter matching timestamps with lag", async () => {
     const journal = new DummyJournalCollection([
 
         // Timestamp for 0 should be matched with the next day since it's lagged
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
 
-        mockEntry("test_form2", {"test": pNumber(55.0)}, 1000 * 60 * 60 * 24),
+        mockEntry("test_form2", {"test": pNumber(55.0)}, new Date(1970, 0, 2).getTime()),
 
         // This should also be matched with the next day
-        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 2),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, 3).getTime()),
 
-        mockEntry("test_form2", {"test": pNumber(30.0)}, 1000 * 60 * 60 * 24 * 3 - 20000),
-        mockEntry("test_form2", {"test": pNumber(70.0)}, 1000 * 60 * 60 * 24 * 3 - 30000),
+        mockEntry("test_form2", {"test": pNumber(30.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pNumber(70.0)}, new Date(1970, 0, 4).getTime()),
 
         // This should not be included at all
-        mockEntry("test_form", {"test": pNumber(50.0)}, 1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form", {"test": pNumber(50.0)}, new Date(1970, 0, 4).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -117,14 +117,14 @@ test("filter matching timestamps with lag", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
         false,
         false,
-        new Date(1000 * 60 * 60 * 24 * 7),
+        new Date(1970, 0, 8),
         SimpleTimeScopeType.DAILY,
         7,
         true
@@ -133,14 +133,15 @@ test("filter matching timestamps with lag", async () => {
     expect(matching).toEqual({
         first: [15, 45],
         second: [55, 50],
-        timestamps: [0, 1000 * 60 * 60 * 24 * 2]
+        timestamps: [new Date(1970, 0, 1).getTime(), new Date(1970, 0, 3).getTime()]
     });
 });
 
+
 test("filter matching timestamps with lag, whole range", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(99.0)}, -1000 * 60 * 60 * 24 * 4),
-        mockEntry("test_form2", {"test": pNumber(33.0)}, -1000 * 60 * 60 * 24 * 3),
+        mockEntry("test_form", {"test": pNumber(99.0)}, new Date(1970, 0, -3).getTime()),
+        mockEntry("test_form2", {"test": pNumber(33.0)}, new Date(1970, 0, -2).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -155,14 +156,14 @@ test("filter matching timestamps with lag, whole range", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(0), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 1), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
         flattened.get("test_form:test")!, flattened.get("test_form2:test")!,
         true,
         true,
-        new Date(0),
+        new Date(1970, 0, 1),
         SimpleTimeScopeType.DAILY,
         7,
         true
@@ -174,27 +175,27 @@ test("filter matching timestamps with lag, whole range", async () => {
         first: [0, 0, 99, 0, 0, 0],
         second: [0, 0, 33, 0, 0, 0],
         timestamps: [
-            -1000 * 60 * 60 * 24 * 6,
-            -1000 * 60 * 60 * 24 * 5,
-            -1000 * 60 * 60 * 24 * 4,
-            -1000 * 60 * 60 * 24 * 3,
-            -1000 * 60 * 60 * 24 * 2,
-            -1000 * 60 * 60 * 24 * 1,
+            new Date(1970, 0, -5).getTime(),
+            new Date(1970, 0, -4).getTime(),
+            new Date(1970, 0, -3).getTime(),
+            new Date(1970, 0, -2).getTime(),
+            new Date(1970, 0, -1).getTime(),
+            new Date(1970, 0, 0).getTime(),
         ]
     });
 })
 
 test("filter matching timestamps with categorical non-empty", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
-        mockEntry("test_form2", {"test": pString("category1")}, 10),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 1).getTime() + 10),
 
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24), // This should not be included since it's not in the first dataset
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 2).getTime()), // This should not be included since it's not in the first dataset
 
-        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 20000),
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 30000),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 4).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -209,7 +210,7 @@ test("filter matching timestamps with categorical non-empty", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
@@ -217,7 +218,7 @@ test("filter matching timestamps with categorical non-empty", async () => {
         flattened.get("cat_test_form2:test:category1")!,
         false,
         false,
-        new Date(1000 * 60 * 60 * 24 * 7),
+        new Date(1970, 0, 8),
         SimpleTimeScopeType.DAILY,
         7
     );
@@ -225,25 +226,25 @@ test("filter matching timestamps with categorical non-empty", async () => {
     expect(matching).toEqual({
         first: [15, 45],
         second: [1, 2],
-        timestamps: [0, 1000 * 60 * 60 * 24 * 3]
+        timestamps: [new Date(1970, 0, 1).getTime(), new Date(1970, 0, 4).getTime()]
     });
 });
 
 
 test("filter matching timestamps with categorical empty", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
         // Test_form2 is missing data for timestamp 0 but we allow empty
 
-        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 20000),
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 30000),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 4).getTime()),
 
         // First still doesn't allow empty so this shouldn't be included
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 5).getTime()),
 
-        mockEntry("test_form", {"test": pNumber(69.0)}, 1000 * 60 * 60 * 24 * 5),
+        mockEntry("test_form", {"test": pNumber(69.0)}, new Date(1970, 0, 6).getTime()),
         // Test_form2 is missing data for day 5 but we allow empty
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
@@ -259,7 +260,7 @@ test("filter matching timestamps with categorical empty", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
@@ -267,7 +268,7 @@ test("filter matching timestamps with categorical empty", async () => {
         flattened.get("cat_test_form2:test:category1")!,
         false,
         true,
-        new Date(1000 * 60 * 60 * 24 * 7),
+        new Date(1970, 0, 8),
         SimpleTimeScopeType.DAILY,
         7
     );
@@ -275,24 +276,24 @@ test("filter matching timestamps with categorical empty", async () => {
     expect(matching).toEqual({
         first: [15, 45, 69],
         second: [0, 2, 0],
-        timestamps: [0, 1000 * 60 * 60 * 24 * 3, 1000 * 60 * 60 * 24 * 5]
+        timestamps: [new Date(1970, 0, 1).getTime(), new Date(1970, 0, 4).getTime(), new Date(1970, 0, 6).getTime()]
     });
 });
 
 test("filter matching timestamps with categorical empty, order switched", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
         // Test_form2 is missing data for timestamp 0 but we allow empty
 
-        mockEntry("test_form", {"test": pNumber(45.0)}, 1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 20000),
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 3 - 30000),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 4).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 4).getTime()),
 
         // First still doesn't allow empty so this shouldn't be included
-        mockEntry("test_form2", {"test": pString("category1")}, 1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, 5).getTime()),
 
-        mockEntry("test_form", {"test": pNumber(69.0)}, 1000 * 60 * 60 * 24 * 5),
+        mockEntry("test_form", {"test": pNumber(69.0)}, new Date(1970, 0, 6).getTime()),
         // Test_form2 is missing data for day 5 but we allow empty
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
@@ -308,7 +309,7 @@ test("filter matching timestamps with categorical empty, order switched", async 
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
@@ -316,31 +317,31 @@ test("filter matching timestamps with categorical empty, order switched", async 
         flattened.get("test_form:test")!,
         true,
         false,
-        new Date(1000 * 60 * 60 * 24 * 7),
+        new Date(1970, 0, 8),
         SimpleTimeScopeType.DAILY,
         7
     );
 
     expect(matching).toEqual({
-        first: [0, 2, 0],
         second: [15, 45, 69],
-        timestamps: [0, 1000 * 60 * 60 * 24 * 3, 1000 * 60 * 60 * 24 * 5]
+        first: [0, 2, 0],
+        timestamps: [new Date(1970, 0, 1).getTime(), new Date(1970, 0, 4).getTime(), new Date(1970, 0, 6).getTime()]
     });
 });
 
 
 test("filter matching timestamps with both empty", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
 
-        mockEntry("test_form", {"test": pNumber(45.0)}, -1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form2", {"test": pString("category1")}, -1000 * 60 * 60 * 24 * 3 - 20000),
-        mockEntry("test_form2", {"test": pString("category1")}, -1000 * 60 * 60 * 24 * 3 - 30000),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, -2).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, -2).getTime()),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, -2).getTime()),
 
-        mockEntry("test_form2", {"test": pString("category1")}, -1000 * 60 * 60 * 24 * 4),
+        mockEntry("test_form2", {"test": pString("category1")}, new Date(1970, 0, -3).getTime()),
 
-        mockEntry("test_form", {"test": pNumber(69.0)}, -1000 * 60 * 60 * 24 * 5),
+        mockEntry("test_form", {"test": pNumber(69.0)}, new Date(1970, 0, -4).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -355,7 +356,7 @@ test("filter matching timestamps with both empty", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(0), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 1), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings2());
     let matching = analytics.filterMatchingTimestamps(
@@ -363,7 +364,7 @@ test("filter matching timestamps with both empty", async () => {
         flattened.get("cat_test_form2:test:category1")!,
         true,
         true,
-        new Date(0),
+        new Date(1970, 0, 1),
         SimpleTimeScopeType.DAILY,
         7
     );
@@ -372,22 +373,22 @@ test("filter matching timestamps with both empty", async () => {
         first: [0, 69, 0, 45, 0, 0, 15],
         second: [0, 0, 1, 2, 0, 0, 0],
         timestamps: [
-            -1000 * 60 * 60 * 24 * 6,
-            -1000 * 60 * 60 * 24 * 5,
-            -1000 * 60 * 60 * 24 * 4,
-            -1000 * 60 * 60 * 24 * 3,
-            -1000 * 60 * 60 * 24 * 2,
-            -1000 * 60 * 60 * 24 * 1,
-            0
+            new Date(1970, 0, -5).getTime(),
+            new Date(1970, 0, -4).getTime(),
+            new Date(1970, 0, -3).getTime(),
+            new Date(1970, 0, -2).getTime(),
+            new Date(1970, 0, -1).getTime(),
+            new Date(1970, 0, 0).getTime(),
+            new Date(1970, 0, 1).getTime(),
         ]
     });
 });
 
 test("flatten categorical values", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pString("category1")}, 0),
-        mockEntry("test_form", {"test": pString("category1")}, 0),
-        mockEntry("test_form", {"test": pString("category2")}, 1000 * 60 * 60 * 24),
+        mockEntry("test_form", {"test": pString("category1")}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pString("category1")}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pString("category2")}, new Date(1970, 0, 2).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -399,16 +400,16 @@ test("flatten categorical values", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings());
 
     expect(flattened).toEqual(new Map([
         ["cat_test_form:test:category1", new Map([
-            [0, 2],
+            [new Date(1970, 0, 1).getTime(), 2],
         ])],
         ["cat_test_form:test:category2", new Map([
-            [1000 * 60 * 60 * 24, 1]
+            [new Date(1970, 0, 2).getTime(), 1]
         ])]
     ]));
 });
@@ -419,15 +420,15 @@ test("week day dataset is_monday", async () => {
     const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 1);
+    let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(1970, 0, 1), 7, 1);
     expect(dataset).toEqual(new Map([
-        [-1000 * 60 * 60 * 24 * 6, 0],
-        [-1000 * 60 * 60 * 24 * 5, 0],
-        [-1000 * 60 * 60 * 24 * 4, 0],
-        [-1000 * 60 * 60 * 24 * 3, 1], // This should be monday
-        [-1000 * 60 * 60 * 24 * 2, 0],
-        [-1000 * 60 * 60 * 24 * 1, 0],
-        [-1000 * 60 * 60 * 24 * 0, 0], // Thursday
+        [new Date(1970, 0, -5).getTime(), 0],
+        [new Date(1970, 0, -4).getTime(), 0],
+        [new Date(1970, 0, -3).getTime(), 0],
+        [new Date(1970, 0, -2).getTime(), 1], // This should be monday
+        [new Date(1970, 0, -1).getTime(), 0],
+        [new Date(1970, 0, -0).getTime(), 0],
+        [new Date(1970, 0, 1).getTime(), 0], // Thursday
     ]));
 });
 
@@ -437,21 +438,23 @@ test("week day dataset is_tuesday", async () => {
     const tags = new DummyTagCollection([]);
     const analytics = new AnalyticsService(new DummyFormService(), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 2);
+    let dataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(1970, 0, 1), 7, 2);
     expect(dataset).toEqual(new Map([
-        [-1000 * 60 * 60 * 24 * 6, 0],
-        [-1000 * 60 * 60 * 24 * 5, 0],
-        [-1000 * 60 * 60 * 24 * 4, 0],
-        [-1000 * 60 * 60 * 24 * 3, 0],
-        [-1000 * 60 * 60 * 24 * 2, 1], // This should be tuesday
-        [-1000 * 60 * 60 * 24 * 1, 0],
-        [-1000 * 60 * 60 * 24 * 0, 0], // Thursday
+
+        [new Date(1970, 0, -5).getTime(), 0],
+        [new Date(1970, 0, -4).getTime(), 0],
+        [new Date(1970, 0, -3).getTime(), 0],
+        [new Date(1970, 0, -2).getTime(), 0], // This should be monday
+        [new Date(1970, 0, -1).getTime(), 1], // This should be tuesday
+        [new Date(1970, 0, -0).getTime(), 0],
+        [new Date(1970, 0, 1).getTime(), 0], // Thursday
+
     ]));
 });
 
 function mockAnalyticsSettings(): AnalyticsSettings[] {
     return [{
-        formId: "test_form",
+        id: "test_form",
         questionId: "test",
         useMeanValue: {"test": true},
         interpolate: false
@@ -461,13 +464,13 @@ function mockAnalyticsSettings(): AnalyticsSettings[] {
 
 function mockAnalyticsSettings2(): AnalyticsSettings[] {
     return [{
-        formId: "test_form",
+        id: "test_form",
         questionId: "test",
         useMeanValue: {"test": true},
         interpolate: false
     },
         {
-            formId: "test_form2",
+            id: "test_form2",
             questionId: "test",
             useMeanValue: {"test": true},
             interpolate: false
@@ -477,10 +480,10 @@ function mockAnalyticsSettings2(): AnalyticsSettings[] {
 
 test("filter matching timestamps with week day dataset", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(45.0)}, -1000 * 60 * 60 * 24 * 3),
-        mockEntry("test_form", {"test": pNumber(69.0)}, -1000 * 60 * 60 * 24 * 5),
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(45.0)}, new Date(1970, 0, -2).getTime()),
+        mockEntry("test_form", {"test": pNumber(69.0)}, new Date(1970, 0, -4).getTime()),
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -492,7 +495,7 @@ test("filter matching timestamps with week day dataset", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(0), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 1), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let flattened = analytics.flattenRawValues(values, mockAnalyticsSettings());
     let mondayDataset = analytics.generateSingleWeekDayDataSet(SimpleTimeScopeType.DAILY, new Date(0), 7, 1);
@@ -503,7 +506,7 @@ test("filter matching timestamps with week day dataset", async () => {
         flattened.get("is_monday")!,
         true,
         true,
-        new Date(0),
+        new Date(1970, 0, 1),
         SimpleTimeScopeType.DAILY,
         7
     );
@@ -512,13 +515,13 @@ test("filter matching timestamps with week day dataset", async () => {
         first: [0, 69, 0, 45, 0, 0, 15],
         second: [0, 0, 0, 1, 0, 0, 0],
         timestamps: [
-            -1000 * 60 * 60 * 24 * 6,
-            -1000 * 60 * 60 * 24 * 5,
-            -1000 * 60 * 60 * 24 * 4,
-            -1000 * 60 * 60 * 24 * 3,
-            -1000 * 60 * 60 * 24 * 2,
-            -1000 * 60 * 60 * 24 * 1,
-            0
+            new Date(1970, 0, -5).getTime(),
+            new Date(1970, 0, -4).getTime(),
+            new Date(1970, 0, -3).getTime(),
+            new Date(1970, 0, -2).getTime(),
+            new Date(1970, 0, -1).getTime(),
+            new Date(1970, 0, 0).getTime(),
+            new Date(1970, 0, 1).getTime(),
         ]
     });
 });

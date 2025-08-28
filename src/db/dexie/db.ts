@@ -1,4 +1,4 @@
-import Dexie, {type EntityTable, type Table} from "dexie";
+import Dexie, {type Table} from "dexie";
 import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
 import type {StoredVariable, VariableIndex} from "@perfice/model/variable/variable";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
@@ -27,34 +27,40 @@ import {DexieNotificationCollection} from "@perfice/db/dexie/notification";
 import type {StoredNotification} from "@perfice/model/notification/notification";
 import {type Migrator} from "@perfice/db/migration/migration";
 import {DexieMigrator} from "@perfice/db/dexie/migration";
+import type {EncryptionKey, OutgoingUpdate} from "@perfice/model/sync/sync";
+import {DexieEncryptionKeyCollection} from "@perfice/db/dexie/encryption";
+import {DexieUpdateQueueCollection} from "@perfice/db/dexie/sync";
+import {LazySyncServiceProvider, SyncedTable} from "@perfice/services/sync/sync";
 
 export type DexieDB = Dexie & {
-    trackables: EntityTable<Trackable, 'id'>;
-    variables: EntityTable<StoredVariable, 'id'>;
-    entries: EntityTable<JournalEntry, 'id'>;
-    indices: EntityTable<VariableIndex, 'id'>;
-    trackableCategories: EntityTable<TrackableCategory, 'id'>;
-    forms: EntityTable<Form, 'id'>;
-    formSnapshots: EntityTable<FormSnapshot, 'id'>;
-    goals: EntityTable<Goal, 'id'>;
-    tags: EntityTable<Tag, 'id'>;
-    tagEntries: EntityTable<TagEntry, 'id'>;
-    formTemplates: EntityTable<FormTemplate, 'id'>;
-    tagCategories: EntityTable<TagCategory, 'id'>;
-    analyticsSettings: EntityTable<AnalyticsSettings, 'formId'>;
-    dashboards: EntityTable<Dashboard, 'id'>;
-    dashboardWidgets: EntityTable<DashboardWidget, 'id'>;
-    reflections: EntityTable<Reflection, 'id'>;
-    savedSearches: EntityTable<JournalSearch, 'id'>;
-    notifications: EntityTable<StoredNotification, 'id'>;
+    trackables: Table<Trackable>;
+    variables: Table<StoredVariable>;
+    entries: Table<JournalEntry>;
+    indices: Table<VariableIndex>;
+    trackableCategories: Table<TrackableCategory>;
+    forms: Table<Form>;
+    formSnapshots: Table<FormSnapshot>;
+    goals: Table<Goal>;
+    tags: Table<Tag>;
+    tagEntries: Table<TagEntry>;
+    formTemplates: Table<FormTemplate>;
+    tagCategories: Table<TagCategory>;
+    analyticSettings: Table<AnalyticsSettings>;
+    dashboards: Table<Dashboard>;
+    dashboardWidgets: Table<DashboardWidget>;
+    reflections: Table<Reflection>;
+    savedSearches: Table<JournalSearch>;
+    notifications: Table<StoredNotification>;
+    encryptionKey: Table<EncryptionKey>;
+    updateQueue: Table<OutgoingUpdate>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(20).stores({
+    db.version(24).stores({
         "trackables": "id, categoryId",
         "variables": "id",
-        "entries": "id, formId, snapshotId, timestamp, [formId+timestamp], [timestamp+id]",
+        "entries": "id, formId, snapshotId, timestamp, integration, [formId+timestamp], [timestamp+id]",
         "indices": "id, variableId, [variableId+timeScope]",
         "trackableCategories": "id",
         "tagCategories": "id",
@@ -64,42 +70,51 @@ function loadDb(): DexieDB {
         "tags": "id, categoryId",
         "tagEntries": "id, tagId, timestamp, [tagId+timestamp], [timestamp+id]",
         "formTemplates": "id, formId",
-        "analyticsSettings": "formId",
+        "analyticSettings": "id",
         "dashboards": "id",
         "dashboardWidgets": "id, dashboardId",
         "reflections": "id",
         "savedSearches": "id",
-        "notifications": "id, entityId"
+        "notifications": "id, entityId",
+        "encryptionKey": "id",
+        "updateQueue": "id, entityId, entityType"
     });
 
     return db;
 }
 
-export function setupDb(): { tables: Record<string, Table>, collections: Collections, migrator: Migrator } {
+export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
+    tables: Record<string, Table>,
+    collections: Collections,
+    migrator: Migrator
+} {
     const db = loadDb();
-    const trackableCollection: TrackableCollection = new DexieTrackableCollection(db.trackables);
-    const variableCollection: VariableCollection = new DexieVariableCollection(db.variables);
-    const journalCollection = new DexieJournalCollection(db.entries);
-    const trackableCategoryCollection = new DexieTrackableCategoryCollection(db.trackableCategories);
-    const formCollection = new DexieFormCollection(db.forms);
-    const formSnapshotCollection = new DexieFormSnapshotCollection(db.formSnapshots);
+    const trackableCollection: TrackableCollection = new DexieTrackableCollection(new SyncedTable(db.trackables, "trackables", syncServiceProvider));
+    const variableCollection: VariableCollection = new DexieVariableCollection(new SyncedTable(db.variables, "variables", syncServiceProvider));
+    const journalCollection = new DexieJournalCollection(new SyncedTable(db.entries, "entries", syncServiceProvider));
+    const trackableCategoryCollection = new DexieTrackableCategoryCollection(new SyncedTable(db.trackableCategories, "trackableCategories", syncServiceProvider));
+    const formCollection = new DexieFormCollection(new SyncedTable(db.forms, "forms", syncServiceProvider));
+    const formSnapshotCollection = new DexieFormSnapshotCollection(new SyncedTable(db.formSnapshots, "formSnapshots", syncServiceProvider));
 
     const indexCollection = new DexieIndexCollection(db.indices);
-    const goalCollection = new DexieGoalCollection(db.goals);
+    const goalCollection = new DexieGoalCollection(new SyncedTable(db.goals, "goals", syncServiceProvider));
 
-    const tagCollection = new DexieTagCollection(db.tags);
-    const tagEntryCollection = new DexieTagEntryCollection(db.tagEntries);
+    const tagCollection = new DexieTagCollection(new SyncedTable(db.tags, "tags", syncServiceProvider));
+    const tagEntryCollection = new DexieTagEntryCollection(new SyncedTable(db.tagEntries, "tagEntries", syncServiceProvider));
 
-    const formTemplateCollection = new DexieFormTemplateCollection(db.formTemplates);
-    const tagCategoryCollection = new DexieTagCategoryCollection(db.tagCategories);
-    const analyticsSettingsCollection = new DexieAnalyticsSettingsCollection(db.analyticsSettings);
+    const formTemplateCollection = new DexieFormTemplateCollection(new SyncedTable(db.formTemplates, "formTemplates", syncServiceProvider));
+    const tagCategoryCollection = new DexieTagCategoryCollection(new SyncedTable(db.tagCategories, "tagCategories", syncServiceProvider));
 
-    const dashboardCollection = new DexieDashboardCollection(db.dashboards);
-    const dashboardWidgetCollection = new DexieDashboardWidgetCollection(db.dashboardWidgets);
+    const analyticsSettingsCollection = new DexieAnalyticsSettingsCollection(new SyncedTable(db.analyticSettings, "analyticSettings", syncServiceProvider));
 
-    const reflectionCollection = new DexieReflectionCollection(db.reflections);
-    const savedSearchCollection = new DexieSavedSearchCollection(db.savedSearches);
-    const notificationCollection = new DexieNotificationCollection(db.notifications);
+    const dashboardCollection = new DexieDashboardCollection(new SyncedTable(db.dashboards, "dashboards", syncServiceProvider));
+    const dashboardWidgetCollection = new DexieDashboardWidgetCollection(new SyncedTable(db.dashboardWidgets, "dashboardWidgets", syncServiceProvider));
+
+    const reflectionCollection = new DexieReflectionCollection(new SyncedTable(db.reflections, "reflections", syncServiceProvider));
+    const savedSearchCollection = new DexieSavedSearchCollection(new SyncedTable(db.savedSearches, "savedSearches", syncServiceProvider));
+    const notificationCollection = new DexieNotificationCollection(new SyncedTable(db.notifications, "notifications", syncServiceProvider));
+    const encryptionKeyCollection = new DexieEncryptionKeyCollection(db.encryptionKey);
+    const updateQueueCollection = new DexieUpdateQueueCollection(db.updateQueue);
 
     return {
         tables: db._allTables,
@@ -121,7 +136,13 @@ export function setupDb(): { tables: Record<string, Table>, collections: Collect
             dashboardWidgets: dashboardWidgetCollection,
             reflections: reflectionCollection,
             savedSearches: savedSearchCollection,
-            notifications: notificationCollection
+            notifications: notificationCollection,
+            encryptionKey: encryptionKeyCollection,
+            updateQueue: updateQueueCollection,
+
+            transaction: async (table, callback) => {
+                await db.transaction('rw', table, callback);
+            }
         }, migrator: new DexieMigrator(db)
     };
 }

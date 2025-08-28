@@ -7,6 +7,7 @@ export function mockEntry(id: string, formId: string, answers: Record<string, Pr
         formId,
         snapshotId: "",
         timestamp,
+        integration: null,
         displayValue: "",
         answers: Object.fromEntries(Object.entries(answers)
             .map(([k, v]) => [k, pDisplay(v, pString(v.value.toString()))]))

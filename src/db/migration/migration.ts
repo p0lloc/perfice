@@ -1,7 +1,7 @@
 import {ChartTitlesMigration} from "@perfice/db/migration/migrations/chartTitles";
 import {FormQuestionDefaultValuesMigration} from "@perfice/db/migration/migrations/defaultQuestionValues";
 
-export const CURRENT_DATA_VERSION: number = 2;
+export const CURRENT_DATA_VERSION: number = 3;
 export const CURRENT_VERSION_STORAGE_KEY = "data_version";
 
 const MIGRATIONS: Migration[] = [new ChartTitlesMigration(), new FormQuestionDefaultValuesMigration()];
@@ -45,6 +45,14 @@ export class MigrationService {
         localStorage.setItem(CURRENT_VERSION_STORAGE_KEY, value.toString());
     }
 
+    getCurrentDataVersion(): number {
+        return CURRENT_DATA_VERSION;
+    }
+
+    isOutdated(version: number): boolean {
+        return version < CURRENT_DATA_VERSION;
+    }
+
     async migrate() {
         let userVersion = this.getUserVersion();
         if (userVersion >= CURRENT_DATA_VERSION) return;
@@ -61,6 +69,17 @@ export class MigrationService {
 
         this.saveUserVersion(CURRENT_DATA_VERSION);
         console.log("Migration complete");
+    }
+
+    async migrateSingleEntity(entity: any, entityType: string, version: number) {
+        let relevantMigrations = MIGRATIONS
+            .filter(m => m.getVersion() > version
+                && m.getEntityType() == entityType
+                && m.getVersion() <= CURRENT_DATA_VERSION);
+
+        for (let migration of relevantMigrations) {
+            await this.migrator.applyMigration(migration);
+        }
     }
 
 }

@@ -56,8 +56,8 @@
     }
 
     export function close() {
-        visible = false;
         popNavigator();
+        visible = false;
         onClose?.();
     }
 

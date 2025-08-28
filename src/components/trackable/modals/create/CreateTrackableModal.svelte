@@ -33,8 +33,9 @@
     }
 
     function onSave() {
-        let {name, icon, type} = singleValueModal.getData();
-        onSingleValue(categoryId, name, icon, type);
+        let result = singleValueModal.getData();
+        if (result == null) return;
+        onSingleValue(categoryId, result.name, result.icon, result.type);
         modal.close();
     }
 

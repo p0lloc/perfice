@@ -36,12 +36,21 @@ async function fetchAnalytics(analyticsService: AnalyticsService, settingsServic
     let allSettings = await settingsService.getAllSettings();
     let [forms, entries] = await analyticsService.fetchFormsAndEntries(date, range);
 
+    // Create settings for all forms that don't have them
+    for (let form of forms) {
+        let settings = allSettings.find(s => s.id == form.id);
+        if (settings == null) {
+            let newSettings = await settingsService.createAnalyticsSettingsFromForm(form.id, form.questions);
+            allSettings.push(newSettings);
+        }
+    }
+
     let ignores = ignoreService.groupIgnoresByTimeScope();
 
     let [dailyValues, interpolated] = await analyticsService.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY, allSettings);
     analyticsService.interpolateValues(dailyValues, interpolated, SimpleTimeScopeType.DAILY, date, range);
 
-    let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7 * 14);
+    let [tagValues, tags] = await analyticsService.fetchTagValues(SimpleTimeScopeType.DAILY, date, range);
     let dailyBasicAnalytics = await analyticsService.calculateAllBasicAnalytics(dailyValues, allSettings);
     let dailyCorrelations = await analyticsService.runBasicCorrelations(dailyValues, tagValues, allSettings, date, range, minimumSampleSize, true);
 

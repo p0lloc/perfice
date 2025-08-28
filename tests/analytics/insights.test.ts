@@ -13,9 +13,9 @@ import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time
 
 test("insights with an outlier", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form", {"test": pNumber(3.0)}, 1000 * 60 * 60 * 24 * 4)
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form", {"test": pNumber(3.0)}, new Date(1970, 0, 5).getTime())
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -27,17 +27,17 @@ test("insights with an outlier", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     const allSettings = [{
-        formId: "test_form",
+        id: "test_form",
         useMeanValue: {
             "test": true
         }
     }];
     let allBasic = await analytics.calculateAllBasicAnalytics(values, allSettings);
 
-    let insights = await analytics.findHistoricalQuantitativeInsights(values, allBasic, new Date(1000 * 60 * 60 * 24 * 4),
+    let insights = await analytics.findHistoricalQuantitativeInsights(values, allBasic, new Date(1970, 0, 5),
         SimpleTimeScopeType.DAILY, allSettings);
 
     expect(insights).toEqual([
@@ -53,11 +53,12 @@ test("insights with an outlier", async () => {
 
 })
 
+
 test("insights with no outlier", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2),
-        mockEntry("test_form", {"test": pNumber(14.0)}, 1000 * 60 * 60 * 24 * 4)
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime()),
+        mockEntry("test_form", {"test": pNumber(14.0)}, new Date(1970, 0, 5).getTime())
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -69,17 +70,17 @@ test("insights with no outlier", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 8), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     const allSettings = [{
-        formId: "test_form",
+        id: "test_form",
         useMeanValue: {
             "test": true
         }
     }];
     let allBasic = await analytics.calculateAllBasicAnalytics(values, allSettings);
 
-    let insights = await analytics.findHistoricalQuantitativeInsights(values, allBasic, new Date(1000 * 60 * 60 * 24 * 4),
+    let insights = await analytics.findHistoricalQuantitativeInsights(values, allBasic, new Date(1970, 0, 5),
         SimpleTimeScopeType.DAILY, allSettings);
 
     expect(insights).toEqual([]);

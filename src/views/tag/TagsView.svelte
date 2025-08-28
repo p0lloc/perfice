@@ -75,7 +75,7 @@
 
     function filterAvailableCategories(categories: CategoryList<TagCategory, Tag>[]): ReorderableCategoryList[] {
         return categories
-            .filter(category => category.category != null || category.items.length > 0)
+            .filter(category => category.category != null || category.items.length > 0 || categories.length == 1)
             .map(category => {
                 return {
                     ...category,

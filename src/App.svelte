@@ -25,8 +25,13 @@
     import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
     import SettingsView from "@perfice/views/settings/SettingsView.svelte";
     import {BASE_URL} from "@perfice/app";
+    import GlobalSyncModals from "@perfice/components/sync/GlobalSyncModals.svelte";
+    import GlobalIntegrationModals from "@perfice/components/integration/modals/GlobalIntegrationModals.svelte";
+    import FeedbackView from "@perfice/views/feedback/FeedbackView.svelte";
+    import FeedbackBanner from "@perfice/components/FeedbackBanner.svelte";
+    import EditTrackableView from "@perfice/views/trackable/EditTrackableView.svelte";
 
-    type AppRoute = Route & { hideBottomBar?: boolean };
+    type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
 
     const routes: AppRoute[] = [
         {
@@ -62,6 +67,10 @@
         },
         {path: "/analytics", component: AnalyticsView},
         {path: "/goals", component: GoalView},
+        {
+            path: "/trackables/(?<trackableId>.*)", component: EditTrackableView,
+            hideBottomBar: true
+        },
         {path: "/trackables", component: TrackableView},
         {
             path: "/reflections/(?<reflectionId>.*)",
@@ -69,15 +78,14 @@
             hideBottomBar: true,
         },
         {path: "/reflections", component: ReflectionListView},
-        {path: ONBOARDING_ROUTE, component: OnboardingView},
+        {path: ONBOARDING_ROUTE, component: OnboardingView, customLayout: true},
         {path: "/settings", component: SettingsView},
+        {path: "/feedback", component: FeedbackView},
         {path: "/", component: DashboardView},
     ];
 
-    const CUSTOM_LAYOUT_ROUTES = [ONBOARDING_ROUTE];
     let customLayout = $state<boolean>(false);
     let hideBottomBar = $state<boolean>(false);
-
 
     function onBodyClick(e: MouseEvent) {
         closeContextMenus(e.target as HTMLElement);
@@ -89,13 +97,17 @@
         });
     }
 
+    function isOnboarding() {
+        return routingNavigatorState.length > 0 && routingNavigatorState[routingNavigatorState.length - 1] == ONBOARDING_ROUTE;
+    }
+
     function onRouterRoute(r: AppRoute) {
         let path = r.path.toString();
         if (r.params != undefined && !Array.isArray(r.params)) {
             path = fillRegexGroups(path, r.params);
         }
 
-        customLayout = CUSTOM_LAYOUT_ROUTES.includes(path);
+        customLayout = r.customLayout ?? false;
         hideBottomBar = r.hideBottomBar ?? false;
 
         clearClosables(); // Any overlays like modals don't matter if we move to a new route
@@ -107,6 +119,8 @@
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
     <div class="flex main-container">
+        <GlobalSyncModals/>
+        <GlobalIntegrationModals/>
         {#if !customLayout}
             <GlobalReflectionModal/>
             <NavigationSidebar {hideBottomBar}/>
@@ -114,6 +128,9 @@
             <QuickLogField/>
         {/if}
         <div class="flex-1">
+            {#if !isOnboarding()}
+                <FeedbackBanner/>
+            {/if}
             <Router basePath={BASE_URL} post={onRouterRoute} {routes}/>
         </div>
     </div>

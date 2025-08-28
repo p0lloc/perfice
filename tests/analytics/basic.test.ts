@@ -14,8 +14,8 @@ import {mockEntry, mockForm} from "./raw.test";
 
 test("basic quantitative values", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pNumber(13.0)}, 0),
-        mockEntry("test_form", {"test": pNumber(17.0)}, 1000 * 60 * 60 * 24 * 2)
+        mockEntry("test_form", {"test": pNumber(13.0)}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pNumber(17.0)}, new Date(1970, 0, 3).getTime())
     ]);
     const tagEntries = new DummyTagEntryCollection([]);
     const tags = new DummyTagCollection([]);
@@ -27,7 +27,7 @@ test("basic quantitative values", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let basic = await analytics.calculateBasicAnalytics("test", values.get("test_form")!.get("test")!, {
         formId: "test_form",
@@ -41,11 +41,11 @@ test("basic quantitative values", async () => {
         value: {
             average: 15.0,
             max: {
-                timestamp: 1000 * 60 * 60 * 24 * 2,
+                timestamp: new Date(1970, 0, 3).getTime(),
                 value: 17
             },
             min: {
-                timestamp: 0,
+                timestamp: new Date(1970, 0, 1).getTime(),
                 value: 13
             }
         }
@@ -55,9 +55,9 @@ test("basic quantitative values", async () => {
 
 test("basic categorical values", async () => {
     const journal = new DummyJournalCollection([
-        mockEntry("test_form", {"test": pString("category1")}, 0),
-        mockEntry("test_form", {"test": pString("category1")}, 0),
-        mockEntry("test_form", {"test": pString("category2")}, 1000 * 60 * 60 * 24),
+        mockEntry("test_form", {"test": pString("category1")}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pString("category1")}, new Date(1970, 0, 1).getTime()),
+        mockEntry("test_form", {"test": pString("category2")}, new Date(1970, 0, 2).getTime()),
     ]);
 
     const tagEntries = new DummyTagEntryCollection([]);
@@ -70,7 +70,7 @@ test("basic categorical values", async () => {
         ],
     ), journal, tags, tagEntries, WeekStart.MONDAY);
 
-    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1000 * 60 * 60 * 24 * 7), 7);
+    let [forms, entries] = await analytics.fetchFormsAndEntries(new Date(1970, 0, 7), 7);
     let [values] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
     let categorical = await analytics.calculateBasicAnalytics("test", values.get("test_form")!.get("test")!, {
         formId: "test_form",

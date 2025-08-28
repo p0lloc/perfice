@@ -1,25 +1,25 @@
 import type {Reflection} from "@perfice/model/reflection/reflection";
-import type {EntityTable} from "dexie";
 import type {ReflectionCollection} from "@perfice/db/collections";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieReflectionCollection implements ReflectionCollection {
 
-    private table: EntityTable<Reflection, "id">;
+    private table: SyncedTable<Reflection>;
 
-    constructor(table: EntityTable<Reflection, "id">) {
+    constructor(table: SyncedTable<Reflection>) {
         this.table = table;
     }
 
     async getReflections(): Promise<Reflection[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getReflectionById(id: string): Promise<Reflection | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async createReflection(reflection: Reflection): Promise<void> {
-        await this.table.add(reflection);
+        await this.table.create(reflection);
     }
 
     async updateReflection(reflection: Reflection): Promise<void> {
@@ -27,7 +27,7 @@ export class DexieReflectionCollection implements ReflectionCollection {
     }
 
     async deleteReflectionById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
 }

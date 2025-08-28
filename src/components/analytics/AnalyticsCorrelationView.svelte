@@ -133,6 +133,7 @@
 {/await}
 
 <style>
+    @reference "@perfice/app.css";
     .setting {
         @apply flex items-center gap-2 px-2 py-1 border rounded bg-white;
     }

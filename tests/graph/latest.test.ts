@@ -3,10 +3,9 @@ import {DummyIndexCollection, DummyJournalCollection, DummyTagEntryCollection} f
 import {EntryAction, VariableGraph} from "../../src/services/variable/graph";
 import {SimpleTimeScopeType, tSimple, WeekStart} from "../../src/model/variable/time/time";
 import {Variable, VariableTypeName} from "../../src/model/variable/variable";
-import {pJournalEntry, pList, pNull, pNumber} from "../../src/model/primitive/primitive";
+import {pJournalEntry, pNull, pNumber} from "../../src/model/primitive/primitive";
 import {LatestVariableType} from "../../src/services/variable/types/latest";
 import {mockEntry} from "../common";
-import {ListVariableType} from "../../src/services/variable/types/list";
 import {JournalEntry} from "../../src/model/journal/journal";
 
 test("empty latest variable", async () => {
@@ -34,7 +33,7 @@ test("simple single latest variable", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}),
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, new Date(1970, 0, 1).getTime()),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -49,10 +48,10 @@ test("simple single latest variable", async () => {
     }
     graph.onVariableCreated(variable);
     let val = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val).toEqual(
-        pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)})
+        pJournalEntry("entry_one", new Date(1970, 0, 1).getTime(), {"ok": pNumber(10.0)})
     );
 })
 
@@ -60,8 +59,8 @@ test("simple ordered latest variable", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, 100),
-            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, 0),
+            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, new Date(1970, 0, 1).getTime() + 100),
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, new Date(1970, 0, 1).getTime()),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -76,10 +75,10 @@ test("simple ordered latest variable", async () => {
     }
     graph.onVariableCreated(variable);
     let val = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val).toEqual(
-        pJournalEntry("newer_entry", 100, {"ok": pNumber(13.0)})
+        pJournalEntry("newer_entry", new Date(1970, 0, 1).getTime() + 100, {"ok": pNumber(13.0)})
     );
 })
 
@@ -88,8 +87,8 @@ test("simple ordered latest variable, newer entry", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, 100),
-            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, 0),
+            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, new Date(1970, 0, 1).getTime() + 100),
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, new Date(1970, 0, 1).getTime()),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -104,22 +103,22 @@ test("simple ordered latest variable, newer entry", async () => {
     }
     graph.onVariableCreated(variable);
     let val = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val).toEqual(
-        pJournalEntry("newer_entry", 100, {"ok": pNumber(13.0)})
+        pJournalEntry("newer_entry", new Date(1970, 0, 1).getTime() + 100, {"ok": pNumber(13.0)})
     );
 
 
-    let entryTwo: JournalEntry = mockEntry("newest_entry", "ok", {"ok": pNumber(13.0)}, 200);
+    let entryTwo: JournalEntry = mockEntry("newest_entry", "ok", {"ok": pNumber(13.0)}, new Date(1970, 0, 1).getTime() + 200);
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
     let val2 = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val2).toEqual(
-        pJournalEntry("newest_entry", 200, {"ok": pNumber(13.0)})
+        pJournalEntry("newest_entry", new Date(1970, 0, 1).getTime() + 200, {"ok": pNumber(13.0)})
     );
 })
 
@@ -127,8 +126,8 @@ test("simple ordered latest variable, add not newer entry", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, 100),
-            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, 0),
+            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, new Date(1970, 0, 1).getTime() + 100),
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, new Date(1970, 0, 1).getTime()),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -143,21 +142,21 @@ test("simple ordered latest variable, add not newer entry", async () => {
     }
     graph.onVariableCreated(variable);
     let val = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val).toEqual(
-        pJournalEntry("newer_entry", 100, {"ok": pNumber(13.0)})
+        pJournalEntry("newer_entry", new Date(1970, 0, 1).getTime() + 100, {"ok": pNumber(13.0)})
     );
 
-    let entryTwo: JournalEntry = mockEntry("new_entry", "ok", {"ok": pNumber(13.0)}, 50);
+    let entryTwo: JournalEntry = mockEntry("new_entry", "ok", {"ok": pNumber(13.0)}, new Date(1970, 0, 1).getTime() + 50);
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
     let val2 = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val2).toEqual(
-        pJournalEntry("newer_entry", 100, {"ok": pNumber(13.0)})
+        pJournalEntry("newer_entry", new Date(1970, 0, 1).getTime() + 100, {"ok": pNumber(13.0)})
     );
 })
 
@@ -166,8 +165,8 @@ test("simple ordered latest variable, delete entry", async () => {
     const index = new DummyIndexCollection();
     const journal = new DummyJournalCollection(
         [
-            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, 100),
-            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, 0),
+            mockEntry("newer_entry", "ok", {"ok": pNumber(13.0)}, new Date(1970, 0, 1).getTime() + 100),
+            mockEntry("entry_one", "ok", {"ok": pNumber(10.0)}, new Date(1970, 0, 1).getTime()),
         ]
     );
     const tagEntries = new DummyTagEntryCollection();
@@ -182,21 +181,21 @@ test("simple ordered latest variable, delete entry", async () => {
     }
     graph.onVariableCreated(variable);
     let val = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val).toEqual(
-        pJournalEntry("newer_entry", 100, {"ok": pNumber(13.0)})
+        pJournalEntry("newer_entry", new Date(1970, 0, 1).getTime() + 100, {"ok": pNumber(13.0)})
     );
 
     let entry = await journal.getEntryById("newer_entry")
-    if(entry == null) throw new Error("base entry not found");
+    if (entry == null) throw new Error("base entry not found");
     await journal.deleteEntryById(entry.id);
-    await graph.onJournalEntryAction(entry, EntryAction.DELETED);
+    await graph.onJournalEntryAction(entry, entry, EntryAction.DELETED);
 
     let val2 = await graph.evaluateVariable(variable,
-        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
+        tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, new Date(1970, 0, 1).getTime()), false, []);
 
     expect(val2).toEqual(
-        pJournalEntry("entry_one", 0, {"ok": pNumber(10.0)})
+        pJournalEntry("entry_one", new Date(1970, 0, 1).getTime(), {"ok": pNumber(10.0)})
     );
 })

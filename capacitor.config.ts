@@ -4,6 +4,9 @@ const config: CapacitorConfig = {
     appId: 'io.perfice.app',
     appName: 'Perfice',
     webDir: 'dist',
+    android: {
+        adjustMarginsForEdgeToEdge: 'force',
+    },
     plugins: {
         LocalNotifications: {
             smallIcon: "res://drawable/small_icon",

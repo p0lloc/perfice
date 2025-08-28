@@ -21,6 +21,7 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 import {parseTrackableSuggestion, type TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 import {questionDataTypeRegistry} from "@perfice/model/form/data";
+import type {GoalService} from "@perfice/services/goal/goal";
 
 export interface TrackableEntityProvider {
     getTrackables(): Promise<Trackable[]>;
@@ -30,15 +31,17 @@ export class TrackableService implements TrackableEntityProvider {
     private collection: TrackableCollection;
     private variableService: VariableService;
     private formService: FormService;
+    private goalService: GoalService;
 
     private observers: EntityObservers<Trackable>;
     private analyticsSettingsService: AnalyticsSettingsService;
 
     constructor(collection: TrackableCollection, variableService: VariableService,
-                formService: FormService, analyticsSettingsService: AnalyticsSettingsService) {
+                formService: FormService, analyticsSettingsService: AnalyticsSettingsService, goalService: GoalService) {
         this.collection = collection;
         this.variableService = variableService;
         this.formService = formService;
+        this.goalService = goalService;
         this.observers = new EntityObservers();
         this.analyticsSettingsService = analyticsSettingsService;
     }
@@ -138,6 +141,7 @@ export class TrackableService implements TrackableEntityProvider {
             order: trackableCount, // Place the trackable at the end of the list
             formId: form.id,
             categoryId: categoryId,
+            goalId: null,
             ...cardSettings,
             dependencies
         };
@@ -204,6 +208,11 @@ export class TrackableService implements TrackableEntityProvider {
             await this.variableService.deleteVariableById(variableId);
         }
 
+        if (trackable.goalId != null) {
+            // TODO: move to observer?
+            await this.goalService.deleteGoalById(trackable.goalId);
+        }
+
         // Delete form associated with trackable
         await this.formService.deleteFormById(trackable.formId);
         await this.collection.deleteTrackableById(trackable.id);
@@ -229,64 +238,6 @@ export class TrackableService implements TrackableEntityProvider {
         return fields;
     }
 
-    /*
-    async updateTrackableChartSettings(trackable: Trackable, aggregateType: AggregateType, field: string, color: string) {
-        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
-
-        listVariable.type = {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, {
-                [field]: false
-            }, listVariable.type.value.getFilters())
-        }
-
-        let chartVariable = this.variableService.getVariableById(trackable.dependencies["aggregate"]);
-        if (chartVariable == null) return;
-
-        chartVariable.type = {
-            type: VariableTypeName.AGGREGATE,
-            value: new AggregateVariableType(aggregateType, listVariable.id, field)
-        }
-
-        trackable.cardSettings = {
-            color
-        }
-
-        // TODO: could we update both variables in conjunction to avoid spamming index listeners?
-        await this.variableService.updateVariable(listVariable);
-        await this.variableService.updateVariable(chartVariable);
-    }
-    async updateTrackableValueSettings(trackable: Trackable, cardSettings: EditTrackableValueSettings) {
-        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
-
-        let fields = this.extractFieldsFromRepresentation(cardSettings.representation);
-        listVariable.type = {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, fields, listVariable.type.value.getFilters())
-        }
-
-        await this.variableService.updateVariable(listVariable);
-        trackable.cardSettings = cardSettings;
-    }
-
-    async updateTrackableTallySettings(trackable: Trackable, cardSettings: EditTrackableTallySettings) {
-        let listVariable = this.variableService.getVariableById(trackable.dependencies["value"]);
-        if (listVariable == null || listVariable.type.type != VariableTypeName.LIST) return;
-
-        // Update list variable to fetch answer for the specified question id
-        listVariable.type = {
-            type: VariableTypeName.LIST,
-            value: new ListVariableType(trackable.formId, {
-                [cardSettings.questionId]: false
-            }, [])
-        }
-
-        await this.variableService.updateVariable(listVariable);
-        trackable.cardSettings = cardSettings;
-    }*/
-
     async reorderTrackables(category: TrackableCategory | null, trackables: Trackable[]) {
         for (let i = 0; i < trackables.length; i++) {
             trackables[i].order = i;
@@ -297,7 +248,6 @@ export class TrackableService implements TrackableEntityProvider {
 
         await this.collection.updateTrackables(trackables);
     }
-
 
     private createListVariableTypeDef(formId: string, card: TrackableCardSettings): VariableTypeDef {
         switch (card.cardType) {
@@ -326,6 +276,12 @@ export class TrackableService implements TrackableEntityProvider {
                     type: VariableTypeName.LIST,
                     value: new ListVariableType(formId, fields, [])
                 }
+            }
+            case TrackableCardType.HABIT: {
+                return {
+                    type: VariableTypeName.LIST,
+                    value: new ListVariableType(formId, {}, [])
+                };
             }
         }
     }
@@ -381,7 +337,6 @@ export class TrackableService implements TrackableEntityProvider {
     async onTrackableCategoryDeleted(category: TrackableCategory) {
         let trackables = await this.collection.getTrackablesByCategoryId(category.id);
         for (let trackable of trackables) {
-            console.log("Deleting trackable", trackable);
             await this.deleteTrackable(trackable);
         }
     }

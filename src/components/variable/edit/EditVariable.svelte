@@ -47,7 +47,6 @@
     });
 
     function onE(v: EditConstantOrVariableState) {
-        console.log(v)
         onEdit(v);
     }
 

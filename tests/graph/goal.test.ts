@@ -235,7 +235,7 @@ test("goal with dynamic target and new entry", async () => {
     let entryTwo = mockEntry("entry_two", "income", {"ok": pNumber(10.0)});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
     let goal_result2 = await graph.evaluateVariable(graph.getVariableById("goal_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);
 
@@ -303,7 +303,7 @@ test("simple goal with new entry", async () => {
     let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(7.0)});
 
     await journal.createEntry(entryTwo);
-    await graph.onJournalEntryAction(entryTwo, EntryAction.CREATED);
+    await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
 
     let goal_result2 = await graph.evaluateVariable(graph.getVariableById("goal_variable")!,
         tSimple(SimpleTimeScopeType.DAILY, WeekStart.MONDAY, 0), false, []);

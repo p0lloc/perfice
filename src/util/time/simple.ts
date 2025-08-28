@@ -1,7 +1,7 @@
 import {SimpleTimeScope, SimpleTimeScopeType, WeekStart} from "@perfice/model/variable/time/time";
 
 export function dateToMidnight(now: Date) {
-    return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
 export function timestampToMidnight(timestamp: number): number {
@@ -9,7 +9,7 @@ export function timestampToMidnight(timestamp: number): number {
 }
 
 export function dateToLastSecondOfDay(now: Date) {
-    return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 }
 
 export function dateWithCurrentTime(date: Date) {
@@ -74,30 +74,30 @@ export function normalizeWeekDayToWeekStart(
 }
 
 export function cloneDateUTC(date: Date): Date {
-    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(),
-        date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(),
+        date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
 }
 
 export function dateToWeekStart(date: Date, weekStart: WeekStart): Date {
     let clone = cloneDateUTC(date);
-    clone.setUTCDate(
+    clone.setDate(
         date.getDate() - normalizeWeekDayToWeekStart(date.getDay(), weekStart),
     );
-    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() - normalizeWeekDayToWeekStart(date.getDay(), weekStart),
-        date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() - normalizeWeekDayToWeekStart(date.getDay(), weekStart),
+        date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
 }
 
 export function dateToMonthEnd(date: Date): Date {
-    return new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0));
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 
 export function dateToYearEnd(date: Date): Date {
-    return new Date(Date.UTC(date.getFullYear(), 11, 31));
+    return new Date(date.getFullYear(), 11, 31);
 }
 
 export function dateToWeekEnd(date: Date, weekStart: WeekStart): Date {
     let clone = cloneDateUTC(date);
-    clone.setUTCDate(
+    clone.setDate(
         date.getDate() + (6 - normalizeWeekDayToWeekStart(date.getDay(), weekStart)),
     );
     return clone;

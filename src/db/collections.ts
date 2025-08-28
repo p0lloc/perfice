@@ -10,6 +10,8 @@ import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboar
 import type {Reflection} from "@perfice/model/reflection/reflection";
 import type {JournalSearch} from "@perfice/model/journal/search/search";
 import type {StoredNotification} from "@perfice/model/notification/notification";
+import type {OutgoingUpdate} from "@perfice/model/sync/sync";
+import type {Table} from "dexie";
 
 export interface Collections {
     entries: JournalCollection;
@@ -30,6 +32,10 @@ export interface Collections {
     reflections: ReflectionCollection;
     savedSearches: SavedSearchCollection;
     notifications: NotificationCollection;
+    encryptionKey: EncryptionKeyCollection;
+    updateQueue: UpdateQueueCollection;
+
+    transaction(table: Table<any>, callback: () => Promise<void>): Promise<void>;
 }
 
 export interface TrackableCollection {
@@ -198,7 +204,9 @@ export interface JournalCollection {
 
     getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]>;
 
-    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]>;
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined>;
 }
 
 export type IndexUpdateListener = (index: VariableIndex) => Promise<void>;
@@ -245,7 +253,7 @@ export interface TagEntryCollection {
 
     getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]>;
 
-    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<TagEntry[]>;
 }
 
 export interface IndexCollection {
@@ -324,4 +332,30 @@ export interface NotificationCollection {
     deleteNotificationById(id: string): Promise<void>;
 
     deleteNotificationsByEntityId(entityId: string): Promise<void>;
+}
+
+export interface EncryptionKeyCollection {
+    getKey(): Promise<CryptoKey | null>;
+
+    put(key: CryptoKey): Promise<void>;
+}
+
+export interface UpdateQueueCollection {
+    getAll(): Promise<OutgoingUpdate[]>;
+
+    create(update: OutgoingUpdate): Promise<void>;
+
+    update(update: OutgoingUpdate): Promise<void>;
+
+    getByEntityId(entityId: string): Promise<OutgoingUpdate | undefined>;
+
+    deleteByEntityType(entityType: string): Promise<void>;
+
+    deleteByIds(ids: string[]): Promise<void>;
+
+    deleteById(id: string): any;
+
+    bulkPut(updates: OutgoingUpdate[]): Promise<void>;
+
+    clear(): Promise<void>;
 }

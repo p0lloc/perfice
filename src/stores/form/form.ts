@@ -1,7 +1,7 @@
 import {AsyncStore} from "@perfice/stores/store";
 import type {FormService} from "@perfice/services/form/form";
 import type {Form, FormQuestion, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
-import { EntityObserverType } from "@perfice/services/observer";
+import {EntityObserverType} from "@perfice/services/observer";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
 import type {FormTemplateService} from "@perfice/services/form/template";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";

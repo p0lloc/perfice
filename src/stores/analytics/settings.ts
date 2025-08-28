@@ -26,6 +26,6 @@ export class AnalyticsSettingsStore extends AsyncStore<AnalyticsSettings[]> {
 
     private onAnalyticsSettingsUpdated(settings: AnalyticsSettings) {
         this.updateResolved(v =>
-            v.map(prev => prev.formId == settings.formId ? settings : prev));
+            v.map(prev => prev.id == settings.id ? settings : prev));
     }
 }

@@ -1,17 +1,16 @@
 import type {IndexCollection, IndexUpdateListener} from "@perfice/db/collections";
-import type {Collection, EntityTable} from "dexie";
+import type {Collection, Table} from "dexie";
 import type {VariableIndex} from "@perfice/model/variable/variable";
 
 export class DexieIndexCollection implements IndexCollection {
 
-    private table: EntityTable<VariableIndex, "id">;
+    private table: Table<VariableIndex>;
     private updateListeners: IndexUpdateListener[] = [];
     private deleteListeners: IndexUpdateListener[] = [];
 
-    constructor(table: EntityTable<VariableIndex, "id">) {
+    constructor(table: Table<VariableIndex>) {
         this.table = table;
     }
-
 
     async getIndexByVariableAndTimeScope(variableId: string, timeScope: string): Promise<VariableIndex | undefined> {
         return this.table.where("[variableId+timeScope]").equals([variableId, timeScope]).first();
@@ -31,6 +30,11 @@ export class DexieIndexCollection implements IndexCollection {
 
     async updateIndices(indices: VariableIndex[]): Promise<void> {
         await this.table.bulkPut(indices);
+        for (let index of indices) {
+            for (const callback of this.updateListeners) {
+                await callback(index);
+            }
+        }
     }
 
     async getIndicesByVariableId(variableId: string): Promise<VariableIndex[]> {
@@ -55,9 +59,10 @@ export class DexieIndexCollection implements IndexCollection {
         await this.performBulkDeleteQuery(query);
     }
 
-    private async performBulkDeleteQuery(query: Collection): Promise<void> {
+    private async performBulkDeleteQuery(query: Collection<VariableIndex>): Promise<void> {
         let indices = await query.toArray();
-        await query.delete();
+
+        await this.table.bulkDelete(indices.map(e => e.id));
         await this.notifyDeletion(indices);
     }
 

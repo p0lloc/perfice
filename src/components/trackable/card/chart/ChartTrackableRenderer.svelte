@@ -4,16 +4,40 @@
     import {getChartColors} from "@perfice/util/color";
     import SingleChart from "@perfice/components/chart/SingleChart.svelte";
 
-    let {value, cardSettings}: { value: PrimitiveValue, cardSettings: TrackableChartSettings, date: Date } = $props();
+    let {value, cardSettings, preview}: {
+        value: PrimitiveValue,
+        cardSettings: TrackableChartSettings,
+        date: Date,
+        preview: boolean
+    } = $props();
 
-    let dataPoints = $derived.by(() => {
-        if (value.type == PrimitiveValueType.LIST) {
-            return value.value
-                .map(v => v?.value as number ?? 0)
-                .toReversed();
+    const PLACEHOLDER_DATA = [130.0, 73.0, 69.0, 110.0, 90.0, 130.0, 73.0, 69.0, 110.0, 90.0];
+
+    let [dataPoints, empty] = $derived.by(() => {
+        if (preview) {
+            return [PLACEHOLDER_DATA, false];
         }
 
-        return [];
+        let empty = true;
+        let values = [];
+        if (value.type == PrimitiveValueType.LIST) {
+            for (let i = value.value.length - 1; i >= 0; i--) {
+                let v = value.value[i].value as number ?? 0;
+                if (v != 0) {
+                    empty = false;
+                }
+
+                values.push(v);
+            }
+
+            if (empty) {
+                return [PLACEHOLDER_DATA, true];
+            }
+
+            return [values, empty];
+        }
+
+        return [[], empty];
     });
 
 
@@ -24,5 +48,6 @@
 <div class="w-full h-full rounded-md">
     <SingleChart type="line" fillColor={fillColor} borderColor={borderColor} hideGrid={true} hideLabels={true}
                  dataPoints={dataPoints}
+                 blur={empty}
                  labels={dataPoints.map((_, i) => i.toString())}/>
 </div>

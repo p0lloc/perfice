@@ -188,6 +188,7 @@ export class VariableEditProvider implements VariableProvider {
 
     createVariable(variable: Variable) {
         this.addChange({id: variable.id, type: VariableChangeType.CREATE, data: variable});
+        this.variables.push(variable);
     }
 
     createVariableFromType(variableType: VariableTypeName): Variable {
@@ -304,6 +305,19 @@ export function extractFormQuestionFromAggregate(forms: Form[], graph: VariableP
 
     let question = form.questions.find(q => q.id == aggregate.getField());
     if (question == null) return null;
+
+    if (aggregate.getAggregateType() == AggregateType.COUNT) {
+        // TODO: This is a hack to not show minutes/hours text for COUNT variables
+        // We need a holistic approach that takes into account the aggregate type
+        return {
+            ...question,
+            dataType: FormQuestionDataType.NUMBER,
+            dataSettings: {
+                min: 0,
+                max: 0
+            }
+        }
+    }
 
     return question;
 }

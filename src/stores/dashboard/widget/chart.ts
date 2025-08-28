@@ -15,6 +15,7 @@ export interface ChartWidgetResult {
     dataPoints: number[];
     labels: string[];
     name: string;
+    empty: boolean;
     fillColor: string;
     borderColor: string;
     labelFormatter: (v: number) => string;
@@ -49,13 +50,20 @@ export function ChartWidget(dependencies: Record<string, string>, settings: Dash
 
             let dataPoints: number[] = [];
             let labels: string[] = [];
+            let empty = true;
+
             if (Array.isArray(resolved)) {
                 for (let i = resolved.length - 1; i >= 0; i--) {
                     let primitive = resolved[i];
                     if (primitive.type != PrimitiveValueType.NUMBER) continue;
+
+                    if (primitive.value != 0) {
+                        empty = false;
+                    }
+
                     dataPoints.push(primitive.value);
 
-                    let offseted = offsetDateByTimeScope(date, settings.timeScope, -i)
+                    let offseted = offsetDateByTimeScope(date, settings.timeScope, -i);
                     labels.push(formatSimpleTimestamp(offseted.getTime(), settings.timeScope, true));
                 }
             } else {
@@ -66,6 +74,15 @@ export function ChartWidget(dependencies: Record<string, string>, settings: Dash
                     labels.push(label);
                     dataPoints.push(pointValue.value);
 
+                    if (pointValue.value != 0) {
+                        empty = false;
+                    }
+                }
+            }
+
+            if (empty) {
+                for (let i = 0; i < dataPoints.length; i++) {
+                    dataPoints[i] = Math.random() * 30;
                 }
             }
 
@@ -76,6 +93,7 @@ export function ChartWidget(dependencies: Record<string, string>, settings: Dash
                 dataPoints,
                 name: form.name,
                 labels: labels,
+                empty,
                 fillColor,
                 borderColor,
                 labelFormatter: (v: number) => v != null ? formatValueAsDataType(v, question.dataType) : v

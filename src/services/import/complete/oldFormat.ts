@@ -228,6 +228,7 @@ export class OldFormatImporter {
         let newEntry: JournalEntry = {
             id: crypto.randomUUID(),
             timestamp: entry.timestamp,
+            integration: null,
             formId: formData.formId,
             snapshotId: formData.snapshotId,
             displayValue,

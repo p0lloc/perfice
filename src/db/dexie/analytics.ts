@@ -1,17 +1,18 @@
 import type {AnalyticsSettingsCollection} from "@perfice/db/collections";
-import type {EntityTable} from "dexie";
 import type {AnalyticsSettings} from "@perfice/model/analytics/analytics";
+
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollection {
 
-    private table: EntityTable<AnalyticsSettings, "formId">;
+    private table: SyncedTable<AnalyticsSettings>;
 
-    constructor(table: EntityTable<AnalyticsSettings, "formId">) {
+    constructor(table: SyncedTable<AnalyticsSettings>) {
         this.table = table;
     }
 
     async insertSettings(settings: AnalyticsSettings): Promise<void> {
-        await this.table.add(settings);
+        await this.table.create(settings);
     }
 
     async updateSettings(settings: AnalyticsSettings): Promise<void> {
@@ -19,15 +20,15 @@ export class DexieAnalyticsSettingsCollection implements AnalyticsSettingsCollec
     }
 
     async getAllSettings(): Promise<AnalyticsSettings[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getSettingsByFormId(formId: string): Promise<AnalyticsSettings | undefined> {
-        return this.table.get(formId);
+        return this.table.getById(formId);
     }
 
     async deleteSettingsByFormId(formId: string): Promise<void> {
-        await this.table.delete(formId);
+        await this.table.deleteById(formId);
     }
 
 }

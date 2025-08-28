@@ -11,7 +11,7 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faBook, faCalendar, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -21,12 +21,15 @@
     import type {SearchEntity} from "@perfice/model/journal/search/search";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {onMount} from "svelte";
-    import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
+    import {gotoEditSearch, parseSearchFromUrl} from "@perfice/stores/journal/search";
     import {navigate} from "@perfice/app";
+    import {pullToRefresh} from "@perfice/util/pullToRefresh";
+    import {ButtonColor} from "@perfice/model/ui/button";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
     let deleteMultiModal: GenericDeleteModal<JournalEntity[]>;
+    let dateInput: HTMLInputElement;
     let {params}: { params: Record<string, string> } = $props();
 
     let selectMode = $state(false);
@@ -117,11 +120,16 @@
 
     function goToSearch() {
         if (currentSearch != null) {
-            navigate(`/journal/search/${constructSearchParam(currentSearch)}`);
+            gotoEditSearch(currentSearch);
             return;
         }
 
         navigate("/journal/search");
+    }
+
+    function openDatePicker() {
+        console.log("ok")
+        dateInput.click();
     }
 
     // Scroll might already be at bottom, give time for the initial page load to finish
@@ -144,16 +152,13 @@
     {/snippet}
 </MobileTopBar>
 <FormModal largeLogButton={false} bind:this={formModal} onDelete={onFormEntryStartDelete}/>
-<div class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content">
+<div class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content" use:pullToRefresh>
     {#await $groupedJournal}
         Loading...
     {:then days}
         <div class="row-between items-center md:mb-8 mb-4 md:flex hidden">
             <Title title={title} icon={currentSearch != null ? faSearch : faBook}/>
             <div class="row-gap md:w-auto w-full flex justify-end">
-                <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
-                    <Fa icon={faSearch}/>
-                </Button>
                 <div class="row-gap bg-white border px-2 rounded-md h-10">
                     {#if selectMode}
                         {selectedEntities.length} selected
@@ -165,14 +170,24 @@
                         <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
                     {/if}
                 </div>
+                <input type="date" class="hidden" bind:this={dateInput}/>
+                <Button onClick={openDatePicker} color={ButtonColor.WHITE} class="hidden md:flex items-center gap-2">
+                    Date
+                    <Fa icon={faCalendar}/>
+                </Button>
+                <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
+                    <Fa icon={faSearch}/>
+                </Button>
             </div>
         </div>
-        <div class="flex flex-col gap-4" id="mainContainer">
+        <div class="flex flex-col gap-4">
             {#each days as day}
                 <JournalDayCard {selectedEntities}
                                 onEntryClick={(e) => onEntityClick(jeForm(e))}
                                 onTagEntryClick={(e) => onEntityClick(jeTag(e))}
                                 onFormEntryDelete={(e) => onEntityStartDelete(jeForm(e))} {day}/>
+            {:else}
+                You haven't tracked anything yet.
             {/each}
         </div>
     {/await}

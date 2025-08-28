@@ -3,6 +3,7 @@ import {defineConfig} from 'vite'
 import {svelte} from '@sveltejs/vite-plugin-svelte'
 import {fileURLToPath, URL} from "node:url";
 import {VitePWA} from 'vite-plugin-pwa'
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig((v) => {
@@ -16,15 +17,18 @@ export default defineConfig((v) => {
         base: basePath,
         plugins: [
             svelte(),
+            tailwindcss(),
             VitePWA({
                 registerType: 'autoUpdate',
                 devOptions: {
                     enabled: true
                 },
                 workbox: {
-                    globPatterns: []
-                    //globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+                    globPatterns: dev ? [] : ['**/*.{js,css,html,ico,png,svg,json,woff2}']
                 },
+                includeAssets: [
+                    "**/*",
+                ],
                 manifest: {
                     name: 'Perfice',
                     short_name: 'Perfice',

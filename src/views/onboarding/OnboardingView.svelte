@@ -11,6 +11,7 @@
     import type {Component} from "svelte";
     import SwipeDetector from "@perfice/components/base/gesture/SwipeDetector.svelte";
     import {onboarding} from "@perfice/stores";
+    import OnboardingRegister from "@perfice/components/onboarding/OnboardingRegister.svelte";
 
     let page = $state(0);
     let current = $derived(ONBOARDING[page]);
@@ -43,7 +44,8 @@
         updateSelectState: (selections: OnboardingSelection[]) => void
     }>> = {
         [OnboardingPageType.IMAGE]: OnboardingImage,
-        [OnboardingPageType.SELECT]: OnboardingSelect
+        [OnboardingPageType.SELECT]: OnboardingSelect,
+        [OnboardingPageType.REGISTER]: OnboardingRegister
     };
 
     const RendererComponent = $derived(RENDERERS[current.pageType]);

@@ -9,10 +9,15 @@
 
     let data = $derived(dataSettings as NumberFormQuestionDataSettings);
     let display = $derived(displaySettings as RangeFormQuestionSettings);
+
+    function onStop(e: { detail: { value: number } }) {
+        onChange(e.detail.value);
+    }
 </script>
 
-<RangeSlider on:change={(e) => onChange(e.detail.value)}
-             pips
-             springValues={{ stiffness: 1.0, damping: 1.0 }}
-             all="label"
-             value={value} min={data.min ?? 0} max={data.max ?? 100} step={display.step ?? 1} {disabled}/>
+<RangeSlider
+        on:stop={onStop}
+        pips
+        springValues={{ stiffness: 1.0, damping: 1.0 }}
+        all="label"
+        bind:value={value} min={data.min ?? 0} max={data.max ?? 100} step={display.step ?? 1} {disabled}/>

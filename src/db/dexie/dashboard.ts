@@ -1,25 +1,25 @@
-import type {EntityTable} from "dexie";
-import type {DashboardCollection} from "@perfice/db/collections";
+import type {DashboardCollection, DashboardWidgetCollection} from "@perfice/db/collections";
 import type {Dashboard, DashboardWidget} from "@perfice/model/dashboard/dashboard";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieDashboardCollection implements DashboardCollection {
 
-    private table: EntityTable<Dashboard, "id">;
+    private table: SyncedTable<Dashboard>;
 
-    constructor(table: EntityTable<Dashboard, "id">) {
+    constructor(table: SyncedTable<Dashboard>) {
         this.table = table;
     }
 
     async getDashboards(): Promise<Dashboard[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getDashboardById(id: string): Promise<Dashboard | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async createDashboard(dashboard: Dashboard): Promise<void> {
-        await this.table.add(dashboard);
+        await this.table.create(dashboard);
     }
 
     async updateDashboard(dashboard: Dashboard): Promise<void> {
@@ -27,15 +27,15 @@ export class DexieDashboardCollection implements DashboardCollection {
     }
 
     async deleteDashboardById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
 }
 
-export class DexieDashboardWidgetCollection {
-    private table: EntityTable<DashboardWidget, "id">;
+export class DexieDashboardWidgetCollection implements DashboardWidgetCollection {
+    private table: SyncedTable<DashboardWidget>;
 
-    constructor(table: EntityTable<DashboardWidget, "id">) {
+    constructor(table: SyncedTable<DashboardWidget>) {
         this.table = table;
     }
 
@@ -44,11 +44,11 @@ export class DexieDashboardWidgetCollection {
     }
 
     async getWidgetById(id: string): Promise<DashboardWidget | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async createWidget(widget: DashboardWidget): Promise<void> {
-        await this.table.add(widget);
+        await this.table.create(widget);
     }
 
     async updateWidget(widget: DashboardWidget): Promise<void> {
@@ -56,6 +56,6 @@ export class DexieDashboardWidgetCollection {
     }
 
     async deleteWidgetById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 }

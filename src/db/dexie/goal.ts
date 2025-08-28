@@ -1,12 +1,12 @@
-import type {EntityTable} from "dexie";
 import type {GoalCollection} from "@perfice/db/collections";
 import type {Goal} from "@perfice/model/goal/goal";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieGoalCollection implements GoalCollection {
 
-    private table: EntityTable<Goal, "id">;
+    private table: SyncedTable<Goal>;
 
-    constructor(table: EntityTable<Goal, "id">) {
+    constructor(table: SyncedTable<Goal>) {
         this.table = table;
     }
 
@@ -15,15 +15,15 @@ export class DexieGoalCollection implements GoalCollection {
     }
 
     async getGoalById(id: string): Promise<Goal | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async getGoals(): Promise<Goal[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async createGoal(goal: Goal): Promise<void> {
-        await this.table.add(goal);
+        await this.table.create(goal);
     }
 
     async updateGoal(goal: Goal): Promise<void> {
@@ -31,7 +31,7 @@ export class DexieGoalCollection implements GoalCollection {
     }
 
     async deleteGoalById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
 }

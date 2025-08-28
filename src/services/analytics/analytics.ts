@@ -53,7 +53,8 @@ export interface HistoricalQuantitativeInsight {
     questionId: string;
     current: number;
     average: number;
-    error: number;
+    // current / average
+    ratio: number;
     diff: number;
 }
 
@@ -227,7 +228,7 @@ export class AnalyticsService {
         let res: Map<string, FlattenedDataSet> = new Map();
 
         for (let [formId, questionIds] of raw.entries()) {
-            let settings = allSettings.find(s => s.formId == formId);
+            let settings = allSettings.find(s => s.id == formId);
             if (settings == null) continue;
 
             for (let [questionId, bag] of questionIds.entries()) {
@@ -405,7 +406,7 @@ export class AnalyticsService {
     async calculateAllBasicAnalytics(values: RawAnalyticsValues, allSettings: AnalyticsSettings[]): Promise<Map<string, Map<string, BasicAnalytics>>> {
         let res: Map<string, Map<string, BasicAnalytics>> = new Map();
         for (let [formId, questionIdToValues] of values.entries()) {
-            let settings = allSettings.find(s => s.formId == formId);
+            let settings = allSettings.find(s => s.id == formId);
             if (settings == null) continue;
 
             let map = new Map();
@@ -425,7 +426,7 @@ export class AnalyticsService {
             let forForm = allBasicAnalytics.get(formId);
             if (forForm == null) continue;
 
-            let settings = allSettings.find(s => s.formId == formId);
+            let settings = allSettings.find(s => s.id == formId);
             if (settings == null) continue;
 
             for (let [questionId, values] of questionIdToValues.entries()) {
@@ -442,8 +443,8 @@ export class AnalyticsService {
                 let currentNumericalValue = convertValue(currentValue, useMeanValue).value;
                 let average = byQuestion.value.average;
 
-                let error = average != 0 ? currentNumericalValue / average : currentNumericalValue;
-                let diff = error != 0 ? Math.abs(error - 1) : 0;
+                let ratio = average != 0 ? currentNumericalValue / average : currentNumericalValue;
+                let diff = ratio != 0 ? Math.abs(ratio - 1) : 0;
 
                 if (diff < threshold)
                     continue;
@@ -454,7 +455,7 @@ export class AnalyticsService {
                     current: currentNumericalValue,
                     average: average,
                     diff,
-                    error: error
+                    ratio: ratio
                 });
             }
         }
@@ -724,6 +725,11 @@ export class AnalyticsService {
                 let firstIncludeEmpty = secondType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(firstType);
                 let secondIncludeEmpty = firstType == DatasetKeyType.WEEK_DAY || this.includeEmptyForKey(secondType);
 
+                if (firstIncludeEmpty && secondIncludeEmpty) {
+                    firstIncludeEmpty = false;
+                    secondIncludeEmpty = false;
+                }
+
                 let matching = this.filterMatchingTimestamps(
                     firstDataset,
                     secondDataset,
@@ -896,7 +902,7 @@ export class AnalyticsService {
 
             res.set(form.id, map);
 
-            let settingsForForm = settings.find(s => s.formId == form.id);
+            let settingsForForm = settings.find(s => s.id == form.id);
             if (settingsForForm != null && settingsForForm.interpolate) {
                 interpolateTimestamps.set(form.id, []);
             }

@@ -1,7 +1,7 @@
 import {AsyncStore} from "@perfice/stores/store";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {JournalService} from "@perfice/services/journal/journal";
-import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
+import {emptyPromise} from "@perfice/util/promise";
 import {updateIdentifiedInArray} from "@perfice/util/array";
 import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
@@ -20,8 +20,8 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
         this.setResolved([]);
     }
 
-    async nextPage(page: number, size: number): Promise<JournalEntry[]> {
-        return await this.journalService.getEntriesUntilTimeAndLimit(page, size);
+    async nextPage(page: number, size: number, lastId: string = "\uffff"): Promise<JournalEntry[]> {
+        return await this.journalService.getEntriesUntilTimeAndLimit(page, size, lastId);
     }
 
     async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<void> {

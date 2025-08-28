@@ -1,22 +1,22 @@
 import type {TagEntry} from "@perfice/model/journal/journal";
 import type {Tag, TagCategory} from "@perfice/model/tag/tag";
-import type {EntityTable} from "dexie";
 import type {TagCategoryCollection, TagCollection, TagEntryCollection,} from "@perfice/db/collections";
+import type {SyncedTable} from "@perfice/services/sync/sync";
 
 export class DexieTagEntryCollection implements TagEntryCollection {
 
-    private readonly table: EntityTable<TagEntry, "id">;
+    private readonly table: SyncedTable<TagEntry>;
 
-    constructor(table: EntityTable<TagEntry, "id">) {
+    constructor(table: SyncedTable<TagEntry>) {
         this.table = table;
     }
 
     async getEntryById(entryId: string): Promise<TagEntry | undefined> {
-        return this.table.get(entryId);
+        return this.table.getById(entryId);
     }
 
     async createEntry(entry: TagEntry): Promise<void> {
-        await this.table.add(entry);
+        await this.table.create(entry);
     }
 
     getTagEntriesByTagId(tagId: string): Promise<TagEntry[]> {
@@ -47,11 +47,12 @@ export class DexieTagEntryCollection implements TagEntryCollection {
     }
 
     async deleteEntriesByTagId(tagId: string): Promise<void> {
-        await this.table.where("tagId").equals(tagId).delete();
+        let byTag = await this.table.where("tagId").equals(tagId).toArray();
+        await this.table.deleteByIds(byTag.map(e => e.id));
     }
 
     async deleteEntryById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
     async getEntriesByTimeRange(start: number, end: number): Promise<TagEntry[]> {
@@ -61,13 +62,13 @@ export class DexieTagEntryCollection implements TagEntryCollection {
     }
 
     async getAllEntries(): Promise<TagEntry[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<TagEntry[]> {
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string = "\uffff"): Promise<TagEntry[]> {
         return this.table
             .where("[timestamp+id]")
-            .belowOrEqual([untilTimestamp, ""])
+            .below([untilTimestamp, lastId])
             .limit(limit)
             .reverse()
             .toArray();
@@ -77,22 +78,22 @@ export class DexieTagEntryCollection implements TagEntryCollection {
 
 export class DexieTagCollection implements TagCollection {
 
-    private table: EntityTable<Tag, "id">;
+    private table: SyncedTable<Tag>;
 
-    constructor(table: EntityTable<Tag, "id">) {
+    constructor(table: SyncedTable<Tag>) {
         this.table = table;
     }
 
     getTags(): Promise<Tag[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getTagById(id: string): Promise<Tag | undefined> {
-        return this.table.get(id);
+        return this.table.getById(id);
     }
 
     async createTag(tag: Tag): Promise<void> {
-        await this.table.add(tag);
+        await this.table.create(tag);
     }
 
     async updateTag(tag: Tag): Promise<void> {
@@ -100,7 +101,7 @@ export class DexieTagCollection implements TagCollection {
     }
 
     async deleteTagById(id: string): Promise<void> {
-        await this.table.delete(id);
+        await this.table.deleteById(id);
     }
 
     async getTagsByCategoryId(categoryId: string): Promise<Tag[]> {
@@ -119,22 +120,22 @@ export class DexieTagCollection implements TagCollection {
 
 export class DexieTagCategoryCollection implements TagCategoryCollection {
 
-    private table: EntityTable<TagCategory, "id">;
+    private table: SyncedTable<TagCategory>;
 
-    constructor(table: EntityTable<TagCategory, "id">) {
+    constructor(table: SyncedTable<TagCategory>) {
         this.table = table;
     }
 
     async getCategories(): Promise<TagCategory[]> {
-        return this.table.toArray();
+        return this.table.getAll();
     }
 
     async getCategoryById(categoryId: string): Promise<TagCategory | undefined> {
-        return this.table.get(categoryId);
+        return this.table.getById(categoryId);
     }
 
     async createCategory(category: TagCategory): Promise<void> {
-        await this.table.add(category);
+        await this.table.create(category);
     }
 
     async updateCategory(category: TagCategory): Promise<void> {
@@ -142,7 +143,7 @@ export class DexieTagCategoryCollection implements TagCategoryCollection {
     }
 
     async deleteCategoryById(categoryId: string): Promise<void> {
-        await this.table.where("id").equals(categoryId).delete();
+        await this.table.deleteById(categoryId);
     }
 
     async updateCategories(categories: TagCategory[]): Promise<void> {

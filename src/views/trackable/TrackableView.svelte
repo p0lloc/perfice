@@ -1,7 +1,7 @@
 <script lang="ts">
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
-    import EditTrackableModal from "@perfice/components/trackable/modals/edit/EditTrackableModal.svelte";
+    import EditTrackableModal from "@perfice/components/trackable/edit/EditTrackableModal.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
@@ -18,6 +18,8 @@
     import type {TrackableSuggestion} from "@perfice/model/trackable/suggestions";
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import {forms, trackableCategories, trackableDate, trackables, weekStart} from "@perfice/stores";
+    import {pullToRefresh} from "@perfice/util/pullToRefresh";
+    import {navigate} from "@perfice/app";
 
     let formModal: FormModal;
     let editTrackableModal: EditTrackableModal;
@@ -31,11 +33,12 @@
     }
 
     async function onEditTrackable(trackable: Trackable) {
-        let state = await trackables.getEditTrackableState(
-            $state.snapshot(trackable),
-        );
-        if (state == null) return;
-        editTrackableModal.open(state);
+        navigate(`/trackables/${trackable.id}`);
+        // let state = await trackables.getEditTrackableState(
+        //     $state.snapshot(trackable),
+        // );
+        // if (state == null) return;
+        // editTrackableModal.open(state);
     }
 
     async function onLogTrackable(trackable: Trackable) {
@@ -113,7 +116,7 @@
 
 <EntryImportResultModal bind:this={importResultModal}/>
 
-<div class="w-screen main-content center-view md:px-0 px-4 md:py-10 py-2">
+<div class="w-screen main-content center-view md:px-0 px-4 md:py-10 py-2" use:pullToRefresh>
     <TitleAndCalendar
             date={$trackableDate}
             {onDateChange}

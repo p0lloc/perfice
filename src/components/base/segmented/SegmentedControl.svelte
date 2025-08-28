@@ -25,7 +25,7 @@
     } = $props();
 
     function onSegmentClick(value: SegmentedItem<T>) {
-        if(disabled) return;
+        if (disabled) return;
         value.onClick?.();
 
         if (value.value != null && onChange != null) {
@@ -51,6 +51,7 @@
 </div>
 
 <style>
+    @reference "@perfice/app.css";
     .segmented-normal {
         @apply bg-gray-200 p-0.5 rounded-xl;
     }

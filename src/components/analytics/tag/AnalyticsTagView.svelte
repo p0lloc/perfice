@@ -2,6 +2,7 @@
     import Heatmap from "@perfice/components/analytics/Heatmap.svelte";
     import {getAnalyticsDetailsLink} from "@perfice/model/analytics/ui";
     import {tagAnalytics} from "@perfice/stores";
+    import {navigate} from "@perfice/app";
 
     let res = $derived(tagAnalytics());
 </script>
@@ -12,8 +13,10 @@
     {:then data}
         {#each data.results as value(value.tag.id)}
             <div class="bg-white rounded p-4 border">
-                <p><a href={getAnalyticsDetailsLink("tag", value.tag.id)}
-                      class="text-xl font-bold text-green-600">{value.tag.name}</a></p>
+                <p>
+                    <button onclick={() => navigate(getAnalyticsDetailsLink("tag", value.tag.id))}
+                            class="text-xl font-bold text-green-600">{value.tag.name}</button>
+                </p>
                 <div class="mt-4">
                     <Heatmap date={data.date} values={value.values}/>
                 </div>

@@ -16,8 +16,8 @@ export class TagEntryStore extends AsyncStore<TagEntry[]> {
         this.setResolved([]);
     }
 
-    async nextPage(page: number, size: number): Promise<TagEntry[]> {
-        return await this.tagEntryService.getEntriesUntilTimeAndLimit(page, size);
+    async nextPage(page: number, size: number, lastId: string): Promise<TagEntry[]> {
+        return await this.tagEntryService.getEntriesUntilTimeAndLimit(page, size, lastId);
     }
 
     async deleteEntryById(id: string) {

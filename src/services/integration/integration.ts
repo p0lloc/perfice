@@ -1,0 +1,242 @@
+import type {Integration, IntegrationType, IntegrationUpdate} from "@perfice/model/integration/integration";
+import {importPrimitive} from "../export/formEntries/export";
+import type {FormService} from "../form/form";
+import type {JournalService} from "../journal/journal";
+import {convertAnswersToDisplay} from "@perfice/model/form/validation";
+import {type KyInstance} from "ky";
+import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+import type {AuthService} from "@perfice/services/auth/auth";
+import type {AuthenticatedUser} from "@perfice/model/auth/auth";
+import type {UnauthenticatedIntegrationError} from "@perfice/model/integration/ui";
+import {publishToEventStore} from "@perfice/util/event";
+import {unauthenticatedIntegrationEvents} from "@perfice/stores/remote/integration";
+import {Capacitor} from "@capacitor/core";
+import {Browser} from "@capacitor/browser";
+import type {Form} from "@perfice/model/form/form";
+
+export interface CreateIntegrationRequest {
+    integrationType: string;
+    entityType: string;
+    formId: string;
+    fields: Record<string, string>;
+    options: Record<string, string | number>;
+}
+
+const USES_INTEGRATIONS_STORAGE_KEY = "uses_integrations";
+
+export class IntegrationService {
+
+    private journalService: JournalService;
+    private formService: FormService;
+
+    private integrations: Integration[] = [];
+
+    private authService: AuthService;
+    private remoteService: RemoteService;
+
+    constructor(journalService: JournalService, formService: FormService, remoteService: RemoteService, authService: AuthService) {
+        this.journalService = journalService;
+        this.formService = formService;
+        this.remoteService = remoteService;
+        this.authService = authService;
+
+        this.remoteService.addRemoteEnableCallback(RemoteType.INTEGRATION, async () => {
+            await this.load();
+        });
+
+        this.authService.addAuthStatusCallback(async (user: AuthenticatedUser | null) => {
+            if (user == null) return;
+            await this.load();
+        });
+    }
+
+    private getClient(): KyInstance {
+        return this.remoteService.getRemoteClient(RemoteType.INTEGRATION)!;
+    }
+
+    private async checkUnauthenticatedIntegrations(integrations: Integration[], integrationTypes: IntegrationType[]): Promise<UnauthenticatedIntegrationError[]> {
+        let unauthenticatedErrors: UnauthenticatedIntegrationError[] = [];
+        for (let integration of integrations) {
+            let type = integrationTypes.find(t => t.integrationType == integration.integrationType);
+            if (type == null) continue;
+
+            if (type.authenticated)
+                continue;
+
+            let form = await this.formService.getFormById(integration.formId);
+            if (form == null) continue;
+
+            let existing = unauthenticatedErrors.find(e => e.integrationType == integration.integrationType);
+            if (existing == null) {
+                unauthenticatedErrors.push({
+                    integrationType: integration.integrationType,
+                    integrationTypeName: type.name,
+                    forms: [form.name]
+                });
+            } else {
+                existing.forms.push(form.name);
+            }
+        }
+
+        return unauthenticatedErrors;
+    }
+
+    async load(): Promise<IntegrationData> {
+        if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)))
+            return {
+                enabled: false,
+                integrations: [],
+                integrationTypes: []
+            };
+
+        let integrations = await this.fetchIntegrations();
+        let integrationTypes = await this.fetchTypes();
+
+        let errors = await this.checkUnauthenticatedIntegrations(integrations, integrationTypes);
+        if (errors.length > 0) {
+            publishToEventStore(unauthenticatedIntegrationEvents, errors);
+        }
+
+        await this.fetchUpdates();
+        return {
+            enabled: true,
+            integrations,
+            integrationTypes
+        }
+    }
+
+    async createIntegration(request: CreateIntegrationRequest) {
+        let response = await this.getClient().post("integrations", {
+            json: request
+        });
+
+        localStorage.setItem(USES_INTEGRATIONS_STORAGE_KEY, "true");
+        let created: Integration = await response.json();
+        this.integrations.push(created);
+        return created;
+    }
+
+    formatIntegrationIdentifier(integrationId: string, identifier: string): string {
+        return `${integrationId}:${identifier}`;
+    }
+
+    async fetchIntegrations(): Promise<Integration[]> {
+        this.integrations = await this.getClient().get("integrations").json<Integration[]>();
+        return this.integrations;
+    }
+
+    async authenticateIntegration(integrationType: string) {
+        let url = await this.getClient().get(`integrationTypes/${integrationType}/redirect`).text();
+        if (Capacitor.isNativePlatform()) {
+            await Browser.open({url: url});
+        } else {
+            window.open(url, "_blank");
+        }
+    }
+
+    async fetchTypes(): Promise<IntegrationType[]> {
+        return await this.getClient().get("integrationTypes").json<IntegrationType[]>();
+    }
+
+    async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
+        let res = (await this.getClient().get(`integrationTypes/${integrationType}/authenticated`, {
+            throwHttpErrors: false
+        }));
+        return res.ok;
+    }
+
+    async fetchUpdates() {
+        if (!this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)) return;
+        let updates = await this.getClient().get("updates").json<IntegrationUpdate[]>();
+
+        let acknowledgedUpdates: string[] = [];
+        for (let update of updates) {
+            let integration = this.integrations.find(i => i.id == update.integrationId);
+            if (integration == null) continue;
+
+            let formattedIdentifier = this.formatIntegrationIdentifier(integration.id, update.identifier);
+            let existingEntry = await this.journalService.getEntryByIntegrationIdentifier(formattedIdentifier);
+
+            if (update.data == null) {
+                if (existingEntry != null) {
+                    await this.journalService.deleteEntry(existingEntry);
+                }
+
+                acknowledgedUpdates.push(update.id);
+                continue;
+            }
+
+            let answers = Object.fromEntries(
+                Object.entries(update.data).map(([k, v]) => [k, importPrimitive(v)]));
+
+            if (existingEntry == null) {
+                let form = await this.formService.getFormById(integration.formId);
+                if (form == null) continue;
+
+                // Create a new journal entry
+                let formattedAnswers = convertAnswersToDisplay(answers, form.questions);
+                await this.journalService.logEntry(form, formattedAnswers, form.format, update.timestamp,
+                    formattedIdentifier);
+
+                acknowledgedUpdates.push(update.id);
+            } else {
+                let snapshot = await this.formService.getFormSnapshotById(existingEntry.snapshotId);
+                if (snapshot == null) continue;
+
+                // Update the existing journal entry
+                let formattedAnswers = convertAnswersToDisplay(answers, snapshot.questions);
+                await this.journalService.updateEntry({
+                    ...existingEntry,
+                    answers: formattedAnswers,
+                    timestamp: update.timestamp
+                }, snapshot.format);
+
+                acknowledgedUpdates.push(update.id);
+            }
+        }
+
+        if (acknowledgedUpdates.length == 0) return;
+        await this.acknowledgeUpdates(acknowledgedUpdates);
+    }
+
+    private async acknowledgeUpdates(updates: string[]) {
+        await this.getClient().post("updates/ack", {
+            json: {
+                updates: updates
+            }
+        });
+    }
+
+    async fetchHistorical(id: string) {
+        await this.getClient().post(`integrations/${id}/historical`);
+        await this.fetchUpdates();
+    }
+
+    async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
+        await this.getClient().put(`integrations/${id}`, {
+            json: {
+                fields,
+                options,
+            }
+        });
+    }
+
+    async deleteIntegrationById(id: string) {
+        await this.getClient().delete(`integrations/${id}`);
+    }
+
+    async onFormDeleted(e: Form) {
+        if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION))) return;
+
+        // Delete all integrations that use this form
+        for (const integration of this.integrations.filter(i => i.formId == e.id)) {
+            await this.deleteIntegrationById(integration.id);
+        }
+    }
+}
+
+export interface IntegrationData {
+    enabled: boolean;
+    integrations: Integration[];
+    integrationTypes: IntegrationType[];
+}

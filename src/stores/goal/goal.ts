@@ -44,9 +44,18 @@ export class GoalStore extends AsyncStore<Goal[]> {
         return await this.goalService.getGoalById(id);
     }
 
-    async getGoalById(id: string): Promise<Goal | undefined> {
+    async getGoalById(id: string, fetch: boolean = false): Promise<Goal | undefined> {
         let goals = await this.get();
-        return goals.find(f => f.id == id);
+        let cached = goals.find(f => f.id == id);
+        if (cached != null) return cached;
+
+        if (!fetch) return undefined;
+
+        let goal = await this.fetchGoalById(id);
+        if (goal == null) return undefined;
+
+        this.updateResolved(v => [...v, goal]);
+        return goal;
     }
 
     async updateGoal(goal: Goal) {

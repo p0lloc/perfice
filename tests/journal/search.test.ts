@@ -13,6 +13,7 @@ import {Form} from "../../src/model/form/form";
 import {TrackableSearchFilterType} from "../../src/model/journal/search/trackable";
 import {FilterComparisonOperator} from "../../src/services/variable/filtering";
 import {pNumber} from "../../src/model/primitive/primitive";
+import {SavedSearchCollection} from "../../src/db/collections";
 
 export class DummyTrackableEntityProvider implements TrackableEntityProvider {
 
@@ -90,6 +91,7 @@ function createMockSearchService() {
                     formId: "test",
                     answers: {},
                     timestamp: 0,
+                    integration: null,
                     displayValue: "test",
                     snapshotId: ""
                 },
@@ -99,6 +101,7 @@ function createMockSearchService() {
                     answers: {
                         "test": pNumber(13.0)
                     },
+                    integration: null,
                     timestamp: 0,
                     displayValue: "test",
                     snapshotId: ""
@@ -135,7 +138,7 @@ function createMockSearchService() {
                     categoryId: null,
                 } as Tag // Only props necessary for mock
             ]
-        ), new DummyFormEntityProvider())
+        ), new DummyFormEntityProvider(), null as SavedSearchCollection)
 }
 
 test("search all trackables", async () => {
@@ -159,6 +162,7 @@ test("search all trackables", async () => {
                 answers: {},
                 timestamp: 0,
                 displayValue: "test",
+                integration: null,
                 snapshotId: ""
             },
 
@@ -170,6 +174,7 @@ test("search all trackables", async () => {
                 },
                 timestamp: 0,
                 displayValue: "test",
+                integration: null,
                 snapshotId: ""
             }
         ],
@@ -232,6 +237,7 @@ test("search by trackable category", async () => {
                     "test": pNumber(13.0)
                 },
                 timestamp: 0,
+                integration: null,
                 displayValue: "test",
                 snapshotId: ""
             }
@@ -279,6 +285,7 @@ test("search by answers", async () => {
             {
                 id: "test2",
                 formId: "test2",
+                integration: null,
                 answers: {
                     "test": pNumber(13.0)
                 },

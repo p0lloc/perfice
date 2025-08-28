@@ -1,13 +1,13 @@
 <script lang="ts">
     import Button from "@perfice/components/base/button/Button.svelte";
     import {ButtonColor} from "@perfice/model/ui/button";
-    import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import {deletion} from "@perfice/stores";
+    import DeleteAccountModal from "@perfice/components/settings/DeleteAccountModal.svelte";
 
-    let modal: GenericDeleteModal<string>;
+    let modal: DeleteAccountModal;
 
     function startDelete() {
-        modal.open("");
+        modal.open();
     }
 
     async function onDeleteData() {
@@ -16,11 +16,9 @@
     }
 </script>
 
-<GenericDeleteModal bind:this={modal}
-                    message="Are you sure you want to delete all your data? This action is irreversible."
-                    onDelete={onDeleteData}/>
+<DeleteAccountModal bind:this={modal} onConfirm={onDeleteData}/>
 
 <h3 class="settings-label">Delete data</h3>
 <div class="row-gap mt-2">
-    <Button class="md:w-auto w-full" color={ButtonColor.RED} onClick={startDelete}>Delete all data</Button>
+    <Button class="md:w-auto w-full" color={ButtonColor.RED} onClick={startDelete}>Delete local data</Button>
 </div>

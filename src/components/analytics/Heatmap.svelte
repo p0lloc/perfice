@@ -1,27 +1,26 @@
 <script lang="ts">
-    import {dateToMidnight, dateToWeekStart} from "@perfice/util/time/simple";
+    import {addDaysDate, dateToMidnight, dateToWeekStart} from "@perfice/util/time/simple";
     import {weekStart} from "@perfice/stores";
-
-    const DAY_MS = 1000 * 60 * 60 * 24;
 
     let {values, date}: { values: Map<number, number>, date: Date } = $props();
 
-    let range = $derived(values.size);
+    let range = $derived(Math.min(values.size, 7 * 14));
 
-    let actualStart = $derived(new Date(date.getTime() - range * DAY_MS));
+    let actualStart = $derived(addDaysDate(date, -range));
     let start = $derived(dateToMidnight(dateToWeekStart(actualStart, $weekStart)).getTime());
 
     function getColor(i: number, values: Map<number, number>) {
-        let val = values.get(start + (i * DAY_MS));
+        let val = values.get(addDaysDate(new Date(start), i).getTime());
         if (val == null) return "bg-gray-200";
 
         return val == 1 ? "bg-green-500" : "bg-gray-200";
     }
+
 </script>
 
 <div class="flex justify-between">
     <div class="grid-container flex-1">
-        {#each Array(Math.ceil(values.size / 7) * 7 + actualStart.getDay() + 1) as _, i}
+        {#each Array(Math.ceil(range / 7) * 7 + actualStart.getDay() + 1) as _, i}
             <div class="{getColor(i, values)} aspect-square rounded">
             </div>
         {/each}

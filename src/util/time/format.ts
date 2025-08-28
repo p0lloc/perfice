@@ -90,7 +90,7 @@ export function formatDateHHMM(date: Date) {
 }
 
 export function formatDateLongTerm(date: Date, currentDate: Date, ws: WeekStart) {
-    let weekStart = dateToWeekStart(currentDate, ws); // TODO: don't hardcode week start
+    let weekStart = dateToWeekStart(currentDate, ws);
     let prefix;
     if (date.getTime() > weekStart.getTime()) {
         return WEEK_DAYS_SHORT[date.getDay()];

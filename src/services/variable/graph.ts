@@ -201,17 +201,29 @@ export class VariableGraph {
         await this.deleteIndicesForVariableAndDependents(variable.id);
     }
 
-    private filterIndicesByTimestamp(indices: VariableIndex[], timestamp: number) {
+    private filterIndicesByTimestamp(indices: VariableIndex[], timestamp: number, previousTimestamp: number | null): {
+        result: VariableIndex[],
+        updatedTimestamp: VariableIndex[]
+    } {
         let result: VariableIndex[] = [];
+        let updatedTimestamp: VariableIndex[] = [];
         for (let index of indices) {
             let scope = deserializeTimeScope(index.timeScope, this.weekStart);
-            if (!isTimestampInRange(timestamp, scope.value.convertToRange()))
+            let scopeRange = scope.value.convertToRange();
+            let matches = isTimestampInRange(timestamp, scopeRange);
+            if (previousTimestamp != null) {
+                if (isTimestampInRange(previousTimestamp, scopeRange) && !matches) {
+                    updatedTimestamp.push(index);
+                }
+            }
+
+            if (!matches)
                 continue;
 
             result.push(index);
         }
 
-        return result;
+        return {result, updatedTimestamp};
     }
 
     private async processIndexActions(variable: Variable, actions: VariableIndexAction[]) {
@@ -247,29 +259,44 @@ export class VariableGraph {
         }
 
         for (let scope of scopesToReevaluate) {
-            await this.evaluateVariable(variable, scope, true, []);
+            await this.reevaluateDependentVariables(variable, scope, []);
         }
     }
 
-    private async handleEntryAction(timestamp: number, variableId: string, action: (indices: VariableIndex[]) => Promise<VariableIndexAction[]>) {
-        let indices = await this.indexCollection.getIndicesByVariableId(variableId);
-        let filteredIndices = this.filterIndicesByTimestamp(indices, timestamp);
+    private async handleEntryAction(timestamp: number, previousTimestamp: number | null,
+                                    variableId: string,
+                                    action: (indices: VariableIndex[]) => Promise<VariableIndexAction[]>,
+                                    staleAction: (indices: VariableIndex[]) => Promise<VariableIndexAction[]>) {
 
         let variable = this.getVariableById(variableId);
         if (variable == undefined) return;
 
-        let actions = await action(filteredIndices);
-        await this.processIndexActions(variable, actions);
+        let indices = await this.indexCollection.getIndicesByVariableId(variableId);
+        let {result, updatedTimestamp} = this.filterIndicesByTimestamp(indices, timestamp, previousTimestamp);
+
+        if (result.length > 0) {
+            let actions = await action(result);
+            await this.processIndexActions(variable, actions);
+        }
+
+        if (updatedTimestamp.length > 0) {
+            let actions = await staleAction(updatedTimestamp);
+            await this.processIndexActions(variable, actions);
+        }
     }
 
-    async onJournalEntryAction(entry: JournalEntry, action: EntryAction) {
+    async onJournalEntryAction(entry: JournalEntry, previousEntry: JournalEntry | null, action: EntryAction) {
         if (this.journalEntryDependent.size == 0) return;
+
+        let previousTimestamp = previousEntry?.timestamp != null && previousEntry.timestamp != entry.timestamp
+            ? previousEntry.timestamp : null;
 
         for (let [variableId, dependent] of this.filterEntryDependents(this.journalEntryDependent,
             v => v.getFormDependencies().includes(entry.formId)).entries()) {
 
-            await this.handleEntryAction(entry.timestamp, variableId,
-                (indices: VariableIndex[]) => dependent.onJournalEntryAction(entry, action, indices));
+            await this.handleEntryAction(entry.timestamp, previousTimestamp, variableId,
+                (indices: VariableIndex[]) => dependent.onJournalEntryAction(entry, action, indices),
+                (indices: VariableIndex[]) => dependent.onJournalEntryAction(entry, EntryAction.DELETED, indices));
         }
     }
 
@@ -280,8 +307,9 @@ export class VariableGraph {
         for (let [variableId, dependent] of this.filterEntryDependents(this.tagEntryDependent,
             v => v.getTagDependencies().includes(entry.tagId)).entries()) {
 
-            await this.handleEntryAction(entry.timestamp, variableId,
-                (indices: VariableIndex[]) => dependent.onTagEntryAction(entry, action, indices));
+            await this.handleEntryAction(entry.timestamp, null, variableId,
+                (indices: VariableIndex[]) => dependent.onTagEntryAction(entry, action, indices),
+                async (_) => []);
         }
     }
 
@@ -296,7 +324,7 @@ export class VariableGraph {
         return result;
     }
 
-    async deleteVariableAndDependencies(id: string, shouldDeleteChild: (v: Variable) => boolean): Promise<Variable[]> {
+    async getVariablesToDeleteWhenDeletingVariable(id: string, shouldDeleteChild: (v: Variable) => boolean): Promise<Variable[]> {
         let variable = this.getVariableById(id);
         if (variable == null) return [];
 
@@ -317,12 +345,6 @@ export class VariableGraph {
 
                 stack.push(child);
             }
-        }
-
-        // This could be more optimized by deleting all variables at once
-        // But then we would need to keep the logic in sync with onVariableDeleted
-        for (const v of variablesToDelete) {
-            await this.onVariableDeleted(v.id);
         }
 
         return variablesToDelete;
@@ -405,6 +427,10 @@ export class VariableGraph {
 
         // Changing week start will break old indices that haven't been updated for the new week start
         // It's easiest to just delete all indices and recreate them as needed
+        await this.deleteIndices();
+    }
+
+    async deleteIndices() {
         await this.indexCollection.deleteAllIndices();
     }
 

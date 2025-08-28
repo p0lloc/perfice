@@ -12,7 +12,7 @@ export enum JournalEntryObserverType {
     ANY,
 }
 
-export type JournalEntryObserverCallback = (e: JournalEntry) => Promise<void>;
+export type JournalEntryObserverCallback = (e: JournalEntry, previous: JournalEntry | null) => Promise<void>;
 
 export interface JournalEntryObserver {
     type: JournalEntryObserverType;
@@ -22,9 +22,9 @@ export interface JournalEntryObserver {
 export interface JournalService {
     getEntryById(id: string): Promise<JournalEntry | undefined>;
 
-    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]>;
+    getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]>;
 
-    logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry>;
+    logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry>;
 
     updateEntry(entry: JournalEntry, format: TextOrDynamic[]): Promise<void>;
 
@@ -47,6 +47,10 @@ export interface JournalService {
     getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]>;
 
     deleteEntriesByFormId(id: string): Promise<void>;
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined>;
+
+    notifyObservers(type: JournalEntryObserverType, entry: JournalEntry, previous: JournalEntry | null): Promise<void>;
 }
 
 export class BaseJournalService implements JournalService {
@@ -67,35 +71,38 @@ export class BaseJournalService implements JournalService {
         return this.collection.getEntryById(id);
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
-        return this.collection.getEntriesUntilTimeAndLimit(untilTimestamp, limit);
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]> {
+        return this.collection.getEntriesUntilTimeAndLimit(untilTimestamp, limit, lastId);
     }
 
-    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number): Promise<JournalEntry> {
+    async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry> {
         let entry: JournalEntry = {
             id: crypto.randomUUID(),
             formId: form.id,
             snapshotId: form.snapshotId,
             answers,
             timestamp,
+            integration: integration ?? null,
             displayValue: formatAnswersIntoRepresentation(answers, format)
         }
 
         await this.collection.createEntry(entry);
-        await this.notifyObservers(JournalEntryObserverType.CREATED, entry);
+        await this.notifyObservers(JournalEntryObserverType.CREATED, entry, null);
         return entry;
     }
 
     async updateEntry(entry: JournalEntry, format: TextOrDynamic[]) {
+        let previous = await this.collection.getEntryById(entry.id);
+        if (previous == undefined) return;
         entry.displayValue = formatAnswersIntoRepresentation(entry.answers, format);
 
         await this.collection.updateEntry(entry);
-        await this.notifyObservers(JournalEntryObserverType.UPDATED, entry);
+        await this.notifyObservers(JournalEntryObserverType.UPDATED, entry, previous);
     }
 
     async deleteEntry(entry: JournalEntry) {
         await this.collection.deleteEntryById(entry.id);
-        await this.notifyObservers(JournalEntryObserverType.DELETED, entry);
+        await this.notifyObservers(JournalEntryObserverType.DELETED, entry, null);
     }
 
     async deleteEntryById(id: string) {
@@ -109,13 +116,13 @@ export class BaseJournalService implements JournalService {
         return this.collection.getEntriesBySnapshotId(snapshotId);
     }
 
-    private async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry) {
+    async notifyObservers(type: JournalEntryObserverType, entry: JournalEntry, previous: JournalEntry | null) {
         let observers = this.observers
             .filter(o => o.type == JournalEntryObserverType.ANY || o.type == type);
 
         for (const o of observers) {
             // TODO: are there any implications of awaiting async observers?
-            await o.callback(entry);
+            await o.callback(entry, previous);
         }
     }
 
@@ -146,6 +153,11 @@ export class BaseJournalService implements JournalService {
 
     getEntriesByFormIdFromTime(formId: string, lower: number): Promise<JournalEntry[]> {
         return this.collection.getEntriesByFormIdFromTime(formId, lower);
+    }
+
+
+    getEntryByIntegrationIdentifier(identifier: string): Promise<JournalEntry | undefined> {
+        return this.collection.getEntryByIntegrationIdentifier(identifier);
     }
 
 }

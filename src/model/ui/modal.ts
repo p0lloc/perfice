@@ -1,5 +1,3 @@
-import Modal from "../../components/base/modal/Modal.svelte";
-
 export enum ModalType {
     CONFIRM_CANCEL,
     CANCEL,

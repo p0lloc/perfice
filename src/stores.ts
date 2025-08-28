@@ -1,4 +1,4 @@
-import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable";
+import {TrackableDate, TrackableStore} from "@perfice/stores/trackable/trackable.svelte";
 import type {Services} from "@perfice/services";
 import {FormStore} from "@perfice/stores/form/form";
 import {VariableStore} from "@perfice/stores/variable/variable";
@@ -55,6 +55,11 @@ import {WeekStartStore} from "@perfice/stores/ui/weekStart";
 import {VariableValueStore} from "@perfice/stores/variable/value";
 import {navigate} from "@perfice/app";
 import {DeletionStore} from "@perfice/stores/deletion/deletion";
+import {SyncStore} from "@perfice/stores/remote/sync";
+import {AuthStore} from "@perfice/stores/remote/auth";
+import {RemoteStore} from "@perfice/stores/remote/remote";
+import {IntegrationStore} from "@perfice/stores/remote/integration";
+import {FeedbackStore} from "@perfice/stores/feedback/feedback";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -83,6 +88,7 @@ export let dashboardWidgets: DashboardWidgetStore;
 
 export let entryImports: EntryImportStore;
 export let entryExports: EntryExportStore;
+export let integrations: IntegrationStore;
 export let completeExport: CompleteExportStore;
 export let completeImport: CompleteImportStore;
 export let onboarding: OnboardingStore;
@@ -92,6 +98,12 @@ export let analytics: AnalyticsStore;
 export let appReady: Writable<boolean> = writable(false);
 
 export let journalSearch: JournalSearchStore;
+
+export let sync: SyncStore;
+export let auth: AuthStore;
+export let remote: RemoteStore;
+
+export let feedback: FeedbackStore;
 
 export class StoreProvider {
 
@@ -103,8 +115,18 @@ export class StoreProvider {
 
     async setup(loadedWeekStart: WeekStart) {
         trackables = new TrackableStore(this.services.trackable);
+        this.services.sync.addObserver("trackables", async (updates) => {
+            trackables.applySyncUpdates(updates);
+        });
+
         forms = new FormStore(this.services.form, this.services.formTemplate);
+        this.services.sync.addObserver("forms", async (updates) => {
+            forms.applySyncUpdates(updates);
+        });
         variables = new VariableStore(this.services.variable);
+        this.services.sync.addObserver("variables", async (updates) => {
+            variables.applySyncUpdates(updates);
+        });
 
         trackableDate = TrackableDate();
         tagDate = TagDate();
@@ -120,6 +142,9 @@ export class StoreProvider {
         trackableCategories = new TrackableCategoryStore(this.services.trackableCategory);
         tagCategories = new TagCategoryStore(this.services.tagCategory);
         journal = new JournalEntryStore(this.services.journal);
+        this.services.sync.addObserver("entries", async (updates) => {
+            journal.applySyncUpdates(updates);
+        });
         tagEntries = new TagEntryStore(this.services.tagEntry);
         categorizedTrackables = CategorizedTrackables();
         goals = new GoalStore(this.services.goal);
@@ -130,6 +155,7 @@ export class StoreProvider {
         variableEditProvider = new VariableEditProvider(this.services.variable, this.services.form, this.services.trackable);
         reflections = new ReflectionStore(this.services.reflection);
         deletion = new DeletionStore(this.services.deletion);
+        integrations = new IntegrationStore(this.services.integration);
 
         forms.addEntityFormCreateListener((entityType, form) => {
             if (!entityType.startsWith(TRACKABLE_FORM_ENTITY_TYPE)) return;
@@ -154,10 +180,15 @@ export class StoreProvider {
             this.services.dashboardWidget, this.services.variable, this.services.goal, this.services.reflection);
 
         analyticsSettings = new AnalyticsSettingsStore(this.services.analyticsSettings);
-        analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 60, 6);
+        analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 600, 30);
 
         journalSearch = new JournalSearchStore(this.services.journalSearch, this.services.form, this.services.trackable,
             this.services.trackableCategory, this.services.tag, this.services.tagCategory);
+
+        sync = new SyncStore(this.services.sync, this.services.encryption);
+        auth = new AuthStore(this.services.auth);
+        remote = new RemoteStore(this.services.remote);
+        feedback = new FeedbackStore();
     }
 
     trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {

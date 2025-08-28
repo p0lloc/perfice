@@ -10,12 +10,13 @@
 
 <button
         onclick={onClick}
-        class="rounded-xl text-center flex gap-1 justify-center items-center {active ? 'active':'inactive'} text-ellipsis flex-1 px-1"
+        class="rounded-xl text-center flex gap-1 justify-center items-center {active ? 'active':'inactive'} text-ellipsis flex-1 px-1 md:px-2"
 >
     {@render children?.()}
 </button>
 
 <style>
+    @reference "@perfice/app.css";
     .active {
         @apply bg-white text-black;
     }

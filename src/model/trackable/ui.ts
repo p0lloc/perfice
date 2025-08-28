@@ -7,11 +7,16 @@ import {
     TrackableValueType,
 } from "./trackable";
 import {AggregateType} from "@perfice/services/variable/types/aggregate";
-import type {TextOrDynamic} from "@perfice/model/variable/variable";
+import type {TextOrDynamic, Variable} from "@perfice/model/variable/variable";
 import {type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
+import type {GoalVariableType} from "@perfice/services/variable/types/goal";
 
 export enum TrackableEditViewType {
     GENERAL = "GENERAL",
+    FORM = "FORM",
+    GOAL = "GOAL",
+    ANALYTICS = "ANALYTICS",
+    INTEGRATIONS = "INTEGRATIONS",
     IMPORT_EXPORT = "IMPORT_EXPORT",
 }
 
@@ -19,6 +24,8 @@ export interface EditTrackableState {
     trackable: Trackable;
     categories: TrackableCategory[];
     form: Form;
+    goalVariable: Variable | null;
+    goalVariableData: GoalVariableType | null;
 }
 
 export const TRACKABLE_FORM_ENTITY_TYPE = "trackable";
@@ -61,6 +68,13 @@ export function getDefaultTrackableCardState(cardType: TrackableCardType, availa
                     field: availableQuestions.length > 0 ? availableQuestions[0].id : ""
                 }
             };
+        case TrackableCardType.HABIT:
+            return {
+                cardType: TrackableCardType.HABIT,
+                cardSettings: {
+                    color: "#ff0000"
+                }
+            }
     }
 }
 
