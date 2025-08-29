@@ -31,7 +31,7 @@ It uses [Capacitor](https://github.com/ionic-team/capacitor) to wrap the webapp 
 
 ### Running the Android app
 ```bash
-npm cap run android
+CAPACITOR=true npm run build && npx cap run android
 ```
 
 ## Backend
