@@ -22,7 +22,7 @@
         from "@perfice/components/analytics/trackable/AnalyticsTrackableLineChart.svelte";
     import {trackableDetailedAnalytics} from "@perfice/stores";
     import {type SearchEntity, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
-    import {gotoSearch} from "@perfice/stores/journal/search";
+    import {gotoJournalSearch} from "@perfice/stores/journal/search";
     import {TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
 
     let {id}: { id: string } = $props();
@@ -78,7 +78,7 @@
 
         ];
 
-        gotoSearch(search);
+        gotoJournalSearch(search);
     }
 </script>
 

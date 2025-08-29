@@ -7,7 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig((v) => {
-    let dev = v.command === 'serve';
+    let dev = v.command === 'serve' || process.env.CAPACITOR;
     let basePath = dev ? '/' : '/new/';
     return {
         test: {

@@ -11,30 +11,31 @@
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBook, faCalendar, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import {faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
-    import type {SearchEntity} from "@perfice/model/journal/search/search";
+    import {type SearchEntity} from "@perfice/model/journal/search/search";
     import Button from "@perfice/components/base/button/Button.svelte";
     import {onMount} from "svelte";
-    import {gotoEditSearch, parseSearchFromUrl} from "@perfice/stores/journal/search";
+    import {createJournalDateSearch, gotoEditSearch, parseSearchFromUrl} from "@perfice/stores/journal/search";
     import {navigate} from "@perfice/app";
     import {pullToRefresh} from "@perfice/util/pullToRefresh";
-    import {ButtonColor} from "@perfice/model/ui/button";
+    import DatePickerButton from "@perfice/components/base/button/DatePickerButton.svelte";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
     let deleteMultiModal: GenericDeleteModal<JournalEntity[]>;
-    let dateInput: HTMLInputElement;
     let {params}: { params: Record<string, string> } = $props();
 
     let selectMode = $state(false);
     let currentSearch = $state<SearchEntity[] | null>(null);
     let selectedEntities = $state<JournalEntity[]>([]);
+
+    let dateSearch = $state<Date | null>(null);
 
     // Padding between bottom and scroll end
     const SCROLL_SLACK = 300;
@@ -48,6 +49,7 @@
             await paginatedJournal.load();
         }
     }
+
 
     function onScroll() {
         if (currentSearch != null) return;
@@ -127,17 +129,24 @@
         navigate("/journal/search");
     }
 
-    function openDatePicker() {
-        console.log("ok")
-        dateInput.click();
+    async function searchDate(date: Date | null) {
+        dateSearch = date;
+        if (date != null) {
+            currentSearch = createJournalDateSearch(date);
+            await journalSearch.search(currentSearch);
+        } else {
+            currentSearch = null;
+            await paginatedJournal.load();
+        }
     }
 
     // Scroll might already be at bottom, give time for the initial page load to finish
     // Then check if we're at the bottom and load more
     onMount(() => setTimeout(() => onScroll(), 500));
 
-    load();
     let title = $derived(currentSearch != null ? "Search result" : "Journal");
+
+    load();
 </script>
 
 <svelte:window onwheel={onScroll} ontouchmove={onScroll}/>
@@ -170,11 +179,7 @@
                         <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
                     {/if}
                 </div>
-                <input type="date" class="hidden" bind:this={dateInput}/>
-                <Button onClick={openDatePicker} color={ButtonColor.WHITE} class="hidden md:flex items-center gap-2">
-                    Date
-                    <Fa icon={faCalendar}/>
-                </Button>
+                <DatePickerButton onDatePick={searchDate} date={dateSearch}/>
                 <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
                     <Fa icon={faSearch}/>
                 </Button>

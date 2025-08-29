@@ -2,13 +2,20 @@ import type {JournalSearchService} from "@perfice/services/journal/search";
 import type {TagCategoryEntityProvider} from "@perfice/services/tag/category";
 import type {TagEntityProvider} from "@perfice/services/tag/tag";
 import type {TrackableEntityProvider} from "@perfice/services/trackable/trackable";
-import type {JournalSearch, SearchEntity} from "@perfice/model/journal/search/search";
+import {
+    type JournalSearch,
+    type SearchEntity,
+    SearchEntityMode,
+    SearchEntityType
+} from "@perfice/model/journal/search/search";
 import {resolvedPromise} from "@perfice/util/promise";
 import type {TrackableCategoryEntityProvider} from "@perfice/services/trackable/category";
 import type {JournalSearchUiDependencies} from "@perfice/model/journal/search/ui";
 import type {FormEntityProvider} from "@perfice/services/form/form";
 import {journal, tagEntries} from "@perfice/stores";
 import {navigate} from "@perfice/app";
+import {TimeRangeType} from "@perfice/model/variable/time/time";
+import {addDaysDate, dateToMidnight} from "@perfice/util/time/simple";
 
 export function parseSearchFromUrl(param: string): SearchEntity[] {
     try {
@@ -29,8 +36,41 @@ export function gotoEditSearch(entities: SearchEntity[]) {
 }
 
 
-export function gotoSearch(entities: SearchEntity[]) {
+export function gotoJournalSearch(entities: SearchEntity[]) {
     navigate(`/journal/${constructSearchParam(entities)}`);
+}
+
+export function createJournalDateSearch(date: Date): SearchEntity[] {
+    return [
+        {
+            id: crypto.randomUUID(),
+            type: SearchEntityType.TRACKABLE,
+            mode: SearchEntityMode.INCLUDE,
+            value: {
+                filters: []
+            }
+        },
+        {
+            id: crypto.randomUUID(),
+            type: SearchEntityType.TAG,
+            mode: SearchEntityMode.INCLUDE,
+            value: {
+                filters: []
+            }
+        },
+        {
+            id: crypto.randomUUID(),
+            type: SearchEntityType.DATE,
+            mode: SearchEntityMode.MUST_MATCH,
+            value: {
+                range: {
+                    type: TimeRangeType.BETWEEN,
+                    lower: dateToMidnight(date).getTime(),
+                    upper: addDaysDate(dateToMidnight(date), 1).getTime() - 1000
+                }
+            }
+        },
+    ];
 }
 
 export class JournalSearchStore {

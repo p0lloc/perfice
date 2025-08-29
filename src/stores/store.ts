@@ -49,30 +49,3 @@ export class AsyncStore<T> extends CustomStore<Promise<T>> {
     }
 
 }
-
-
-// type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
-//
-// type StoresValues<T> =
-//     T extends Readable<infer U> ? U : { [K in keyof T]: T[K] extends Readable<infer U> ? U : never };
-//
-// export function debouncedDerive<S extends Stores, T>(stores: S,
-//                                                      fn: (values: StoresValues<S>,
-//                                                           set: (value: T) => void, update: (fn: Updater<T>) => void) => Unsubscriber | void,
-//                                                      initial_value: T): Readable<T> {
-//     let timeout: any = null;
-//     let previousValues: T = initial_value;
-//     return derived(stores, (values, set, update) => {
-//         console.log("prev", previousValues);
-//         set(previousValues);
-//         clearTimeout(timeout);
-//         timeout = setTimeout(() => {
-//             fn(values, (v) => {
-//                 console.log("set", v);
-//                 previousValues = v;
-//                 set(v);
-//             }, update);
-//         }, 500);
-//     });
-// }
-//

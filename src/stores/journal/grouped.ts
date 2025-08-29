@@ -184,7 +184,6 @@ export function GroupedJournal(): Readable<Promise<JournalDay[]>> {
                         let singleEntries: JournalDayGroup[] = [];
                         let multiEntries: JournalDayGroup[] = [];
 
-                        // console.log(new Date(timestamp), dayData);
                         for (let group of dayData.formGroups.values()) {
                             if (group.entries.length == 1) {
                                 singleEntries.push(group);
