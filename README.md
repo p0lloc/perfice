@@ -25,6 +25,10 @@ npm run dev
 ```bash
 npm run build
 ```
+### Running with Docker
+A basic Dockerfile is provided for building the app with Node and spinning up an nginx server.
+Note that the app runs under the `/new` subpath.
+
 ## Stack
 Perfice is built with Svelte 5, TypeScript, TailwindCSS and leverages IndexedDB for most data storage.    
 It uses [Capacitor](https://github.com/ionic-team/capacitor) to wrap the webapp in a native WebView application for Android.
