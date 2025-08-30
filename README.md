@@ -6,8 +6,8 @@ Perfice is an open-source self-tracking platform that helps you track anything y
 
 ## Key Features
 - **Trackables**: Easily track anything you like - sleep, mood, or food
-- **Correlations**: See which metrics correlate the most with each other
-- **Goals**: Set goals to stay motivated
+- **Correlations**: Automatic insights like "Mood is better when you sleep longer"
+- **Goals**: Set goals to stay motivated, supports multiple trackables
 - **Privacy first**: Data is stored and calculated locally on your device
 - **Exportability**: All data can be exported to/from CSV and JSON
 ## Quick Start
