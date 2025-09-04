@@ -181,11 +181,11 @@ export class AuthService {
     }
 
     async setTimezone(timezone: string): Promise<boolean> {
-        let res = await this.postAuthenticated("timezone", {
+        let res = await this.getClient().put("timezone", this.getAuthenticatedOptions({
             json: {
                 timezone
             }
-        });
+        }));
 
         if (!res.ok || !this.user)
             return false;
