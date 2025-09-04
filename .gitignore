@@ -29,7 +29,10 @@ Perfice.drawio
 dev-dist
 deploy-apk.sh
 build-signed.sh
+build-local.sh
 deploy.sh
+*.drawio
+*.drawio.bkp
 
 .env.development
 .env
