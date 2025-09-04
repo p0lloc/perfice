@@ -1,4 +1,4 @@
-![Perfice - Screenshot](https://raw.githubusercontent.com/p0lloc/perfice/main/assets/screenshot.png)
+![Perfice - Screenshot](https://raw.githubusercontent.com/p0lloc/perfice/main/client/assets/screenshot.png)
 # Perfice - Open self-tracking platform
 
 Perfice is an open-source self-tracking platform that helps you track anything you like, and see how different metrics impact other areas of your life. It is built to be heavily customizable and local-first, leaving you in control of your tracking journey.
