@@ -1,10 +1,10 @@
 services:
-  perfice:
+  client:
     image: ghcr.io/p0lloc/perfice:latest   
     build:
-      context: https://github.com/p0lloc/perfice.git
-      dockerfile: client/Dockerfile
-    container_name: perfice
+      context: https://github.com/p0lloc/perfice.git#main:client
+      dockerfile: Dockerfile
+    container_name: client
     ports:
       - "6574:80"     
     restart: unless-stopped
