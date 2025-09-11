@@ -1,0 +1,1 @@
+docker build -f gateway/Dockerfile -t gateway:latest .

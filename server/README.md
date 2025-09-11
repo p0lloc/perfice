@@ -1,3 +1,5 @@
 # server
-Perfice runs completely fine without a backend server, it's only useful if you want integrations or syncing data between devices.  
-The backend source will be published once I've polished the code and written docs for how to run it.
+Perfice can be run completely locally without a server, but using a server allows some extra features.  
+The server component is responsible for synchronizing data between devices and pulling data automatically from integrations like Fitbit, Todoist into the platform.
+
+More information can be read in the [docs](https://perfice.adoe.dev/docs/).

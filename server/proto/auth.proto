@@ -1,0 +1,49 @@
+syntax = "proto3";
+option go_package = "./proto";
+
+service UserService {
+  rpc Authenticate(AuthenticationRequest) returns (AuthenticationResponse);
+  rpc GetSessions(GetSessionsRequest) returns (GetSessionsResponse);
+  rpc GetUserTimeZone(GetUserTimeZoneRequest) returns (GetUserTimeZoneResponse);
+  rpc GetUsersTimeZones(GetUsersTimeZonesRequest) returns (GetUsersTimeZonesResponse);
+}
+
+message AuthenticationRequest { string token = 1; }
+
+message GetSessionsRequest {
+  string userId = 1;
+}
+
+message GetUsersTimeZonesRequest {
+  repeated string userIds = 1;
+}
+
+message GetUsersTimeZonesResponse {
+  map<string, string> timezones = 1;
+}
+
+message GetUserTimeZoneRequest { string userId = 1; }
+
+message GetUserTimeZoneResponse { string timezone = 1; }
+
+message GetSessionsResponse {
+  repeated Session sessions = 1;
+}
+
+message Session {
+  string id = 1;
+  string userId = 2;
+  int64 expiry = 3;
+}
+
+message SuccessfulAuthenticationResponse {
+  string userId = 1;
+  string sessionId = 2;
+}
+
+message AuthenticationResponse {
+  oneof result {
+    SuccessfulAuthenticationResponse auth = 1;
+    string error = 2;
+  }
+}

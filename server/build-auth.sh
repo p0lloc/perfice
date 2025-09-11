@@ -1,0 +1,1 @@
+docker build -f auth/Dockerfile -t auth:latest .

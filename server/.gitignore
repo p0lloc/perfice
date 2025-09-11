@@ -1,0 +1,3 @@
+.env
+deploy-*.sh
+*-deployment.yaml
