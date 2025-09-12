@@ -13,6 +13,7 @@ Perfice is an open-source self-tracking platform that helps you track anything y
 ## Quick Start
 ### Install project dependencies
 ```bash
+cd client
 npm install
 ```
 
@@ -26,7 +27,7 @@ npm run dev
 npm run build
 ```
 ### Running with Docker
-A basic Dockerfile is provided for building the app with Node and spinning up an nginx server.
+A basic Dockerfile (and compose file) is provided for building the app with Node and spinning up an nginx server.
 Note that the app runs under the `/new` subpath.
 
 ## Stack
@@ -42,8 +43,7 @@ CAPACITOR=true npm run build && npx cap run android
 User accounts, synchronization and integrations require a backend to function. You can set the service URL locally by clicking the globe (🌐) icon on the settings page. 
 To set a default backend URL, configure the `VITE_BACKEND_URL` environment variable in a `.env` or `.env.development` file in the root of the project.
 
-The backend is currently not open source and the protocol documentation is sadly not yet finished. However, most functionality can be deduced (for the brave) from the [code](https://github.com/p0lloc/perfice/blob/main/src/services) in the auth, integration and sync modules.
-
+You can read more about how to setup the backend in the [documentation](https://perfice.adoe.dev/docs/selfhost).
 ## License
 Perfice is licensed under the [MIT license](https://github.com/p0lloc/perfice/blob/main/LICENSE).
 
