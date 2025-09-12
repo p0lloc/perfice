@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+    "github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"perfice.adoe.dev/mongoutil"
