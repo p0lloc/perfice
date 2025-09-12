@@ -103,35 +103,20 @@ func (s *IntegrationFetchService) replaceURLVariables(inputUrl string, options m
 		}
 	}
 
-	parsed, err := url.Parse(inputUrl)
-	if err != nil {
-		return "", err
-	}
-
-	queryParams := parsed.Query()
-
-	for param, values := range queryParams {
-		if len(values) != 1 {
-			return "", fmt.Errorf("integration request URL contains duplicate query params %s", param)
-		}
-
-		value := values[0]
-		for varName, lookup := range availableVariables {
-			varName = fmt.Sprintf("[%s]", varName)
-			if strings.Contains(value, varName) {
-				result, err := lookup(now, rangeStart, rangeEnd)
-				if err != nil {
-					return "", fmt.Errorf("failed to evaluate variable %s: %v", varName, err)
-				}
-				value = strings.ReplaceAll(value, varName, result)
+	result := inputUrl
+	for varName, lookup := range availableVariables {
+		varName = fmt.Sprintf("[%s]", varName)
+		if strings.Contains(result, varName) {
+			val, err := lookup(now, rangeStart, rangeEnd)
+			if err != nil {
+				return "", fmt.Errorf("failed to evaluate variable %s: %v", varName, err)
 			}
 
-			queryParams[param] = []string{value}
+			result = strings.ReplaceAll(result, varName, url.QueryEscape(val))
 		}
 	}
 
-	parsed.RawQuery = queryParams.Encode()
-	return parsed.String(), nil
+	return result, nil
 }
 
 func (s *IntegrationFetchService) constructIntegrationEntityKey(integrationType string, entityType string) string {
