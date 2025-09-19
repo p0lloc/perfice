@@ -21,20 +21,36 @@ type IntegrationOption struct {
 }
 
 type IntegrationEntityDefinition struct {
-	EntityType      string                            `json:"entityType" bson:"entityType"`
-	Name            string                            `json:"name" bson:"name"`
-	IntegrationType string                            `json:"integrationType" bson:"integrationType"`
-	URL             string                            `json:"url" bson:"url"`
-	Identifier      string                            `json:"identifier" bson:"identifier"`
-	Timestamp       any                               `json:"timestamp" bson:"timestamp"`
-	Multiple        string                            `json:"multiple,omitempty" bson:"multiple"`
-	History         *HistoryOptions                   `json:"history" bson:"history"`
-	Interval        IntegrationFetchInterval          `json:"interval" bson:"interval"`
-	Fields          map[string]IntegrationEntityField `json:"fields" bson:"fields"`
-	Schema          map[string]interface{}            `json:"schema" bson:"schema"`
-	LogSettings     *IntegrationEntityLogSettings     `json:"logSettings" bson:"logSettings"`
-	Options         map[string]IntegrationOption      `json:"options" bson:"options"`
+	EntityType      string                    `json:"entityType" bson:"entityType"`
+	Name            string                    `json:"name" bson:"name"`
+	IntegrationType string                    `json:"integrationType" bson:"integrationType"`
+	Sources         []IntegrationEntitySource `json:"sources" bson:"sources"`
+	//URL             string                            `json:"url" bson:"url"`
+	//Interval        IntegrationFetchInterval          `json:"interval" bson:"interval"`
+	Identifier  string                            `json:"identifier" bson:"identifier"`
+	Timestamp   any                               `json:"timestamp" bson:"timestamp"`
+	Multiple    string                            `json:"multiple,omitempty" bson:"multiple"`
+	History     *HistoryOptions                   `json:"history" bson:"history"`
+	Fields      map[string]IntegrationEntityField `json:"fields" bson:"fields"`
+	Schema      map[string]interface{}            `json:"schema" bson:"schema"`
+	LogSettings *IntegrationEntityLogSettings     `json:"logSettings" bson:"logSettings"`
+	Options     map[string]IntegrationOption      `json:"options" bson:"options"`
 }
+
+var PullIntegrationEntitySourceType = "pull"
+var PushIntegrationEntitySourceType = "push"
+
+type IntegrationEntitySource struct {
+	Type     string         `json:"type" bson:"type"`
+	Settings map[string]any `json:"settings" bson:"settings"`
+}
+
+type PullIntegrationEntitySourceSettings struct {
+	URL      string                   `json:"url" bson:"url"`
+	Interval IntegrationFetchInterval `json:"interval" bson:"interval"`
+}
+
+type PushIntegrationEntitySourceSettings struct{}
 
 type IntegrationEntityLogSettings struct {
 	Identifier string `json:"identifier" bson:"identifier"`
@@ -59,13 +75,18 @@ type IntegrationUpdate struct {
 }
 
 type UserIntegration struct {
-	Id              string            `bson:"id" json:"id"`
-	UserId          string            `bson:"userId" json:"userId"`
-	IntegrationType string            `json:"integrationType" bson:"integrationType"`
-	EntityType      string            `json:"entityType" bson:"entityType"`
-	FormId          string            `json:"formId" bson:"formId"`
-	Fields          map[string]string `json:"fields" bson:"fields"`
-	Options         map[string]any    `json:"options" bson:"options"`
+	Id              string                  `bson:"id" json:"id"`
+	UserId          string                  `bson:"userId" json:"userId"`
+	IntegrationType string                  `json:"integrationType" bson:"integrationType"`
+	EntityType      string                  `json:"entityType" bson:"entityType"`
+	Webhook         *UserIntegrationWebhook `json:"webhook" bson:"webhook"`
+	FormId          string                  `json:"formId" bson:"formId"`
+	Fields          map[string]string       `json:"fields" bson:"fields"`
+	Options         map[string]any          `json:"options" bson:"options"`
+}
+
+type UserIntegrationWebhook struct {
+	Token string `json:"token" bson:"token"`
 }
 
 type FetchedEntityLog struct {

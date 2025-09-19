@@ -88,6 +88,10 @@ func (a *Gateway) routeIntegrationService(app *fiber.App, httpClient *http.Clien
 	forwarder.Delete("/:id", "/%s", "id").Forward()
 	forwarder.Post("/:id/historical", "/%s/historical", "id").Forward()
 
+	baseRouter := app.Group("/")
+	baseForwarder := newRequestForwarder(remoteBase, a.authMiddleware, httpClient, &baseRouter, false)
+	baseForwarder.Post("/integrations/push/:token", "/integrations/push/%s", "token").Forward()
+
 	typeGroup := app.Group("/integrationTypes")
 	typeForwarder := newRequestForwarder(remoteBase+"/integrationTypes", a.authMiddleware, httpClient, &typeGroup, false)
 	typeForwarder.Get("/", "").Authenticated().Forward()
@@ -95,7 +99,6 @@ func (a *Gateway) routeIntegrationService(app *fiber.App, httpClient *http.Clien
 	typeForwarder.Get("/:integrationType/redirect", "/%s/redirect", "integrationType").Authenticated().Forward()
 	typeForwarder.Get("/:integrationType/callback", "/%s/callback", "integrationType").Forward()
 
-	baseRouter := app.Group("/")
 	updateForwarder := newRequestForwarder(remoteBase+"/updates", a.authMiddleware, httpClient, &baseRouter, true)
 	updateForwarder.Get("/updates", "").Forward()
 	updateForwarder.Post("/updates/ack", "/ack").Forward()
