@@ -129,7 +129,7 @@ func (a *Gateway) run() {
 		}))
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "https://localhost, http://localhost:8000, http://localhost:5173, https://perfice.adoe.dev", // allow all origins, including no origin
+		AllowOrigins:     "http://localhost, https://localhost, http://localhost:8000, http://localhost:5173, https://perfice.adoe.dev", // allow all origins, including no origin
 		AllowHeaders:     "content-type, authorization",                                                               // allow all headers
 		AllowCredentials: true,
 	}))
