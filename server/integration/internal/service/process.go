@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -91,7 +92,6 @@ func (s *IntegrationProcessService) extractField(path any, data interface{}, now
 
 		value, err := gPath(context.Background(), data)
 		if err != nil {
-			sentry.CaptureException(fmt.Errorf("Failed to get field %s: %v\n", path, err))
 			return nil, nil
 		}
 
@@ -127,6 +127,10 @@ func (s *IntegrationProcessService) extractTimestamp(def model.IntegrationEntity
 	extracted, err := s.extractField(mongoutil.CleanBSON(def.Timestamp), data, now)
 	if err != nil {
 		return 0, err
+	}
+
+	if extracted == nil {
+		return 0, errors.New("unable to extract timestamp")
 	}
 
 	switch extracted := extracted.(type) {
@@ -170,6 +174,10 @@ func (s *IntegrationProcessService) handleItem(def model.IntegrationEntityDefini
 		if err != nil {
 			sentry.CaptureException(fmt.Errorf("Failed to get field %v: %v\n", &fieldPath.Path, err))
 			continue
+		}
+
+		if value == nil {
+			return nil
 		}
 
 		extractedData[questionId] = value
