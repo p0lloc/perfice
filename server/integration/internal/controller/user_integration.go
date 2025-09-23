@@ -4,8 +4,10 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"perfice.adoe.dev/integration/internal/model"
 	"perfice.adoe.dev/integration/internal/service"
 	"perfice.adoe.dev/integration/internal/util"
+	util2 "perfice.adoe.dev/util"
 )
 
 type UserIntegrationController struct {
@@ -30,6 +32,16 @@ type UpdateIntegrationRequest struct {
 	Options map[string]any    `json:"options" validate:"required"`
 }
 
+type UserIntegrationResponse struct {
+	Id              string                        `bson:"id" json:"id"`
+	IntegrationType string                        `json:"integrationType"`
+	EntityType      string                        `json:"entityType"`
+	Webhook         *model.UserIntegrationWebhook `json:"webhook"`
+	FormId          string                        `json:"formId"`
+	Fields          map[string]string             `json:"fields"`
+	Options         map[string]any                `json:"options"`
+}
+
 func (c *UserIntegrationController) GetIntegrations(ctx *fiber.Ctx) error {
 	userId := getUserId(ctx)
 	integrations, err := c.userIntegrationService.GetIntegrationsByUserId(userId)
@@ -37,7 +49,19 @@ func (c *UserIntegrationController) GetIntegrations(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(integrations)
+	response := util2.SliceMap(integrations, func(integration model.UserIntegration) UserIntegrationResponse {
+		return UserIntegrationResponse{
+			Id:              integration.Id,
+			IntegrationType: integration.IntegrationType,
+			EntityType:      integration.EntityType,
+			Webhook:         integration.Webhook,
+			FormId:          integration.FormId,
+			Fields:          integration.Fields,
+			Options:         integration.Options,
+		}
+	})
+
+	return ctx.JSON(response)
 }
 
 func (c *UserIntegrationController) Create(ctx *fiber.Ctx) error {

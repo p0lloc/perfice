@@ -2,9 +2,14 @@ export interface Integration {
     id: string;
     formId: string;
     integrationType: string;
+    webhook: IntegrationWebhook | null;
     entityType: string;
     fields: Record<string, string>;
     options: Record<string, string | number>;
+}
+
+export interface IntegrationWebhook {
+    token: string;
 }
 
 export interface IntegrationType {
