@@ -9,7 +9,7 @@ Integrations are what allow you to synchronize data from remote providers (like 
 Pull data to Perfice by setting up an [Integration type](./types) and [Integration entities](./entities).
 
 ## Pushing data to Perfice
-Pushing data to Perfice by exposing an API/webhooks is a feature planned for the future.
+Pushing data to Perfice is possible by configuring a `push` source in an [Integration entity](./entities).
 
 ## Local integrations
 Local integrations like Android HealthConnect or Apple Health are currently not yet supported.
