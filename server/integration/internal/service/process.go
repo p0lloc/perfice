@@ -241,6 +241,10 @@ func (s *IntegrationProcessService) handleIntegrationLog(definition model.Integr
 		return s.variableEvaluator.evaluateIdentifier(definition.Identifier, options, item, now)
 	})
 
+	if err != nil {
+		return err
+	}
+
 	if logged == nil {
 		err := s.fetchedEntityLogCollection.Insert(model.FetchedEntityLog{
 			Identifier:    logIdentifier,

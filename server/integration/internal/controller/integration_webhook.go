@@ -18,7 +18,7 @@ func (c *IntegrationWebhookController) HandleWebhook(ctx *fiber.Ctx) error {
 	body := ctx.Body()
 
 	if err := (*c.service).HandleWebhook(token, body); err != nil {
-		return ctx.SendStatus(fiber.StatusInternalServerError)
+		return err
 	}
 	return ctx.SendStatus(fiber.StatusOK)
 }
