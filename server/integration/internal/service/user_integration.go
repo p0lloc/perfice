@@ -15,24 +15,30 @@ type UserIntegrationService struct {
 	fetchedEntityLogCollection *collection.FetchedIntegrationEntityLogCollection
 	integrationFetchService    *IntegrationFetchService
 	userService                pb.UserServiceClient
+	typeService                *IntegrationTypeService
 
 	integrationCreateCallbacks []func(model.UserIntegration)
 	integrationDeleteCallbacks []func(string)
 }
 
 func NewUserIntegrationService(userIntegrationCollection *collection.UserIntegrationCollection, fetchedEntityLogCollection *collection.FetchedIntegrationEntityLogCollection,
-	userService pb.UserServiceClient) *UserIntegrationService {
+	userService pb.UserServiceClient, typeService *IntegrationTypeService) *UserIntegrationService {
 	return &UserIntegrationService{
 		userIntegrationCollection:  userIntegrationCollection,
 		fetchedEntityLogCollection: fetchedEntityLogCollection,
 		userService:                userService,
 		integrationCreateCallbacks: []func(model.UserIntegration){},
 		integrationDeleteCallbacks: []func(string){},
+		typeService:                typeService,
 	}
 }
 
 func (s *UserIntegrationService) SetFetchService(integrationFetchService *IntegrationFetchService) {
 	s.integrationFetchService = integrationFetchService
+}
+
+func (s *UserIntegrationService) GetIntegrationByWebhookToken(token string) (*model.UserIntegration, error) {
+	return s.userIntegrationCollection.FindIntegrationByWebhookToken(token)
 }
 
 func (s *UserIntegrationService) GetAllIntegrations() ([]model.UserIntegration, error) {
@@ -54,6 +60,23 @@ func (s *UserIntegrationService) Create(userId string, integrationType string, e
 		FormId:          formId,
 		Fields:          fields,
 		Options:         options,
+	}
+
+	definition := s.typeService.GetIntegrationEntityByIntegrationTypeAndEntityType(integrationType, entityType)
+	if definition == nil {
+		return nil, nil
+	}
+
+	source := s.typeService.ExtractPushSource(integrationType, entityType)
+	if source != nil {
+		token, err := util.GenerateAlphanumericString(32)
+		if err != nil {
+			return nil, err
+		}
+
+		integration.Webhook = &model.UserIntegrationWebhook{
+			Token: token,
+		}
 	}
 
 	if err := s.userIntegrationCollection.Insert(integration); err != nil {

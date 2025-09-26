@@ -19,6 +19,10 @@ func (c *UserIntegrationCollection) FindAllIntegrations() ([]model.UserIntegrati
 	return mongoutil.Find[model.UserIntegration](c.collection, bson.M{})
 }
 
+func (c *UserIntegrationCollection) FindIntegrationByWebhookToken(token string) (*model.UserIntegration, error) {
+	return mongoutil.FindOne[model.UserIntegration](c.collection, bson.M{"webhook.token": token})
+}
+
 func (c *UserIntegrationCollection) FindIntegrationByIdAndUserId(id string, userId string) (*model.UserIntegration, error) {
 	return mongoutil.FindOne[model.UserIntegration](c.collection, bson.M{"id": id, "userId": userId})
 }

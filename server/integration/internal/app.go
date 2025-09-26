@@ -33,6 +33,8 @@ type IntegrationApp struct {
 	integrationFetchService     *service.IntegrationFetchService
 	integrationUpdateService    *service.IntegrationUpdateService
 	integrationSchedulerService *service.IntegrationSchedulerService
+	processService              *service.IntegrationProcessService
+	integrationWebhookService   *service.IntegrationWebhookService
 	authClient                  pb.UserServiceClient
 }
 
@@ -52,9 +54,16 @@ func NewIntegrationApp() *IntegrationApp {
 }
 
 func (a *IntegrationApp) setupServices() {
+	integrationTypeCollection := collection.NewIntegrationTypeCollection(a.db.Collection("integration_types"))
+	integrationEntityCollection := collection.NewIntegrationEntityCollection(a.db.Collection("integration_entities"))
+	a.integrationTypeService = service.NewIntegrationTypeService(integrationTypeCollection, integrationEntityCollection)
+	if err := a.integrationTypeService.Load(); err != nil {
+		panic(err)
+	}
+
 	userIntegrationCollection := collection.NewUserIntegrationCollection(a.db.Collection("user_integrations"))
 	fetchedLogCollection := collection.NewFetchedIntegrationEntityLogCollection(a.db.Collection("entity_log"))
-	a.userIntegrationService = service.NewUserIntegrationService(userIntegrationCollection, fetchedLogCollection, a.authClient)
+	a.userIntegrationService = service.NewUserIntegrationService(userIntegrationCollection, fetchedLogCollection, a.authClient, a.integrationTypeService)
 	a.userIntegrationService.AddCreateCallback(func(integration model.UserIntegration) {
 		resp, err := a.authClient.GetUserTimeZone(context.Background(), &pb.GetUserTimeZoneRequest{UserId: integration.UserId})
 		if err != nil {
@@ -62,7 +71,12 @@ func (a *IntegrationApp) setupServices() {
 			return
 		}
 
-		err = a.integrationSchedulerService.ScheduleIntegration(integration, resp.Timezone)
+		pullSource := a.integrationTypeService.ExtractPullSource(integration.IntegrationType, integration.EntityType)
+		if pullSource == nil {
+			return
+		}
+
+		err = a.integrationSchedulerService.ScheduleIntegration(integration, *pullSource, resp.Timezone)
 		if err != nil {
 			sentry.CaptureException(fmt.Errorf("Failed to create integration scheduler job: %v\n", err))
 		}
@@ -74,13 +88,6 @@ func (a *IntegrationApp) setupServices() {
 			sentry.CaptureException(fmt.Errorf("Failed to delete integration scheduler job: %v\n", err))
 		}
 	})
-
-	integrationTypeCollection := collection.NewIntegrationTypeCollection(a.db.Collection("integration_types"))
-	integrationEntityCollection := collection.NewIntegrationEntityCollection(a.db.Collection("integration_entities"))
-	a.integrationTypeService = service.NewIntegrationTypeService(integrationTypeCollection, integrationEntityCollection)
-	if err := a.integrationTypeService.Load(); err != nil {
-		panic(err)
-	}
 
 	integrationAuthCollection := collection.NewIntegrationAuthenticationCollection(a.db.Collection("integration_auth"))
 	a.integrationAuthService = service.NewIntegrationAuthenticationService(integrationAuthCollection, a.integrationTypeService)
@@ -96,10 +103,14 @@ func (a *IntegrationApp) setupServices() {
 			sentry.CaptureException(fmt.Errorf("Failed to delete integration updates: %v\n", err))
 		}
 	})
-	a.integrationFetchService = service.NewIntegrationFetchService(a.userIntegrationService, a.integrationTypeService, a.integrationAuthService,
+
+	a.processService = service.NewIntegrationProcessService(a.integrationUpdateService, fetchedLogCollection)
+	a.integrationWebhookService = service.NewIntegrationWebhookService(a.userIntegrationService, a.authClient,
+		a.processService, a.integrationTypeService)
+
+	a.integrationFetchService = service.NewIntegrationFetchService(a.processService, a.userIntegrationService, a.integrationTypeService, a.integrationAuthService,
 		a.integrationUpdateService, fetchedLogCollection, a.authClient)
-	a.integrationFetchService.Load()
-	a.integrationSchedulerService = service.NewIntegrationSchedulerService(a.integrationFetchService, a.userIntegrationService, a.authClient)
+	a.integrationSchedulerService = service.NewIntegrationSchedulerService(a.integrationFetchService, a.integrationTypeService, a.userIntegrationService, a.authClient)
 	a.userIntegrationService.SetFetchService(a.integrationFetchService)
 
 	if err := a.integrationSchedulerService.Load(); err != nil {
@@ -163,6 +174,9 @@ func (a *IntegrationApp) setupHttpServer() {
 		recover.Config{
 			EnableStackTrace: true,
 		}))
+
+	integrationWebhookController := controller.NewIntegrationWebhookController(a.integrationWebhookService)
+	app.Post("/integrations/push/:token", integrationWebhookController.HandleWebhook)
 
 	userIntegrationController := controller.NewUserIntegrationController(a.userIntegrationService)
 	integrationGroup := app.Group("/integrations")

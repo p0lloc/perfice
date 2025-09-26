@@ -20,6 +20,7 @@ import (
 
 type IntegrationSchedulerService struct {
 	fetchService           *IntegrationFetchService
+	typeService            *IntegrationTypeService
 	userIntegrationService *UserIntegrationService
 	authClient             pb.UserServiceClient
 
@@ -27,8 +28,8 @@ type IntegrationSchedulerService struct {
 	scheduler gocron.Scheduler
 }
 
-func NewIntegrationSchedulerService(fetchService *IntegrationFetchService, userIntegrationService *UserIntegrationService, authClient pb.UserServiceClient) *IntegrationSchedulerService {
-	return &IntegrationSchedulerService{fetchService, userIntegrationService, authClient, map[string]uuid.UUID{}, nil}
+func NewIntegrationSchedulerService(fetchService *IntegrationFetchService, typeService *IntegrationTypeService, userIntegrationService *UserIntegrationService, authClient pb.UserServiceClient) *IntegrationSchedulerService {
+	return &IntegrationSchedulerService{fetchService, typeService, userIntegrationService, authClient, map[string]uuid.UUID{}, nil}
 }
 
 func (s *IntegrationSchedulerService) Load() error {
@@ -60,7 +61,12 @@ func (s *IntegrationSchedulerService) Load() error {
 			continue
 		}
 
-		if err := s.ScheduleIntegration(integration, *timezone); err != nil {
+		pullSource := s.typeService.ExtractPullSource(integration.IntegrationType, integration.EntityType)
+		if pullSource == nil {
+			continue
+		}
+
+		if err := s.ScheduleIntegration(integration, *pullSource, *timezone); err != nil {
 			return err
 		}
 	}
@@ -78,24 +84,24 @@ func (s *IntegrationSchedulerService) UnscheduleJobByIntegrationId(integrationId
 	return s.scheduler.RemoveJob(*jobId)
 }
 
-func (s *IntegrationSchedulerService) ScheduleIntegration(integration model.UserIntegration, timezone string) error {
-	definition := util.GetFromMapOrNil(s.fetchService.typeMapping, s.fetchService.constructIntegrationEntityKey(integration.IntegrationType, integration.EntityType))
+func (s *IntegrationSchedulerService) ScheduleIntegration(integration model.UserIntegration, pullSource model.PullIntegrationEntitySourceSettings, timezone string) error {
+	definition := s.typeService.GetIntegrationEntityByIntegrationTypeAndEntityType(integration.IntegrationType, integration.EntityType)
 	if definition == nil {
 		return nil
 	}
 
-	if definition.Interval.Cron == "" {
+	if pullSource.Interval.Cron == "" {
 		return nil
 	}
 
-	cron := fmt.Sprintf("TZ=%s %s", timezone, definition.Interval.Cron)
+	cron := fmt.Sprintf("TZ=%s %s", timezone, pullSource.Interval.Cron)
 
 	log.Println("Scheduling new job", integration.IntegrationType, integration.EntityType, cron)
 
 	job, err := s.scheduler.NewJob(gocron.CronJob(cron, true), gocron.NewTask(func() {
 		jitter := time.Duration(0)
-		if definition.Interval.Jitter > 0 {
-			jitter = time.Minute * time.Duration(rand.Intn(definition.Interval.Jitter))
+		if pullSource.Interval.Jitter > 0 {
+			jitter = time.Minute * time.Duration(rand.Intn(pullSource.Interval.Jitter))
 		}
 
 		time.Sleep(jitter)
@@ -111,13 +117,13 @@ func (s *IntegrationSchedulerService) ScheduleIntegration(integration model.User
 			return
 		}
 
-		err = s.fetchService.processIntegration(*integration)
+		err = s.fetchService.pullIntegration(*integration, pullSource)
 		if err != nil {
 			sentry.CaptureException(fmt.Errorf("Failed to run integration %s:%s: %v\n", integration.IntegrationType, integration.EntityType, err))
 			if errors.Is(err, IntegrationFetchError{}) {
 				_, _ = s.scheduler.NewJob(gocron.OneTimeJob(gocron.OneTimeJobStartDateTime(time.Now().Add(time.Second*10))), gocron.NewTask(func() {
 					log.Printf("Retrying integration %s:%s\n", integration.IntegrationType, integration.EntityType)
-					err := s.fetchService.processIntegration(*integration)
+					err := s.fetchService.pullIntegration(*integration, pullSource)
 					if err != nil {
 						sentry.CaptureException(fmt.Errorf("Integration re-fetch failed %s:%s: %v\n", integration.IntegrationType, integration.EntityType, err))
 					}
@@ -146,7 +152,12 @@ func (s *IntegrationSchedulerService) RescheduleIntegrations(integrations []mode
 			return err
 		}
 
-		if err := s.ScheduleIntegration(integration, timezone); err != nil {
+		pullSource := s.typeService.ExtractPullSource(integration.IntegrationType, integration.EntityType)
+		if pullSource == nil {
+			continue
+		}
+
+		if err := s.ScheduleIntegration(integration, *pullSource, timezone); err != nil {
 			return err
 		}
 	}

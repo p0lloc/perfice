@@ -18,6 +18,7 @@
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import IntegrationOptionEditor from "@perfice/components/integration/IntegrationOptionEditor.svelte";
     import GenericInfoModal from "@perfice/components/base/modal/generic/GenericInfoModal.svelte";
+    import EditIntegrationWebhook from "@perfice/components/integration/EditIntegrationWebhook.svelte";
 
     let {integrationId, back}: { integrationId: string, back: () => void } = $props();
     let fetchedHistoricalModal: GenericInfoModal;
@@ -110,6 +111,13 @@
         <IntegrationFieldEditor {form} {selectedEntity} fields={integration.fields} bind:this={fieldEditor}/>
         <IntegrationOptionEditor definition={selectedEntity.options} options={integration.options}
                                  bind:this={optionEditor}/>
+
+        {#if integration.webhook}
+            <div class="mb-8">
+                <EditIntegrationWebhook webhook={integration.webhook}/>
+            </div>
+        {/if}
+
         <div class="flex justify-between gap-2 items-center mt-4">
             {#if selectedEntity.historical}
                 <Button onClick={fetchHistorical}>Fetch historical</Button>
