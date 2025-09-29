@@ -13,6 +13,18 @@ The easiest way to run the webapp is by using Docker, this will run a bundled ve
 A [Docker compose file](https://raw.githubusercontent.com/p0lloc/perfice/refs/heads/main/client/docker-compose.yml) exists which you can use to get up and running quickly.   
 
 Simply download the file into your current directory and run `docker compose up`
+
+##### Building from source
+You can also build the client from source to produce static HTML/CSS/JS files.
+```shell
+cd client
+npm install
+npm run build
+```
+The built files will be placed in the `dist` folder, ready to be served by your favorite HTTP server. 
+
+Keep in mind that the client is expected to be ran under the `/new` subpath. This might require you to tweak your configuration or place all files under a dummy `new` directory.
+
 ### Running the backend
 In order to run the backend you must have a MongoDB database running.
 Similar to the client I've created a [Docker compose file](https://raw.githubusercontent.com/p0lloc/perfice/refs/heads/main/server/docker-compose.yml). Here you can configure the services before running them, such as setting the `MONGO_URL` and `ENCRYPTION_KEY` environment variables.
