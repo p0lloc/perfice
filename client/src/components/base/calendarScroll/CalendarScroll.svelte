@@ -1,11 +1,7 @@
 <script lang="ts">
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {
-        faCalendarAlt,
-        faChevronLeft,
-        faChevronRight,
-    } from "@fortawesome/free-solid-svg-icons";
+    import {faCalendarAlt, faChevronLeft, faChevronRight,} from "@fortawesome/free-solid-svg-icons";
     import {addDaysDate, dateToMidnight, getDaysDifference} from "@perfice/util/time/simple";
     import CalendarScrollItem from "@perfice/components/base/calendarScroll/CalendarScrollItem.svelte";
 
@@ -55,7 +51,7 @@
     let atEnd = $derived(endDate.getTime() == todayDate.getTime());
 </script>
 
-<div class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border px-4 md:px-0 w-full rounded-xl md:w-auto md:h-12 h-10 overflow-hidden bg-white md:bg-inherit">
+<div class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border px-4 md:px-0 w-full rounded-xl md:w-auto md:h-12 h-10 overflow-hidden bg-white dark:bg-gray-800 md:bg-inherit">
     <button onclick={left} class="mr-3">
         <Fa icon={faChevronLeft}/>
     </button>
@@ -84,7 +80,7 @@
                 />
                 <button
                         onclick={openDatePicker}
-                        class="bg-white md:p-2 py-2 md:border rounded-full pointer-feedback:bg-gray-100 md:ml-2"
+                        class="dark:bg-gray-800 bg-white md:p-2 py-2 md:border dark:md:border-gray-500 rounded-full hover-feedback md:ml-2"
                 >
                     <Fa icon={faCalendarAlt}/>
                 </button>

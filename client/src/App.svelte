@@ -118,7 +118,7 @@
 
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
-    <div class="flex main-container">
+    <div class="flex main-container dark">
         <GlobalSyncModals/>
         <GlobalIntegrationModals/>
         {#if !customLayout}
