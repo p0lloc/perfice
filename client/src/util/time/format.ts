@@ -89,6 +89,10 @@ export function formatDateHHMM(date: Date) {
     return `${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
 }
 
+export function formatMinutesHHMM(minutes: number) {
+    return `${padTime(Math.floor(minutes / 60))}:${padTime(Math.floor(minutes % 60))}`;
+}
+
 export function formatDateLongTerm(date: Date, currentDate: Date, ws: WeekStart) {
     let weekStart = dateToWeekStart(currentDate, ws);
     let prefix;

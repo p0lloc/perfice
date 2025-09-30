@@ -1,7 +1,7 @@
 import type {FormQuestionDataTypeDefinition} from "@perfice/model/form/data";
 import {pNumber, type PrimitiveValue, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
 import {FormQuestionDisplayType} from "@perfice/model/form/form";
-import {formatTimestampHHMM} from "@perfice/util/time/format";
+import {formatMinutesHHMM} from "@perfice/util/time/format";
 import {faCalendar, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import {parseHhMmTimeOfDayMinutes} from "@perfice/util/time/simple";
 
@@ -71,7 +71,7 @@ export class TimeOfDayFormQuestionDataType implements FormQuestionDataTypeDefini
     }
 
     getDisplayValue(value: number): PrimitiveValue | null {
-        return pString(formatTimestampHHMM(value));
+        return pString(formatMinutesHHMM(value));
     }
 
 }
