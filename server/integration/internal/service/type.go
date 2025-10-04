@@ -92,7 +92,7 @@ func (s *IntegrationTypeService) deserializeEntitySourceSettings(source model.In
 			URL: source.Settings["url"].(string),
 			Interval: model.IntegrationFetchInterval{
 				Cron:   source.Settings["interval"].(map[string]any)["cron"].(string),
-				Jitter: int(source.Settings["interval"].(map[string]any)["jitter"].(int32)),
+				Jitter: util.CastToInt(source.Settings["interval"].(map[string]any)["jitter"].(any)),
 			},
 		}
 	case model.PushIntegrationEntitySourceType:
