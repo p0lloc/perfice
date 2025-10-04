@@ -63,7 +63,7 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 
-	if err := c.authService.Register(strings.Trim(strings.ToLower(request.Email), " "), request.Password); err != nil {
+	if err := c.authService.Register(c.sanitizeEmail(request.Email), request.Password); err != nil {
 		if errors.Is(err, UserAlreadyExistsError{}) {
 			return ctx.Status(fiber.StatusBadRequest).SendString("User already exists")
 		} else {
@@ -74,13 +74,17 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(fiber.StatusOK)
 }
 
+func (c *AuthController) sanitizeEmail(email string) string {
+	return strings.Trim(strings.ToLower(email), " ")
+}
+
 func (c *AuthController) Login(ctx *fiber.Ctx) error {
 	var request LoginRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 
-	session, err := c.authService.Login(request.Email, request.Password)
+	session, err := c.authService.Login(c.sanitizeEmail(request.Email), request.Password)
 	if err != nil {
 		if errors.Is(err, UserNotConfirmedError{}) {
 			return ctx.Status(fiber.StatusForbidden).SendString("Email not confirmed")
@@ -178,7 +182,7 @@ func (c *AuthController) ConfirmEmail(ctx *fiber.Ctx) error {
 
 func (c *AuthController) InitResetPassword(ctx *fiber.Ctx) error {
 	email := ctx.Query("email")
-	err := c.authService.InitResetPassword(email)
+	err := c.authService.InitResetPassword(c.sanitizeEmail(email))
 	if err != nil {
 		sentry.CaptureException(err)
 		return ctx.Status(fiber.StatusBadRequest).SendString("Invalid token")
