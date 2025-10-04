@@ -22,6 +22,10 @@ export class AuthStore extends CustomStore<AuthenticatedUser | null> {
         return await this.authService.resetPassword(email);
     }
 
+    async resendConfirmationEmail(email: string) {
+        return await this.authService.resendConfirmationEmail(email);
+    }
+
     async logout() {
         await this.authService.logout();
     }

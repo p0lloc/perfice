@@ -1,5 +1,5 @@
 <script lang="ts">
-    import LoginModal from "@perfice/components/settings/auth/LoginModal.svelte";
+    import LoginModal from "@perfice/components/settings/auth/login/LoginModal.svelte";
     import Button from "@perfice/components/base/button/Button.svelte";
     import ForgotPasswordModal from "@perfice/components/settings/auth/ForgotPasswordModal.svelte";
     import {auth, deletion, remote} from "@perfice/stores";

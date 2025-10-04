@@ -54,6 +54,7 @@ func (a *Gateway) routeAuthService(app *fiber.App, httpClient *http.Client) {
 	forwarder.Post("/delete", "/delete"). /*.Authenticated()*/ Forward()
 	forwarder.Get("/confirm/:token", "/confirm/%s", "token").Forward()
 	forwarder.Post("/reset", "/reset").Forward()
+	forwarder.Post("/resendConfirm", "/resendConfirm").Forward()
 	forwarder.Post("/resetInit", "/resetInit").Forward()
 	forwarder.Get("/reset/:token", "/reset/%s", "token").Forward()
 
@@ -133,7 +134,7 @@ func (a *Gateway) run() {
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost, https://localhost, http://localhost:8000, http://localhost:5173, https://perfice.adoe.dev", // allow all origins, including no origin
-		AllowHeaders:     "content-type, authorization",                                                               // allow all headers
+		AllowHeaders:     "content-type, authorization",                                                                                 // allow all headers
 		AllowCredentials: true,
 	}))
 

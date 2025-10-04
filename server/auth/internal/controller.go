@@ -35,6 +35,10 @@ type RefreshTokenRequest struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type ResendConfirmationEmailRequest struct {
+	Email string `json:"email"`
+}
+
 func sessionResponse(ctx *fiber.Ctx, session Session) error {
 	return ctx.JSON(fiber.Map{
 		"accessToken":  session.AccessToken,
@@ -218,6 +222,21 @@ func (c *AuthController) ResetPassword(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Type("html").SendString(fmt.Sprintf(resetPasswordHtml, appBaseUrl))
+}
+
+func (c *AuthController) ResendConfirmationEmail(ctx *fiber.Ctx) error {
+	var request ResendConfirmationEmailRequest
+	if err := ctx.BodyParser(&request); err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+
+	err := c.authService.ResendConfirmationEmail(c.sanitizeEmail(request.Email))
+	if err != nil {
+		sentry.CaptureException(err)
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+
+	return ctx.SendStatus(fiber.StatusOK)
 }
 
 type FeedbackController struct {

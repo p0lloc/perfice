@@ -109,17 +109,25 @@ func (a *AuthService) Register(email string, password string) error {
 		Timezone: "Europe/Amsterdam",
 	}
 
+	if err := a.createConfirmationEmail(user); err != nil {
+		return err
+	}
+
+	return a.userCollection.Create(user)
+}
+
+func (a *AuthService) createConfirmationEmail(user User) error {
 	confirmationToken, err := a.accountTokenCollection.Create(user.Id, confirmationAccountToken)
 	if err != nil {
 		return err
 	}
 
-	err = a.mailService.SendEmailConfirmationMail(email, confirmationToken.Id.Hex())
+	err = a.mailService.SendEmailConfirmationMail(user.Email, confirmationToken.Id.Hex())
 	if err != nil {
 		return err
 	}
 
-	return a.userCollection.Create(user)
+	return nil
 }
 
 func (a *AuthService) Login(email string, password string) (Session, error) {
@@ -273,6 +281,19 @@ func (a *AuthService) ValidateResetPassword(token primitive.ObjectID) bool {
 	}
 
 	return found != nil
+}
+
+func (a *AuthService) ResendConfirmationEmail(email string) error {
+	user, err := a.userCollection.GetUserByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if user == nil || user.Confirmed {
+		return errors.New("invalid email")
+	}
+
+	return a.createConfirmationEmail(*user)
 }
 
 type FeedbackService struct {

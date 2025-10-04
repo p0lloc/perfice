@@ -51,6 +51,7 @@ func (a *AuthApp) setupHttpServer(secret []byte, authService *AuthService, sessi
 	app.Get("/confirm/:token", authController.ConfirmEmail)
 	app.Post("/resetInit", authController.InitResetPassword)
 	app.Post("/reset", authController.ResetPassword)
+	app.Post("/resendConfirm", authController.ResendConfirmationEmail)
 	app.Get("/reset/:token", authController.FillResetPassword)
 
 	feedbackController := NewFeedbackController(feedbackService)

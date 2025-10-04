@@ -229,4 +229,14 @@ export class AuthService {
             ...options
         };
     }
+
+    async resendConfirmationEmail(email: string) {
+        let res = await this.getClient().post("resendConfirm", {
+            json: {
+                email
+            }
+        });
+
+        return res.ok;
+    }
 }
