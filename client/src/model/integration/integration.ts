@@ -8,6 +8,39 @@ export interface Integration {
     options: Record<string, string | number>;
 }
 
+export const LOCAL_INTEGRATION_TYPES: IntegrationType[] = [
+    {
+        integrationType: "HEALTH_CONNECT",
+        authenticated: true,
+        name: "Health Connect",
+        logo: "",
+        entities: [
+            {
+                name: "Steps",
+                entityType: "steps",
+                fields: {
+                    "steps": "Steps"
+                },
+                options: {},
+                historical: false
+            },
+            {
+                name: "Heart rate",
+                entityType: "heartRate",
+                fields: {
+                    "heartRate": "Heart rate"
+                },
+                options: {},
+                historical: false
+            },
+        ]
+    }
+]
+
+export function isLocalIntegrationType(type: string): boolean {
+    return LOCAL_INTEGRATION_TYPES.some(i => i.integrationType == type);
+}
+
 export interface IntegrationWebhook {
     token: string;
 }

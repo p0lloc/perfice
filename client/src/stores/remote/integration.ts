@@ -1,9 +1,9 @@
-import type {IntegrationType} from "@perfice/model/integration/integration";
 import type {IntegrationData, IntegrationService} from "@perfice/services/integration/integration";
 import {AsyncStore} from "@perfice/stores/store";
 import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 import {writable} from "svelte/store";
 import type {UnauthenticatedIntegrationError} from "@perfice/model/integration/ui";
+import {isLocalIntegrationType} from "@perfice/model/integration/integration";
 
 export const unauthenticatedIntegrationEvents = writable<UnauthenticatedIntegrationError[][]>([]);
 
@@ -27,15 +27,15 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         return value;
     }
 
-    getIntegrationTypes(): Promise<IntegrationType[]> {
-        return this.integrationService.fetchTypes();
-    }
-
     authenticateIntegration(integrationType: string) {
         this.integrationService.authenticateIntegration(integrationType);
     }
 
-    fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
+    async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
+        if (isLocalIntegrationType(integrationType)) {
+            return true;
+        }
+
         return this.integrationService.fetchAuthenticationStatus(integrationType);
     }
 

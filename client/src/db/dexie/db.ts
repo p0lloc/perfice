@@ -31,6 +31,8 @@ import type {EncryptionKey, OutgoingUpdate} from "@perfice/model/sync/sync";
 import {DexieEncryptionKeyCollection} from "@perfice/db/dexie/encryption";
 import {DexieUpdateQueueCollection} from "@perfice/db/dexie/sync";
 import {LazySyncServiceProvider, SyncedTable} from "@perfice/services/sync/sync";
+import {DexieLocalIntegrationCollection} from "@perfice/db/dexie/integration";
+import type {Integration} from "@perfice/model/integration/integration";
 
 export type DexieDB = Dexie & {
     trackables: Table<Trackable>;
@@ -53,11 +55,12 @@ export type DexieDB = Dexie & {
     notifications: Table<StoredNotification>;
     encryptionKey: Table<EncryptionKey>;
     updateQueue: Table<OutgoingUpdate>;
+    localIntegrations: Table<Integration>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(24).stores({
+    db.version(25).stores({
         "trackables": "id, categoryId",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, integration, [formId+timestamp], [timestamp+id]",
@@ -77,7 +80,8 @@ function loadDb(): DexieDB {
         "savedSearches": "id",
         "notifications": "id, entityId",
         "encryptionKey": "id",
-        "updateQueue": "id, entityId, entityType"
+        "updateQueue": "id, entityId, entityType",
+        "localIntegrations": "id, formId"
     });
 
     return db;
@@ -115,6 +119,8 @@ export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
     const notificationCollection = new DexieNotificationCollection(new SyncedTable(db.notifications, "notifications", syncServiceProvider));
     const encryptionKeyCollection = new DexieEncryptionKeyCollection(db.encryptionKey);
     const updateQueueCollection = new DexieUpdateQueueCollection(db.updateQueue);
+    const localIntegrationCollection = new DexieLocalIntegrationCollection(new SyncedTable(db.localIntegrations,
+        "localIntegrations", syncServiceProvider));
 
     return {
         tables: db._allTables,
@@ -139,6 +145,7 @@ export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
             notifications: notificationCollection,
             encryptionKey: encryptionKeyCollection,
             updateQueue: updateQueueCollection,
+            localIntegrations: localIntegrationCollection,
 
             transaction: async (table, callback) => {
                 await db.transaction('rw', table, callback);
