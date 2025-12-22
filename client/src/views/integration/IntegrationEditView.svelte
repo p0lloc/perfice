@@ -78,7 +78,8 @@
     }
 
     async function fetchHistorical() {
-        await integrations.fetchHistorical(integration!.id);
+        if (!integration) return;
+        await integrations.fetchHistorical(integration!.id, integration.integrationType);
         fetchedHistoricalModal.open();
     }
 </script>
@@ -87,21 +88,6 @@
 <GenericInfoModal title="Fetched data" message="Successfully fetched historical data for this integration"
                   bind:this={fetchedHistoricalModal}/>
 {#if integrationType && form && integration && selectedEntity}
-    <!--    <MobileTopBar title={integrationType.name}>-->
-    <!--        {#snippet leading()}-->
-    <!--            <button class="icon-button" onclick={back}>-->
-    <!--                <Fa icon={faArrowLeft}/>-->
-    <!--            </button>-->
-    <!--        {/snippet}-->
-    <!--        {#snippet actions()}-->
-    <!--            <button class="icon-button" onclick={deleteIntegration}>-->
-    <!--                <Fa icon={faTrash}/>-->
-    <!--            </button>-->
-    <!--            <button class="icon-button" onclick={save}>-->
-    <!--                <Fa icon={faCheck}/>-->
-    <!--            </button>-->
-    <!--        {/snippet}-->
-    <!--    </MobileTopBar>-->
     <div class="md:mt-8">
         <div class="justify-between flex items-center">
             <Title title={integrationType.name} icon={faGears}/>

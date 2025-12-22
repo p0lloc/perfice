@@ -3,7 +3,6 @@ import {AsyncStore} from "@perfice/stores/store";
 import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
 import {writable} from "svelte/store";
 import type {UnauthenticatedIntegrationError} from "@perfice/model/integration/ui";
-import {isLocalIntegrationType} from "@perfice/model/integration/integration";
 
 export const unauthenticatedIntegrationEvents = writable<UnauthenticatedIntegrationError[][]>([]);
 
@@ -15,16 +14,21 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
     constructor(integrationService: IntegrationService) {
         super(emptyPromise());
         this.integrationService = integrationService;
+        this.integrationService.onEnable(async (data) => {
+            this.set(resolvedPromise(data));
+            this.loaded = true;
+        });
+
+        this.integrationService.onDisable(async () => {
+            this.set(emptyPromise());
+            this.loaded = false;
+        });
     }
 
     async load(): Promise<IntegrationData> {
         if (this.loaded) return this.get();
 
-        let value = await this.integrationService.load();
-
-        this.set(resolvedPromise(value));
-        this.loaded = true;
-        return value;
+        return await this.integrationService.load();
     }
 
     authenticateIntegration(integrationType: string) {
@@ -32,10 +36,6 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
     }
 
     async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
-        if (isLocalIntegrationType(integrationType)) {
-            return true;
-        }
-
         return this.integrationService.fetchAuthenticationStatus(integrationType);
     }
 
@@ -54,8 +54,8 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         }));
     }
 
-    async fetchHistorical(id: string) {
-        await this.integrationService.fetchHistorical(id);
+    async fetchHistorical(id: string, integrationType: string) {
+        await this.integrationService.fetchHistorical(id, integrationType);
     }
 
     async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {

@@ -13,7 +13,7 @@ export const LOCAL_INTEGRATION_TYPES: IntegrationType[] = [
         integrationType: "HEALTH_CONNECT",
         authenticated: true,
         name: "Health Connect",
-        logo: "",
+        logo: "https://developer.android.com/static/images/picto-icons/health-connect-logo.svg",
         entities: [
             {
                 name: "Steps",
@@ -22,7 +22,7 @@ export const LOCAL_INTEGRATION_TYPES: IntegrationType[] = [
                     "steps": "Steps"
                 },
                 options: {},
-                historical: false
+                historical: true
             },
             {
                 name: "Heart rate",
@@ -31,8 +31,98 @@ export const LOCAL_INTEGRATION_TYPES: IntegrationType[] = [
                     "heartRate": "Heart rate"
                 },
                 options: {},
-                historical: false
+                historical: true
             },
+            {
+                name: "Total calories burned",
+                entityType: "totalCaloriesBurned",
+                fields: {
+                    "totalCaloriesBurned": "Total calories burned"
+                },
+                options: {},
+                historical: true
+            },
+
+            {
+                name: "Sleep",
+                entityType: "sleep",
+                fields: {
+                    "duration": "Duration",
+                },
+                options: {},
+                historical: true
+            },
+
+            {
+                name: "Exercise",
+                entityType: "exercise",
+                fields: {
+                    "title": "Title",
+                    "duration": "Duration",
+                },
+                options: {},
+                historical: true
+            },
+
+            {
+                name: "Hydration",
+                entityType: "hydration",
+                fields: {
+                    "hydration": "Hydration"
+                },
+                options: {},
+                historical: true
+            },
+            {
+                name: "Blood glucose",
+                entityType: "bloodGlucose",
+                fields: {
+                    "bloodGlucose": "Blood glucose"
+                },
+                options: {},
+                historical: true
+            },
+            {
+                name: "Blood pressure",
+                entityType: "bloodPressure",
+                fields: {
+                    "systolic": "Systolic",
+                    "diastolic": "Diastolic"
+                },
+                options: {},
+                historical: true
+            },
+            {
+                name: "Height",
+                entityType: "height",
+                fields: {
+                    "height": "Height"
+                },
+                options: {},
+                historical: true
+            },
+            {
+                name: "Weight",
+                entityType: "weight",
+                fields: {
+                    "weight": "Weight"
+                },
+                options: {},
+                historical: true
+            },
+            {
+                name: "Nutrition",
+                entityType: "nutrition",
+                fields: {
+                    "name": "Name",
+                    "carbs": "Carbohydrates",
+                    "calories": "Calories",
+                    "protein": "Protein",
+                    "fat": "Fat"
+                },
+                options: {},
+                historical: true
+            }
         ]
     }
 ]

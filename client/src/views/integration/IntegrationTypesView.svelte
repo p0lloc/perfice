@@ -58,7 +58,7 @@
     <!--    <Title title={`Integrations for ${form?.name ?? "Form"}`} icon={faGears}/>-->
     {#await $integrations then integrationData}
         {#if !integrationData.enabled}
-            <p class="mt-4">Integrations must first be enabled in settings by creating an account.</p>
+            <p class="mt-4">Integrations must be enabled in settings.</p>
         {:else}
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                 {#each integrationData.integrationTypes as type}
