@@ -1,10 +1,5 @@
 <script lang="ts">
-    import {
-        type DisplayValue, type JournalEntryValue,
-        pJournalEntry,
-        type PrimitiveValue,
-        PrimitiveValueType
-    } from "@perfice/model/primitive/primitive";
+    import {type JournalEntryValue, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
     import type {TextOrDynamic} from "@perfice/model/variable/variable";
     import {formatTimestampHHMM} from "@perfice/util/time/format";
     import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
@@ -21,7 +16,7 @@
     });
 </script>
 
-<div class="w-full border-b row-between px-2">
+<div class="w-full border-b dark-border row-between px-2">
     <span>
         {formatAnswersIntoRepresentation(entry.value, representation)}
     </span>

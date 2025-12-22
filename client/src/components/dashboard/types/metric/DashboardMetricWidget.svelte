@@ -15,7 +15,7 @@
         $weekStart, widgetId));
 </script>
 
-<button class="w-full h-full bg-white p-4 flex gap-3 items-center border rounded-xl text-left hover-feedback"
+<button class="w-full h-full card p-4 flex gap-3 items-center text-left hover-feedback"
         onclick={() => openFormModal(settings.formId)}>
     {#await $result then value}
         <div>
@@ -23,7 +23,7 @@
         </div>
         <div class="flex-1 min-w-0">
             <div class="flex justify-between gap-1 items-center w-full">
-                <h2 class="text-xl text-gray-600 font-bold overflow-hidden text-ellipsis text-nowrap">{value.name}</h2>
+                <h2 class="text-xl text-gray-600 dark:text-white font-bold overflow-hidden text-ellipsis text-nowrap">{value.name}</h2>
                 <p class="text-[10px] text-gray-400 overflow-hidden">{value.timeScope}</p>
             </div>
             <p class="text-lg">{value.value}</p>

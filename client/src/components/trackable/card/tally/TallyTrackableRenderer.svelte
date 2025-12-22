@@ -61,7 +61,7 @@
 <style>
     @reference "@perfice/app.css";
     .tally-btn {
-        @apply pointer-feedback:bg-gray-100 h-full flex items-center justify-center text-2xl;
+        @apply hover-feedback h-full flex items-center justify-center text-2xl;
         flex: 1.5;
     }
 </style>

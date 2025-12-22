@@ -15,11 +15,11 @@
     }
 </script>
 
-<div class="bg-white rounded p-4 border">
+<div class="card p-4">
     <div class="flex justify-between items-center mb-2">
         <p>
             <button onclick={() => navigate(generateLink(value.trackable))}
-                    class="text-xl font-bold text-green-600">{value.trackable.name}</button>
+                    class="text-xl font-bold dark:text-green-400 text-green-600">{value.trackable.name}</button>
         </p>
         <PopupIconButton buttons={[
                         {

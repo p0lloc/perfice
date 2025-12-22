@@ -18,7 +18,7 @@
 
     <div class="mt-4">
         <textarea bind:value={message} placeholder="Your feedback" rows="10" cols="10"
-                  class="w-full md:w-1/3 bg-white"></textarea>
+                  class="w-full md:w-1/3 dark:bg-gray-700 default-border bg-white"></textarea>
     </div>
 
     {#if !sent}

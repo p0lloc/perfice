@@ -33,7 +33,7 @@
     }
 
     .inactive {
-        @apply text-black;
+        @apply dark:text-white text-black;
     }
 
     .active-inverted {

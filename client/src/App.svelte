@@ -30,6 +30,7 @@
     import FeedbackView from "@perfice/views/feedback/FeedbackView.svelte";
     import FeedbackBanner from "@perfice/components/FeedbackBanner.svelte";
     import EditTrackableView from "@perfice/views/trackable/EditTrackableView.svelte";
+    import {darkMode} from "@perfice/stores/ui/darkmode";
 
     type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
 
@@ -118,7 +119,7 @@
 
 <svelte:body onclick={onBodyClick}/>
 {#if $appReady}
-    <div class="flex main-container dark">
+    <div class="flex main-container" class:dark={$darkMode} id="main-container">
         <GlobalSyncModals/>
         <GlobalIntegrationModals/>
         {#if !customLayout}

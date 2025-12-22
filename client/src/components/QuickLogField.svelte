@@ -181,7 +181,7 @@
             <div
                     class="hidden fixed bottom-12 md:bottom-0 h-12 md:flex items-center justify-center w-screen px-4 z-50"
             >
-                <div class="bg-white w-1/3 p-2 rounded-t-md border">
+                <div class="dark:bg-gray-800 default-border bg-white w-1/3 p-2 rounded-t-md">
                     <DynamicInput
                             entities={[
 					...mapFormsToInputEntities(forms),

@@ -22,7 +22,8 @@
     }
 </script>
 
-<button class="{className} border-dashed text-gray-500 border-2 w-full h-40 flex-center mt-2 rounded-xl pointer-feedback:bg-gray-100"
+<button class="{className} border-dashed dark-border dark:text-white text-gray-500 border-2 w-full h-40 flex-center mt-2 rounded-xl
+hover-feedback"
         onclick={onButtonClick}>
     {#if selectedFile != null && displayFile}
         {selectedFile.name}

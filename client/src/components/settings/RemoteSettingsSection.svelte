@@ -29,9 +29,9 @@
 
 <ConfigureUrlModal onConfigure={onConfigure} bind:this={configureUrlModal}/>
 <div class="row-between">
-    <h3 class="font-bold text-gray-500 text-2xl">{REMOTE_NAMES[remoteType]}</h3>
+    <h3 class="font-bold text-gray-500 dark:text-white text-2xl">{REMOTE_NAMES[remoteType]}</h3>
 
-    <IconButton class="text-gray-500" icon={faGlobe}
+    <IconButton class="text-gray-500 dark:text-white" icon={faGlobe}
                 onClick={configureUrl}/>
 </div>
 

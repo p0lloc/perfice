@@ -5,7 +5,7 @@
 </script>
 
 <div
-        class="border p-4 bg-gray-50 md:inline-block text-center md:w-24 rounded-xl hidden"
+        class="p-4 bg-gray-50 dark:bg-gray-900 default-border md:inline-block text-center md:w-24 rounded-xl hidden"
 >
     <p class="text text-[11px] font-bold">
         {MONTHS_SHORT[date.getMonth()]}

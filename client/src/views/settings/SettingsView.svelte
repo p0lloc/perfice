@@ -27,12 +27,12 @@
 <MobileTopBar title="Settings"/>
 <div class="center-view md:mt-8 md:px-0 p-4 pb-20 main-content">
     <h1 class="text-4xl font-bold hidden md:block">Settings</h1>
-    <div class="bg-white border p-4 rounded-xl mt-4 flex flex-col gap-4">
+    <div class="card p-4 rounded-xl mt-4 flex flex-col gap-4">
         <SettingsAccount/>
     </div>
     <SettingsSync/>
     <SettingsIntegrations/>
-    <div class="bg-white border p-4 rounded-xl mt-4 flex flex-col gap-4">
+    <div class="card p-4 rounded-xl mt-4 flex flex-col gap-4">
         {#if import.meta.env.DEV}
             <div class="mt-8 flex flex-col gap-4">
                 <Button onClick={() => sync.fullPull(true)}>Full pull</Button>
@@ -73,7 +73,7 @@
 <style>
     @reference "@perfice/app.css";
     :global(.settings-label) {
-        @apply font-bold text-gray-500 text-xl;
+        @apply font-bold text-gray-500 dark:text-white text-xl;
     }
 
     :global(.settings-container) {

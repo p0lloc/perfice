@@ -26,7 +26,7 @@
         {/if}
         {category.category != null ? getName(category.category) : UNCATEGORIZED_NAME}
     </div>
-    <div class="flex items-center md:group-hover:flex md:hidden text-lg md:text-xl text-gray-500">
+    <div class="flex items-center md:group-hover:flex md:hidden text-lg md:text-xl text-gray-500 dark:text-white">
         {@render actions?.()}
         {#if !uncategorized}
             <IconButton icon={faTrash} onClick={onCategoryDelete}/>

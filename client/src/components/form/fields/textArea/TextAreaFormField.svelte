@@ -14,7 +14,9 @@
     }
 </script>
 
-<textarea spellcheck="false" class="border bg-white md:w-1/2 w-full" {disabled} value={value} onchange={onInputChange}
+<textarea spellcheck="false" class="bg-white dark:bg-gray-500 default-border dark:text-white md:w-1/2 w-full" {disabled}
+          value={value}
+          onchange={onInputChange}
           rows="3"
           bind:this={input}
 ></textarea>

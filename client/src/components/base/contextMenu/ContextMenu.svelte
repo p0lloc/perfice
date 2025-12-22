@@ -65,8 +65,9 @@
 </script>
 
 {#if inLayout}
-    <Portal target="body">
-        <div class:invisible={!visible} class="fixed z-[5000] border rounded-xl bg-white text-black font-normal"
+    <Portal target="#main-container">
+        <div class:invisible={!visible}
+             class="fixed z-[5000] default-border rounded-xl dark:bg-gray-600 bg-white dark:text-white text-black font-normal"
              style:top="{top}px"
              style:left="{left}px"
              style:min-width="{minWidth}"

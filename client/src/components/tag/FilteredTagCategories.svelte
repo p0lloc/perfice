@@ -13,7 +13,7 @@
     {#each categories as category (category.category?.id)}
         {#if visibleCategories.length === 0 || visibleCategories.includes(category.category?.id ?? UNCATEGORIZED_TAG_CATEGORY_ID)}
             <div>
-                <p class="font-bold text-gray-600 text-lg mb-1">{category.category?.name ?? UNCATEGORIZED_NAME}</p>
+                <p class="font-bold dark:text-white text-gray-600 text-lg mb-1">{category.category?.name ?? UNCATEGORIZED_NAME}</p>
                 <div class="flex flex-wrap gap-1">
                     {#each category.items as tag}
                         {@render item(tag)}

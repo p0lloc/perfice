@@ -9,6 +9,8 @@
     import {RemoteType} from "@perfice/services/remote/remote";
     import RegisterModal from "@perfice/components/settings/auth/RegisterModal.svelte";
     import DeleteAccountModal from "@perfice/components/settings/DeleteAccountModal.svelte";
+    import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
+    import {darkMode} from "@perfice/stores/ui/darkmode";
 
     let loginModal: LoginModal;
     let registerModal: RegisterModal;
@@ -66,4 +68,18 @@
             {/if}
         </div>
     {/if}
+
+    <h3 class="settings-label">Theme</h3>
+    <div class="mt-2">
+        <SegmentedControl class="w-64" segments={[
+        {
+            name: "Light",
+            value: false
+        },
+        {
+            name: "Dark",
+            value: true
+        }
+    ]} value={$darkMode} onChange={(v) => $darkMode = v}/>
+    </div>
 </div>

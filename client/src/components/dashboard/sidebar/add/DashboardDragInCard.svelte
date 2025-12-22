@@ -1,10 +1,7 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {GridStack} from "gridstack";
-    import {
-        type DashboardWidgetDefinition,
-        DashboardWidgetType
-    } from "@perfice/model/dashboard/dashboard";
+    import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
@@ -22,7 +19,7 @@
     }
 
     onMount(() => {
-        if(mobile)
+        if (mobile)
             return;
 
         GridStack.setupDragIn([element], {
@@ -40,8 +37,8 @@
         data-widget-type={definition.getType()}
         bind:this={element}
 >
-    <div class="drag-card border flex-col items-center justify-center flex gap-2 bg-white w-full h-32 rounded-xl">
-        <Fa icon={definition.getIcon()} size="2.0x" />
+    <div class="drag-card default-border flex-col items-center justify-center flex gap-2 dark:bg-gray-900 bg-white w-full h-32 rounded-xl">
+        <Fa icon={definition.getIcon()} size="2.0x"/>
         <span>{definition.getName()}</span>
     </div>
 </div>

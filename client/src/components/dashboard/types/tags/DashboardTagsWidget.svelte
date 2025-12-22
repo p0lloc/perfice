@@ -9,6 +9,7 @@
     import {type Tag} from "@perfice/model/tag/tag";
     import FilteredTagCategories from "@perfice/components/tag/FilteredTagCategories.svelte";
     import {categorizedTags, tagCategories, tags, weekStart} from "@perfice/stores";
+    import DashboardWidgetBase from "@perfice/components/dashboard/DashboardWidgetBase.svelte";
 
     let {settings}: {
         settings: DashboardTagsWidgetSettings,
@@ -29,16 +30,14 @@
         tags.load();
     });
 </script>
-<div class="bg-white w-full h-full rounded-xl border overflow-x-scroll scrollbar-hide">
-    {#await $categorizedTags}
-        Loading...
-    {:then categories}
-        <div class="border-b basic self-stretch p-2 font-bold text-gray-600 row-between">
-            <div class="row-gap">
-                <Fa icon={faTags} class="text-green-500"/>
-                <span>Tags</span>
-            </div>
+{#await $categorizedTags}
+    <DashboardWidgetBase>
+        <div class="p-4">
+            Loading...
         </div>
+    </DashboardWidgetBase>
+{:then categories}
+    <DashboardWidgetBase title="Tags" icon={faTags}>
         <div class="p-2">
             <FilteredTagCategories categories={categories} visibleCategories={settings.categories}>
                 {#snippet item(tag)}
@@ -47,5 +46,5 @@
                 {/snippet}
             </FilteredTagCategories>
         </div>
-    {/await}
-</div>
+    </DashboardWidgetBase>
+{/await}
