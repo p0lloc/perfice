@@ -50,7 +50,7 @@
             style:width="{WIDTH}px"
             bind:this={picker}
             class="fixed w-full picker
-             bg-white z-[200] border md:w-[290px] rounded-md overflow-visible p-4 h-64 overflow-y-scroll"
+             bg-white dark:bg-gray-800 dark-border z-[200] border md:w-[290px] rounded-md overflow-visible p-4 h-64 overflow-y-scroll"
     >
         <div class="flex justify-between mb-2">
             <input bind:value={search} type="text" class="text-xs" placeholder="Search..."/>
@@ -61,7 +61,7 @@
         <div class="grid grid-cols-6 md:grid-cols-7">
             {#each emojis as emoji}
                 <button
-                        class="p-2 pointer-feedback:bg-gray-200 aspect-square inline-flex items-center justify-center openmoji text-2xl"
+                        class="p-2 pointer-feedback:bg-gray-200 dark:pointer-feedback:bg-gray-900 aspect-square inline-flex items-center justify-center openmoji text-2xl"
                         onclick={() => pick(emoji.emoji)}
                 >
                     {emoji.emoji}

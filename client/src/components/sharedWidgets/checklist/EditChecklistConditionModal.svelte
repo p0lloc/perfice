@@ -1,20 +1,21 @@
 <script lang="ts">
-    import {ModalSize, ModalType} from "@perfice/model/ui/modal.js";
+    import { ModalSize, ModalType } from "@perfice/model/ui/modal.js";
     import Modal from "@perfice/components/base/modal/Modal.svelte";
-    import {faLayerGroup, faTextHeight} from "@fortawesome/free-solid-svg-icons";
+    import {
+        faLayerGroup,
+        faTextHeight,
+    } from "@fortawesome/free-solid-svg-icons";
     import IconLabel from "@perfice/components/base/iconLabel/IconLabel.svelte";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
-    import type {Form} from "@perfice/model/form/form";
-    import type {Tag} from "@perfice/model/tag/tag";
-    import EditFormChecklistCondition
-        from "@perfice/components/sharedWidgets/checklist/EditFormChecklistCondition.svelte";
-    import type {Component} from "svelte";
-    import EditTagChecklistCondition
-        from "@perfice/components/sharedWidgets/checklist/EditTagChecklistCondition.svelte";
+    import type { Form } from "@perfice/model/form/form";
+    import type { Tag } from "@perfice/model/tag/tag";
+    import EditFormChecklistCondition from "@perfice/components/sharedWidgets/checklist/EditFormChecklistCondition.svelte";
+    import type { Component } from "svelte";
+    import EditTagChecklistCondition from "@perfice/components/sharedWidgets/checklist/EditTagChecklistCondition.svelte";
     import {
         CHECKLIST_CONDITION_TYPES,
         type ChecklistCondition,
-        ChecklistConditionType
+        ChecklistConditionType,
     } from "@perfice/model/sharedWidgets/checklist/checklist";
 
     let modal: Modal;
@@ -27,8 +28,14 @@
 
     let currentRenderer: any = $state(null);
 
-    export async function open(editOption: ChecklistCondition | null, forms: Form[], tags: Tag[]): Promise<ChecklistCondition | null> {
-        let promise = new Promise<ChecklistCondition | null>((resolve) => completer = resolve);
+    export async function open(
+        editOption: ChecklistCondition | null,
+        forms: Form[],
+        tags: Tag[],
+    ): Promise<ChecklistCondition | null> {
+        let promise = new Promise<ChecklistCondition | null>(
+            (resolve) => (completer = resolve),
+        );
 
         availableForms = forms;
         availableTags = tags;
@@ -43,10 +50,10 @@
                     type: ChecklistConditionType.FORM,
                     value: {
                         formId: "",
-                        answers: {}
-                    }
-                }
-            }
+                        answers: {},
+                    },
+                },
+            };
         }
 
         modal.open();
@@ -60,18 +67,18 @@
                     type: ChecklistConditionType.FORM,
                     value: {
                         formId: "",
-                        answers: {}
-                    }
-                }
+                        answers: {},
+                    },
+                };
                 break;
             }
             case ChecklistConditionType.TAG: {
                 condition.value = {
                     type: ChecklistConditionType.TAG,
                     value: {
-                        tagId: ""
-                    }
-                }
+                        tagId: "",
+                    },
+                };
                 break;
             }
         }
@@ -88,40 +95,55 @@
     function onValueChange(v: any) {
         condition.value = {
             ...condition.value,
-            value: v
+            value: v,
         };
     }
 
-    const RENDERERS: Record<ChecklistConditionType, Component<{
-        forms: Form[],
-        tags: Tag[],
-        value: any,
-        onChange: (v: any) => void
-    }> & { finalize?: () => void }> = {
+    const RENDERERS: Record<
+        ChecklistConditionType,
+        Component<{
+            forms: Form[];
+            tags: Tag[];
+            value: any;
+            onChange: (v: any) => void;
+        }> & { finalize?: () => void }
+    > = {
         [ChecklistConditionType.FORM]: EditFormChecklistCondition,
         [ChecklistConditionType.TAG]: EditTagChecklistCondition,
-    }
+    };
 
     const RendererComponent = $derived(RENDERERS[condition.value.type]);
 </script>
 
-<Modal title="Edit item" bind:this={modal} type={ModalType.CONFIRM_CANCEL} size={ModalSize.MEDIUM}
-       onConfirm={onConfirm} onClose={() => completer(null)}>
-
-
+<Modal
+    title="Edit item"
+    bind:this={modal}
+    type={ModalType.CONFIRM_CANCEL}
+    size={ModalSize.MEDIUM}
+    {onConfirm}
+    onClose={() => completer(null)}
+>
     <div class="row-between">
-        <IconLabel icon={faTextHeight} title="Name"/>
-        <input type="text" class="border" bind:value={condition.name}/>
+        <IconLabel icon={faTextHeight} title="Name" />
+        <input type="text" bind:value={condition.name} />
     </div>
 
     <div class="row-between mt-2">
-        <IconLabel icon={faLayerGroup} title="Type"/>
-        <DropdownButton value={condition.value.type} items={CHECKLIST_CONDITION_TYPES} onChange={onTypeChanged}/>
+        <IconLabel icon={faLayerGroup} title="Type" />
+        <DropdownButton
+            value={condition.value.type}
+            items={CHECKLIST_CONDITION_TYPES}
+            onChange={onTypeChanged}
+        />
     </div>
 
     <div class="mt-2">
-        <RendererComponent bind:this={currentRenderer}
-                           forms={availableForms} tags={availableTags} value={condition.value.value}
-                           onChange={onValueChange}/>
+        <RendererComponent
+            bind:this={currentRenderer}
+            forms={availableForms}
+            tags={availableTags}
+            value={condition.value.value}
+            onChange={onValueChange}
+        />
     </div>
 </Modal>

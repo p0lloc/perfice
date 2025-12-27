@@ -64,7 +64,7 @@
 
     let labels = $derived(constructDataPointLabels(correlation.value.timestamps));
 </script>
-<div class="bg-white rounded border p-2 {className} flex flex-col justify-between">
+<div class="bg-white dark:bg-gray-800 dark-border rounded border p-2 {className} flex flex-col justify-between">
     <div>
         <div class="flex gap-2 justify-between items-start">
             <CorrelationMessage positive={correlation.value.coefficient > 0} display={correlation.display}/>

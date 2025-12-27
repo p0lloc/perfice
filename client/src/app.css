@@ -1,6 +1,3 @@
-
-
-
 @import 'tailwindcss';
 
 @config '../tailwind.config.js';
@@ -16,13 +13,14 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
 }
 
 @utility flex-center {
@@ -47,7 +45,8 @@
     overflow-y: visible !important;
 }
 
-input:not([type="checkbox"]):not([type="color"]):not([type="range"]), textarea {
+input:not([type="checkbox"]):not([type="color"]):not([type="range"]),
+textarea {
     appearance: none;
     outline: none;
 }
@@ -72,7 +71,7 @@ input:not([type="checkbox"]):not([type="color"]):not([type="range"]), textarea {
     @apply border dark-border;
 }
 
-.card {
+@utility card {
     @apply rounded-xl bg-white dark:bg-gray-800 default-border;
 }
 
@@ -95,8 +94,7 @@ select {
 }
 
 .input {
-    @apply dark:bg-gray-600 dark-border dark:text-white bg-white block disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5
-    text-gray-900 border border-gray-300 text-sm rounded-lg;
+    @apply dark:bg-gray-600 dark-border dark:text-white bg-white block disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5 text-gray-900 border border-gray-300 text-sm rounded-lg;
 }
 
 input[type="checkbox"] {
@@ -113,6 +111,7 @@ button {
             @slot;
         }
     }
+
     @media (pointer: coarse) {
         &:active {
             @slot;
@@ -125,12 +124,11 @@ button {
 }
 
 @utility horizontal-add-button {
-    @apply border-2 border-dashed h-16 p-4 w-full dark:text-white text-gray-600
-        dark-border flex justify-center items-center hover-feedback;
+    @apply border-2 border-dashed h-16 p-4 w-full dark:text-white text-gray-600 dark-border flex justify-center items-center hover-feedback;
 }
 
 @utility right-sidebar {
-    @apply fixed top-0 right-0 z-101 dark:bg-gray-900 border-l dark-border bg-white h-full min-h-screen w-screen max-h-full;
+    @apply fixed top-0 right-0 z-101 dark:bg-gray-800 border-l dark-border bg-white h-full min-h-screen w-screen max-h-full;
 }
 
 input[type="color"]::-moz-color-swatch {
@@ -170,7 +168,7 @@ input[type="text"],
 input[type="password"],
 input[type="number"],
 textarea {
-    @apply border py-1 px-2 rounded-md;
+    @apply border py-1 px-2 rounded-md dark-border bg-white dark:bg-inherit;
 }
 
 .small-blur {
@@ -236,6 +234,7 @@ input[type="checkbox"] {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }

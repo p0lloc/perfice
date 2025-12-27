@@ -49,11 +49,11 @@
 </script>
 
 <div class="flex justify-center items-center h-full">
-    <button {preview} class="tally-btn" onclick={decrement}>
+    <button disabled={preview} class="tally-btn" onclick={decrement}>
         <Fa icon={faMinus}/>
     </button>
     <span class="text-3xl flex-1">{getTallyValue(entryValue)}</span>
-    <button {preview} class="tally-btn" onclick={increment}>
+    <button disabled={preview} class="tally-btn" onclick={increment}>
         <Fa icon={faPlus}/>
     </button>
 </div>
@@ -61,7 +61,7 @@
 <style>
     @reference "@perfice/app.css";
     .tally-btn {
-        @apply hover-feedback h-full flex items-center justify-center text-2xl;
+        @apply hover-feedback h-full flex items-center justify-center text-2xl rounded-b-xl;
         flex: 1.5;
     }
 </style>

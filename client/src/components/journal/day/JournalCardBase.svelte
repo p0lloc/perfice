@@ -10,7 +10,7 @@
 
 <button
         onclick={onClick}
-        class="dark:bg-gray-900 default-border bg-gray-100 w-full rounded-xl px-4 py-1 group"
+        class="dark:bg-gray-800 default-border bg-gray-100 w-full rounded-xl px-4 py-1 group"
         class:hover-feedback={!selected}
         class:bg-gray-300={selected}
 >

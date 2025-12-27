@@ -95,7 +95,7 @@
                 <IconLabel icon={faFont} title="Name"/>
                 <input
                         type="text"
-                        class="w-full border mt-2"
+                        class="w-full mt-2"
                         value={currentQuestion.name}
                         onchange={onNameChange}
                 />
@@ -104,7 +104,7 @@
                 <IconLabel icon={faDumbbell} title="Unit (optional)"/>
                 <input
                         type="text"
-                        class="w-full border mt-2"
+                        class="w-full mt-2"
                         value={currentQuestion.unit}
                         onchange={onUnitChange}
                         placeholder="kg, ml, ..."

@@ -60,11 +60,11 @@
 
 <EditSelectOptionModal bind:this={editOptionModal} {dataType} {dataSettings}/>
 <div class="row-between">
-    <h2 class="text-xl text-gray-500 font-bold">Multiple values</h2>
+    <h2 class="text-xl text-gray-500 dark:text-white font-bold">Multiple values</h2>
     <input type="checkbox" class="border w-4 h-4" checked={settings.multiple} onchange={onMultipleChange}/>
 </div>
 <div class="row-gap mt-4">
-    <h2 class="text-xl text-gray-500 font-bold">Options</h2>
+    <h2 class="text-xl text-gray-500 dark:text-white font-bold">Options</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>
 <DragAndDropContainer zoneId="select-options" onFinalize={onReorderFinalize}
@@ -77,7 +77,7 @@
 </DragAndDropContainer>
 <div class="mt-4">
     <div class="row-between">
-        <h2 class="text-xl text-gray-500 font-bold">Grid</h2>
+        <h2 class="text-xl text-gray-500 dark:text-white font-bold">Grid</h2>
         {#if settings.grid != null}
             <Button onClick={removeGrid}>Remove</Button>
         {:else}

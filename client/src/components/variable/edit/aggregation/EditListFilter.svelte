@@ -57,7 +57,7 @@
 
 {#if availableFields != null}
     <div class="rounded-xl">
-        <div class="bg-gray-50 w-full p-2 flex justify-between items-center rounded-t-xl border text-gray-500">
+        <div class="bg-gray-50 w-full p-2 flex justify-between items-center rounded-t-xl border text-gray-500 dark:text-white">
             Filter
             <IconButton icon={faTrash} onClick={onRemove}/>
         </div>

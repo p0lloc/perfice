@@ -22,7 +22,7 @@
     }
 </script>
 
-<button class="rounded-xl p-4 bg-white border text-left flex flex-col justify-start"
+<button class="p-4 card text-left flex flex-col justify-start"
         class:hover-feedback={!deauthenticated}
         onclick={() => onClick(integration)}>
     <div class="flex justify-between">

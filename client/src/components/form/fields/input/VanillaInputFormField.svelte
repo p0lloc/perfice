@@ -1,11 +1,14 @@
 <script lang="ts">
-    import {getHtmlInputFromQuestionType, type InputFieldProps} from "@perfice/model/form/ui";
+    import {
+        getHtmlInputFromQuestionType,
+        type InputFieldProps,
+    } from "@perfice/model/form/ui";
 
-    let {dataType, disabled, value, onChange}: InputFieldProps = $props();
+    let { dataType, disabled, value, onChange }: InputFieldProps = $props();
 
     let input: HTMLInputElement;
 
-    export function focus(){
+    export function focus() {
         input.focus();
     }
 
@@ -14,6 +17,11 @@
     }
 </script>
 
-<input class="border bg-white" {disabled} value={value} onchange={onInputChange}
-       bind:this={input}
-       type={getHtmlInputFromQuestionType(dataType)}/>
+<input
+    class="border bg-white dark:bg-gray-900 dark-border"
+    {disabled}
+    {value}
+    onchange={onInputChange}
+    bind:this={input}
+    type={getHtmlInputFromQuestionType(dataType)}
+/>

@@ -7,7 +7,7 @@
     let {entity, onClick}: { entity: IntegrationEntityDefinition, onClick: () => void } = $props();
 </script>
 
-<button class="rounded-xl p-4 bg-white border text-left hover-feedback flex flex-col justify-start"
+<button class="card p-4 text-left hover-feedback flex flex-col justify-start"
         onclick={onClick}>
     <div class="flex justify-between">
         <div class="flex gap-2 items-center">

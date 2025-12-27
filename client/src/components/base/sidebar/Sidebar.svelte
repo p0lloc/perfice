@@ -1,14 +1,16 @@
 <script lang="ts">
-    import {closableState, onClosableClosed} from "@perfice/model/ui/modal";
-    import type {Snippet} from "svelte";
+    import { closableState, onClosableClosed } from "@perfice/model/ui/modal";
+    import type { Snippet } from "svelte";
     import IconButton from "../button/IconButton.svelte";
-    import {faTimes, type IconDefinition,} from "@fortawesome/free-solid-svg-icons";
+    import {
+        faTimes,
+        type IconDefinition,
+    } from "@fortawesome/free-solid-svg-icons";
 
     let {
         children,
         title,
-        onClose = () => {
-        },
+        onClose = () => {},
         closeButtonIcon = faTimes,
         class: className = "",
     }: {
@@ -41,9 +43,9 @@
             {/if}
             {#if closeButtonIcon != null}
                 <IconButton
-                        onClick={close}
-                        icon={closeButtonIcon}
-                        class="text-gray-500 text-xl"
+                    onClick={close}
+                    icon={closeButtonIcon}
+                    class="text-gray-500 text-xl dark:text-white"
                 />
             {/if}
         </div>
