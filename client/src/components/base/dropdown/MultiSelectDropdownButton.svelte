@@ -3,6 +3,7 @@
     import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
     import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown.js";
+    // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
 
     let contextMenu: ContextMenu;
@@ -35,7 +36,7 @@
     let selectedItems: DropdownMenuItem<T>[] = $derived(value.map(v => items.find(i => i.value == v)!));
 </script>
 
-<button class="border min-h-8 min-w-6 rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
+<button class="border dark-border min-h-8 min-w-6 rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
         onclick={open} bind:this={button}>
     <div class="row-gap pointer-events-none">
         {#if selectedItems.length > 0}
