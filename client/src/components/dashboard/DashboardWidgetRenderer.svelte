@@ -80,7 +80,7 @@
         <!-- Dummy container for border -->
         <div class="w-full h-full absolute border-2 border-green-500 border-dashed pointer-events-none"></div>
         <!-- Delete button -->
-        <div class="absolute right-2 px-2 pt-1 rounded-t-md top-[-25px] bg-white border-t border-x z-[100]">
+        <div class="absolute right-2 px-2 pt-1 rounded-t-md top-[-25px] bg-white dark:bg-gray-800 dark-border border-t border-x z-[100]">
             <button onclick={onDeleteClicked} class="text-red-500 hover:text-red-700">
                 <Fa icon={faTrash}/>
             </button>

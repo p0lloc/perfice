@@ -24,6 +24,7 @@
         let newOption = await editOptionModal.open(null);
         if (newOption == null) return;
 
+        console.log(newOption)
         onChange({...settings, options: [...settings.options, newOption]});
     }
 
@@ -45,7 +46,7 @@
 
 <EditSegmentedOptionModal bind:this={editOptionModal} {dataType} {dataSettings}/>
 <div class="row-gap mt-4">
-    <h2 class="text-xl text-gray-500 font-bold">Options</h2>
+    <h2 class="text-xl text-gray-500 font-bold dark:text-white">Options</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>
 <DragAndDropContainer zoneId="segmented-options"

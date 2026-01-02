@@ -12,10 +12,10 @@
         Loading...
     {:then data}
         {#each data.results as value(value.tag.id)}
-            <div class="bg-white rounded p-4 border">
+            <div class="card p-4">
                 <p>
                     <button onclick={() => navigate(getAnalyticsDetailsLink("tag", value.tag.id))}
-                            class="text-xl font-bold text-green-600">{value.tag.name}</button>
+                            class="text-xl font-bold dark:text-green-400 text-green-600">{value.tag.name}</button>
                 </p>
                 <div class="mt-4">
                     <Heatmap date={data.date} values={value.values}/>

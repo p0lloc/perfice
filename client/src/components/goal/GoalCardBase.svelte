@@ -23,7 +23,7 @@
         && streak?.value != 0 ? streak.value : null);
 </script>
 <div
-        class="border-b w-full p-2 row-between rounded-t-xl font-bold text-gray-600"
+        class="border-b dark-border w-full p-2 row-between rounded-t-xl font-bold text-gray-600 dark:text-white"
 >
             <span class="flex items-center gap-2">
                 {goal.name}
@@ -45,7 +45,7 @@
 
 {#if value != null}
     <GoalValueRenderer value={value.results} color={goal.color}/>
-    <div class="border-t w-full text-center text-gray-500">
+    <div class="border-t dark-border w-full text-center text-gray-500 dark:text-gray-300">
         {formatTimeScopeType(value.timeScope)}
     </div>
 {/if}

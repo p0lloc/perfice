@@ -279,7 +279,7 @@
 <svelte:body on:keydown={handleBodyKeydown}/>
 
 {#if (currentField != null && currentEntity != null) || suggestions.length > 0}
-    <div class="fixed bottom-12 flex gap-2 bg-white border-t border-x  rounded-t-md p-2">
+    <div class="fixed bottom-12 flex gap-2 dark:bg-gray-800 bg-white default-border border-t border-x  rounded-t-md p-2">
         {#if suggestions.length > 0}
             {#each suggestions as suggestion}
                 <span>{suggestion}</span>
@@ -293,7 +293,7 @@
     </div>
 {/if}
 <div
-        class="flex flex-wrap items-center border rounded-md inp py-1 px-2 gap-1"
+        class="flex flex-wrap items-center default-border rounded-md inp py-1 px-2 gap-1"
 >
     {#each dynamic as v}
         <DynamicLabel>{v.name}</DynamicLabel>

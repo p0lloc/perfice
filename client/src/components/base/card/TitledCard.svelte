@@ -4,7 +4,7 @@
     import Fa from "svelte-fa";
     import type {Snippet} from "svelte";
 
-    let {icon, title, description, class: className = 'bg-white', iconClass = 'w-8', suffix}: {
+    let {icon, title, description, class: className = 'bg-white dark:bg-gray-800', iconClass = 'w-8', suffix}: {
         icon?: IconDefinition,
         title: string,
         description: string,
@@ -14,7 +14,7 @@
     } = $props();
 </script>
 
-<div class="border p-4 flex justify-between gap-4 w-full rounded-xl {className}">
+<div class="dark-border border p-4 flex justify-between gap-4 w-full rounded-xl {className}">
     <div class="flex items-center gap-2">
         <span class={iconClass}>
             {#if icon != null}

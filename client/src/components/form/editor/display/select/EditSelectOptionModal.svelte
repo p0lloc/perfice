@@ -71,6 +71,7 @@
     }
 
     function onValueChange(v: PrimitiveValue) {
+        console.log(v);
         option.value = v;
     }
 
@@ -82,6 +83,7 @@
         completer($state.snapshot(option));
         modal.close();
     }
+
 </script>
 
 <Modal title="Edit option" bind:this={modal} type={ModalType.CONFIRM_CANCEL} size={ModalSize.SMALL}

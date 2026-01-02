@@ -10,7 +10,7 @@
 
 </script>
 
-<div class="border">
+<div class="border dark-border">
     <div class="row-between px-4 py-2">
         <div class="row-gap flex-wrap">
             <Fa icon={faFilter}></Fa>

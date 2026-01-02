@@ -1,9 +1,8 @@
-
-
-
 @import 'tailwindcss';
 
 @config '../tailwind.config.js';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -14,13 +13,14 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
 }
 
 @utility flex-center {
@@ -32,7 +32,7 @@
 }
 
 .main-container {
-    background-color: rgb(250, 250, 250);
+    @apply dark:bg-gray-800 bg-[rgb(250,250,250)] text-black dark:text-white;
     min-height: 100vh;
 }
 
@@ -45,7 +45,8 @@
     overflow-y: visible !important;
 }
 
-input:not([type="checkbox"]):not([type="color"]):not([type="range"]), textarea {
+input:not([type="checkbox"]):not([type="color"]):not([type="range"]),
+textarea {
     appearance: none;
     outline: none;
 }
@@ -59,11 +60,19 @@ input:not([type="checkbox"]):not([type="color"]):not([type="range"]), textarea {
 }
 
 .icon-button {
-    @apply p-2 rounded-full active:bg-gray-100;
+    @apply p-2 rounded-full;
 }
 
-.card {
-    @apply rounded-xl border bg-white p-2;
+@utility dark-border {
+    @apply dark:border-gray-500;
+}
+
+@utility default-border {
+    @apply border dark-border;
+}
+
+@utility card {
+    @apply rounded-xl bg-white dark:bg-gray-800 default-border;
 }
 
 select {
@@ -81,11 +90,11 @@ select {
 
 
 .label {
-    @apply text-lg font-bold text-gray-700;
+    @apply text-lg font-bold text-gray-700 dark:text-white;
 }
 
 .input {
-    @apply bg-white block disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5 text-gray-900 border border-gray-300 text-sm rounded-lg;
+    @apply dark:bg-gray-600 dark-border dark:text-white bg-white block disabled:cursor-not-allowed disabled:opacity-50 rtl:text-right p-2.5 text-gray-900 border border-gray-300 text-sm rounded-lg;
 }
 
 input[type="checkbox"] {
@@ -102,6 +111,7 @@ button {
             @slot;
         }
     }
+
     @media (pointer: coarse) {
         &:active {
             @slot;
@@ -110,18 +120,16 @@ button {
 }
 
 @utility hover-feedback {
-    @apply pointer-feedback:bg-gray-100;
+    @apply pointer-feedback:bg-gray-100 dark:pointer-feedback:bg-gray-900;
 }
 
 @utility horizontal-add-button {
-    @apply border-2 border-dashed h-16 p-4 w-full text-gray-600 flex justify-center items-center pointer-feedback:bg-gray-100;
+    @apply border-2 border-dashed h-16 p-4 w-full dark:text-white text-gray-600 dark-border flex justify-center items-center hover-feedback;
 }
 
 @utility right-sidebar {
-    @apply fixed top-0 right-0 z-101 border-l bg-white h-full min-h-screen w-screen max-h-full;
+    @apply fixed top-0 right-0 z-101 dark:bg-gray-800 border-l dark-border bg-white h-full min-h-screen w-screen max-h-full;
 }
-
-
 
 input[type="color"]::-moz-color-swatch {
     border: none;
@@ -160,7 +168,7 @@ input[type="text"],
 input[type="password"],
 input[type="number"],
 textarea {
-    @apply border py-1 px-2 rounded-md;
+    @apply border py-1 px-2 rounded-md dark-border bg-white dark:bg-inherit;
 }
 
 .small-blur {
@@ -226,6 +234,7 @@ input[type="checkbox"] {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }

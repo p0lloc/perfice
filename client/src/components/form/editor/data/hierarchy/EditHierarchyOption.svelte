@@ -40,7 +40,7 @@
 <div class:ml-3={!root}>
     <div class="row-gap">
         <div class="row-gap overflow-hidden">
-            <Fa icon={faFolderTree} class="text-gray-500"/>
+            <Fa icon={faFolderTree} class="text-gray-500 dark:text-white"/>
             <span class="overflow-hidden text-ellipsis">{option.text}</span></div>
         <div class="flex">
             <IconButton class="text-gray-400" onClick={onAddChild} icon={faPlus}/>

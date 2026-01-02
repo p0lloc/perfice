@@ -53,7 +53,7 @@
 <style>
     @reference "@perfice/app.css";
     .segmented-normal {
-        @apply bg-gray-200 p-0.5 rounded-xl;
+        @apply bg-gray-200 dark:bg-gray-700 p-0.5 rounded-xl;
     }
 
     .segmented-inverted {

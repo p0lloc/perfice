@@ -15,6 +15,6 @@
     let RendererComponent = $derived(RENDERERS[value.type]);
 </script>
 
-<div class="p-2 gap-2 w-full border-b">
-    <RendererComponent value={value.value} {color} />
+<div class="p-2 gap-2 w-full border-b dark-border">
+    <RendererComponent value={value.value} {color}/>
 </div>

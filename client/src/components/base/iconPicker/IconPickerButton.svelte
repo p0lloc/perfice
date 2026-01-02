@@ -34,7 +34,7 @@
 <div class="overflow-visible">
     <IconPicker {right} bind:this={iconPicker} icons={EMOJIS}/>
     <button bind:this={button} onclick={open}
-            class="min-w-10 bg-gray-50 border-gray-300 border min-h-10 flex justify-center items-center icon-button">
+            class="min-w-10 dark:bg-gray-600  dark-border bg-gray-50 border-gray-300 border min-h-10 flex justify-center items-center icon-button">
         <Icon name={icon}/>
     </button>
 </div>

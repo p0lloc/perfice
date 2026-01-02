@@ -48,14 +48,14 @@ export function categoryToCssRgb(str: string) {
 const FILL_OPACITY = 50;
 const BORDER_DARKNESS_MODIFIER = 25;
 
-export function getChartColors(color: string): { fillColor: string, borderColor: string } {
+export function getChartColors(color: string, dark: boolean = false): { fillColor: string, borderColor: string } {
     let {r, g, b} = hexToRgb(color);
     return {
-        fillColor: rgbaToHex(r, g, b, FILL_OPACITY),
+        fillColor: rgbaToHex(r, g, b, dark ? 100 : FILL_OPACITY),
         borderColor: rgbaToHex(
-            r - BORDER_DARKNESS_MODIFIER,
-            g - BORDER_DARKNESS_MODIFIER,
-            b - BORDER_DARKNESS_MODIFIER,
+            dark ? r : r - BORDER_DARKNESS_MODIFIER,
+            dark ? g : g - BORDER_DARKNESS_MODIFIER,
+            dark ? b : b - BORDER_DARKNESS_MODIFIER,
             255),
     }
 }

@@ -20,12 +20,12 @@
     <div class="flex items-center gap-2">
         <button
                 onclick={onDeleteClick}
-                class="hidden md:group-hover:block hover:text-red-800"
+                class="hidden md:group-hover:block dark:text-gray-400 dark:hover:text-red-500 hover:text-red-800"
         >
             <Fa icon={faTrash}/>
         </button>
         <div class="group-hover:hidden">
-            <JournalEntryTimestamp timestamp={entry.timestamp} />
+            <JournalEntryTimestamp timestamp={entry.timestamp}/>
         </div>
     </div>
 </div>

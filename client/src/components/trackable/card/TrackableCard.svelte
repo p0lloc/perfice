@@ -61,16 +61,16 @@
 </script>
 
 
-<div class="w-full h-full p-0 bg-white border rounded-xl flex flex-col items-stretch text-gray-500 {className}">
+<div class="w-full h-full p-0 bg-white dark:bg-gray-700 border dark:border-gray-500 rounded-xl flex flex-col items-stretch text-gray-500 dark:text-white {className}">
     {#await data then result}
         {@const goalResult = result[1]}
         {@const value = result[0]}
-        <button class="border-b rounded-t-xl p-2 flex items-center justify-between"
+        <button class="border-b dark:border-b-gray-500 rounded-t-xl p-2 flex items-center justify-between"
                 class:hover-feedback={onEdit != null}
                 onclick={onEditClick}>
         <span class="flex gap-1 items-center overflow-hidden text-ellipsis">
             <Icon name={trackable.icon} class="text-green-500 text-xl"/>
-            <span class="text-left font-semibold text-gray-700 overflow-hidden text-ellipsis">{trackable.name}</span></span>
+            <span class="text-left font-semibold text-gray-700 dark:text-white overflow-hidden text-ellipsis">{trackable.name}</span></span>
             <div>
                 {#if goalResult != null}
                     {@const met = areGoalConditionsMet(goalResult.results)}

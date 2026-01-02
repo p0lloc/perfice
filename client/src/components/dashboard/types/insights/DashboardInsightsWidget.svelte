@@ -8,6 +8,7 @@
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {insightsWidget} from "@perfice/stores";
+    import DashboardWidgetBase from "@perfice/components/dashboard/DashboardWidgetBase.svelte";
 
     let {widgetId, dependencies, settings}: {
         settings: DashboardInsightsWidgetSettings,
@@ -19,16 +20,12 @@
     let result = $derived(insightsWidget(settings, $dashboardDate));
 </script>
 
-<div class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col ">
-    {#await $result}
-        Loading...
-    {:then value}
-        <div class="border-b basic self-stretch p-2 font-bold text-gray-600 row-between">
-            <div class="row-gap">
-                <Fa class="text-green-500" icon={faHatWizard}/>
-                <span>{TIME_SCOPE_LABELS[settings.timeScope]}</span>
-            </div>
-        </div>
+{#await $result}
+    <DashboardWidgetBase>
+        <div class="p-4">Loading...</div>
+    </DashboardWidgetBase>
+{:then value}
+    <DashboardWidgetBase title={TIME_SCOPE_LABELS[settings.timeScope]} icon={faHatWizard}>
         <div class="flex flex-col overflow-y-scroll scrollbar-hide w-full">
             {#if value.empty}
                 <span class="absolute z-[21] w-full h-full flex items-center justify-center">
@@ -36,7 +33,7 @@
                 </span>
             {/if}
             {#each value.insights as insight}
-                <div class="text-sm border-b p-2 flex justify-between gap-2" class:small-blur={value.empty}>
+                <div class="text-sm border-b dark-border p-2 flex justify-between gap-2" class:small-blur={value.empty}>
                     <span class="flex flex-wrap gap-1 break-words items-center">Your
                         <QuestionLabel message={`${insight.formName} > ${insight.questionName}`}>
                             <Icon name={insight.icon} class="text-sm"/>
@@ -49,5 +46,5 @@
                 </div>
             {/each}
         </div>
-    {/await}
-</div>
+    </DashboardWidgetBase>
+{/await}

@@ -18,7 +18,7 @@
 </script>
 
 <div>
-    <h2 class="text-2xl font-bold mb-2 flex gap-1 items-center text-gray-600">
+    <h2 class="text-2xl font-bold mb-2 flex gap-1 items-center text-gray-600 dark:text-white">
         <Icon name={group.icon} class="text-green-500 text-3xl"/>
         {group.name}
     </h2>

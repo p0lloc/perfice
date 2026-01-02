@@ -21,5 +21,5 @@
     });
 </script>
 
-<input type="text" bind:this={input} class="{className} rounded-xl text-sm"
+<input type="text" bind:this={input} class="{className} rounded-xl text-sm dark-border"
        placeholder="Name" onblur={onBlur} onkeydown={onKeyDown}/>

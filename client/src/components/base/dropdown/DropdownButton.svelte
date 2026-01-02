@@ -76,7 +76,7 @@
     });
     let selectedItem: DropdownMenuItem<T> | undefined = $derived(items.find(i => compareFunction(i.value, value)));
 </script>
-<button class="border min-h-8 min-w-6 bg-white rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
+<button class="border dark:border-gray-500 min-h-8 min-w-6 bg-white dark:bg-gray-600 rounded-xl {small ? 'px-2 py-1': 'px-3 py-2'} flex items-center justify-between {className} gap-2 context-menu-button"
         onclick={open} bind:this={button}>
     <div class="row-gap pointer-events-none">
         {#if selectedItem != null}

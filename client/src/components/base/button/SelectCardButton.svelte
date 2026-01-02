@@ -22,7 +22,7 @@
         cardSuffix?: Snippet
     } = $props();
 
-    let cardClass = $derived(selected ? "pointer-feedback:bg-green-100 bg-white border-1 border-green-500 bg-green-50" : "hover-feedback bg-white");
+    let cardClass = $derived(selected ? "pointer-feedback:bg-green-100 dark:pointer-feedback:bg-gray-900 bg-white border-1 dark:border-green-500 border-green-500 bg-green-50 dark:bg-gray-800" : "hover-feedback bg-white dark:bg-gray-800");
 </script>
 
 <CardButton {iconClass} {buttonClass} icon={icon} title={title}

@@ -6,6 +6,7 @@
     import type {SegmentedOption} from "@perfice/model/form/display/segmented";
     import Button from "@perfice/components/base/button/Button.svelte";
     import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
+    import type { PrimitiveValue } from "@perfice/model/primitive/primitive";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
 
@@ -52,21 +53,21 @@
 
     function onValueChange(v: PrimitiveValue) {
         option.value = v;
+        console.log(option)
     }
 
     function onConfirm() {
-        let value = dataDef.deserialize($state.snapshot(valueStr));
-        if (value == null) return;
-        option.value = value;
-
         // If using same display text, copy from the value
         if (sameDisplayText) {
-            option.text = dataDef.serialize(value);
+            option.text = dataDef.serialize(option.value);
         }
 
         completer($state.snapshot(option));
         modal.close();
     }
+
+
+    // TODO: refactor: there is a lot of code duplication between this and editselectoptionmodal
 </script>
 
 <Modal title="Edit option" bind:this={modal} type={ModalType.CONFIRM_CANCEL} size={ModalSize.SMALL}

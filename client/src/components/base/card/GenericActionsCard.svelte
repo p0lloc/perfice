@@ -11,7 +11,7 @@
     } = $props();
 </script>
 
-<div class="border p-2 rounded-xl flex justify-between items-center bg-white">
+<div class="default-border p-2 rounded-xl flex justify-between items-center bg-white dark:bg-gray-800">
     <div class="row-gap">
         {#if icon != null}
             <Fa icon={icon}/>
@@ -19,7 +19,7 @@
 
         {text}
     </div>
-    <div class="row-gap text-gray-500">
+    <div class="row-gap dark:text-white text-gray-500">
         {@render actions()}
     </div>
 </div>

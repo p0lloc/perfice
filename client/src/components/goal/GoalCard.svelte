@@ -28,7 +28,7 @@
 </script>
 
 <div
-        class="border aspect-auto rounded-xl flex flex-col items-center min-h-48 max-h-48 bg-white"
+        class="default-border aspect-auto rounded-xl flex flex-col items-center min-h-48 max-h-48 dark:bg-gray-800 bg-white"
 >
     {#await $res}
         Loading...

@@ -1,12 +1,18 @@
 <script lang="ts">
-    import type {Snippet} from "svelte";
+    import type { Snippet } from "svelte";
 
-    let {class: className = '', children, onClick, inverted = false, active = false}: {
-        children: Snippet,
-        onClick: () => void,
-        active?: boolean,
-        inverted?: boolean,
-        class?: string
+    let {
+        class: className = "",
+        children,
+        onClick,
+        inverted = false,
+        active = false,
+    }: {
+        children: Snippet;
+        onClick: () => void;
+        active?: boolean;
+        inverted?: boolean;
+        class?: string;
     } = $props();
 
     function getButtonClass(inverted: boolean) {
@@ -19,9 +25,11 @@
 </script>
 
 <button
-        onclick={onClick}
-        class="{getButtonClass(inverted)} text-center flex gap-1 [&:last-child]:rounded-r-xl [&:first-child]:rounded-l-xl justify-center items-center flex-1 {className}"
-        style:min-width="5rem"
+    onclick={onClick}
+    class="{getButtonClass(
+        inverted,
+    )} text-sm text-center flex gap-1 [&:last-child]:rounded-r-xl [&:first-child]:rounded-l-xl justify-center items-center flex-1 {className}"
+    style:min-width="5rem"
 >
     {@render children?.()}
 </button>
@@ -33,7 +41,7 @@
     }
 
     .inactive {
-        @apply text-black;
+        @apply dark:text-white text-black;
     }
 
     .active-inverted {

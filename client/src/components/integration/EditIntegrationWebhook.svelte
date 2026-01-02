@@ -9,5 +9,5 @@
 
 <h2 class="text-2xl font-bold">Webhook</h2>
 <p>Updates should be sent to this URL:</p>
-<input class="w-full bg-white mt-2" type="text" readonly value={webhookUrl}
+<input class="w-full mt-2" type="text" readonly value={webhookUrl}
        onfocus={(e) => e.currentTarget.select()}/>

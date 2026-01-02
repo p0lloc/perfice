@@ -74,11 +74,11 @@
             <hr class="my-4">
             <div class="row-gap text-2xl mt-8">
                 <Fa icon={faHatWizard} class="text-green-500"/>
-                <span class="text-gray-500 font-bold">Suggestions</span>
+                <span class="text-gray-500 font-bold dark:text-white">Suggestions</span>
             </div>
             <div class="flex flex-col gap-2 mt-4">
                 {#each TRACKABLE_SUGGESTIONS as group}
-                    <p class="font-bold text-gray-500 text-xl">{group.name}</p>
+                    <p class="font-bold text-gray-500 text-xl dark:text-white">{group.name}</p>
                     <div class="grid grid-cols-2 md:grid-cols-4 md:max-w-[75%] gap-2">
                         {#each group.suggestions as suggestion}
                             <button onclick={() => onSelected(categoryId, suggestion)}

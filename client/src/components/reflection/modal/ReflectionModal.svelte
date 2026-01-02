@@ -105,7 +105,7 @@
 
     {#if nestedForm != null}
         {#if nestedFormTimeScope !== SimpleTimeScopeType.DAILY}
-            <div class="flex justify-end mb-4 gap-2 items-center text-gray-500">
+            <div class="flex justify-end mb-4 gap-2 items-center text-gray-500 dark:text-white">
                 <Fa icon={faCalendar}/>
                 <DatePicker value={formatDateYYYYMMDDHHMMSS(date)} time={true}
                             onChange={(v) => date = new Date(v)} disabled={false}/>
@@ -121,7 +121,7 @@
     {/if}
 
     {#snippet customFooter()}
-        <div class="w-full border-t justify-center items-center gap-2 py-2 fixed md:static bottom-0 flex bg-white">
+        <div class="w-full border-t justify-center items-center gap-2 py-2 fixed md:static bottom-0 flex bg-white dark:bg-gray-900 dark-border">
             {#if nestedForm != null}
                 <Button onClick={logNestedForm}>Log</Button>
                 <Button color={ButtonColor.RED} onClick={cancelNestedForm}>Cancel</Button>

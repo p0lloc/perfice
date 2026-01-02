@@ -19,7 +19,7 @@
     let dayOfMonth = $derived(date.getDate().toString().padStart(2, "0"));
 </script>
 
-<div class="bg-white border p-4 md:p-8 rounded-xl shadow-md w-full">
+<div class="card p-4 md:p-8 shadow-md w-full">
     <div class="flex gap-8 items-start">
 
         <JournalDayDate {date} {dayOfMonth} {weekDay}/>

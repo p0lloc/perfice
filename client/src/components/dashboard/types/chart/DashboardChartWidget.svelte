@@ -23,7 +23,7 @@
     }
 
 </script>
-<button class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col"
+<button class="card basic w-full h-full items-start flex flex-col"
         onclick={onClick}>
     {#await $result}
         <span class="p-2">

@@ -1,35 +1,50 @@
 <script lang="ts">
-    import {forms, groupedJournal, journal, journalSearch, paginatedJournal, tagEntries} from "@perfice/stores";
+    import {
+        forms,
+        groupedJournal,
+        journal,
+        journalSearch,
+        paginatedJournal,
+        tagEntries,
+    } from "@perfice/stores";
     import JournalDayCard from "@perfice/components/journal/day/JournalDayCard.svelte";
     import {
         jeForm,
         jeTag,
         type JournalEntity,
         JournalEntityType,
-        type JournalEntry
+        type JournalEntry,
     } from "@perfice/model/journal/journal";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
-    import {type PrimitiveValue} from "@perfice/model/primitive/primitive";
-    import {extractValueFromDisplay} from "@perfice/services/variable/types/list";
-    import {faBook, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+    import { type PrimitiveValue } from "@perfice/model/primitive/primitive";
+    import { extractValueFromDisplay } from "@perfice/services/variable/types/list";
+    import {
+        faBook,
+        faSearch,
+        faTrash,
+    } from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import Title from "@perfice/components/base/title/Title.svelte";
-    import {type SearchEntity} from "@perfice/model/journal/search/search";
+    import { type SearchEntity } from "@perfice/model/journal/search/search";
     import Button from "@perfice/components/base/button/Button.svelte";
-    import {onMount} from "svelte";
-    import {createJournalDateSearch, gotoEditSearch, parseSearchFromUrl} from "@perfice/stores/journal/search";
-    import {navigate} from "@perfice/app";
-    import {pullToRefresh} from "@perfice/util/pullToRefresh";
+    import { onMount } from "svelte";
+    import {
+        createJournalDateSearch,
+        gotoEditSearch,
+        parseSearchFromUrl,
+    } from "@perfice/stores/journal/search";
+    import { navigate } from "@perfice/app";
+    import { pullToRefresh } from "@perfice/util/pullToRefresh";
     import DatePickerButton from "@perfice/components/base/button/DatePickerButton.svelte";
 
     let formModal: FormModal;
     let deleteModal: GenericDeleteModal<JournalEntity>;
     let deleteMultiModal: GenericDeleteModal<JournalEntity[]>;
-    let {params}: { params: Record<string, string> } = $props();
+    let { params }: { params: Record<string, string> } = $props();
 
     let selectMode = $state(false);
     let currentSearch = $state<SearchEntity[] | null>(null);
@@ -50,11 +65,12 @@
         }
     }
 
-
     function onScroll() {
         if (currentSearch != null) return;
 
-        let reachedBottom = (window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - SCROLL_SLACK;
+        let reachedBottom =
+            window.innerHeight + Math.round(window.scrollY) >=
+            document.body.offsetHeight - SCROLL_SLACK;
         if (reachedBottom) {
             paginatedJournal.nextPage();
         }
@@ -62,8 +78,10 @@
 
     async function onEntityClick(entity: JournalEntity) {
         if (selectMode) {
-            if (selectedEntities.some(e => e.entry.id === entity.entry.id)) {
-                selectedEntities = selectedEntities.filter(v => v.entry.id != entity.entry.id);
+            if (selectedEntities.some((e) => e.entry.id === entity.entry.id)) {
+                selectedEntities = selectedEntities.filter(
+                    (v) => v.entry.id != entity.entry.id,
+                );
             } else {
                 selectedEntities.push(entity);
             }
@@ -90,8 +108,15 @@
             answers[id] = extractValueFromDisplay(value);
         }
 
-        formModal.open(form, snapshot.questions, snapshot.format, new Date(entry.timestamp),
-            templates, answers, entry);
+        formModal.open(
+            form,
+            snapshot.questions,
+            snapshot.format,
+            new Date(entry.timestamp),
+            templates,
+            answers,
+            entry,
+        );
     }
 
     function deleteEntity(entity: JournalEntity) {
@@ -109,7 +134,7 @@
     function onMultiEntryDelete(entries: JournalEntity[]) {
         selectedEntities = [];
         // TODO: delete all entries at once
-        entries.forEach(e => deleteEntity(e));
+        entries.forEach((e) => deleteEntity(e));
     }
 
     function onEntityStartDelete(entity: JournalEntity) {
@@ -149,48 +174,74 @@
     load();
 </script>
 
-<svelte:window onwheel={onScroll} ontouchmove={onScroll}/>
+<svelte:window onwheel={onScroll} ontouchmove={onScroll} />
 
-<GenericDeleteModal subject="this entry" onDelete={deleteEntity} bind:this={deleteModal}/>
-<GenericDeleteModal subject="{selectedEntities.length} entries" onDelete={onMultiEntryDelete}
-                    bind:this={deleteMultiModal}/>
+<GenericDeleteModal
+    subject="this entry"
+    onDelete={deleteEntity}
+    bind:this={deleteModal}
+/>
+<GenericDeleteModal
+    subject="{selectedEntities.length} entries"
+    onDelete={onMultiEntryDelete}
+    bind:this={deleteMultiModal}
+/>
 
-<MobileTopBar title={title}>
+<MobileTopBar {title}>
     {#snippet actions()}
-        <IconButton icon={faSearch} onClick={goToSearch}/>
+        <IconButton icon={faSearch} onClick={goToSearch} />
     {/snippet}
 </MobileTopBar>
-<FormModal largeLogButton={false} bind:this={formModal} onDelete={onFormEntryStartDelete}/>
-<div class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content" use:pullToRefresh>
+<FormModal
+    largeLogButton={false}
+    bind:this={formModal}
+    onDelete={onFormEntryStartDelete}
+/>
+<div
+    class="mx-auto w-screen md:w-3/4 xl:w-1/2 md:px-0 px-4 py-6 md:py-10 main-content"
+    use:pullToRefresh
+>
     {#await $groupedJournal}
         Loading...
     {:then days}
         <div class="row-between items-center md:mb-8 mb-4 md:flex hidden">
-            <Title title={title} icon={currentSearch != null ? faSearch : faBook}/>
+            <Title {title} icon={currentSearch != null ? faSearch : faBook} />
             <div class="row-gap md:w-auto w-full flex justify-end">
-                <div class="row-gap bg-white border px-2 rounded-md h-10">
+                <div
+                    class="row-gap bg-white dark:bg-gray-800 dark-border border px-2 rounded-md h-10"
+                >
                     {#if selectMode}
                         {selectedEntities.length} selected
                     {:else}
                         Select
                     {/if}
-                    <input type="checkbox" bind:checked={selectMode}/>
+                    <input type="checkbox" bind:checked={selectMode} />
                     {#if selectedEntities.length > 0}
-                        <IconButton class="text-gray-500" icon={faTrash} onClick={onMultiEntryStartDelete}/>
+                        <IconButton
+                            class="text-gray-500"
+                            icon={faTrash}
+                            onClick={onMultiEntryStartDelete}
+                        />
                     {/if}
                 </div>
-                <DatePickerButton onDatePick={searchDate} date={dateSearch}/>
-                <Button onClick={goToSearch} class="hidden md:flex items-center gap-2">Search
-                    <Fa icon={faSearch}/>
+                <DatePickerButton onDatePick={searchDate} date={dateSearch} />
+                <Button
+                    onClick={goToSearch}
+                    class="hidden md:flex items-center gap-2"
+                    >Search
+                    <Fa icon={faSearch} />
                 </Button>
             </div>
         </div>
         <div class="flex flex-col gap-4">
             {#each days as day}
-                <JournalDayCard {selectedEntities}
-                                onEntryClick={(e) => onEntityClick(jeForm(e))}
-                                onTagEntryClick={(e) => onEntityClick(jeTag(e))}
-                                onFormEntryDelete={(e) => onEntityStartDelete(jeForm(e))} {day}/>
+                <JournalDayCard
+                    {selectedEntities}
+                    onEntryClick={(e) => onEntityClick(jeForm(e))}
+                    onTagEntryClick={(e) => onEntityClick(jeTag(e))}
+                    onFormEntryDelete={(e) => onEntityStartDelete(jeForm(e))}
+                    {day}
+                />
             {:else}
                 You haven't tracked anything yet.
             {/each}

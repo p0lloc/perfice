@@ -28,9 +28,9 @@
 </script>
 
 {#if value != null}
-    <div class="row-gap bg-gray-100 rounded-md pr-2 w-full md:w-auto">
+    <div class="row-gap bg-gray-100 dark:bg-gray-900 rounded-md pr-2 w-full md:w-auto">
         <input type="date" class="input flex-1" value={formatDateYYYYMMDD(new Date(value))}
-                                    onchange={onDateChange}/>
+               onchange={onDateChange}/>
         <IconButton icon={faTimes} onClick={remove}/>
     </div>
 {:else}
