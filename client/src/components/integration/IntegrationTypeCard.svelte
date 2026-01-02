@@ -22,20 +22,20 @@
     }
 </script>
 
-<button class="rounded-xl p-4 bg-white border text-left flex flex-col justify-start"
+<button class="p-4 card text-left flex flex-col justify-start"
         class:hover-feedback={!deauthenticated}
         onclick={() => onClick(integration)}>
     <div class="flex justify-between">
         <div class="flex gap-2 items-center">
             <img class="w-4 h-4" alt="Integration" src={integrationType.logo}/>
-            <h2 class="text-xl font-bold text-gray-600">{integrationType.name}</h2>
+            <h2 class="text-xl font-bold text-gray-600 dark:text-white">{integrationType.name}</h2>
         </div>
         {#if !deauthenticated}
             <Fa icon={integration != null ? faGear : faPlus}/>
         {/if}
     </div>
     {#if integrationType.authenticated || integration == null}
-        <ul class="list-disc list-inside mt-2 text-gray-600">
+        <ul class="list-disc list-inside mt-2 text-gray-600 dark:text-white">
             {#each integrationType.entities as def}
                 <li>{def.name}</li>
             {/each}

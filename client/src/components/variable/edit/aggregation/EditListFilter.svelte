@@ -1,12 +1,7 @@
 <script lang="ts">
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import {FILTER_COMPARISON_OPERATORS} from "@perfice/model/variable/ui";
-    import {
-        pList,
-        type PrimitiveValue,
-        PrimitiveValueType,
-        pString
-    } from "@perfice/model/primitive/primitive";
+    import {pList, type PrimitiveValue, PrimitiveValueType} from "@perfice/model/primitive/primitive";
     import {faTrash} from "@fortawesome/free-solid-svg-icons";
     import EditListOperatorValue from "@perfice/components/variable/edit/aggregation/EditListOperatorValue.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
@@ -57,11 +52,11 @@
 
 {#if availableFields != null}
     <div class="rounded-xl">
-        <div class="bg-gray-50 w-full p-2 flex justify-between items-center rounded-t-xl border text-gray-500">
+        <div class="dark:bg-gray-800 dark-border bg-gray-50 w-full p-2 flex justify-between items-center rounded-t-xl border text-gray-500 dark:text-white">
             Filter
             <IconButton icon={faTrash} onClick={onRemove}/>
         </div>
-        <div class="flex md:flex-row flex-col gap-1 items-start border p-1 rounded-b-xl">
+        <div class="flex md:flex-row flex-col gap-1 items-start border p-1 rounded-b-xl dark-border">
             <DropdownButton class="flex-1 md:w-auto w-full" small={true} items={availableFields} value={filter.field}
                             onChange={onFieldChange}/>
 

@@ -123,7 +123,7 @@
         {/if}
     </div>
 
-    <div class="bg-white rounded-xl p-2 border mt-4">
+    <div class="card p-2 mt-4">
         {#if val.chart.type === AnalyticsChartType.LINE}
             <div class="h-48">
                 <AnalyticsTrackableLineChart name={val.trackable.name} data={val.chart}/>

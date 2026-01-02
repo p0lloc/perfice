@@ -9,6 +9,6 @@
     } = $props();
 </script>
 <div class="hidden md:flex gap-4 items-center">
-    <Fa icon={icon} class="text-4xl text-green-600"/>
+    <Fa icon={icon} class="text-4xl dark:text-green-500 text-green-600"/>
     <h1 class="text-4xl font-bold text-center">{title}</h1>
 </div>

@@ -15,7 +15,7 @@
 </script>
 
 <div
-        class="border rounded-xl flex flex-col justify-center items-center w-full h-full bg-white"
+        class="rounded-xl flex flex-col justify-center items-center w-full h-full bg-white dark:bg-gray-800 default-border"
 >
     {#await $res}
         Please select a goal

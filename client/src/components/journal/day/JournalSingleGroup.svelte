@@ -24,7 +24,7 @@
             </p>
             <div class="flex-1 w-[60%]">
                 <JournalCardHeader {entry} onDelete={() => onEntryDelete(entry)}>
-                    <h2 class="text-xl font-bold text-gray-600">
+                    <h2 class="text-xl font-bold text-gray-600 dark:text-white">
                         {group.name}
                     </h2>
                 </JournalCardHeader>

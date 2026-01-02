@@ -63,14 +63,14 @@
 </script>
 
 
-<div class="border rounded-md bg-white">
-    <div class="row-between p-2 border-b">
-        <div class="row-gap text-gray-500 ">
+<div class="card">
+    <div class="row-between p-2">
+        <div class="row-gap text-gray-500 dark:text-white">
             <Fa icon={uiDefinition.icon} class="w-4"/>
             <span class="font-bold">{uiDefinition.name}</span>
             <DropdownButton class="text-sm" onChange={onModeChange} value={entity.mode} items={SEARCH_ENTITY_MODES}/>
         </div>
-        <div class="row-between text-gray-500">
+        <div class="row-between text-gray-500 dark:text-white">
             <ActionRendererComponent options={entity.value} onChange={onOptionsChange}/>
             <IconButton icon={faTrash} onClick={onDelete}/>
         </div>

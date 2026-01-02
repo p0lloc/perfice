@@ -91,7 +91,8 @@
                 style:z-index={zIndex}
                 class="w-screen h-screen md:h-auto {SIZE_CLASSES[
                 size
-            ]} md:rounded-lg bg-white overflow-y-auto overflow-x-hidden md:max-h-[90%] text-black flex flex-col md:justify-between"
+            ]} md:rounded-lg bg-white dark:bg-gray-800 dark:text-white overflow-y-auto overflow-x-hidden
+            md:max-h-[90%] text-black flex flex-col md:justify-between dark-border dark:border"
         >
             <MobileModalHeader
                     {title}
@@ -103,7 +104,7 @@
                     extraActions={actions}
             />
             <div
-                    class="py-4 px-6 border-b-gray-300 border-b hidden md:flex justify-between"
+                    class="py-4 px-6 border-b-gray-300 dark:border-b-gray-500 border-b hidden md:flex justify-between"
             >
                 <h2 class="text-2xl font-semibold">{title}</h2>
                 <div class="row-gap">{@render actions?.()}</div>

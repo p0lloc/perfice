@@ -3,6 +3,7 @@
     import type {TrackableChartSettings} from "@perfice/model/trackable/trackable";
     import {getChartColors} from "@perfice/util/color";
     import SingleChart from "@perfice/components/chart/SingleChart.svelte";
+    import {darkMode} from "@perfice/stores/ui/darkmode";
 
     let {value, cardSettings, preview}: {
         value: PrimitiveValue,
@@ -41,7 +42,7 @@
     });
 
 
-    let {fillColor, borderColor} = $derived(getChartColors(cardSettings.color));
+    let {fillColor, borderColor} = $derived(getChartColors(cardSettings.color, $darkMode));
 </script>
 
 

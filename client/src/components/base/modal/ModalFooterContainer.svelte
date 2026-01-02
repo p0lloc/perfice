@@ -2,6 +2,7 @@
     let {children} = $props();
 </script>
 
-<div class="hidden md:block mt-8 bg-gray-100 border border-t-gray-300 p-4 rounded-b-xl">
+<div class="hidden md:block mt-8 bg-gray-100 dark:bg-gray-900 dark:border-x-0 dark:border-y-0
+dark:border-t-gray-600 border border-t-gray-300 p-4 rounded-b-xl">
     {@render children?.()}
 </div>

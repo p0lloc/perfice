@@ -5,6 +5,7 @@
     import {faMagicWandSparkles} from "@fortawesome/free-solid-svg-icons";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import DashboardWidgetBase from "@perfice/components/dashboard/DashboardWidgetBase.svelte";
 
     let {}: {
         settings: DashboardTrackableWidgetSettings,
@@ -16,18 +17,15 @@
 </script>
 
 
-<div class="bg-white rounded-xl border basic w-full h-full items-start flex flex-col ">
-    {#await $analytics}
-        Loading...
-    {:then result}
-        <div class="border-b basic self-stretch p-2 font-bold text-gray-600 row-between">
-            <div class="row-gap">
-                <Fa class="text-green-500" icon={faMagicWandSparkles}/>
-                <span>New correlations</span>
-            </div>
-        </div>
+{#await $analytics}
+    <DashboardWidgetBase>
+        <div class="p-4">Loading...</div>
+    </DashboardWidgetBase>
+
+{:then result}
+    <DashboardWidgetBase title="New correlations" icon={faMagicWandSparkles}>
         <div class="overflow-y-scroll scrollbar-hide w-full p-4 flex flex-col gap-2">
             <NewCorrelations {newCorrelations} result={result}/>
         </div>
-    {/await}
-</div>
+    </DashboardWidgetBase>
+{/await}

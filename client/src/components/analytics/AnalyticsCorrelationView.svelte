@@ -118,7 +118,7 @@
 {:then result}
     <div class="flex md:flex-row flex-col gap-4 mt-4 flex-wrap items-start">
         <div class="w-full md:w-auto">
-            <div class="md:w-72 flex flex-col gap-2 p-3 bg-white rounded-md border">
+            <div class="md:w-72 flex flex-col gap-2 p-3 card">
                 <h2 class="text-xl">New correlations</h2>
                 <NewCorrelations {newCorrelations} result={result}/>
             </div>
@@ -135,6 +135,6 @@
 <style>
     @reference "@perfice/app.css";
     .setting {
-        @apply flex items-center gap-2 px-2 py-1 border rounded bg-white;
+        @apply flex items-center gap-2 px-2 py-1 border rounded bg-white dark:bg-gray-800 dark-border;
     }
 </style>

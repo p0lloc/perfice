@@ -6,7 +6,7 @@
         FormQuestionDisplayType,
     } from "@perfice/model/form/form";
     import Button from "@perfice/components/base/button/Button.svelte";
-    import {ButtonColor} from "@perfice/model/ui/button";
+    import { ButtonColor } from "@perfice/model/ui/button";
     import ContextMenu from "@perfice/components/base/contextMenu/ContextMenu.svelte";
     import ContextMenuButtons from "@perfice/components/base/contextMenu/ContextMenuButtons.svelte";
     import FormFieldEdit from "@perfice/components/form/editor/field/FormFieldEdit.svelte";
@@ -26,16 +26,24 @@
         type FormQuestionDataTypeDefinition,
         questionDataTypeRegistry,
     } from "@perfice/model/form/data";
-    import {type FormQuestionDisplaySettings, questionDisplayTypeRegistry,} from "@perfice/model/form/display";
+    import {
+        type FormQuestionDisplaySettings,
+        questionDisplayTypeRegistry,
+    } from "@perfice/model/form/display";
     import EditTextOrDynamic from "@perfice/components/base/textOrDynamic/EditTextOrDynamic.svelte";
-    import type {TextOrDynamic} from "@perfice/model/variable/variable";
+    import type { TextOrDynamic } from "@perfice/model/variable/variable";
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import IconPickerButton from "@perfice/components/base/iconPicker/IconPickerButton.svelte";
-    import {forms} from "@perfice/stores";
-    import {back} from "@perfice/app";
+    import { forms } from "@perfice/stores";
+    import { back } from "@perfice/app";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
 
-    let {form, creating, headless}: { form: Form | undefined, creating: string | null, headless: boolean } = $props();
+    let {
+        form,
+        creating,
+        headless,
+    }: { form: Form | undefined; creating: string | null; headless: boolean } =
+        $props();
 
     let createName = $state<string>("");
     let createIcon = $state<string>("");
@@ -49,7 +57,6 @@
     let sidebar: FormEditorSidebar;
     // svelte-ignore non_reactive_update From bind:this
     let editDisplayFormat: EditTextOrDynamic<FormQuestion>;
-
 
     function createQuestion(type: FormQuestionDisplayType) {
         if (form == null) return;
@@ -91,12 +98,12 @@
             // If format is empty, add the new question to be shown there
             form.format.push({
                 dynamic: true,
-                value: question.id
+                value: question.id,
             });
             editDisplayFormat.invalidateItems();
         }
 
-        let newQuestion = form.questions.find(q => q.id == question.id);
+        let newQuestion = form.questions.find((q) => q.id == question.id);
         if (newQuestion == null) return;
 
         // Necessary to use the stateful value inside the array
@@ -113,7 +120,9 @@
         form.questions = form.questions.filter((q) => q.id !== question.id);
         questionContainer.invalidateItems();
 
-        form.format = form.format.filter(v => !v.dynamic || v.value != question.id);
+        form.format = form.format.filter(
+            (v) => !v.dynamic || v.value != question.id,
+        );
         editDisplayFormat.invalidateItems();
 
         if (question.id == currentQuestion?.id) {
@@ -129,7 +138,13 @@
             await forms.updateForm(snapshot);
             await back();
         } else {
-            await forms.createForm(creating, createName, createIcon, snapshot.questions, snapshot.format);
+            await forms.createForm(
+                creating,
+                createName,
+                createIcon,
+                snapshot.questions,
+                snapshot.format,
+            );
         }
     }
 
@@ -140,7 +155,7 @@
 
     function onSidebarQuestionChange(question: FormQuestion | null) {
         if (form == undefined || question == null) return;
-        let index = form.questions.findIndex(q => q.id == question?.id);
+        let index = form.questions.findIndex((q) => q.id == question?.id);
         if (index == -1) return;
 
         form.questions[index] = question;
@@ -157,49 +172,54 @@
         if (form == undefined) return;
         form.questions = items;
 
-        currentQuestion = form.questions.find(q => q.id == currentQuestion?.id) ?? null;
+        currentQuestion =
+            form.questions.find((q) => q.id == currentQuestion?.id) ?? null;
 
         if (currentQuestion != null) {
             sidebar.open(currentQuestion);
         }
     }
 
-    let displayTypeButtons = questionDisplayTypeRegistry.getRegisteredDisplayTypes().map(([type, t]) => {
-        return {
-            name: t.getName(),
-            icon: t.getIcon(),
-            action: () => createQuestion(type as FormQuestionDisplayType),
-        };
-    })
+    let displayTypeButtons = questionDisplayTypeRegistry
+        .getRegisteredDisplayTypes()
+        .map(([type, t]) => {
+            return {
+                name: t.getName(),
+                icon: t.getIcon(),
+                action: () => createQuestion(type as FormQuestionDisplayType),
+            };
+        });
 </script>
 
 {#if form !== undefined}
     {#if !headless}
-        <MobileTopBar title={creating != null ? "Create form": form.name}>
+        <MobileTopBar title={creating != null ? "Create form" : form.name}>
             {#snippet leading()}
                 <button class="icon-button" onclick={back}>
-                    <Fa icon={faArrowLeft}/>
+                    <Fa icon={faArrowLeft} />
                 </button>
             {/snippet}
             {#snippet actions()}
                 <button class="icon-button" onclick={save}>
-                    <Fa icon={faCheck}/>
+                    <Fa icon={faCheck} />
                 </button>
             {/snippet}
         </MobileTopBar>
     {/if}
 
     <FormEditorSidebar
-            onClose={() => (currentQuestion = null)}
-            onChange={onSidebarQuestionChange}
-            bind:this={sidebar}
+        onClose={() => (currentQuestion = null)}
+        onChange={onSidebarQuestionChange}
+        bind:this={sidebar}
     />
 
     <div class="flex justify-between w-full">
         <div class:p-2={!headless} class="flex-1 flex">
             <div class="w-full">
                 {#if !headless}
-                    <div class="bg-white hidden md:flex gap-2 border rounded-xl p-4 mb-8 fixed right-40 top-10">
+                    <div
+                        class="bg-white hidden dark:bg-gray-800 md:flex gap-2 border rounded-xl p-4 mb-8 fixed right-40 top-10"
+                    >
                         <Button onClick={save}>Save</Button>
                         <Button color={ButtonColor.RED} onClick={back}>
                             Cancel
@@ -208,69 +228,82 @@
                 {/if}
 
                 {#if creating != null}
-                    <div class="row-gap text-2xl text-gray-500 mt-4">
-                        <Fa icon={faFont}/>
-                        <p>Name & icon</p></div>
+                    <div
+                        class="row-gap text-2xl text-gray-500 dark:text-white mt-4"
+                    >
+                        <Fa icon={faFont} />
+                        <p>Name & icon</p>
+                    </div>
                     <div class="row-gap w-full mt-2">
-                        <input id="first_name" bind:value={createName} placeholder="Name" type="text"
-                               class="input flex-1">
-                        <IconPickerButton right={true} icon={createIcon} onChange={(i) => createIcon = i}/>
+                        <input
+                            id="first_name"
+                            bind:value={createName}
+                            placeholder="Name"
+                            type="text"
+                            class="input flex-1"
+                        />
+                        <IconPickerButton
+                            right={true}
+                            icon={createIcon}
+                            onChange={(i) => (createIcon = i)}
+                        />
                     </div>
                 {/if}
 
                 <div class="mb-4 mt-4">
-                    <div class="row-gap text-2xl text-gray-500">
-                        <Fa icon={faHeading}/>
+                    <div class="row-gap text-2xl text-gray-500 dark:text-white">
+                        <Fa icon={faHeading} />
                         <h2>Display format</h2>
                     </div>
-                    <p class="text-xs mb-4">Decides which values to show in the journal</p>
+                    <p class="text-xs mb-4">
+                        Decides which values to show in the journal
+                    </p>
 
                     <EditTextOrDynamic
-                            bind:this={editDisplayFormat}
-                            value={form.format}
-                            availableDynamic={form.questions}
-                            onChange={onFormatChange}
-                            getDynamicId={(v) => v.id}
-                            getDynamicText={(v) => v.name}
+                        bind:this={editDisplayFormat}
+                        value={form.format}
+                        availableDynamic={form.questions}
+                        onChange={onFormatChange}
+                        getDynamicId={(v) => v.id}
+                        getDynamicText={(v) => v.name}
                     />
                 </div>
 
-                <hr class="my-8"/>
+                <hr class="my-8" />
                 <div
-                        class="row-gap items-center text-2xl text-gray-500 mt-8 mb-4"
+                    class="row-gap items-center text-2xl text-gray-500 dark:text-white mt-8 mb-4"
                 >
-                    <Fa icon={faQuestionCircle}/>
+                    <Fa icon={faQuestionCircle} />
                     <h2>Questions</h2>
                 </div>
                 <DragAndDropContainer
-                        zoneId="form-questions"
-                        bind:this={questionContainer}
-                        onFinalize={onReorderQuestions}
-                        items={form.questions}
-                        class="flex flex-col gap-4"
+                    zoneId="form-questions"
+                    bind:this={questionContainer}
+                    onFinalize={onReorderQuestions}
+                    items={form.questions}
+                    class="flex flex-col gap-4"
                 >
                     {#snippet item(question, i)}
                         <FormFieldEdit
-                                question={form.questions[i]}
-                                selected={currentQuestion?.id === question.id}
-                                onClick={() => editQuestion(question)}
-                                onDelete={() => deleteQuestion(question)}
+                            question={form.questions[i]}
+                            selected={currentQuestion?.id === question.id}
+                            onClick={() => editQuestion(question)}
+                            onDelete={() => deleteQuestion(question)}
                         />
                     {/snippet}
                 </DragAndDropContainer>
 
                 <button
-                        class="horizontal-add-button mt-4"
-                        onclick={(e) => startAddingQuestion(e)}
+                    class="horizontal-add-button mt-4"
+                    onclick={(e) => startAddingQuestion(e)}
                 >
-                    <Fa icon={faPlusCircle} class="pointer-events-none"/>
+                    <Fa icon={faPlusCircle} class="pointer-events-none" />
                 </button>
             </div>
         </div>
 
         <ContextMenu bind:this={contextMenu}>
-            <ContextMenuButtons buttons={displayTypeButtons}
-            />
+            <ContextMenuButtons buttons={displayTypeButtons} />
         </ContextMenu>
     </div>
 {:else}
