@@ -1,9 +1,5 @@
 <script lang="ts">
-    import {
-        comparePrimitives,
-        type PrimitiveValue,
-        pString
-    } from "@perfice/model/primitive/primitive";
+    import {comparePrimitives, type PrimitiveValue, pString} from "@perfice/model/primitive/primitive";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
     import {faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
@@ -38,7 +34,7 @@
             <IconButton icon={faTrash} onClick={() => onRemoveValue(v)} class="text-gray-500"/>
         </div>
     {/each}
-    <button class="border rounded-xl flex justify-center py-2 hover-feedback min-w-10" onclick={add}>
+    <button class="border dark-border rounded-xl flex justify-center py-2 hover-feedback min-w-10" onclick={add}>
         <Fa icon={faPlus}/>
     </button>
 </div>

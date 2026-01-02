@@ -64,7 +64,7 @@
 
 
 <div class="card">
-    <div class="row-between p-2 border-b">
+    <div class="row-between p-2">
         <div class="row-gap text-gray-500 dark:text-white">
             <Fa icon={uiDefinition.icon} class="w-4"/>
             <span class="font-bold">{uiDefinition.name}</span>
