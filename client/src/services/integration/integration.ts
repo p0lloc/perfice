@@ -5,6 +5,7 @@ import {
     isLocalIntegrationType,
     LOCAL_INTEGRATION_TYPES
 } from "@perfice/model/integration/integration";
+
 import {importPrimitive} from "../export/formEntries/export";
 import type {FormService} from "../form/form";
 import type {JournalService} from "../journal/journal";
@@ -222,13 +223,11 @@ export class IntegrationService {
         }
 
         let localUpdates = await this.fetchLocalUpdates();
-        console.log("local updates" + localUpdates);
 
         let updates = [...remoteUpdates, ...localUpdates];
         let acknowledgedUpdates: string[] = [];
         for (let update of updates) {
             let integration = this.integrations.find(i => i.id == update.integrationId);
-            console.log("integration" + integration);
             if (integration == null) continue;
 
             // Only remote updates need to be acknowledged

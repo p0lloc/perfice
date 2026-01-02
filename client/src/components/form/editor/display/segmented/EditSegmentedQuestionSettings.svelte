@@ -24,7 +24,6 @@
         let newOption = await editOptionModal.open(null);
         if (newOption == null) return;
 
-        console.log(newOption)
         onChange({...settings, options: [...settings.options, newOption]});
     }
 

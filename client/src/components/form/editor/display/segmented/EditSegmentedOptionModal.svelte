@@ -6,7 +6,7 @@
     import type {SegmentedOption} from "@perfice/model/form/display/segmented";
     import Button from "@perfice/components/base/button/Button.svelte";
     import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
-    import type { PrimitiveValue } from "@perfice/model/primitive/primitive";
+    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
 
@@ -53,7 +53,6 @@
 
     function onValueChange(v: PrimitiveValue) {
         option.value = v;
-        console.log(option)
     }
 
     function onConfirm() {
