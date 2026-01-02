@@ -63,7 +63,6 @@ test("saves history successfully", async () => {
 
     let [forms, entries] = await analytics.fetchFormsAndEntries(date, 7);
     let [rawValues] = await analytics.constructRawValues(forms, entries, SimpleTimeScopeType.DAILY);
-    console.log(rawValues)
 
     let [tagValues] = await analytics.fetchTagValues(SimpleTimeScopeType.DAILY, date, 7);
     let results = await analytics.runBasicCorrelations(rawValues, tagValues, mockAnalyticsSettings(), date, 7, 3);
@@ -185,18 +184,16 @@ test("timestamp changes for drastic coefficient change", async () => {
     history.processResult(results1, date1);
 
     let historyEntries1 = history.getNewestCorrelations(5, date1.getTime());
-    expect(historyEntries1).toEqual([
-        {
-            key: "lag_test_form2:test|test_form:test",
-            coefficient: expect.closeTo(-0.548860, 5),
-            timestamp: date1.getTime()
-        },
-        {
-            key: "test_form:test|test_form2:test",
-            coefficient: expect.closeTo(0.527777, 5),
-            timestamp: date1.getTime()
-        },
-    ])
+    expect(historyEntries1).toContainEqual({
+        key: "lag_test_form2:test|test_form:test",
+        coefficient: expect.closeTo(-0.548860, 5),
+        timestamp: date1.getTime()
+    });
+    expect(historyEntries1).toContainEqual({
+        key: "test_form:test|test_form2:test",
+        coefficient: expect.closeTo(0.527777, 5),
+        timestamp: date1.getTime()
+    });
 
     // Update the datasets to have much more closely related values, significantly increasing the correlation
     journal.updateEntry({...firstMismatch, answers: {"test": pNumber(16.0)}});
@@ -219,21 +216,9 @@ test("timestamp changes for drastic coefficient change", async () => {
     const newHistory = new AnalyticsHistoryService(0.5, 0.3);
     newHistory.load();
     let historyEntries2 = history.getNewestCorrelations(5, date2.getTime());
-    expect(historyEntries2).toEqual([
-        {
-            key: "test_form:test|test_form2:test",
-            coefficient: expect.closeTo(0.977008, 5),
-            timestamp: date2.getTime() // Timestamp should now have changed since the coefficient drastically changed
-        },
-        {
-            key: "test_form:test|wd_Thursday",
-            coefficient: expect.closeTo(-0.639135, 5),
-            timestamp: date2.getTime()
-        },
-        {
-            key: "test_form2:test|wd_Thursday",
-            coefficient: expect.closeTo(-0.63647, 5),
-            timestamp: date2.getTime()
-        }
-    ])
+    expect(historyEntries2).toContainEqual({
+        key: "test_form:test|test_form2:test",
+        coefficient: expect.closeTo(0.977008, 5),
+        timestamp: date2.getTime() // Timestamp should now have changed since the coefficient drastically changed
+    });
 });

@@ -380,7 +380,7 @@ test("simple aggregate sum new entry", async () => {
 
     expect(val).toEqual(pNumber(23.0));
 
-    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(13.0)});
+    let entryTwo: JournalEntry = mockEntry("entry_three", "ok", {"ok": pNumber(13.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, null, EntryAction.CREATED);
@@ -422,7 +422,7 @@ test("simple aggregate mean new entry", async () => {
 
     expect(val).toEqual(pNumber(25.0));
 
-    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(43.0)});
+    let entryTwo: JournalEntry = mockEntry("entry_three", "ok", {"ok": pNumber(43.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);
