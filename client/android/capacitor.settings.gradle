@@ -21,4 +21,4 @@ include ':capacitor-secure-storage'
 project(':capacitor-secure-storage').projectDir = new File('../node_modules/capacitor-secure-storage/android')
 
 include ':perfice-android'
-project(':perfice-android').projectDir = new File('../../../perfice-android/android')
+project(':perfice-android').projectDir = new File('../../android/android')

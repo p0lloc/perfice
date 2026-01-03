@@ -30,7 +30,7 @@
         {name: "Goal", value: TrackableEditViewType.GOAL},
         {name: "Analytics", value: TrackableEditViewType.ANALYTICS},
         {name: "Integrations", value: TrackableEditViewType.INTEGRATIONS},
-        {name: "Import/export", value: TrackableEditViewType.IMPORT_EXPORT},
+        {name: "Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 
     function getView(v: TrackableEditViewType) {
