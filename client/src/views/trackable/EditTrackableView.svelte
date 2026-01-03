@@ -30,7 +30,7 @@
         {name: "Goal", value: TrackableEditViewType.GOAL},
         {name: "Analytics", value: TrackableEditViewType.ANALYTICS},
         {name: "Integrations", value: TrackableEditViewType.INTEGRATIONS},
-        {name: "Import/export", value: TrackableEditViewType.IMPORT_EXPORT},
+        {name: "Export", value: TrackableEditViewType.IMPORT_EXPORT},
     ];
 
     function getView(v: TrackableEditViewType) {
@@ -112,6 +112,8 @@
         <Button color={ButtonColor.RED} onClick={back}>Close</Button>
     </div>
 </div>
+
+
 <div class="center-view md:mt-2 md:p-0 px-4 py-2 main-content w-full">
     <div class="mt-8">
         {#if editState != null}
