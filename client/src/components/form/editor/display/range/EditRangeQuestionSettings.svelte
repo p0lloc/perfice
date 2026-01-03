@@ -2,7 +2,7 @@
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import type {RangeFormQuestionSettings, RangeLabel} from "@perfice/model/form/display/range";
     import DndOptionList from "@perfice/components/form/editor/DndOptionList.svelte";
-    import AsyncInlineCreateInput from "@perfice/components/base/inline/AsyncInlineCreateInput.svelte";
+    import ControlledInlineCreateInput from "@perfice/components/base/inline/ControlledInlineCreateInput.svelte";
 
     let {settings, onChange, dataType, dataSettings}: {
         settings: RangeFormQuestionSettings,
@@ -11,7 +11,7 @@
         dataSettings: any
     } = $props();
 
-    let createInput: AsyncInlineCreateInput;
+    let createInput: ControlledInlineCreateInput;
 
     function onStepChange(e: { currentTarget: HTMLInputElement }) {
         onChange({...settings, step: parseInt(e.currentTarget.value)});
@@ -36,5 +36,5 @@
 <div class="mt-4">
     <DndOptionList options={settings.labels ?? []} text={(label) => label.text} onChange={onLabelsChange}
                    onAdd={onLabelAdd}/>
-    <AsyncInlineCreateInput class="mt-2" bind:this={createInput}/>
+    <ControlledInlineCreateInput class="mt-2" bind:this={createInput}/>
 </div>
