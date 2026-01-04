@@ -7,20 +7,20 @@
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
 
-    type OptionCallback = (value: T | null) => void;
-
     let {
         options,
         onChange,
         onAdd,
         onEdit,
         text,
+        label = "Labels",
         icon
     }: {
         options: T[],
         onChange: (options: T[]) => void,
         onAdd?: () => void,
         onEdit?: (option: T) => Promise<T | null>,
+        label?: string,
         text: (option: T) => string,
         icon?: (option: T) => IconDefinition,
     } = $props();
@@ -50,11 +50,11 @@
 </script>
 
 <div class="row-gap">
-    <h2 class="text-xl text-gray-500 dark:text-white font-bold">Labels</h2>
+    <h2 class="text-xl text-gray-500 dark:text-white font-bold">{label}</h2>
     <IconButton icon={faPlus} onClick={addOption}/>
 </div>
 
-<div>
+<div class="mt-2">
     <DragAndDropContainer
             dragHandles={true}
             zoneId="text-or-dynamic"
@@ -63,7 +63,7 @@
             class="flex flex-col gap-2 w-full"
     >
         {#snippet item(option, i)}
-            <GenericEditDeleteCard onEdit={() => onEditOption(option)}
+            <GenericEditDeleteCard onEdit={() => onEditOption($state.snapshot(option))}
                                    onDelete={() => onDeleteOption(option)}
                                    dragHandle={true}
                                    icon={icon != null ? icon(option) : undefined}
