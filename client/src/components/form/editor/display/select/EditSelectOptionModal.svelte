@@ -71,7 +71,6 @@
     }
 
     function onValueChange(v: PrimitiveValue) {
-        console.log(v);
         option.value = v;
     }
 
