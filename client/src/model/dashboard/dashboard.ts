@@ -38,6 +38,10 @@ import {
     type DashboardChecklistWidgetSettings
 } from "@perfice/model/dashboard/widgets/checklist";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import {
+    DashboardReflectionsWidgetDefinition,
+    type DashboardReflectionsWidgetSettings
+} from "@perfice/model/dashboard/widgets/reflections";
 
 export interface Dashboard {
     id: string;
@@ -63,6 +67,7 @@ export enum DashboardWidgetType {
     NEW_CORRELATIONS = "NEW_CORRELATIONS",
     INSIGHTS = "INSIGHTS",
     CHECKLIST = "CHECKLIST",
+    REFLECTIONS = "REFLECTIONS",
 }
 
 export type DashboardWidget = {
@@ -84,6 +89,7 @@ export type DashboardWidgetSettings =
     | DS<DashboardWidgetType.NEW_CORRELATIONS, DashboardNewCorrelationsWidgetSettings>
     | DS<DashboardWidgetType.INSIGHTS, DashboardInsightsWidgetSettings>
     | DS<DashboardWidgetType.CHECKLIST, DashboardChecklistWidgetSettings>
+    | DS<DashboardWidgetType.REFLECTIONS, DashboardReflectionsWidgetSettings>
     ;
 
 export interface DS<T extends DashboardWidgetType, V> {
@@ -123,6 +129,7 @@ definitions.set(DashboardWidgetType.TRACKABLE, new DashboardTrackableWidgetDefin
 definitions.set(DashboardWidgetType.NEW_CORRELATIONS, new DashboardNewCorrelationsWidgetDefinition());
 definitions.set(DashboardWidgetType.INSIGHTS, new DashboardInsightsWidgetDefinition());
 definitions.set(DashboardWidgetType.CHECKLIST, new DashboardChecklistWidgetDefinition());
+definitions.set(DashboardWidgetType.REFLECTIONS, new DashboardReflectionsWidgetDefinition());
 
 export function getDashboardWidgetDefinitions(): DashboardWidgetDefinition<DashboardWidgetType, any>[] {
     return Array.from(definitions.values());

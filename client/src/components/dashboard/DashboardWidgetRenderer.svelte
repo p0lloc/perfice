@@ -20,6 +20,8 @@
     import DashboardInsightsWidget from "@perfice/components/dashboard/types/insights/DashboardInsightsWidget.svelte";
     import DashboardChecklistWidget
         from "@perfice/components/dashboard/types/checkList/DashboardChecklistWidget.svelte";
+    import DashboardReflectionsWidget
+        from "@perfice/components/dashboard/types/reflections/DashboardReflectionsWidget.svelte";
 
     let {widget, onClick, onDelete, openFormModal}: {
         widget: DashboardWidget,
@@ -45,6 +47,7 @@
         [DashboardWidgetType.NEW_CORRELATIONS]: DashboardNewCorrelationsWidget,
         [DashboardWidgetType.INSIGHTS]: DashboardInsightsWidget,
         [DashboardWidgetType.CHECKLIST]: DashboardChecklistWidget,
+        [DashboardWidgetType.REFLECTIONS]: DashboardReflectionsWidget,
     };
 
     function onClicked() {
