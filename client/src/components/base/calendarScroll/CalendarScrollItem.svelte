@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { WEEK_DAYS_SHORT } from "@perfice/util/time/format";
+    import {WEEK_DAYS_SHORT} from "@perfice/util/time/format";
 
     let {
         value,
@@ -11,10 +11,10 @@
 </script>
 
 <button
-    onclick={onClick}
-    class="hover-feedback flex w-10 h-10 md:h-full h-full md:w-12 flex-1 md:flex-initial flex-col aspect-square
+        onclick={onClick}
+        class="hover-feedback flex w-10 h-10 md:h-full h-full md:w-12 flex-1 md:flex-initial flex-col aspect-square
         justify-center items-center px-4 py-2 text-xs md:rounded-md md:border
-	dark:bg-inherit bg-white {selected
+bg-inherit {selected
         ? 'md:border-green-500 text-green-500  dark:text-green-200'
         : 'md:border dark:md:border-gray-500'}"
 >

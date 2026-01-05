@@ -149,8 +149,8 @@ export class StoreProvider {
         categorizedTrackables = CategorizedTrackables();
         goals = new GoalStore(this.services.goal);
         tags = new TagStore(this.services.tag);
-        groupedJournal = GroupedJournal();
-        paginatedJournal = new PaginatedJournal();
+        paginatedJournal = new PaginatedJournal(journal, tagEntries, tags);
+        groupedJournal = GroupedJournal(paginatedJournal, forms, tags);
         categorizedTags = CategorizedTags();
         variableEditProvider = new VariableEditProvider(this.services.variable, this.services.form, this.services.trackable);
         reflections = new ReflectionStore(this.services.reflection);
@@ -183,7 +183,7 @@ export class StoreProvider {
         analytics = new AnalyticsStore(this.services.analytics, this.services.analyticsSettings, this.services.analyticsHistory, this.services.ignore, new Date(), 600, 30);
 
         journalSearch = new JournalSearchStore(this.services.journalSearch, this.services.form, this.services.trackable,
-            this.services.trackableCategory, this.services.tag, this.services.tagCategory);
+            this.services.trackableCategory, this.services.tag, this.services.tagCategory, journal, tagEntries);
 
         sync = new SyncStore(this.services.sync, this.services.encryption);
         auth = new AuthStore(this.services.auth);

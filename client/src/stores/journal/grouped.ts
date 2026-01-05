@@ -1,18 +1,15 @@
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {derived, type Readable} from "svelte/store";
 import {dateToLastSecondOfDay, timestampToMidnight} from "@perfice/util/time/simple";
-import {JournalEntryStore} from "@perfice/stores/journal/entry";
-import type {TagEntryStore} from "@perfice/stores/journal/tag";
-import type {FormStore} from "@perfice/stores/form/form";
-import type {TagStore} from "@perfice/stores/tag/tag";
 import type {Form} from "@perfice/model/form/form";
 import type {Tag} from "@perfice/model/tag/tag";
-import {forms, journal, tagEntries, tags} from "@perfice/stores";
-
-
-export type TransformedJournalEntry = JournalEntry & {
-    form: Form;
-}
+import {getLastElementOfArray} from "@perfice/util/array";
+import {MAX_ID} from "@perfice/db/dexie/journal";
+import {AsyncStore} from "@perfice/stores/store";
+import type {IJournalEntryStore} from "@perfice/stores/journal/entry";
+import type {ITagEntryStore} from "@perfice/stores/journal/tag";
+import type {ITagStore} from "@perfice/stores/tag/tag";
+import {resolvedPromise} from "@perfice/util/promise";
 
 export type TransformedTagEntry = TagEntry & {
     tag: Tag;
@@ -62,53 +59,62 @@ interface JournalDayData {
     tagEntries: TransformedTagEntry[];
 }
 
-export interface IGroupedJournal extends Readable<Promise<JournalDay[]>> {
-    load(): Promise<void>;
+export const PAGE_SIZE = 20;
 
-    nextPage(): Promise<void>;
+export interface PaginationResult {
+    journalEntries: JournalEntry[];
+    tagEntries: TagEntry[];
 }
 
-const PAGE_SIZE = 20;
-
-export class PaginatedJournal {
+export class PaginatedJournal extends AsyncStore<PaginationResult> {
     private currentPage = 0;
-    private lastJournalEntryId = "\uffff";
-    private lastTagEntryId = "\uffff";
+    private lastJournalEntryId = MAX_ID;
+    private lastTagEntryId = MAX_ID;
     private loading = false;
+    private reachedEnd = false;
+
+    private journal: IJournalEntryStore;
+    private tagEntries: ITagEntryStore;
+    private tags: ITagStore;
+
+    constructor(journal: IJournalEntryStore, tagEntries: ITagEntryStore, tags: ITagStore) {
+        super(resolvedPromise({
+            journalEntries: [],
+            tagEntries: []
+        }));
+        this.journal = journal;
+        this.tagEntries = tagEntries;
+        this.tags = tags;
+    }
 
     async load() {
         // Load tags so we can display names in the UI
-        await tags.load();
+        await this.tags.load();
 
         this.currentPage = dateToLastSecondOfDay(new Date()).getTime();
 
-        await journal.init();
-        await tagEntries.init();
-        await this.nextPage();
+        await this.journal.init();
+        await this.tagEntries.init();
+        this.reachedEnd = false;
     }
 
-    async nextPage() {
+    async nextPage(): Promise<PaginationResult> {
         // Prevent multiple loading requests from scrolling too quickly
-        if (this.loading) return;
+        if (this.loading || this.reachedEnd) return this.get();
 
         this.loading = true;
 
-        let formEntries = await journal.nextPage(this.currentPage, PAGE_SIZE, this.lastJournalEntryId);
-        let taggedEntries = await tagEntries.nextPage(this.currentPage, PAGE_SIZE, this.lastTagEntryId);
+        let formEntries = await this.journal.nextPage(this.currentPage, PAGE_SIZE, this.lastJournalEntryId);
+        let taggedEntries = await this.tagEntries.nextPage(this.currentPage, PAGE_SIZE, this.lastTagEntryId);
 
-        let oldestJournalEntry = formEntries.length > 0 ? formEntries[formEntries.length - 1] : null;
-        let oldestTagEntry = taggedEntries.length > 0 ? taggedEntries[taggedEntries.length - 1] : null;
-
-        if (oldestJournalEntry != null)
-            this.lastJournalEntryId = oldestJournalEntry.id;
-        if (oldestTagEntry != null)
-            this.lastTagEntryId = oldestTagEntry.id;
+        let oldestJournalEntry = getLastElementOfArray(formEntries);
+        let oldestTagEntry = getLastElementOfArray(taggedEntries);
 
         let oldestJournalEntryTimestamp = oldestJournalEntry?.timestamp ?? 0;
         let oldestTagEntryTimestamp = oldestTagEntry?.timestamp ?? 0;
 
         if (formEntries.length > 0 && taggedEntries.length > 0) {
-            // Entries might be uneven so only include up to the oldest entry even if there are more
+            // Entries might be uneven so only include entries after oldest entry (since we move backwards in time)
             if (oldestJournalEntryTimestamp > oldestTagEntryTimestamp) {
                 taggedEntries = taggedEntries.filter(e => e.timestamp >= oldestJournalEntryTimestamp);
                 this.currentPage = oldestJournalEntryTimestamp;
@@ -121,19 +127,35 @@ export class PaginatedJournal {
             this.currentPage = Math.max(oldestJournalEntryTimestamp, oldestTagEntryTimestamp);
         }
 
-        journal.updateResolved(v => [...v, ...formEntries]);
-        tagEntries.updateResolved(v => [...v, ...taggedEntries]);
+        // We need to recalculate the last ids because we might have filtered out some entries
+        oldestJournalEntry = getLastElementOfArray(formEntries);
+        oldestTagEntry = getLastElementOfArray(taggedEntries);
+
+        if (oldestJournalEntry != null)
+            this.lastJournalEntryId = oldestJournalEntry.id;
+        if (oldestTagEntry != null)
+            this.lastTagEntryId = oldestTagEntry.id;
+
+        const v = await this.get();
+        const value: PaginationResult = {
+            journalEntries: [...v.journalEntries, ...formEntries],
+            tagEntries: [...v.tagEntries, ...taggedEntries]
+        };
+
+        this.reachedEnd = formEntries.length == 0 && taggedEntries.length == 0;
         this.loading = false;
+
+        this.setResolved(value);
+        return value;
     }
 }
 
-export function GroupedJournal(): Readable<Promise<JournalDay[]>> {
-
-    let {subscribe} = derived<[JournalEntryStore, TagEntryStore, FormStore, TagStore], Promise<JournalDay[]>>([journal, tagEntries, forms, tags],
-        ([$entries, $tagEntries, $forms, $tags], set) => {
+export function GroupedJournal(pagination: AsyncStore<PaginationResult>, forms: AsyncStore<Form[]>, tags: AsyncStore<Tag[]>): Readable<Promise<JournalDay[]>> {
+    let {subscribe} = derived<[AsyncStore<PaginationResult>, AsyncStore<Form[]>, AsyncStore<Tag[]>], Promise<JournalDay[]>>([pagination, forms, tags],
+        ([$pagination, $forms, $tags], set) => {
             set(new Promise<JournalDay[]>(async (resolve) => {
-                    let journalEntries = await $entries;
-                    let tagEntries = await $tagEntries;
+                    let pagination = await $pagination;
+                    let {journalEntries, tagEntries} = pagination;
                     let forms = await $forms;
                     let tags = await $tags;
 

@@ -12,10 +12,11 @@ import {resolvedPromise} from "@perfice/util/promise";
 import type {TrackableCategoryEntityProvider} from "@perfice/services/trackable/category";
 import type {JournalSearchUiDependencies} from "@perfice/model/journal/search/ui";
 import type {FormEntityProvider} from "@perfice/services/form/form";
-import {journal, tagEntries} from "@perfice/stores";
 import {navigate} from "@perfice/app";
 import {TimeRangeType} from "@perfice/model/variable/time/time";
 import {addDaysDate, dateToMidnight} from "@perfice/util/time/simple";
+import type {AsyncStore} from "@perfice/stores/store";
+import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 
 export function parseSearchFromUrl(param: string): SearchEntity[] {
     try {
@@ -82,11 +83,16 @@ export class JournalSearchStore {
     private tagEntityProvider: TagEntityProvider;
     private tagCategoryEntityProvider: TagCategoryEntityProvider;
 
+    private journal: AsyncStore<JournalEntry[]>;
+    private tagEntries: AsyncStore<TagEntry[]>;
+
     constructor(searchService: JournalSearchService,
                 formEntityProvider: FormEntityProvider,
                 trackableEntityProvider: TrackableEntityProvider,
                 trackableCategoryEntityProvider: TrackableCategoryEntityProvider,
-                tagEntityProvider: TagEntityProvider, tagCategoryEntityProvider: TagCategoryEntityProvider) {
+                tagEntityProvider: TagEntityProvider, tagCategoryEntityProvider: TagCategoryEntityProvider,
+                journal: AsyncStore<JournalEntry[]>,
+                tagEntries: AsyncStore<TagEntry[]>) {
 
         this.formEntityProvider = formEntityProvider;
         this.trackableEntityProvider = trackableEntityProvider;
@@ -94,12 +100,15 @@ export class JournalSearchStore {
         this.tagEntityProvider = tagEntityProvider;
         this.tagCategoryEntityProvider = tagCategoryEntityProvider;
         this.searchService = searchService;
+
+        this.journal = journal;
+        this.tagEntries = tagEntries;
     }
 
     async search(search: SearchEntity[]) {
         let result = await this.searchService.searchAll(search);
-        journal.set(resolvedPromise(result.journalEntries));
-        tagEntries.set(resolvedPromise(result.tagEntries));
+        this.journal.set(resolvedPromise(result.journalEntries));
+        this.tagEntries.set(resolvedPromise(result.tagEntries));
     }
 
     async fetchSavedSearchById(id: string): Promise<JournalSearch | undefined> {

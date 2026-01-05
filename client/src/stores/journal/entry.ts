@@ -7,7 +7,13 @@ import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
-export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
+export interface IJournalEntryStore extends AsyncStore<JournalEntry[]> {
+    init(): Promise<void>;
+
+    nextPage(page: number, size: number, lastId: string): Promise<JournalEntry[]>;
+}
+
+export class JournalEntryStore extends AsyncStore<JournalEntry[]> implements IJournalEntryStore {
 
     private journalService: JournalService;
 

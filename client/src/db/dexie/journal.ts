@@ -2,6 +2,9 @@ import type {JournalCollection} from "@perfice/db/collections";
 import type {JournalEntry} from "@perfice/model/journal/journal";
 import {SyncedTable} from "@perfice/services/sync/sync";
 
+// Maximum unicode character that can be compared with, any UUID < MAX_ID (sorting lexicographically)
+export const MAX_ID: string = "\uffff";
+
 export class DexieJournalCollection implements JournalCollection {
 
     private readonly table: SyncedTable<JournalEntry>;
@@ -88,12 +91,13 @@ export class DexieJournalCollection implements JournalCollection {
             .toArray();
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string = "\uffff"): Promise<JournalEntry[]> {
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string = MAX_ID): Promise<JournalEntry[]> {
         // We sort by both timestamp and id so that we get deterministic results when entries have the same timestamp
         // This returns the newest entries first
         return this.table
             .where("[timestamp+id]")
-            .below([untilTimestamp, lastId]) // If we are exactly at the boundary point we need to compare by id of last journal entry instead
+            .belowOrEqual([untilTimestamp, lastId]) // If we are exactly at the boundary point we need to compare by id of last journal entry instead
+            .filter(e => e.id != lastId)
             .limit(limit)
             .reverse()
             .toArray();

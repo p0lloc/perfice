@@ -11,7 +11,11 @@ export function TagDate(): Writable<Date> {
     return writable(dateToMidnight(new Date()));
 }
 
-export class TagStore extends AsyncStore<Tag[]> {
+export interface ITagStore extends AsyncStore<Tag[]> {
+    load(): Promise<void>;
+}
+
+export class TagStore extends AsyncStore<Tag[]> implements ITagStore {
 
     private tagService: TagService;
 

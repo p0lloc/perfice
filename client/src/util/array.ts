@@ -33,3 +33,8 @@ export function reorderGeneric<T extends { order: number }>(items: T[]): T[] {
 
     return values;
 }
+
+export function getLastElementOfArray<T>(entries: T[]): T | null {
+    if (entries.length == 0) return null;
+    return entries[entries.length - 1];
+}

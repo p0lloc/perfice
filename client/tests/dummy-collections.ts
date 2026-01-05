@@ -28,8 +28,11 @@ export class DummyJournalCollection implements JournalCollection {
         throw new Error("Method not implemented.");
     }
 
-    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number): Promise<JournalEntry[]> {
-        return this.entries.filter(e => e.timestamp <= untilTimestamp).sort((a, b) => a.timestamp - b.timestamp).slice(0, limit);
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<JournalEntry[]> {
+        return this.entries
+            .sort((a, b) => (b.timestamp - a.timestamp) || (b.id.localeCompare(a.id)))
+            .filter(e => e.timestamp <= untilTimestamp && e.id != lastId)
+            .slice(0, limit);
     }
 
     async getEntriesByTimeRange(start: number, end: number): Promise<JournalEntry[]> {
