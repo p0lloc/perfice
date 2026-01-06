@@ -88,6 +88,10 @@ export class PaginatedJournal extends AsyncStore<PaginationResult> {
     }
 
     async load() {
+        this.setResolved({
+            journalEntries: [],
+            tagEntries: []
+        })
         // Load tags so we can display names in the UI
         await this.tags.load();
 

@@ -103,3 +103,5 @@ test("entry part of second page", async () => {
     expect((await paginated.nextPage()).journalEntries).not.toContainEqual(entry);
     expect((await paginated.nextPage()).journalEntries).toContainEqual(entry);
 });
+
+// generate bunch of entries with random timestamps and make sure all of them are properly returned
