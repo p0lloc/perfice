@@ -36,5 +36,5 @@
     $effect(() => updateChart(data));
 </script>
 
-<canvas class="rounded-b-xl" style="filter: {blur ? 'blur(3px)' : ''}"
+<canvas class="rounded-b-xl max-w-full" style="filter: {blur ? 'blur(3px)' : ''}"
         bind:this={canvasElem}></canvas>

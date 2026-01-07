@@ -4,11 +4,12 @@
     import Fa from "svelte-fa";
     import type {SegmentedItem} from "@perfice/model/ui/segmented";
 
-    let {segments, value, onChange, class: className = 'w-screen'}: {
+    let {segments, value, onChange, class: className = 'w-screen', segmentClass}: {
         segments: SegmentedItem<T>[],
         value: T,
         onChange?: (value: T) => void,
         class?: string
+        segmentClass?: string
     } = $props();
 
     function onSegmentClick(value: SegmentedItem<T>) {
@@ -23,7 +24,7 @@
 <div class="bg-green-700 min-w-0 flex-1 flex p-1 md:p-2 gap-1 overflow-x-auto min-h-10 {className}">
     {#each segments as segment}
         <InvertedSegment active={value === segment.value}
-                         onClick={() => onSegmentClick(segment)}>
+                         onClick={() => onSegmentClick(segment)} class={segmentClass}>
 
             {#if segment.prefix != null}
                 <Fa icon={segment.prefix}/>
