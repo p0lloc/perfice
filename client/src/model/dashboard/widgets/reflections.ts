@@ -20,7 +20,7 @@ export class DashboardReflectionsWidgetDefinition implements DashboardWidgetDefi
     }
 
     getMinHeight(): number | undefined {
-        return undefined;
+        return 9;
     }
 
     getMinWidth(): number | undefined {
