@@ -2,8 +2,17 @@
     import {type DndEvent, dndzone, dragHandleZone, SOURCES, TRIGGERS} from "svelte-dnd-action";
     import {longPress} from "@perfice/util/long-press";
     import type {Snippet} from "svelte";
+    import {darkMode} from "@perfice/stores/ui/darkmode";
 
-    let {items = $bindable(), item, class: className = '', disabled = false, onFinalize, zoneId = "dnd", dragHandles = false}: {
+    let {
+        items = $bindable(),
+        item,
+        class: className = '',
+        disabled = false,
+        onFinalize,
+        zoneId = "dnd",
+        dragHandles = false
+    }: {
         items: any[],
         item: Snippet<[any, number]>,
         class?: string,
@@ -15,6 +24,7 @@
     } = $props();
 
     let dragDisabled = $state(true);
+
     //let currentItems = $state(items);
 
 
@@ -44,7 +54,7 @@
     function transformDraggedElement(el?: HTMLElement) {
         if (el == null) return;
         // Sometimes the element inherits the background color, but when we drag it we don't want any transparency
-        el.style.backgroundColor = "white";
+        el.style.backgroundColor = $darkMode ? "#161616" : "white";
     }
 
     /**
