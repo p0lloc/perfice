@@ -12,6 +12,7 @@
         minimal = true,
         legend = true,
         randomColor = false,
+        maxTicksLimit,
         fillColor = "#9BD0F5",
         borderColor = "#36A2EB",
         dataSetLabel = "Data",
@@ -24,6 +25,7 @@
         labels: string[],
         randomColor?: boolean,
         hideLabels?: boolean,
+        maxTicksLimit?: number,
         hideGrid?: boolean,
         minimal?: boolean,
         legend?: boolean,
@@ -102,7 +104,8 @@
                     ticks: {
                         padding: 0,
                         autoSkip: true,
-                        display: !hideLabels
+                        display: !hideLabels,
+                        maxTicksLimit: maxTicksLimit,
                     },
                     grid: {
                         display: !hideGrid

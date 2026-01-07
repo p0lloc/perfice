@@ -10,9 +10,10 @@
 
 <SingleChart
         type="line"
-        hideLabels={true}
+        hideLabels={false}
         hideGrid={true}
         minimal={false}
+        maxTicksLimit={5}
         legend={false}
         dataPoints={data.values}
         blur={data.blur}

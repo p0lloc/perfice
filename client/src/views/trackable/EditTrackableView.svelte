@@ -8,7 +8,6 @@
     import EditTrackableGoal from "@perfice/components/trackable/edit/EditTrackableGoal.svelte";
     import {faArrowLeft, faCheck} from "@fortawesome/free-solid-svg-icons";
     import {navigate} from "@perfice/app";
-    import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
     import EditTrackableForm from "@perfice/components/trackable/edit/EditTrackableForm.svelte";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     // noinspection ES6UnusedImports
@@ -17,6 +16,7 @@
     import {ButtonColor} from "@perfice/model/ui/button";
     import EditTrackableAnalytics from "@perfice/components/trackable/edit/general/EditTrackableAnalytics.svelte";
     import EditTrackableIntegrations from "@perfice/components/trackable/edit/EditTrackableIntegrations.svelte";
+    import InvertedSegmentedControl from "@perfice/components/base/invertedSegmented/InvertedSegmentedControl.svelte";
 
     let viewType = $state(TrackableEditViewType.GENERAL);
     let editState = $state<EditTrackableState | null>(null);
@@ -99,12 +99,15 @@
     </MobileTopBar>
 {/if}
 <div class="flex gap-4 items-center w-full xl:w-1/2 md:w-3/4 md:mt-8 md:mx-auto">
-    <InvertedSegmentedControl
-            class="md:rounded-xl w-full md:text-base text-xs"
-            value={viewType}
-            onChange={changeView}
-            segments={ANALYTICS_SEGMENTED_ITEMS}
-    />
+    <div class="w-screen max-w-screen md:w-auto flex-1">
+        <InvertedSegmentedControl
+                segmentClass="md:text-base text-xs"
+                class="md:rounded-xl"
+                value={viewType}
+                onChange={changeView}
+                segments={ANALYTICS_SEGMENTED_ITEMS}
+        />
+    </div>
     <div class="md:flex gap-2 items-center hidden">
         {#if showSave(viewType)}
             <Button onClick={save}>Save</Button>
