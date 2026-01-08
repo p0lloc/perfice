@@ -60,7 +60,7 @@
         {#if !integrationData.enabled}
             <p class="mt-4">Integrations must be enabled in settings.</p>
         {:else}
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
                 {#each integrationData.integrationTypes as type}
                     <IntegrationTypeCard integrationType={type}
                                          formId={formId}
