@@ -355,7 +355,7 @@ export class SyncService {
     }
 
     async sync(): Promise<void> {
-        if (!this.authService.isAuthenticated()) return;
+        if (!this.isEnabled() || !this.authService.isAuthenticated()) return;
         this.syncTimer = null;
         if (!await this.pull()) return;
         await this.push();

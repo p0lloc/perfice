@@ -1,13 +1,10 @@
 <script lang="ts">
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
-    import EditTrackableModal from "@perfice/components/trackable/edit/EditTrackableModal.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
     import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {faRuler} from "@fortawesome/free-solid-svg-icons";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
     import {entryImportEvents} from "@perfice/stores/import/formEntry";
     import {subscribeToEventStore} from "@perfice/util/event.js";
@@ -22,10 +19,8 @@
     import {navigate} from "@perfice/app";
 
     let formModal: FormModal;
-    let editTrackableModal: EditTrackableModal;
     let createTrackableModal: CreateTrackableModal;
     let importResultModal: EntryImportResultModal;
-    let deleteTrackableModal: GenericDeleteModal<Trackable>;
     let deleteTrackableCategoryModal: GenericDeleteModal<TrackableCategory>;
 
     function onDateChange(e: Date) {
@@ -34,11 +29,6 @@
 
     async function onEditTrackable(trackable: Trackable) {
         navigate(`/trackables/${trackable.id}`);
-        // let state = await trackables.getEditTrackableState(
-        //     $state.snapshot(trackable),
-        // );
-        // if (state == null) return;
-        // editTrackableModal.open(state);
     }
 
     async function onLogTrackable(trackable: Trackable) {
@@ -55,16 +45,8 @@
         );
     }
 
-    function onStartDeleteTrackable(trackable: Trackable) {
-        deleteTrackableModal.open(trackable);
-    }
-
     function onStartDeleteTrackableCategory(category: TrackableCategory) {
         deleteTrackableCategoryModal.open(category);
-    }
-
-    function onDeleteTrackable(trackable: Trackable) {
-        trackables.deleteTrackable(trackable);
     }
 
     function onDeleteTrackableCategory(category: TrackableCategory) {
@@ -96,17 +78,8 @@
 <MobileTopBar title="Trackables"/>
 
 <FormModal bind:this={formModal}/>
-<EditTrackableModal
-        onStartDelete={onStartDeleteTrackable}
-        bind:this={editTrackableModal}
-/>
 <CreateTrackableModal bind:this={createTrackableModal} onSelectSuggestion={onSuggestionSelected}
                       onSingleValue={onSingleValue}/>
-<GenericDeleteModal
-        subject="this trackable"
-        onDelete={onDeleteTrackable}
-        bind:this={deleteTrackableModal}
-/>
 
 <GenericDeleteModal
         subject="this category and all associated trackables"

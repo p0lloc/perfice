@@ -131,6 +131,17 @@ button {
     @apply fixed top-0 right-0 z-101 dark:bg-gray-800 border-l dark-border bg-white h-full min-h-screen w-screen max-h-full;
 }
 
+.rangePips .rsPip:first-child .rsPipVal {
+    text-align: left !important;
+    transform: translate(-10%, 25%) !important;
+}
+
+.rangePips .rsPip:last-child .rsPipVal {
+    text-align: right !important;
+    top: 0.4em !important;
+    transform: translate(-100%, 25%) !important;
+}
+
 input[type="color"]::-moz-color-swatch {
     border: none;
 }

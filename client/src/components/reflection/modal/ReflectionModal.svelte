@@ -42,6 +42,7 @@
     let date = $state(new Date());
 
     function validate(): boolean {
+        if (pageRenderer == null) return false;
         return pageRenderer.validate();
     }
 
@@ -103,21 +104,25 @@
 <Modal size={ModalSize.LARGE} type={ModalType.NONE} title={reflection.name} bind:this={modal}
        onConfirm={confirm}>
 
-    {#if nestedForm != null}
-        {#if nestedFormTimeScope !== SimpleTimeScopeType.DAILY}
-            <div class="flex justify-end mb-4 gap-2 items-center text-gray-500 dark:text-white">
-                <Fa icon={faCalendar}/>
-                <DatePicker value={formatDateYYYYMMDDHHMMSS(date)} time={true}
-                            onChange={(v) => date = new Date(v)} disabled={false}/>
+    {#if currentPage != null}
+        {#if nestedForm != null}
+            {#if nestedFormTimeScope !== SimpleTimeScopeType.DAILY}
+                <div class="flex justify-end mb-4 gap-2 items-center text-gray-500 dark:text-white">
+                    <Fa icon={faCalendar}/>
+                    <DatePicker value={formatDateYYYYMMDDHHMMSS(date)} time={true}
+                                onChange={(v) => date = new Date(v)} disabled={false}/>
+                </div>
+            {/if}
+            <div class="pb-20 md:pb-0">
+                <FormEmbed bind:this={nestedFormEmbed} questions={nestedForm.questions} answers={nestedFormAnswers}/>
             </div>
+        {:else}
+            <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage}
+                                    states={answerStates}
+                                    bind:this={pageRenderer} {openNestedForm}/>
         {/if}
-        <div class="pb-20 md:pb-0">
-            <FormEmbed bind:this={nestedFormEmbed} questions={nestedForm.questions} answers={nestedFormAnswers}/>
-        </div>
     {:else}
-        <ReflectionPageRenderer onStateChange={onStateChange} page={currentPage}
-                                states={answerStates}
-                                bind:this={pageRenderer} {openNestedForm}/>
+        This reflection has no pages.
     {/if}
 
     {#snippet customFooter()}
@@ -132,7 +137,7 @@
                 </div>
                 <div class="bg-gray-100 rounded-xl w-48">
                     <div class="bg-green-500 w-[60%] p-2 rounded-xl"
-                         style:width={((currentPageNumber + 1) / reflection.pages.length) * 100 + "%"}>
+                         style:width={((currentPageNumber + 1) / (Math.max(reflection.pages.length, 1) ?? 1)) * 100 + "%"}>
 
                     </div>
                 </div>

@@ -2,21 +2,17 @@
     import {faPen, faPlay, faSun, faTrash} from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
-    // noinspection ES6UnusedImports
-    import Fa from "svelte-fa";
     import type {Reflection} from "@perfice/model/reflection/reflection";
     import {NEW_REFLECTION_ROUTE, openReflectionEvents} from "@perfice/model/reflection/ui";
     import HorizontalPlusButton from "@perfice/components/base/button/HorizontalPlusButton.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import GenericActionsCard from "@perfice/components/base/card/GenericActionsCard.svelte";
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
-    import ReflectionModal from "@perfice/components/reflection/modal/ReflectionModal.svelte";
     import {publishToEventStore} from "@perfice/util/event";
     import {reflections} from "@perfice/stores";
     import {navigate} from "@perfice/app";
 
     let deleteReflectionModal: GenericDeleteModal<Reflection>;
-    let reflectionModal: ReflectionModal;
 
     reflections.load();
 
