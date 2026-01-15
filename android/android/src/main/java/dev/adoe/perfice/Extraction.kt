@@ -1,40 +1,36 @@
 package dev.adoe.perfice
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.BloodGlucoseRecord
-import androidx.health.connect.client.records.BloodPressureRecord
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.HeightRecord
-import androidx.health.connect.client.records.HydrationRecord
-import androidx.health.connect.client.records.NutritionRecord
-import androidx.health.connect.client.records.Record
-import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
-import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import dev.adoe.perfice.data.Integration
 import dev.adoe.perfice.data.IntegrationUpdate
 import dev.adoe.perfice.store.IntegrationUpdateDataStore
 import java.time.Instant
-
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.time.temporal.ChronoUnit
+import java.util.*
 import kotlin.reflect.KClass
 
+
 interface RecordExtractor {
-    fun extract(record: Any): List<ExtractedRecord>
     fun getType(): KClass<out Record>
+    fun extract(time: Instant, records: List<*>): List<ExtractedRecord>
+    fun extractTime(record: Any): Instant
 }
 
 data class ExtractedRecord(val data: Map<String, Any>, val identifier: String, val timestamp: Long)
 
-val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault())
+@RequiresApi(Build.VERSION_CODES.O)
+val dateFormatter: DateTimeFormatter = DateTimeFormatter
+    .ofPattern("yyyy-MM-dd")
+    .withZone(ZoneId.systemDefault())
 
 
 val RECORD_EXTRACTORS: Map<String, RecordExtractor> =
@@ -56,228 +52,7 @@ val RECORD_EXTRACTORS: Map<String, RecordExtractor> =
 val RECORD_PERMISSIONS =
     RECORD_EXTRACTORS.values.map { HealthPermission.getReadPermission(it.getType()) }.toSet()
 
-fun instantDurationInMinutes(start: Instant, end: Instant): Double {
-    return (end.toEpochMilli().toDouble() - start.toEpochMilli().toDouble()) / (1000 * 60)
-}
-
-class NutritionRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val nutrition = (record as NutritionRecord)
-
-        val name: String = nutrition.name ?: ""
-        val carbs: Double = nutrition.totalCarbohydrate?.inGrams ?: 0.0
-        val kcal: Double = nutrition.energy?.inKilocalories ?: 0.0
-        val protein: Double = nutrition.protein?.inGrams ?: 0.0
-        val fat: Double = nutrition.totalFat?.inGrams ?: 0.0
-        return listOf(
-            ExtractedRecord(
-                mapOf(
-                    "name" to name,
-                    "carbs" to carbs,
-                    "calories" to kcal,
-                    "protein" to protein,
-                    "fat" to fat
-                ),
-                nutrition.startTime.toEpochMilli().toString(),
-                nutrition.endTime.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return NutritionRecord::class
-    }
-}
-
-class BloodPressureRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val bloodPressure = (record as BloodPressureRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf(
-                    "systolic" to bloodPressure.systolic.inMillimetersOfMercury,
-                    "diastolic" to bloodPressure.diastolic.inMillimetersOfMercury
-                ),
-                bloodPressure.time.toEpochMilli().toString(),
-                bloodPressure.time.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return BloodPressureRecord::class
-    }
-}
-
-class ExerciseSessionRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val exerciseSession = (record as ExerciseSessionRecord)
-        val title = exerciseSession.title ?: ""
-
-        return listOf(
-            ExtractedRecord(
-                mapOf(
-                    "title" to title,
-                    "duration" to instantDurationInMinutes(exerciseSession.startTime, exerciseSession.endTime)
-                ), // Duration in minutes
-                exerciseSession.startTime.toEpochMilli().toString(),
-                exerciseSession.startTime.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return ExerciseSessionRecord::class
-    }
-}
-
-class BloodGlucoseRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val bloodGlucose = (record as BloodGlucoseRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("bloodGlucose" to bloodGlucose.level.inMillimolesPerLiter),
-                bloodGlucose.time.toEpochMilli().toString(),
-                bloodGlucose.time.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return BloodGlucoseRecord::class
-    }
-}
-
-class HeightRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val height = (record as HeightRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("height" to height.height.inMeters),
-                height.time.toEpochMilli().toString(),
-                height.time.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return HeightRecord::class
-    }
-}
-
-class WeightRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val weight = (record as WeightRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("weight" to weight.weight.inKilograms),
-                weight.time.toEpochMilli().toString(),
-                weight.time.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return WeightRecord::class
-    }
-}
-
-class SleepSessionRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val sleepSession = (record as SleepSessionRecord)
-        val duration = sleepSession.endTime.toEpochMilli() - sleepSession.startTime.toEpochMilli()
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("duration" to duration / (1000 * 60)), // Duration in minutes
-                dateFormatter.format(sleepSession.endTime),
-                sleepSession.endTime.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return SleepSessionRecord::class
-    }
-}
-
-class HydrationRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val hydration = (record as HydrationRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("hydration" to hydration.volume.inMilliliters),
-                hydration.startTime.toEpochMilli().toString(),
-                hydration.startTime.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return HydrationRecord::class
-    }
-}
-
-class TotalCaloriesBurnedRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val totalCaloriesBurned = (record as TotalCaloriesBurnedRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("totalCaloriesBurned" to totalCaloriesBurned.energy.inKilocalories),
-                totalCaloriesBurned.startTime.toEpochMilli().toString(),
-                totalCaloriesBurned.startTime.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return TotalCaloriesBurnedRecord::class
-    }
-}
-
-class StepsRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        val steps = (record as StepsRecord)
-
-        return listOf(
-            ExtractedRecord(
-                mapOf("steps" to steps.count),
-                dateFormatter.format(steps.startTime),
-                steps.startTime.toEpochMilli()
-            )
-        )
-    }
-
-    override fun getType(): KClass<out Record> {
-        return StepsRecord::class
-    }
-}
-
-class HeartRateRecordExtractor : RecordExtractor {
-    override fun extract(record: Any): List<ExtractedRecord> {
-        return (record as HeartRateRecord)
-            .samples
-            .map { sample ->
-                ExtractedRecord(
-                    mapOf<String, Any>("heartRate" to sample.beatsPerMinute),
-                    dateFormatter.format(sample.time),
-                    sample.time.toEpochMilli()
-                )
-            }
-            .toList()
-    }
-
-    override fun getType(): KClass<out Record> {
-        return HeartRateRecord::class
-    }
-}
-
+@RequiresApi(Build.VERSION_CODES.O)
 suspend fun extractRecordsAndCreateUpdates(
     healthConnect: HealthConnectClient,
     updates: IntegrationUpdateDataStore,
@@ -286,7 +61,6 @@ suspend fun extractRecordsAndCreateUpdates(
 ) {
     try {
         val extractor = RECORD_EXTRACTORS[integration.entityType] ?: return
-
         val response =
             healthConnect.readRecords(
                 ReadRecordsRequest(
@@ -295,7 +69,10 @@ suspend fun extractRecordsAndCreateUpdates(
                 )
             )
 
-        val extracted = response.records.flatMap { record -> extractor.extract(record) }
+        val extracted = response.records
+            .groupBy { (extractor.extractTime(it)).truncatedTo(ChronoUnit.DAYS) }
+            .mapValues { (key, value) -> extractor.extract(key, value) }
+            .flatMap { (_, value) -> value }
 
         Log.d("Perfice", "extracted" + extracted.size + " records")
 

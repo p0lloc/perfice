@@ -1,6 +1,5 @@
 package dev.adoe.perfice
 
-import android.R
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,17 +8,14 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.health.connect.client.HealthConnectClient
-import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import dev.adoe.perfice.data.Integration
-import dev.adoe.perfice.data.IntegrationUpdate
 import dev.adoe.perfice.store.CustomDataStore
 import dev.adoe.perfice.store.IntegrationUpdateDataStore
 import java.time.LocalDateTime
-import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,12 +54,13 @@ class BackgroundService : Service() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notification: Notification =
                 NotificationCompat.Builder(this, CHANNEL_ID)
                         .setContentTitle("Perfice Background Task")
                         .setContentText("Running in background")
-                        .setSmallIcon(R.drawable.ic_dialog_info)
+                        .setSmallIcon(android.R.drawable.ic_dialog_info)
                         .setOngoing(true)
                         .build()
 
@@ -85,6 +82,7 @@ class BackgroundService : Service() {
         return START_STICKY
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun run(healthConnect: HealthConnectClient) {
         if (integrations == null) return
         for (integration in integrations!!.getAll()) {
