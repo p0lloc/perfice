@@ -101,9 +101,7 @@
     }
 </script>
 
-<Modal size={ModalSize.LARGE} type={ModalType.NONE} title={reflection.name} bind:this={modal}
-       onConfirm={confirm}>
-
+<Modal size={ModalSize.LARGE} type={ModalType.NONE} title={reflection.name} bind:this={modal} onEnter={next}>
     {#if currentPage != null}
         {#if nestedForm != null}
             {#if nestedFormTimeScope !== SimpleTimeScopeType.DAILY}

@@ -132,7 +132,8 @@
     }
 </script>
 
-<Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm} leftTitle={true}>
+<Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm} onEnter={confirm}
+       leftTitle={true}>
     {#snippet actions()}
         <SveltyPicker
                 inputClasses="w-16 text-center"
