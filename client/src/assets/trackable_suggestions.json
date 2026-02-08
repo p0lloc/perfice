@@ -1722,8 +1722,154 @@
         }
       },
       {
-        "name": "Blood sugar",
+        "name": "Menstrual cycle",
         "icon": "🩸",
+        "form": {
+          "format": [
+            {
+              "dynamic": true,
+              "value": "1c884ebc-22e9-40d3-ba8e-e03311383f49"
+            }
+          ],
+          "questions": [
+            {
+              "id": "1c884ebc-22e9-40d3-ba8e-e03311383f49",
+              "name": "Phase",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "Menstruation",
+                    "value": "Menstruation",
+                    "icon": "🩸",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Follicular",
+                    "value": "Follicular",
+                    "icon": "🌱",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Ovulation",
+                    "value": "Ovulation",
+                    "icon": "🥚",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Luteal",
+                    "value": "Luteal",
+                    "icon": "🍂",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": false
+              }
+            },
+            {
+              "id": "49ec2027-67c6-4c4e-850e-1b5b263d7766",
+              "name": "Cycle day",
+              "dataType": "NUMBER",
+              "dataSettings": {},
+              "displayType": "INPUT",
+              "displaySettings": {}
+            },
+            {
+              "id": "4c3a61ab-b968-4652-acba-626088342459",
+              "name": "Flow / Intensity",
+              "dataType": "NUMBER",
+              "dataSettings": {
+                "min": 1,
+                "max": 5
+              },
+              "displayType": "RANGE",
+              "displaySettings": {
+                "step": 1
+              }
+            },
+            {
+              "id": "28264fd4-ea57-4690-9162-d1eb5e658d70",
+              "name": "Non-pain symptoms",
+              "dataType": "TEXT",
+              "dataSettings": {},
+              "displayType": "SELECT",
+              "displaySettings": {
+                "options": [
+                  {
+                    "text": "None",
+                    "value": "None",
+                    "icon": "🙂",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Bloating",
+                    "value": "Bloating",
+                    "icon": "🫃",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Tender breasts",
+                    "value": "Tender breasts",
+                    "icon": "🫐",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Acne / Skin irritation",
+                    "value": "Acne / Skin irritation",
+                    "icon": "🫥",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Shortness of breath",
+                    "value": "Shortness of breath",
+                    "icon": "🫁",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Mood swings",
+                    "value": "Mood swings",
+                    "icon": "🤪",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Cravings",
+                    "value": "Cravings",
+                    "icon": "🍩",
+                    "iconAndText": true
+                  },
+                  {
+                    "text": "Hot flashes",
+                    "value": "Hot flashes",
+                    "icon": "🥵",
+                    "iconAndText": true
+                  }
+                ],
+                "multiple": true,
+                "grid": {
+                  "itemsPerRow": 4,
+                  "border": false
+                }
+              }
+            }
+          ]
+        },
+        "cardType": "VALUE",
+        "cardSettings": {
+          "representation": [
+            {
+              "dynamic": true,
+              "value": "1c884ebc-22e9-40d3-ba8e-e03311383f49"
+            }
+          ],
+          "type": "TABLE",
+          "settings": {}
+        }
+      },
+      {
+        "name": "Blood sugar",
+        "icon": "\uD83D\uDC89",
         "form": {
           "format": [
             {
@@ -1749,7 +1895,7 @@
         }
       },
       {
-        "name": "Blood Pressure",
+        "name": "Blood pressure",
         "icon": "💓",
         "form": {
           "format": [
