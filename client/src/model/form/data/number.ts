@@ -37,8 +37,8 @@ export class NumberFormQuestionDataType implements FormQuestionDataTypeDefinitio
         };
     }
 
-    getDefaultValue(): number {
-        return 0;
+    getDefaultValue(settings: NumberFormQuestionDataSettings): number {
+        return settings.min ?? 0;
     }
 
     getPrimitiveType(): PrimitiveValueType {
