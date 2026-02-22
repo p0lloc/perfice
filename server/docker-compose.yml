@@ -4,7 +4,7 @@ networks:
 
 services:
   auth:
-    image: auth:latest
+    image: ghcr.io/p0lloc/perfice_auth:latest
     container_name: auth
     environment:
       GRPC_PORT: 5001
@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   sync:
-    image: sync:latest
+    image: ghcr.io/p0lloc/perfice_sync:latest
     container_name: sync
     environment:
       PORT: 8082
@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
 
   gateway:
-    image: gateway:latest
+    image: ghcr.io/p0lloc/perfice_gateway:latest
     container_name: gateway
     ports:
       - "3000:3000"
@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
 
   integration:
-    image: integration:latest
+    image: ghcr.io/p0lloc/perfice_integration:latest
     container_name: integration
     environment:
       MONGO_URL: mongodb://localhost:27017
@@ -77,15 +77,15 @@ services:
     image: apache/kafka:latest
     container_name: kafka
     environment:
-      KAFKA_KRAFT_MODE: 'true'
-      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_NODE_ID: 1
-      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_LISTENERS: 'PLAINTEXT://:9092,CONTROLLER://:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
       KAFKA_NUM_PARTITIONS: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_LOG_RETENTION_MS: 60000
       KAFKA_SEGMENT_MS: 60000
@@ -93,7 +93,14 @@ services:
     networks:
       - perfice
     healthcheck:
-      test: [ "CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list" ]
+      test:
+        [
+          "CMD",
+          "/opt/kafka/bin/kafka-topics.sh",
+          "--bootstrap-server",
+          "localhost:9092",
+          "--list",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
