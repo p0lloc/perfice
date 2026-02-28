@@ -175,8 +175,14 @@ export class AuthService {
 
     private async setUser(user: AuthenticatedUser | null) {
         this.user = user;
-        for (let callback of this.authStatusChangeCallbacks) {
-            await callback(user);
+        try {
+            for (let callback of this.authStatusChangeCallbacks) {
+                await callback(user);
+            }
+        } catch (e) {
+            // Callbacks errors should be handled gracefully
+            // E.g an error in integration service should not prevent the user from being logged in
+            console.error(e);
         }
     }
 
