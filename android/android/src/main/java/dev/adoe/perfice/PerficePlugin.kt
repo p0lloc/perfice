@@ -150,14 +150,17 @@ class PerficePlugin : Plugin() {
         val healthConnectClient = HealthConnectClient.getOrCreate(context)
 
         CoroutineScope(Dispatchers.IO).launch {
-            extractRecordsAndCreateUpdates(
+            val results = extractRecordsAndCreateUpdates(
                 healthConnectClient, updates = updateStore, integration, TimeRangeFilter.between(
                     LocalDateTime.now().minusYears(1),
                     LocalDateTime.now()
                 )
-            )
+            ).sortedBy { it.timestamp }
 
-            call.resolve()
+            val responseObject = JSObject()
+            responseObject.put("oldest", if (results.isNotEmpty()) results[0].timestamp else 0 )
+            responseObject.put("count", results.size)
+            call.resolve(responseObject)
         }
     }
 

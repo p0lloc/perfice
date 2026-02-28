@@ -294,13 +294,15 @@ export class IntegrationService {
     }
 
     async fetchHistorical(id: string, integrationType: string) {
+        let result: { oldest: number, count: number } | null = null;
         if (isLocalIntegrationType(integrationType)) {
-            await this.localIntegrationService.fetchHistorical(id);
+            result = await this.localIntegrationService.fetchHistorical(id);
         } else {
             await this.getClient().post(`integrations/${id}/historical`);
         }
 
         await this.fetchUpdates();
+        return result;
     }
 
     async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {

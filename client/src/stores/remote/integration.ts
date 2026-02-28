@@ -54,8 +54,8 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         }));
     }
 
-    async fetchHistorical(id: string, integrationType: string) {
-        await this.integrationService.fetchHistorical(id, integrationType);
+    async fetchHistorical(id: string, integrationType: string): Promise<{ oldest: number, count: number } | null> {
+        return await this.integrationService.fetchHistorical(id, integrationType);
     }
 
     async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {

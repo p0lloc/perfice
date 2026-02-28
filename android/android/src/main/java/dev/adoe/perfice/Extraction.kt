@@ -58,9 +58,9 @@ suspend fun extractRecordsAndCreateUpdates(
     updates: IntegrationUpdateDataStore,
     integration: Integration,
     timeRangeFilter: TimeRangeFilter
-) {
+): List<IntegrationUpdate> {
     try {
-        val extractor = RECORD_EXTRACTORS[integration.entityType] ?: return
+        val extractor = RECORD_EXTRACTORS[integration.entityType] ?: return emptyList()
         val response =
             healthConnect.readRecords(
                 ReadRecordsRequest(
@@ -74,6 +74,8 @@ suspend fun extractRecordsAndCreateUpdates(
             .mapValues { (key, value) -> extractor.extract(key, value) }
             .flatMap { (_, value) -> value }
 
+        val allUpdates = mutableListOf<IntegrationUpdate>()
+
         Log.d("Perfice", "extracted" + extracted.size + " records")
 
         extracted.forEach { extractedRecord ->
@@ -84,15 +86,16 @@ suspend fun extractRecordsAndCreateUpdates(
                 )
             val mapped = mapResponse(integration.fields, extractedRecord.data)
             if (existing == null) {
-                updates.add(
-                    IntegrationUpdate(
+                val update = IntegrationUpdate(
                         UUID.randomUUID().toString(),
                         integration.id,
                         extractedRecord.identifier,
                         mapped,
                         extractedRecord.timestamp
                     )
-                )
+
+                updates.add(update)
+                allUpdates.add(update)
             } else {
                 val updated =
                     IntegrationUpdate(
@@ -104,13 +107,17 @@ suspend fun extractRecordsAndCreateUpdates(
                     )
 
                 updates.update(updated)
+                allUpdates.add(updated)
             }
         }
 
         updates.save()
+        return allUpdates
     } catch (e: Exception) {
         Log.e("Perfice", "Error extracting records", e)
     }
+
+    return emptyList()
 }
 
 private fun mapResponse(fields: Map<String, String>, data: Map<String, Any>): Map<String, Any> {

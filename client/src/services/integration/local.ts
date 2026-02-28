@@ -79,8 +79,8 @@ export class LocalIntegrationService {
         }));
     }
 
-    async fetchHistorical(id: string) {
-        await Perfice.fetchHistorical({id});
+    async fetchHistorical(id: string): Promise<{ oldest: number, count: number }> {
+        return await Perfice.fetchHistorical({id});
     }
 
     async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
