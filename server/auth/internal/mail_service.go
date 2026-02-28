@@ -10,10 +10,13 @@ import (
 )
 
 type MailService struct {
+	apiKey string
 }
 
-func NewMailService() *MailService {
-	return &MailService{}
+func NewMailService(apiKey string) *MailService {
+	return &MailService{
+		apiKey: apiKey,
+	}
 }
 
 var baseUrl = os.Getenv("BACKEND_BASE_URL")
@@ -49,12 +52,6 @@ func (s MailService) sendMail(email string, subject string, html string) error {
 		"html":    html,
 	}
 
-	apiKey := os.Getenv("MAILEROO_API_KEY")
-	if apiKey == "" {
-		// If no api key is provided, don't send emails
-		return nil
-	}
-
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return err
@@ -65,7 +62,7 @@ func (s MailService) sendMail(email string, subject string, html string) error {
 		return err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", s.apiKey))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
