@@ -8,7 +8,7 @@ require (
 	github.com/getsentry/sentry-go v0.34.1
 	github.com/go-co-op/gocron/v2 v2.16.2
 	github.com/go-playground/validator/v10 v10.26.0
-	github.com/gofiber/fiber/v2 v2.52.8
+	github.com/gofiber/fiber/v2 v2.52.12
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/kaptinlin/jsonschema v0.2.4
@@ -16,9 +16,8 @@ require (
 	github.com/stretchr/testify v1.10.0
 	go.mongodb.org/mongo-driver v1.17.3
 	golang.org/x/oauth2 v0.30.0
-	golang.org/x/sync v0.11.0
+	golang.org/x/sync v0.18.0
 	google.golang.org/grpc v1.72.2
-	perfice.adoe.dev/mongoutil v0.0.0-00010101000000-000000000000
 	perfice.adoe.dev/proto v0.0.0-00010101000000-000000000000
 	perfice.adoe.dev/util v0.0.0-00010101000000-000000000000
 )
@@ -55,10 +54,10 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
