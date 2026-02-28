@@ -109,8 +109,11 @@ func (a *AuthService) Register(email string, password string) error {
 		Timezone: "Europe/Amsterdam",
 	}
 
-	if err := a.createConfirmationEmail(user); err != nil {
-		return err
+	if a.mailService != nil {
+		// Only send confirmation email if mail service is configured
+		if err := a.createConfirmationEmail(user); err != nil {
+			return err
+		}
 	}
 
 	return a.userCollection.Create(user)
@@ -140,7 +143,8 @@ func (a *AuthService) Login(email string, password string) (Session, error) {
 		return Session{}, errors.New("invalid email")
 	}
 
-	if !user.Confirmed {
+	// Only check confirmation if mail service has been configured
+	if !user.Confirmed && a.mailService != nil {
 		return Session{}, UserNotConfirmedError{}
 	}
 
@@ -257,6 +261,10 @@ func (a *AuthService) ResetPassword(token primitive.ObjectID, newPassword string
 }
 
 func (a *AuthService) InitResetPassword(email string) error {
+	if a.mailService == nil {
+		return errors.New("unable to reset password, mail sender not configured")
+	}
+
 	user, err := a.userCollection.GetUserByEmail(email)
 	if err != nil {
 		return err
@@ -284,6 +292,10 @@ func (a *AuthService) ValidateResetPassword(token primitive.ObjectID) bool {
 }
 
 func (a *AuthService) ResendConfirmationEmail(email string) error {
+	if a.mailService == nil {
+		return errors.New("unable to resend confirmation email, mail sender not configured")
+	}
+
 	user, err := a.userCollection.GetUserByEmail(email)
 	if err != nil {
 		return err

@@ -1,6 +1,6 @@
 services:
   client:
-    image: ghcr.io/p0lloc/perfice:latest
+    image: ghcr.io/p0lloc/perfice_client:latest
     build:
       context: https://github.com/p0lloc/perfice.git#main:client
       dockerfile: Dockerfile

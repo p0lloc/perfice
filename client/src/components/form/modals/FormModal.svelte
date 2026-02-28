@@ -15,9 +15,7 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {forms, journal} from "@perfice/stores";
     import {getDefaultFormAnswers} from "@perfice/model/form/data";
-    import SveltyPicker from "svelty-picker";
-    import {formatDateHHMM} from "@perfice/util/time/format";
-    import {parseHhMm} from "@perfice/util/time/simple";
+    import ObjectDatePicker from "@perfice/components/base/datePicker/ObjectDatePicker.svelte";
 
     let {largeLogButton = true, onDelete}: {
         largeLogButton?: boolean,
@@ -27,7 +25,7 @@
     let form: Form = $state({} as Form);
     let questions: FormQuestion[] = $state([]);
     let date: Date = $state(new Date());
-    let logTime: string = $state("");
+
     let editEntry: JournalEntry | undefined;
     let answers: Record<string, PrimitiveValue> = $state({});
     let templates: FormTemplate[] = $state([]);
@@ -45,7 +43,6 @@
 
         form = logForm;
         date = logDate;
-        logTime = formatDateHHMM(logDate);
         format = displayFormat;
         questions = formQuestions;
         editEntry = entry;
@@ -77,13 +74,6 @@
     function confirm() {
         let answers = embed.validateAndGetAnswers();
         if (answers == null) return; // If there are validation errors, don't save
-
-        let parsedTime = parseHhMm(logTime);
-        if (parsedTime == null) return;
-
-        let [hours, minutes] = parsedTime;
-        date.setHours(hours);
-        date.setMinutes(minutes);
 
         if (editEntry != null) {
             journal.updateEntry({
@@ -125,23 +115,21 @@
         onDelete?.(editEntry);
     }
 
-    function onLogTimeChanged(e: string | string[] | null) {
-        if (typeof e != "string") return;
-
-        logTime = e;
+    function onDateChanged(newDate: Date) {
+        date = newDate;
     }
 </script>
 
 <Modal type={ModalType.CONFIRM_CANCEL} title={form.name} bind:this={modal} onConfirm={confirm} onEnter={confirm}
        leftTitle={true}>
     {#snippet actions()}
-        <SveltyPicker
+        <ObjectDatePicker
                 inputClasses="w-16 text-center"
-                mode={"time"}
-                format="hh:ii"
-                value={logTime}
-                onChange={onLogTimeChanged}
+                value={date}
+                displayFormat="hh:ii"
+                onChange={onDateChanged}
         />
+
         {#if editEntry != null}
             <IconButton icon={faTrash} onClick={onDeleteClicked}/>
         {:else}

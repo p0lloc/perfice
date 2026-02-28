@@ -132,9 +132,16 @@ func (a *Gateway) run() {
 			EnableStackTrace: true,
 		}))
 
+	allowedOrigins := "http://localhost, https://localhost, http://localhost:8000, http://localhost:5173, https://perfice.adoe.dev"
+	extraOrigins := os.Getenv("CORS_EXTRA_ORIGINS")
+	if extraOrigins != "" {
+		// Add extra origins from environment variable
+		allowedOrigins += ", " + extraOrigins
+	}
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost, https://localhost, http://localhost:8000, http://localhost:5173, https://perfice.adoe.dev", // allow all origins, including no origin
-		AllowHeaders:     "content-type, authorization",                                                                                 // allow all headers
+		AllowOrigins:     allowedOrigins,                // allow all origins, including no origin
+		AllowHeaders:     "content-type, authorization", // allow all headers
 		AllowCredentials: true,
 	}))
 

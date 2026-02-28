@@ -1,1 +1,1 @@
-docker build -f auth/Dockerfile -t auth:latest .
+docker build -f auth/Dockerfile -t ghcr.io/p0lloc/perfice_auth:latest .
