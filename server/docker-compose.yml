@@ -48,6 +48,7 @@ services:
       SYNC_URL: http://sync:8082
       INTEGRATION_URL: http://integration:8080
       PORT: 3000
+      CORS_EXTRA_ORIGINS: http://localhost:5174
       SENTRY_DSN: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX@XXXXXXX.ingest.us.sentry.io/XXXXXXXXXXXXXXXX
     networks:
       - perfice
