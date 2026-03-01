@@ -52,7 +52,7 @@
         disabled={!configurable}
         onclick={() => onClick(integration)}
 >
-    <div class="flex justify-between">
+    <div class="flex items-center justify-between w-full">
         <div class="flex gap-2 items-center">
             <img class="w-4 h-4" alt="Integration" src={integrationType.logo}/>
             <h2 class="text-xl font-bold text-gray-600 dark:text-white">{integrationType.name}</h2>
