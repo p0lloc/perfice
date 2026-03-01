@@ -3,6 +3,7 @@ module perfice.adoe.dev/gateway
 go 1.24.3
 
 require (
+	github.com/getsentry/sentry-go v0.34.1
 	github.com/joho/godotenv v1.5.1
 	google.golang.org/grpc v1.72.1
 	perfice.adoe.dev/proto v0.0.0
@@ -11,7 +12,6 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/getsentry/sentry-go v0.34.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
