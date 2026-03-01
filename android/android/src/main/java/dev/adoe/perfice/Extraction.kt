@@ -76,7 +76,7 @@ suspend fun extractRecordsAndCreateUpdates(
 
         val allUpdates = mutableListOf<IntegrationUpdate>()
 
-        Log.d("Perfice", "extracted" + extracted.size + " records")
+        //Log.d("Perfice", "extracted" + extracted.size + " records")
 
         extracted.forEach { extractedRecord ->
             val existing =

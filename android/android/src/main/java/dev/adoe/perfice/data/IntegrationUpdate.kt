@@ -26,7 +26,6 @@ data class IntegrationUpdate(
 
     companion object {
         fun fromJson(jsonObject: JSONObject): IntegrationUpdate {
-            Log.d("Perfice", "incoming" + jsonObject.toString())
             return IntegrationUpdate(
                 id = jsonObject.getString("id"),
                 integrationId = jsonObject.getString("integrationId"),

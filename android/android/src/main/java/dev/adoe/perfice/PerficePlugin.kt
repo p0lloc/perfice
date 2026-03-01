@@ -110,10 +110,6 @@ class PerficePlugin : Plugin() {
         val response = JSObject()
 
         response.put("updates", JSONArray(updateStore.getAll().map { it.toJson() }))
-        updateStore.getAll().forEach { integrationUpdate ->
-            Log.d("Perfice", "integrationUpdate: " + integrationUpdate.toJson().toString())
-        }
-
         updateStore.clear()
         call.resolve(response)
     }
