@@ -104,4 +104,23 @@ test("entry part of second page", async () => {
     expect((await paginated.nextPage()).journalEntries).toContainEqual(entry);
 });
 
+
+test("random timestamps all part of first page", async () => {
+    const {paginated, journalService} = await setup();
+
+    const form = mockForm();
+    const entriesToAdd = PAGE_SIZE + 1;
+    for (let i = 0; i < entriesToAdd; i++) {
+        let timestamp = (Math.random() * 10000000 + 1000);
+
+        await journalService.logEntry(mockForm(),
+            {"test": pDisplay(pNumber(20.0), pString("13.0"))}, form.format, timestamp);
+    }
+
+    expect((await paginated.nextPage()).journalEntries).length(PAGE_SIZE);
+
+    // Next page should contain the extra entry as well
+    expect((await paginated.nextPage()).journalEntries).length(entriesToAdd);
+});
+
 // generate bunch of entries with random timestamps and make sure all of them are properly returned

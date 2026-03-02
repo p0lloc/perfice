@@ -154,6 +154,73 @@ export class PaginatedJournal extends AsyncStore<PaginationResult> {
     }
 }
 
+export function groupEntries(journalEntries: JournalEntry[], tagEntries: TagEntry[], forms: Form[], tags: Tag[]): JournalDay[] {
+    let mapping: Map<number, JournalDayData> = new Map();
+
+    for (let entry of journalEntries) {
+        let timestamp = timestampToMidnight(entry.timestamp);
+        let day = mapping.get(timestamp);
+
+        let form = forms.find(f => f.id == entry.formId);
+        if (form == undefined) continue;
+
+        if (day == undefined) {
+            mapping.set(timestamp, newJournalDayData(newGroupMap(entry, form)));
+        } else {
+            let group = day.formGroups.get(entry.formId);
+            if (group == undefined) {
+                day.formGroups.set(entry.formId, newGroup(entry, form));
+            } else {
+                group.entries.push(entry);
+            }
+        }
+    }
+
+    for (let rawEntry of tagEntries) {
+        let timestamp = timestampToMidnight(rawEntry.timestamp);
+        let day = mapping.get(timestamp);
+
+        let tag = tags.find(t => t.id == rawEntry.tagId);
+        if (tag == undefined) {
+            continue;
+        }
+
+        let entry: TransformedTagEntry = {
+            ...rawEntry,
+            tag
+        }
+
+        if (day == undefined) {
+            mapping.set(timestamp, newJournalDayData(undefined, [entry]));
+        } else {
+            day.tagEntries.push(entry);
+        }
+    }
+
+    let grouped: JournalDay[] = [];
+    for (let [timestamp, dayData] of mapping.entries()) {
+        let singleEntries: JournalDayGroup[] = [];
+        let multiEntries: JournalDayGroup[] = [];
+
+        for (let group of dayData.formGroups.values()) {
+            if (group.entries.length == 1) {
+                singleEntries.push(group);
+            } else {
+                multiEntries.push(group);
+            }
+        }
+
+        grouped.push({
+            timestamp,
+            singleEntries,
+            multiEntries,
+            tagEntries: dayData.tagEntries
+        });
+    }
+
+    return grouped;
+}
+
 export function GroupedJournal(pagination: AsyncStore<PaginationResult>, forms: AsyncStore<Form[]>, tags: AsyncStore<Tag[]>): Readable<Promise<JournalDay[]>> {
     let {subscribe} = derived<[AsyncStore<PaginationResult>, AsyncStore<Form[]>, AsyncStore<Tag[]>], Promise<JournalDay[]>>([pagination, forms, tags],
         ([$pagination, $forms, $tags], set) => {
@@ -163,68 +230,7 @@ export function GroupedJournal(pagination: AsyncStore<PaginationResult>, forms: 
                     let forms = await $forms;
                     let tags = await $tags;
 
-                    let mapping: Map<number, JournalDayData> = new Map();
-
-                    for (let entry of journalEntries) {
-                        let timestamp = timestampToMidnight(entry.timestamp);
-                        let day = mapping.get(timestamp);
-
-                        let form = forms.find(f => f.id == entry.formId);
-                        if (form == undefined) continue;
-
-                        if (day == undefined) {
-                            mapping.set(timestamp, newJournalDayData(newGroupMap(entry, form)));
-                        } else {
-                            let group = day.formGroups.get(entry.formId);
-                            if (group == undefined) {
-                                day.formGroups.set(entry.formId, newGroup(entry, form));
-                            } else {
-                                group.entries.push(entry);
-                            }
-                        }
-                    }
-
-                    for (let rawEntry of tagEntries) {
-                        let timestamp = timestampToMidnight(rawEntry.timestamp);
-                        let day = mapping.get(timestamp);
-
-                        let tag = tags.find(t => t.id == rawEntry.tagId);
-                        if (tag == undefined) {
-                            continue;
-                        }
-
-                        let entry: TransformedTagEntry = {
-                            ...rawEntry,
-                            tag
-                        }
-
-                        if (day == undefined) {
-                            mapping.set(timestamp, newJournalDayData(undefined, [entry]));
-                        } else {
-                            day.tagEntries.push(entry);
-                        }
-                    }
-
-                    let grouped: JournalDay[] = [];
-                    for (let [timestamp, dayData] of mapping.entries()) {
-                        let singleEntries: JournalDayGroup[] = [];
-                        let multiEntries: JournalDayGroup[] = [];
-
-                        for (let group of dayData.formGroups.values()) {
-                            if (group.entries.length == 1) {
-                                singleEntries.push(group);
-                            } else {
-                                multiEntries.push(group);
-                            }
-                        }
-
-                        grouped.push({
-                            timestamp,
-                            singleEntries,
-                            multiEntries,
-                            tagEntries: dayData.tagEntries
-                        });
-                    }
+                    let grouped = groupEntries(journalEntries, tagEntries, forms, tags);
 
                     resolve(grouped.sort((a, b) => b.timestamp - a.timestamp));
                 }
