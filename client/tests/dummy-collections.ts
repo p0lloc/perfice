@@ -201,8 +201,11 @@ export class DummyTagEntryCollection implements TagEntryCollection {
         return this.entries.filter(e => e.timestamp >= start && e.timestamp <= end);
     }
 
-    async getEntriesUntilTimeAndLimit(timestamp: number, limit: number): Promise<TagEntry[]> {
-        return this.entries.filter(e => e.timestamp <= timestamp).sort((a, b) => a.timestamp - b.timestamp).slice(0, limit);
+    async getEntriesUntilTimeAndLimit(untilTimestamp: number, limit: number, lastId: string): Promise<TagEntry[]> {
+        return this.entries
+            .sort((a, b) => (b.timestamp - a.timestamp) || (b.id.localeCompare(a.id)))
+            .filter(e => e.timestamp <= untilTimestamp && e.id != lastId)
+            .slice(0, limit);
     }
 
 }
