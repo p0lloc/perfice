@@ -1,4 +1,3 @@
-import type {IntegrationType} from "@perfice/model/integration/integration";
 import type {IntegrationData, IntegrationService} from "@perfice/services/integration/integration";
 import {AsyncStore} from "@perfice/stores/store";
 import {emptyPromise, resolvedPromise} from "@perfice/util/promise";
@@ -15,27 +14,28 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
     constructor(integrationService: IntegrationService) {
         super(emptyPromise());
         this.integrationService = integrationService;
+        this.integrationService.onEnable(async (data) => {
+            this.set(resolvedPromise(data));
+            this.loaded = true;
+        });
+
+        this.integrationService.onDisable(async () => {
+            this.set(emptyPromise());
+            this.loaded = false;
+        });
     }
 
     async load(): Promise<IntegrationData> {
         if (this.loaded) return this.get();
 
-        let value = await this.integrationService.load();
-
-        this.set(resolvedPromise(value));
-        this.loaded = true;
-        return value;
-    }
-
-    getIntegrationTypes(): Promise<IntegrationType[]> {
-        return this.integrationService.fetchTypes();
+        return await this.integrationService.load();
     }
 
     authenticateIntegration(integrationType: string) {
         this.integrationService.authenticateIntegration(integrationType);
     }
 
-    fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
+    async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
         return this.integrationService.fetchAuthenticationStatus(integrationType);
     }
 
@@ -54,8 +54,8 @@ export class IntegrationStore extends AsyncStore<IntegrationData> {
         }));
     }
 
-    async fetchHistorical(id: string) {
-        await this.integrationService.fetchHistorical(id);
+    async fetchHistorical(id: string, integrationType: string): Promise<{ oldest: number, count: number } | null> {
+        return await this.integrationService.fetchHistorical(id, integrationType);
     }
 
     async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {

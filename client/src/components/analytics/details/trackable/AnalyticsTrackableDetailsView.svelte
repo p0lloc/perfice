@@ -10,8 +10,6 @@
     import SegmentedControl from "@perfice/components/base/segmented/SegmentedControl.svelte";
     import {SimpleTimeScopeType, TimeRangeType} from "@perfice/model/variable/time/time";
     import {SIMPLE_TIME_SCOPE_TYPES} from "@perfice/model/variable/ui";
-    import TrackableWeekDayAnalytics
-        from "@perfice/components/analytics/details/trackable/TrackableWeekDayAnalytics.svelte";
     import CorrelationAnalytics from "@perfice/components/analytics/details/CorrelationAnalytics.svelte";
     import type {FormQuestion} from "@perfice/model/form/form";
     import type {DropdownMenuItem} from "@perfice/model/ui/dropdown";
@@ -24,6 +22,8 @@
     import {type SearchEntity, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
     import {gotoJournalSearch} from "@perfice/stores/journal/search";
     import {TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
+    import TrackableWeekDayAnalytics
+        from "@perfice/components/analytics/details/trackable/TrackableWeekDayAnalytics.svelte";
 
     let {id}: { id: string } = $props();
     let res = $state<Readable<Promise<TrackableDetailedAnalyticsResult>>>(
@@ -123,9 +123,9 @@
         {/if}
     </div>
 
-    <div class="card p-2 mt-4">
+    <div class="md:p-4 p-2 card mt-4">
         {#if val.chart.type === AnalyticsChartType.LINE}
-            <div class="h-48">
+            <div class="h-48 w-full max-w-full">
                 <AnalyticsTrackableLineChart name={val.trackable.name} data={val.chart}/>
             </div>
         {/if}
@@ -140,7 +140,7 @@
             </div>
         {/if}
     </div>
-    <div class="md:grid-cols-{val.weekDayAnalytics != null ? 2 : 1} grid mt-8 gap-6">
+    <div class="md:grid-cols-{val.weekDayAnalytics != null ? 2 : 1} grid mt-8 gap-6 w-full">
         <CorrelationAnalytics correlations={val.correlations}/>
         {#if val.weekDayAnalytics != null}
             <TrackableWeekDayAnalytics analytics={val.weekDayAnalytics}/>

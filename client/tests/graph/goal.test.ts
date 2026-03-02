@@ -300,7 +300,7 @@ test("simple goal with new entry", async () => {
         "condition1": pComparisonResult(pNumber(23.0), pNumber(30.0), false)
     }));
 
-    let entryTwo: JournalEntry = mockEntry("entry_two", "ok", {"ok": pNumber(7.0)});
+    let entryTwo: JournalEntry = mockEntry("entry_three", "ok", {"ok": pNumber(7.0)});
 
     await journal.createEntry(entryTwo);
     await graph.onJournalEntryAction(entryTwo, entryTwo, EntryAction.CREATED);

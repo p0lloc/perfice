@@ -27,6 +27,8 @@
         onDelete,
         onConfirm,
         onClose,
+        onKeyDown,
+        onEnter,
         leftTitle = false,
     }: {
         title: string;
@@ -37,6 +39,8 @@
         actions?: Snippet;
         customFooter?: Snippet;
         closeWithBackground?: boolean;
+        onEnter?: () => void;
+        onKeyDown?: (e: KeyboardEvent) => void;
         leftTitle?: boolean;
     } & ModalFooterProps &
         ModalActions = $props();
@@ -52,7 +56,16 @@
 
     export function open() {
         closableState.push(close);
-        visible = true;
+        visible = true
+
+        // Setting a timeout seems to be the easiest way to wait for the element to be mounted.
+        // We could separate the container into a separate component or use an effect with change tracking, but that seems overly complicated.
+        setTimeout(() => {
+            if (modalBackgroundContainer == null) return;
+
+            // Focus the BG container so we can receive keyboard events and let user tab through the modal
+            modalBackgroundContainer.focus();
+        });
     }
 
     export function close() {
@@ -75,6 +88,21 @@
         onClosableClosed(close);
     }
 
+    function handleKeyDown(e: KeyboardEvent) {
+        switch (e.key) {
+            case "Escape":
+                close();
+                break;
+            case "Enter":
+                if (e.target == e.currentTarget)
+                    onEnter?.();
+
+                break;
+        }
+
+        onKeyDown?.(e);
+    }
+
     onDestroy(() => {
         popNavigator();
     });
@@ -84,7 +112,9 @@
     <!-- svelte-ignore a11y_no_static_element_interactions (Needed for backdrop click to close modal, we also provide Close button for A11y) -->
     <div
             class="modal-bg"
+            tabindex="-1"
             onmousedown={onBackgroundMousedown}
+            onkeydown={handleKeyDown}
             bind:this={modalBackgroundContainer}
     >
         <div

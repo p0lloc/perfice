@@ -26,7 +26,10 @@
     }
 
     function openDatePicker() {
-        datePickerElement?.showPicker();
+        if (datePickerElement == null) return;
+        datePickerElement.classList.remove("hidden");
+        datePickerElement.showPicker();
+        datePickerElement.classList.add("hidden");
     }
 
     function onDatePickerChange(e: { currentTarget: HTMLInputElement }) {
@@ -74,17 +77,16 @@
             <Fa icon={faChevronRight}/>
         </button>
         {#if atEnd}
-            <div class="flex items-center justify-center">
+            <div class="md:flex items-center justify-center">
                 <input
                         type="date"
-                        class="invisible"
-                        style="width: 0; height: 0; padding: 0"
+                        class="hidden"
                         onchange={onDatePickerChange}
                         bind:this={datePickerElement}
                 />
                 <button
                         onclick={openDatePicker}
-                        class="md:p-2 py-2 md:border dark:md:border-gray-500 rounded-full hover-feedback md:ml-2"
+                        class="dark:bg-inherit bg-white md:p-2 py-2 md:border dark:md:border-gray-500 rounded-full hover-feedback md:ml-2"
                 >
                     <Fa icon={faCalendarAlt}/>
                 </button>

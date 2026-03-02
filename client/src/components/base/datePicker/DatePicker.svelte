@@ -1,12 +1,14 @@
 <script lang="ts">
     import SveltyPicker from 'svelty-picker';
-    import { computePosition, autoUpdate, shift, flip } from '@floating-ui/dom';
+    import {autoUpdate, computePosition, flip, shift} from '@floating-ui/dom';
 
-    let {value, time = false, disabled, onChange}: {
+    let {value, time = false, disabled, onChange, inputClasses, displayFormat}: {
         value: string,
         time?: boolean,
         disabled: boolean,
-        onChange: (v: string) => void
+        onChange: (v: string) => void,
+        inputClasses?: string,
+        displayFormat?: string
     } = $props();
 
     let valueState = $derived.by(() => {
@@ -57,8 +59,10 @@
 
 <SveltyPicker
         {disabled}
+        inputClasses={inputClasses}
         mode={time ? "datetime": "date"}
         format="yyyy-mm-dd{time ? ' hh:ii' :''}"
+        {displayFormat}
         value={valueState}
         positionResolver={positionResolver}
         onChange={(v) => onChange(typeof v == "string" ? v : "")}

@@ -16,6 +16,7 @@ import (
 type AuthApp struct {
 	db           *mongo.Database
 	kafkaService *KafkaService
+	mailService  *MailService
 }
 
 func NewAuthApp() *AuthApp {
@@ -50,10 +51,13 @@ func (a *AuthApp) Init() {
 	a.setupKafka()
 	a.setupSentry()
 
-	mailService := NewMailService()
+	apiKey := os.Getenv("MAILEROO_API_KEY")
+	if apiKey != "" {
+		a.mailService = NewMailService(apiKey)
+	}
 
 	authService := NewAuthService(NewUserCollection(a.db.Collection("users")), NewAccountTokenCollection(a.db.Collection("accountTokens")),
-		jwtSecret, sessionService, a.kafkaService, mailService)
+		jwtSecret, sessionService, a.kafkaService, a.mailService)
 	authService.OnUserDeleted(func(userId string) {
 		err := sessionService.OnUserDeleted(userId)
 		if err != nil {

@@ -9,7 +9,7 @@
 
 <button class="card p-4 text-left hover-feedback flex flex-col justify-start"
         onclick={onClick}>
-    <div class="flex justify-between">
+    <div class="flex justify-between w-full">
         <div class="flex gap-2 items-center">
             <h2 class="text-xl font-bold text-gray-600 dark:text-white">{entity.name}</h2>
         </div>
