@@ -12,6 +12,7 @@ import type {JournalSearch} from "@perfice/model/journal/search/search";
 import type {StoredNotification} from "@perfice/model/notification/notification";
 import type {OutgoingUpdate} from "@perfice/model/sync/sync";
 import type {Table} from "dexie";
+import type {Integration} from "@perfice/model/integration/integration";
 
 export interface Collections {
     entries: JournalCollection;
@@ -34,6 +35,7 @@ export interface Collections {
     notifications: NotificationCollection;
     encryptionKey: EncryptionKeyCollection;
     updateQueue: UpdateQueueCollection;
+    localIntegrations: LocalIntegrationCollection;
 
     transaction(table: Table<any>, callback: () => Promise<void>): Promise<void>;
 }
@@ -54,6 +56,20 @@ export interface TrackableCollection {
     updateTrackables(items: Trackable[]): Promise<void>;
 
     getTrackablesByCategoryId(id: string): Promise<Trackable[]>;
+}
+
+export interface LocalIntegrationCollection {
+    getIntegrations(): Promise<Integration[]>;
+
+    getIntegrationById(id: string): Promise<Integration | undefined>;
+
+    createIntegration(integration: Integration): Promise<void>;
+
+    updateIntegration(integration: Integration): Promise<void>;
+
+    deleteIntegrationById(id: string): Promise<void>;
+
+    deleteIntegrationsByFormId(formId: string): Promise<void>;
 }
 
 export interface ReflectionCollection {

@@ -34,9 +34,10 @@ import {IntegrationService} from "./services/integration/integration";
 import {AuthService} from "@perfice/services/auth/auth";
 import {EncryptionService} from "@perfice/services/encryption/encryption";
 import {SyncService} from "./services/sync/sync";
-import {RemoteService} from "@perfice/services/remote/remote";
+import {RemoteService, RemoteType} from "@perfice/services/remote/remote";
 import {UpdateOperation} from "./model/sync/sync";
 import type {Variable} from "@perfice/model/variable/variable";
+import {LocalIntegrationService} from "@perfice/services/integration/local";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -69,6 +70,7 @@ export interface Services {
     readonly encryption: EncryptionService;
     readonly sync: SyncService;
     readonly remote: RemoteService;
+    readonly localIntegration: LocalIntegrationService;
 }
 
 export async function setupServices(db: Collections, tables: Record<string, Table>,
@@ -149,9 +151,16 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     // This is quite order dependent, sync service must be synced before fetching integration updates
     provideSyncService(syncService);
 
+    const localIntegrationService = new LocalIntegrationService(db.localIntegrations);
+
     // Integration service is instantiated after sync service, so it will register its observer after the sync service.
-    const integrationService = new IntegrationService(journalService, formService, remoteService, authService);
+    const integrationService = new IntegrationService(journalService, formService, remoteService, authService, localIntegrationService);
     await authService.load();
+
+    if (!remoteService.isRemoteEnabled(RemoteType.AUTH)) {
+        // Integration service loads when auth status is retrieved, load manually if auth is disabled
+        await integrationService.load();
+    }
 
     return {
         trackable: trackableService,
@@ -184,6 +193,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
         encryption: encryptionService,
         sync: syncService,
         remote: remoteService,
+        localIntegration: localIntegrationService,
     }
 }
 

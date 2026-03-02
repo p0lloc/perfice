@@ -22,6 +22,7 @@
 
     let {integrationId, back}: { integrationId: string, back: () => void } = $props();
     let fetchedHistoricalModal: GenericInfoModal;
+    let fetchedHistoricalModalMessage = $state("");
 
     let integrationType: IntegrationType | undefined = $state(undefined);
     let selectedEntity: IntegrationEntityDefinition | undefined = $state<IntegrationEntityDefinition | undefined>(undefined);
@@ -78,30 +79,26 @@
     }
 
     async function fetchHistorical() {
-        await integrations.fetchHistorical(integration!.id);
+        if (!integration) return;
+        let result = await integrations.fetchHistorical(integration!.id, integration.integrationType);
+        if (result == null) {
+            fetchedHistoricalModalMessage = "Successfully fetched historical data for this integration"
+        } else {
+            if (result.count == 0) {
+                fetchedHistoricalModalMessage = `No historical data found for this integration`;
+            } else {
+                fetchedHistoricalModalMessage = `Fetched ${result.count} entries since ${new Date(result.oldest).toLocaleString()}`
+            }
+        }
+
         fetchedHistoricalModal.open();
     }
 </script>
 
 <GenericDeleteModal subject="this integration" {onDelete} bind:this={deleteModal}/>
-<GenericInfoModal title="Fetched data" message="Successfully fetched historical data for this integration"
+<GenericInfoModal title="Fetched data" message={fetchedHistoricalModalMessage}
                   bind:this={fetchedHistoricalModal}/>
 {#if integrationType && form && integration && selectedEntity}
-    <!--    <MobileTopBar title={integrationType.name}>-->
-    <!--        {#snippet leading()}-->
-    <!--            <button class="icon-button" onclick={back}>-->
-    <!--                <Fa icon={faArrowLeft}/>-->
-    <!--            </button>-->
-    <!--        {/snippet}-->
-    <!--        {#snippet actions()}-->
-    <!--            <button class="icon-button" onclick={deleteIntegration}>-->
-    <!--                <Fa icon={faTrash}/>-->
-    <!--            </button>-->
-    <!--            <button class="icon-button" onclick={save}>-->
-    <!--                <Fa icon={faCheck}/>-->
-    <!--            </button>-->
-    <!--        {/snippet}-->
-    <!--    </MobileTopBar>-->
     <div class="md:mt-8">
         <div class="justify-between flex items-center">
             <Title title={integrationType.name} icon={faGears}/>

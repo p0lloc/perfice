@@ -1,4 +1,11 @@
-import type {Integration, IntegrationType, IntegrationUpdate} from "@perfice/model/integration/integration";
+import {
+    type Integration,
+    type IntegrationType,
+    type IntegrationUpdate,
+    isLocalIntegrationType,
+    LOCAL_INTEGRATION_TYPES
+} from "@perfice/model/integration/integration";
+
 import {importPrimitive} from "../export/formEntries/export";
 import type {FormService} from "../form/form";
 import type {JournalService} from "../journal/journal";
@@ -13,6 +20,7 @@ import {unauthenticatedIntegrationEvents} from "@perfice/stores/remote/integrati
 import {Capacitor} from "@capacitor/core";
 import {Browser} from "@capacitor/browser";
 import type {Form} from "@perfice/model/form/form";
+import type {LocalIntegrationService} from "@perfice/services/integration/local";
 
 export interface CreateIntegrationRequest {
     integrationType: string;
@@ -21,8 +29,6 @@ export interface CreateIntegrationRequest {
     fields: Record<string, string>;
     options: Record<string, string | number>;
 }
-
-const USES_INTEGRATIONS_STORAGE_KEY = "uses_integrations";
 
 export class IntegrationService {
 
@@ -33,21 +39,42 @@ export class IntegrationService {
 
     private authService: AuthService;
     private remoteService: RemoteService;
+    private localIntegrationService: LocalIntegrationService;
 
-    constructor(journalService: JournalService, formService: FormService, remoteService: RemoteService, authService: AuthService) {
+    private enableCallbacks: ((data: IntegrationData) => Promise<void>)[] = [];
+    private disableCallbacks: (() => Promise<void>)[] = [];
+
+    constructor(journalService: JournalService, formService: FormService, remoteService: RemoteService,
+                authService: AuthService, localIntegrationService: LocalIntegrationService) {
+
         this.journalService = journalService;
         this.formService = formService;
         this.remoteService = remoteService;
         this.authService = authService;
+        this.localIntegrationService = localIntegrationService;
 
         this.remoteService.addRemoteEnableCallback(RemoteType.INTEGRATION, async () => {
             await this.load();
         });
 
-        this.authService.addAuthStatusCallback(async (user: AuthenticatedUser | null) => {
-            if (user == null) return;
+        this.remoteService.addRemoteDisableCallback(RemoteType.INTEGRATION, async () => {
+            for (const callback of this.disableCallbacks) {
+                await callback();
+            }
+        });
+
+        this.authService.addAuthStatusCallback(async (_: AuthenticatedUser | null) => {
+            // We load regardless if authenticated or not, since local integrations do not require authentication.
             await this.load();
         });
+    }
+
+    onEnable(callback: (data: IntegrationData) => Promise<void>) {
+        this.enableCallbacks.push(callback);
+    }
+
+    onDisable(callback: () => Promise<void>) {
+        this.disableCallbacks.push(callback);
     }
 
     private getClient(): KyInstance {
@@ -82,47 +109,77 @@ export class IntegrationService {
     }
 
     async load(): Promise<IntegrationData> {
-        if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)))
-            return {
-                enabled: false,
-                integrations: [],
-                integrationTypes: []
-            };
+        let remoteIntegrations: Integration[] = [];
+        let remoteIntegrationTypes: IntegrationType[] = [];
+        if (this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION) && this.isAuthenticated()) {
+            remoteIntegrations = await this.fetchRemoteIntegrations();
+            remoteIntegrationTypes = await this.fetchRemoteIntegrationTypes();
 
-        let integrations = await this.fetchIntegrations();
-        let integrationTypes = await this.fetchTypes();
-
-        let errors = await this.checkUnauthenticatedIntegrations(integrations, integrationTypes);
-        if (errors.length > 0) {
-            publishToEventStore(unauthenticatedIntegrationEvents, errors);
+            let errors = await this.checkUnauthenticatedIntegrations(remoteIntegrations, remoteIntegrationTypes);
+            if (errors.length > 0) {
+                publishToEventStore(unauthenticatedIntegrationEvents, errors);
+            }
         }
 
+        let localIntegrations = await this.localIntegrationService.getIntegrations();
+
+        // Sync integrations when loading since we might have received integrations from other devices
+        await this.localIntegrationService.syncIntegrations();
+
+        let integrations = [...remoteIntegrations, ...localIntegrations];
+        let integrationTypes = [...remoteIntegrationTypes, ...LOCAL_INTEGRATION_TYPES];
+
+        this.integrations = integrations;
+
         await this.fetchUpdates();
-        return {
+        let data = {
             enabled: true,
             integrations,
             integrationTypes
         }
+
+        for (const callback of this.enableCallbacks) {
+            await callback(data);
+        }
+
+        return data;
     }
 
-    async createIntegration(request: CreateIntegrationRequest) {
+    private isAuthenticated(): boolean {
+        return this.authService.isAuthenticated();
+    }
+
+    async createIntegration(request: CreateIntegrationRequest): Promise<Integration> {
+        let created: Integration;
+        if (isLocalIntegrationType(request.integrationType)) {
+            created = await this.createLocalIntegration(request);
+        } else {
+            created = await this.createRemoteIntegration(request);
+        }
+
+        this.integrations.push(created);
+
+        return created;
+    }
+
+    private async createLocalIntegration(request: CreateIntegrationRequest): Promise<Integration> {
+        return await this.localIntegrationService.createIntegration(request);
+    }
+
+    private async createRemoteIntegration(request: CreateIntegrationRequest): Promise<Integration> {
         let response = await this.getClient().post("integrations", {
             json: request
         });
 
-        localStorage.setItem(USES_INTEGRATIONS_STORAGE_KEY, "true");
-        let created: Integration = await response.json();
-        this.integrations.push(created);
-        return created;
+        return await response.json();
     }
 
     formatIntegrationIdentifier(integrationId: string, identifier: string): string {
         return `${integrationId}:${identifier}`;
     }
 
-    async fetchIntegrations(): Promise<Integration[]> {
-        this.integrations = await this.getClient().get("integrations").json<Integration[]>();
-        return this.integrations;
+    private async fetchRemoteIntegrations(): Promise<Integration[]> {
+        return await this.getClient().get("integrations").json<Integration[]>();
     }
 
     async authenticateIntegration(integrationType: string) {
@@ -134,25 +191,47 @@ export class IntegrationService {
         }
     }
 
-    async fetchTypes(): Promise<IntegrationType[]> {
+    async fetchRemoteIntegrationTypes(): Promise<IntegrationType[]> {
         return await this.getClient().get("integrationTypes").json<IntegrationType[]>();
     }
 
     async fetchAuthenticationStatus(integrationType: string): Promise<boolean> {
+        if (isLocalIntegrationType(integrationType)) {
+            return this.localIntegrationService.checkOrPromptPermissions();
+        }
+
         let res = (await this.getClient().get(`integrationTypes/${integrationType}/authenticated`, {
             throwHttpErrors: false
         }));
         return res.ok;
     }
 
-    async fetchUpdates() {
-        if (!this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION)) return;
-        let updates = await this.getClient().get("updates").json<IntegrationUpdate[]>();
+    private async fetchRemoteUpdates() {
+        return await this.getClient().get("updates").json<IntegrationUpdate[]>();
+    }
 
+    private async fetchLocalUpdates(): Promise<IntegrationUpdate[]> {
+        return this.localIntegrationService.getUpdates();
+    }
+
+    async fetchUpdates() {
+        console.log("Fetching updates");
+
+        let remoteUpdates: IntegrationUpdate[] = [];
+        if (this.isAuthenticated()) {
+            remoteUpdates = await this.fetchRemoteUpdates();
+        }
+
+        let localUpdates = await this.fetchLocalUpdates();
+
+        let updates = [...remoteUpdates, ...localUpdates];
         let acknowledgedUpdates: string[] = [];
         for (let update of updates) {
             let integration = this.integrations.find(i => i.id == update.integrationId);
             if (integration == null) continue;
+
+            // Only remote updates need to be acknowledged
+            let remote = !isLocalIntegrationType(integration.integrationType);
 
             let formattedIdentifier = this.formatIntegrationIdentifier(integration.id, update.identifier);
             let existingEntry = await this.journalService.getEntryByIntegrationIdentifier(formattedIdentifier);
@@ -162,7 +241,10 @@ export class IntegrationService {
                     await this.journalService.deleteEntry(existingEntry);
                 }
 
-                acknowledgedUpdates.push(update.id);
+                if (remote) {
+                    acknowledgedUpdates.push(update.id);
+                }
+
                 continue;
             }
 
@@ -178,7 +260,9 @@ export class IntegrationService {
                 await this.journalService.logEntry(form, formattedAnswers, form.format, update.timestamp,
                     formattedIdentifier);
 
-                acknowledgedUpdates.push(update.id);
+                if (remote) {
+                    acknowledgedUpdates.push(update.id);
+                }
             } else {
                 let snapshot = await this.formService.getFormSnapshotById(existingEntry.snapshotId);
                 if (snapshot == null) continue;
@@ -191,11 +275,13 @@ export class IntegrationService {
                     timestamp: update.timestamp
                 }, snapshot.format);
 
-                acknowledgedUpdates.push(update.id);
+                if (remote) {
+                    acknowledgedUpdates.push(update.id);
+                }
             }
         }
 
-        if (acknowledgedUpdates.length == 0) return;
+        if (acknowledgedUpdates.length == 0 || !this.isAuthenticated()) return;
         await this.acknowledgeUpdates(acknowledgedUpdates);
     }
 
@@ -207,12 +293,27 @@ export class IntegrationService {
         });
     }
 
-    async fetchHistorical(id: string) {
-        await this.getClient().post(`integrations/${id}/historical`);
+    async fetchHistorical(id: string, integrationType: string) {
+        let result: { oldest: number, count: number } | null = null;
+        if (isLocalIntegrationType(integrationType)) {
+            result = await this.localIntegrationService.fetchHistorical(id);
+        } else {
+            await this.getClient().post(`integrations/${id}/historical`);
+        }
+
         await this.fetchUpdates();
+        return result;
     }
 
     async updateIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
+        if (this.isIntegrationLocal(id)) {
+            await this.updateLocalIntegration(id, fields, options);
+        } else {
+            await this.updateRemoteIntegration(id, fields, options);
+        }
+    }
+
+    private async updateRemoteIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
         await this.getClient().put(`integrations/${id}`, {
             json: {
                 fields,
@@ -221,17 +322,40 @@ export class IntegrationService {
         });
     }
 
+    private async updateLocalIntegration(id: string, fields: Record<string, string>, options: Record<string, string | number>) {
+        await this.localIntegrationService.updateIntegration(id, fields, options);
+    }
+
     async deleteIntegrationById(id: string) {
+        if (this.isIntegrationLocal(id)) {
+            await this.deleteLocalIntegrationById(id);
+        } else {
+            await this.deleteRemoteIntegrationById(id);
+        }
+    }
+
+    private isIntegrationLocal(id: string): boolean {
+        let existing = this.integrations.find(i => i.id == id);
+        if (existing == null) return false;
+
+        return isLocalIntegrationType(existing.integrationType);
+    }
+
+    private async deleteLocalIntegrationById(id: string) {
+        await this.localIntegrationService.deleteIntegrationById(id);
+    }
+
+    private async deleteRemoteIntegrationById(id: string) {
         await this.getClient().delete(`integrations/${id}`);
     }
 
     async onFormDeleted(e: Form) {
-        if (!(this.remoteService.isRemoteEnabled(RemoteType.INTEGRATION))) return;
-
         // Delete all integrations that use this form
         for (const integration of this.integrations.filter(i => i.formId == e.id)) {
             await this.deleteIntegrationById(integration.id);
         }
+
+        await this.localIntegrationService.onFormDeleted(e);
     }
 }
 
