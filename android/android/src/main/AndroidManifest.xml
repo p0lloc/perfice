@@ -13,9 +13,6 @@
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY"/>
     <uses-permission android:name="android.permission.health.READ_HEALTH_IN_BACKGROUND"/>
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-
     <application>
         <!-- For supported versions through Android 13, create an activity to show the rationale
              of Health Connect permissions once users click the privacy policy link. -->
@@ -39,12 +36,6 @@
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
         </activity-alias>
-
-
-        <service
-                android:name="dev.adoe.perfice.BackgroundService"
-                android:exported="false"
-                android:foregroundServiceType="dataSync" /> <!-- or 'dataSync', depending on your use -->
     </application>
 
     <queries>

@@ -1,25 +1,19 @@
 package dev.adoe.perfice
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Build
-import android.os.IBinder
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
-import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.work.*
 import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
@@ -34,83 +28,84 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+// These variables must be shared because we cannot instantiate the worker with them.
+// Defining a custom worker factory requires access to "Application" which is unavailable in Capacitor.
+var integrationUpdates: IntegrationUpdateDataStore? = null
+var integrations: CustomDataStore<Integration>? = null
+
+class ScheduleWorker(
+    private val appContext: Context, workerParams: WorkerParameters
+) :
+    CoroutineWorker(appContext, workerParams) {
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun doWork(): Result {
+        val healthConnect = HealthConnectClient.getOrCreate(appContext)
+        if (healthConnect.permissionController.getGrantedPermissions().isEmpty()) return Result.success()
+
+        for (integration in integrations!!.getAll()) {
+            extractRecordsAndCreateUpdates(
+                healthConnect, integrationUpdates!!, integration, TimeRangeFilter.between(
+                    LocalDateTime.now().minusDays(1),
+                    LocalDateTime.now()
+                )
+            )
+        }
+
+        return Result.success()
+    }
+}
 
 
 @CapacitorPlugin(name = "Perfice")
 class PerficePlugin : Plugin() {
 
     private lateinit var requestPermissions: ActivityResultLauncher<Set<String>>
-    lateinit var updateStore: IntegrationUpdateDataStore
-    lateinit var integrations: CustomDataStore<Integration>
 
     private var permissionCall: ((Boolean) -> Unit)? = null
     override fun load() {
         super.load()
         try {
-            updateStore = IntegrationUpdateDataStore(context.dataStore)
-            updateStore.load()
+            integrationUpdates = IntegrationUpdateDataStore(context.dataStore)
+            integrationUpdates!!.load()
 
             integrations = CustomDataStore(context.dataStore, "integrations", IntegrationSerializer)
-            integrations.load()
+            integrations!!.load()
         } catch (e: Exception) {
             Log.e("Perfice", "Error loading data", e)
         }
 
-        val requestPermissionActivityContract =
-                PermissionController.createRequestPermissionResultContract()
-        requestPermissions =
-                activity.registerForActivityResult(requestPermissionActivityContract) { granted ->
-                    if (granted.isNotEmpty()) {
-                        permissionCall?.invoke(true)
-                        startService()
-                    } else {
-                        permissionCall?.invoke(false)
-                    }
-                }
-
-        // TODO: Start background service when permissions are granted
-
-        checkPermissions(false) { granted ->
-            if (!granted) return@checkPermissions
-
-            startService()
-        }
-    }
-
-    fun startService() {
-        Log.d("Perfice", "Starting background service")
-
-        val intent = Intent(context, BackgroundService::class.java)
-        context.bindService(
-                intent,
-                object : ServiceConnection {
-                    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                        val binder = service as BackgroundService.LocalBinder
-                        val service = binder.getService()
-                        service.integrationUpdates = updateStore
-                        service.integrations = integrations
-                    }
-
-                    override fun onServiceDisconnected(name: ComponentName?) {}
-                },
-                Context.BIND_AUTO_CREATE
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "read_health_connect",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            PeriodicWorkRequestBuilder<ScheduleWorker>(
+                15, TimeUnit.MINUTES
+            ).build()
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
+        val requestPermissionActivityContract =
+            PermissionController.createRequestPermissionResultContract()
+        requestPermissions =
+            activity.registerForActivityResult(requestPermissionActivityContract) { granted ->
+                if (granted.isNotEmpty()) {
+                    permissionCall?.invoke(true)
+                } else {
+                    permissionCall?.invoke(false)
+                }
+            }
     }
 
     @PluginMethod
     fun getUpdates(call: PluginCall) {
+        if(integrationUpdates == null) return
         val response = JSObject()
 
-        response.put("updates", JSONArray(updateStore.getAll().map { it.toJson() }))
-        updateStore.clear()
+        response.put("updates", JSONArray(integrationUpdates!!.getAll().map { it.toJson() }))
+        integrationUpdates!!.clear()
         call.resolve(response)
     }
 
@@ -124,11 +119,11 @@ class PerficePlugin : Plugin() {
             list.add(IntegrationSerializer.fromJson(integration))
         }
 
-        integrations.overwrite(list)
+        integrations!!.overwrite(list)
         call.resolve()
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     @PluginMethod
     fun fetchHistorical(call: PluginCall) {
         val integrationId = call.getString("id")
@@ -137,8 +132,8 @@ class PerficePlugin : Plugin() {
             return
         }
 
-        val integration = integrations.getById(integrationId)
-        if(integration == null) {
+        val integration = integrations!!.getById(integrationId)
+        if (integration == null) {
             call.reject("Integration not found")
             return
         }
@@ -147,14 +142,14 @@ class PerficePlugin : Plugin() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val results = extractRecordsAndCreateUpdates(
-                healthConnectClient, updates = updateStore, integration, TimeRangeFilter.between(
+                healthConnectClient, updates = integrationUpdates!!, integration, TimeRangeFilter.between(
                     LocalDateTime.now().minusYears(1),
                     LocalDateTime.now()
                 )
             ).sortedBy { it.timestamp }
 
             val responseObject = JSObject()
-            responseObject.put("oldest", if (results.isNotEmpty()) results[0].timestamp else 0 )
+            responseObject.put("oldest", if (results.isNotEmpty()) results[0].timestamp else 0)
             responseObject.put("count", results.size)
             call.resolve(responseObject)
         }
@@ -183,14 +178,14 @@ class PerficePlugin : Plugin() {
 
         if (availabilityStatus == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
             val uriString =
-                    "market://details?id=$providerPackageName&url=healthconnect%3A%2F%2Fonboarding"
+                "market://details?id=$providerPackageName&url=healthconnect%3A%2F%2Fonboarding"
             context.startActivity(
-                    Intent(Intent.ACTION_VIEW).apply {
-                        setPackage("com.android.vending")
-                        data = Uri.parse(uriString)
-                        putExtra("overlay", true)
-                        putExtra("callerId", context.packageName)
-                    }
+                Intent(Intent.ACTION_VIEW).apply {
+                    setPackage("com.android.vending")
+                    data = Uri.parse(uriString)
+                    putExtra("overlay", true)
+                    putExtra("callerId", context.packageName)
+                }
             )
             return
         }
