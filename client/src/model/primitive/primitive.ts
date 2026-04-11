@@ -59,43 +59,43 @@ export interface DisplayValue {
 }
 
 export function pString(value: string): PrimitiveValue {
-    return {type: PrimitiveValueType.STRING, value}
+    return { type: PrimitiveValueType.STRING, value }
 }
 
 export function pNumber(value: number): PrimitiveValue {
-    return {type: PrimitiveValueType.NUMBER, value}
+    return { type: PrimitiveValueType.NUMBER, value }
 }
 
 export function pBoolean(value: boolean): PrimitiveValue {
-    return {type: PrimitiveValueType.BOOLEAN, value}
+    return { type: PrimitiveValueType.BOOLEAN, value }
 }
 
 export function pMap(value: Record<string, PrimitiveValue>): PrimitiveValue {
-    return {type: PrimitiveValueType.MAP, value}
+    return { type: PrimitiveValueType.MAP, value }
 }
 
 export function pList(value: PrimitiveValue[]): PrimitiveValue {
-    return {type: PrimitiveValueType.LIST, value}
+    return { type: PrimitiveValueType.LIST, value }
 }
 
 export function pDisplay(value: PrimitiveValue, display: PrimitiveValue | null): PrimitiveValue {
-    return {type: PrimitiveValueType.DISPLAY, value: {value, display}}
+    return { type: PrimitiveValueType.DISPLAY, value: { value, display } }
 }
 
 export function pJournalEntry(id: string, timestamp: number, value: Record<string, PrimitiveValue>): PrimitiveValue {
-    return {type: PrimitiveValueType.JOURNAL_ENTRY, value: {id, timestamp, value}}
+    return { type: PrimitiveValueType.JOURNAL_ENTRY, value: { id, timestamp, value } }
 }
 
 export function pTagEntry(id: string, timestamp: number): PrimitiveValue {
-    return {type: PrimitiveValueType.TAG_ENTRY, value: {id, timestamp}}
+    return { type: PrimitiveValueType.TAG_ENTRY, value: { id, timestamp } }
 }
 
 export function pComparisonResult(source: PrimitiveValue, target: PrimitiveValue, result: boolean): PrimitiveValue {
-    return {type: PrimitiveValueType.COMPARISON_RESULT, value: {source, target, met: result}}
+    return { type: PrimitiveValueType.COMPARISON_RESULT, value: { source, target, met: result } }
 }
 
 export function pNull(): PrimitiveValue {
-    return {type: PrimitiveValueType.NULL, value: null}
+    return { type: PrimitiveValueType.NULL, value: null }
 }
 
 export function getDefaultPrimitiveValue(t: PrimitiveValueType): PrimitiveValue {
