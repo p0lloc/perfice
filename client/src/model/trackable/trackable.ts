@@ -8,6 +8,8 @@ export enum TrackableCardType {
     HABIT = "HABIT"
 }
 
+export type TrackableType = 'regular' | 'sport';
+
 export type Trackable = {
     id: string;
     name: string;
@@ -18,6 +20,7 @@ export type Trackable = {
     categoryId: string | null;
     // Mapping of dependency to variable id
     dependencies: Record<string, string>;
+    trackableType: TrackableType;
 } & TrackableCardSettings;
 
 export type TrackableCardSettings =

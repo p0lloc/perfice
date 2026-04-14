@@ -43,4 +43,14 @@ export class JournalEntryStore extends AsyncStore<JournalEntry[]> {
         this.updateResolved(v => updateIdentifiedInArray(v, entry));
     }
 
+    async getSportEntries(startTimestamp: number, endTimestamp: number, sportFormIds: string[]): Promise<JournalEntry[]> {
+        let sportFormIdSet = new Set(sportFormIds);
+        let allEntries: JournalEntry[] = [];
+        for (let formId of sportFormIds) {
+            let entries = await this.journalService.getEntriesByFormIdFromTime(formId, startTimestamp);
+            allEntries.push(...entries.filter(e => e.timestamp <= endTimestamp));
+        }
+        return allEntries;
+    }
+
 }

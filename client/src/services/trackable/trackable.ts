@@ -5,6 +5,7 @@ import {
     type TrackableCardSettings,
     TrackableCardType,
     type TrackableCategory,
+    type TrackableType,
     TrackableValueType
 } from "@perfice/model/trackable/trackable";
 import {
@@ -120,7 +121,12 @@ export class TrackableService implements TrackableEntityProvider {
     }
 
     async createTrackable(name: string, icon: string, form: Form, card: TrackableCardSettings,
-                          categoryId: string | null = null): Promise<Trackable> {
+                          categoryId: string | null = null, trackableType: TrackableType = 'regular'): Promise<Trackable> {
+
+        let validationError = validateSportTrackable(trackableType, form);
+        if (validationError != null) {
+            throw new Error(validationError);
+        }
 
         let trackableCount = await this.collection.count();
         let cardSettings: TrackableCardSettings = {
@@ -142,6 +148,7 @@ export class TrackableService implements TrackableEntityProvider {
             formId: form.id,
             categoryId: categoryId,
             goalId: null,
+            trackableType,
             ...cardSettings,
             dependencies
         };
@@ -170,6 +177,15 @@ export class TrackableService implements TrackableEntityProvider {
     async updateTrackable(trackable: Trackable) {
         let previous = await this.getTrackableById(trackable.id);
         if (previous == null) return;
+
+        // Validate sport type constraints on update
+        let form = await this.formService.getFormById(trackable.formId);
+        if (form != null) {
+            let validationError = validateSportTrackable(trackable.trackableType ?? 'regular', form);
+            if (validationError != null) {
+                throw new Error(validationError);
+            }
+        }
 
         await this.updateTrackableForm(previous, trackable);
         await this.updateTrackableVariables(trackable);
@@ -341,4 +357,22 @@ export class TrackableService implements TrackableEntityProvider {
         }
     }
 
+}
+
+/**
+ * Validates sport trackable constraints.
+ * Returns an error message if validation fails, or null if valid.
+ */
+export function validateSportTrackable(trackableType: TrackableType, form: Form): string | null {
+    if (trackableType !== 'sport') return null;
+
+    let hasTimeElapsed = form.questions.some(
+        q => q.dataType === FormQuestionDataType.TIME_ELAPSED
+    );
+
+    if (!hasTimeElapsed) {
+        return "Sport trackables require at least one duration (time elapsed) field";
+    }
+
+    return null;
 }

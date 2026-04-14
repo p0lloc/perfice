@@ -2,6 +2,7 @@ import {
     IndexCollection,
     IndexUpdateListener,
     JournalCollection,
+    RestDayCollection,
     TagCollection,
     TagEntryCollection,
     TrackableCollection,
@@ -16,6 +17,7 @@ import {JournalService} from "../src/services/journal/journal";
 import {EntityObserverCallback, EntityObserverType} from "../src/services/observer";
 import {Trackable} from "../src/model/trackable/trackable";
 import {Tag} from "../src/model/tag/tag";
+import {RestDay} from "../src/model/sport/restday";
 
 export class DummyJournalCollection implements JournalCollection {
     private entries: JournalEntry[];
@@ -405,5 +407,37 @@ export class DummyVariableCollection implements VariableCollection {
 
     async updateVariable(variable: StoredVariable): Promise<void> {
         this.variables = updateIdentifiedInArray(this.variables, variable);
+    }
+}
+
+export class DummyRestDayCollection implements RestDayCollection {
+    private restDays: RestDay[];
+
+    constructor(restDays: RestDay[] = []) {
+        this.restDays = restDays;
+    }
+
+    async getRestDays(): Promise<RestDay[]> {
+        return this.restDays;
+    }
+
+    async getRestDayByDate(date: string): Promise<RestDay | undefined> {
+        return this.restDays.find(r => r.date === date);
+    }
+
+    async getRestDaysByDateRange(startDate: string, endDate: string): Promise<RestDay[]> {
+        return this.restDays.filter(r => r.date >= startDate && r.date <= endDate);
+    }
+
+    async createRestDay(restDay: RestDay): Promise<void> {
+        this.restDays.push(restDay);
+    }
+
+    async deleteRestDayByDate(date: string): Promise<void> {
+        this.restDays = this.restDays.filter(r => r.date !== date);
+    }
+
+    async deleteRestDayById(id: string): Promise<void> {
+        this.restDays = this.restDays.filter(r => r.id !== id);
     }
 }

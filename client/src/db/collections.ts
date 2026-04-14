@@ -13,6 +13,7 @@ import type {StoredNotification} from "@perfice/model/notification/notification"
 import type {OutgoingUpdate} from "@perfice/model/sync/sync";
 import type {Table} from "dexie";
 import type {Integration} from "@perfice/model/integration/integration";
+import type {RestDay} from "@perfice/model/sport/restday";
 
 export interface Collections {
     entries: JournalCollection;
@@ -36,6 +37,7 @@ export interface Collections {
     encryptionKey: EncryptionKeyCollection;
     updateQueue: UpdateQueueCollection;
     localIntegrations: LocalIntegrationCollection;
+    restDays: RestDayCollection;
 
     transaction(table: Table<any>, callback: () => Promise<void>): Promise<void>;
 }
@@ -374,4 +376,18 @@ export interface UpdateQueueCollection {
     bulkPut(updates: OutgoingUpdate[]): Promise<void>;
 
     clear(): Promise<void>;
+}
+
+export interface RestDayCollection {
+    getRestDays(): Promise<RestDay[]>;
+
+    getRestDayByDate(date: string): Promise<RestDay | undefined>;
+
+    getRestDaysByDateRange(startDate: string, endDate: string): Promise<RestDay[]>;
+
+    createRestDay(restDay: RestDay): Promise<void>;
+
+    deleteRestDayByDate(date: string): Promise<void>;
+
+    deleteRestDayById(id: string): Promise<void>;
 }

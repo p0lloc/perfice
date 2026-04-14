@@ -38,6 +38,7 @@ import {RemoteService, RemoteType} from "@perfice/services/remote/remote";
 import {UpdateOperation} from "./model/sync/sync";
 import type {Variable} from "@perfice/model/variable/variable";
 import {LocalIntegrationService} from "@perfice/services/integration/local";
+import {RestDayService} from "@perfice/services/sport/restday";
 
 export interface Services {
     readonly trackable: TrackableService;
@@ -71,6 +72,7 @@ export interface Services {
     readonly sync: SyncService;
     readonly remote: RemoteService;
     readonly localIntegration: LocalIntegrationService;
+    readonly restDay: RestDayService;
 }
 
 export async function setupServices(db: Collections, tables: Record<string, Table>,
@@ -152,6 +154,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
     provideSyncService(syncService);
 
     const localIntegrationService = new LocalIntegrationService(db.localIntegrations);
+    const restDayService = new RestDayService(db.restDays);
 
     // Integration service is instantiated after sync service, so it will register its observer after the sync service.
     const integrationService = new IntegrationService(journalService, formService, remoteService, authService, localIntegrationService);
@@ -194,6 +197,7 @@ export async function setupServices(db: Collections, tables: Record<string, Tabl
         sync: syncService,
         remote: remoteService,
         localIntegration: localIntegrationService,
+        restDay: restDayService,
     }
 }
 

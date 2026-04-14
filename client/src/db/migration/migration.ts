@@ -1,10 +1,11 @@
 import {ChartTitlesMigration} from "@perfice/db/migration/migrations/chartTitles";
 import {FormQuestionDefaultValuesMigration} from "@perfice/db/migration/migrations/defaultQuestionValues";
+import {TrackableTypeMigration} from "@perfice/db/migration/migrations/trackableType";
 
-export const CURRENT_DATA_VERSION: number = 3;
+export const CURRENT_DATA_VERSION: number = 4;
 export const CURRENT_VERSION_STORAGE_KEY = "data_version";
 
-const MIGRATIONS: Migration[] = [new ChartTitlesMigration(), new FormQuestionDefaultValuesMigration()];
+const MIGRATIONS: Migration[] = [new ChartTitlesMigration(), new FormQuestionDefaultValuesMigration(), new TrackableTypeMigration()];
 
 export interface Migration {
     apply(entity: any): Promise<object>;
