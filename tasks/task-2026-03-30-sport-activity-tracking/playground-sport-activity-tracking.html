@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sport Activity Tracking — Visual Prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+  /* ── Layout: 3-column ── */
+  .layout { display: grid; grid-template-columns: 280px 1fr 320px; min-height: 100vh; }
+  @media (max-width: 1100px) { .layout { grid-template-columns: 240px 1fr 260px; } }
+
+  /* ── Panel Shared ── */
+  .panel { padding: 24px; overflow-y: auto; }
+  .panel h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 16px; }
+  .panel h3 { font-size: 12px; font-weight: 600; color: #cbd5e1; margin: 18px 0 8px; }
+
+  /* ── Left Panel: Controls ── */
+  .controls { background: #151822; border-right: 1px solid #1e293b; }
+  .control-group { margin-bottom: 20px; }
+  .control-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+  .scenario-btn { display: block; width: 100%; text-align: left; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 13px; cursor: pointer; margin-bottom: 6px; transition: all 0.15s; }
+  .scenario-btn:hover { background: #334155; }
+  .scenario-btn.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+  .toggle-row span { font-size: 13px; }
+  .toggle { position: relative; width: 44px; height: 24px; background: #334155; border-radius: 12px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: #3b82f6; }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+  .toggle.on::after { transform: translateX(20px); }
+  .slider-row { padding: 6px 0; }
+  .slider-row input[type="range"] { width: 100%; accent-color: #3b82f6; }
+  .slider-val { font-size: 12px; color: #64748b; text-align: right; }
+  select.control-select { width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 13px; }
+
+  /* ── Center: Phone Preview ── */
+  .preview-area { display: flex; align-items: center; justify-content: center; background: #0f1117; }
+  .phone-frame { width: 375px; height: 780px; background: #1f2937; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 0 0 4px #334155, 0 25px 80px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+  .phone-notch { width: 160px; height: 28px; background: #0f1117; border-radius: 0 0 20px 20px; margin: 0 auto; position: relative; z-index: 10; flex-shrink: 0; }
+  .phone-screen { flex: 1; overflow-y: auto; background: #1f2937; scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+  .phone-screen::-webkit-scrollbar { width: 3px; }
+  .phone-screen::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+  /* Light mode phone */
+  .phone-frame.light { background: #fafafa; }
+  .phone-frame.light .phone-screen { background: #fafafa; }
+  .phone-frame.light .phone-notch { background: #fafafa; }
+
+  /* ── Phone: Top Bar ── */
+  .top-bar { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .top-bar-title { font-size: 18px; font-weight: 700; }
+  .top-bar .icon-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; font-size: 16px; }
+  .dark .top-bar-title { color: #fff; }
+  .dark .top-bar .icon-btn { color: #94a3b8; }
+  .light .top-bar-title { color: #111827; }
+  .light .top-bar .icon-btn { color: #6b7280; }
+
+  /* ── Phone: Week Navigation ── */
+  .week-nav { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 12px; }
+  .week-nav-label { font-size: 14px; font-weight: 600; }
+  .week-nav-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 12px; }
+  .dark .week-nav-label { color: #e2e8f0; }
+  .dark .week-nav-btn { background: #374151; color: #94a3b8; }
+  .light .week-nav-label { color: #374151; }
+  .light .week-nav-btn { background: #e5e7eb; color: #6b7280; }
+
+  /* ── Phone: Stats Bar ── */
+  .stats-bar { display: flex; justify-content: space-around; padding: 14px 16px; margin: 0 16px 12px; border-radius: 12px; }
+  .dark .stats-bar { background: #374151; }
+  .light .stats-bar { background: #fff; border: 1px solid #e5e7eb; }
+  .stat-item { text-align: center; }
+  .stat-value { font-size: 18px; font-weight: 700; }
+  .dark .stat-value { color: #fff; }
+  .light .stat-value { color: #111827; }
+  .stat-label { font-size: 11px; margin-top: 2px; }
+  .dark .stat-label { color: #94a3b8; }
+  .light .stat-label { color: #6b7280; }
+  .stat-icon { margin-right: 4px; }
+  .stat-value .streak-fire { color: #f97316; }
+
+  /* ── Phone: Day Group ── */
+  .day-group { padding: 0 16px; margin-bottom: 16px; }
+  .day-header { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .dark .day-header { color: #94a3b8; }
+  .light .day-header { color: #6b7280; }
+
+  /* ── Phone: Activity Row ── */
+  .activity-row { display: flex; align-items: center; padding: 12px; border-radius: 12px; margin-bottom: 6px; cursor: pointer; transition: background 0.15s; gap: 10px; }
+  .dark .activity-row { background: #374151; }
+  .dark .activity-row:active { background: #4b5563; }
+  .light .activity-row { background: #fff; border: 1px solid #e5e7eb; }
+  .light .activity-row:active { background: #f3f4f6; }
+  .activity-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .activity-info { flex: 1; min-width: 0; }
+  .activity-name { font-size: 14px; font-weight: 600; }
+  .dark .activity-name { color: #fff; }
+  .light .activity-name { color: #111827; }
+  .activity-meta { font-size: 12px; margin-top: 2px; }
+  .dark .activity-meta { color: #94a3b8; }
+  .light .activity-meta { color: #6b7280; }
+  .activity-duration { font-size: 14px; font-weight: 600; text-align: right; }
+  .dark .activity-duration { color: #e2e8f0; }
+  .light .activity-duration { color: #374151; }
+  .activity-time { font-size: 11px; text-align: right; }
+  .dark .activity-time { color: #64748b; }
+  .light .activity-time { color: #9ca3af; }
+
+  /* ── Phone: Expanded Entry ── */
+  .expanded-fields { padding: 8px 12px 4px; margin: -2px 0 6px; border-radius: 0 0 12px 12px; }
+  .dark .expanded-fields { background: #2d3748; }
+  .light .expanded-fields { background: #f9fafb; border: 1px solid #e5e7eb; border-top: none; }
+  .field-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+  .field-row:not(:last-child) { border-bottom: 1px solid; }
+  .dark .field-row { border-color: #374151; }
+  .light .field-row { border-color: #e5e7eb; }
+  .field-label { font-weight: 500; }
+  .dark .field-label { color: #94a3b8; }
+  .light .field-label { color: #6b7280; }
+  .dark .field-value { color: #e2e8f0; }
+  .light .field-value { color: #111827; }
+
+  /* ── Phone: Rest Day Toggle ── */
+  .rest-day-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; margin-bottom: 6px; }
+  .dark .rest-day-row { background: #374151; }
+  .light .rest-day-row { background: #fff; border: 1px solid #e5e7eb; }
+  .dark .rest-day-row.active { background: #1e3a5f; }
+  .light .rest-day-row.active { background: #eff6ff; border-color: #93c5fd; }
+  .rest-day-left { display: flex; align-items: center; gap: 10px; }
+  .rest-day-icon { font-size: 18px; }
+  .rest-day-label { font-size: 14px; font-weight: 500; }
+  .dark .rest-day-label { color: #e2e8f0; }
+  .light .rest-day-label { color: #374151; }
+  .rest-toggle { width: 40px; height: 22px; border-radius: 11px; cursor: pointer; transition: background 0.2s; position: relative; border: none; }
+  .dark .rest-toggle { background: #4b5563; }
+  .light .rest-toggle { background: #d1d5db; }
+  .rest-toggle.on { background: #3b82f6 !important; }
+  .rest-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+  .rest-toggle.on::after { transform: translateX(18px); }
+
+  /* ── Phone: No Activity ── */
+  .no-activity { text-align: center; padding: 12px; font-size: 13px; border-radius: 12px; margin-bottom: 6px; }
+  .dark .no-activity { color: #64748b; background: #374151; }
+  .light .no-activity { color: #9ca3af; background: #fff; border: 1px solid #e5e7eb; }
+
+  /* ── Phone: FAB ── */
+  .fab { position: absolute; bottom: 80px; right: 20px; width: 52px; height: 52px; border-radius: 16px; background: #3b82f6; color: #fff; border: none; cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(59,130,246,0.4); transition: transform 0.15s, box-shadow 0.15s; z-index: 5; }
+  .fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(59,130,246,0.5); }
+
+  /* ── Phone: Bottom Nav ── */
+  .bottom-nav { display: flex; justify-content: space-around; align-items: center; padding: 8px 4px 24px; flex-shrink: 0; border-top: 1px solid; }
+  .dark .bottom-nav { background: #1f2937; border-color: #374151; }
+  .light .bottom-nav { background: #fff; border-color: #e5e7eb; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; gap: 2px; cursor: pointer; padding: 4px 6px; border-radius: 8px; transition: color 0.15s; min-width: 48px; }
+  .nav-item i { font-size: 18px; }
+  .dark .nav-item { color: #64748b; }
+  .dark .nav-item.active { color: #3b82f6; }
+  .light .nav-item { color: #9ca3af; }
+  .light .nav-item.active { color: #3b82f6; }
+
+  /* ── Phone: Empty State ── */
+  .empty-state { padding: 48px 24px; text-align: center; }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+  .empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .dark .empty-title { color: #fff; }
+  .light .empty-title { color: #111827; }
+  .empty-desc { font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+  .dark .empty-desc { color: #94a3b8; }
+  .light .empty-desc { color: #6b7280; }
+  .empty-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; background: #3b82f6; color: #fff; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .empty-btn:hover { background: #2563eb; }
+
+  /* ── Phone: Dashboard Widget ── */
+  .widget-container { padding: 16px; }
+  .widget-card { border-radius: 12px; padding: 16px; position: relative; }
+  .dark .widget-card { background: #374151; }
+  .light .widget-card { background: #fff; border: 1px solid #e5e7eb; }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .widget-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .dark .widget-title { color: #fff; }
+  .light .widget-title { color: #111827; }
+  .widget-plus { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 14px; }
+  .dark .widget-plus { background: #4b5563; color: #e2e8f0; }
+  .light .widget-plus { background: #f3f4f6; color: #374151; }
+  .widget-stats { display: flex; justify-content: space-between; }
+  .widget-stat { text-align: center; flex: 1; }
+  .widget-stat-val { font-size: 20px; font-weight: 700; }
+  .dark .widget-stat-val { color: #fff; }
+  .light .widget-stat-val { color: #111827; }
+  .widget-stat-label { font-size: 11px; margin-top: 2px; }
+  .dark .widget-stat-label { color: #94a3b8; }
+  .light .widget-stat-label { color: #6b7280; }
+  .widget-context { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6; }
+  .dark .widget-context { background: #1f2937; color: #94a3b8; }
+  .light .widget-context { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+
+  /* ── Phone: Quick-log Dropdown ── */
+  .quicklog-dropdown { position: absolute; top: 48px; right: 16px; width: 200px; border-radius: 10px; padding: 6px; z-index: 20; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .dark .quicklog-dropdown { background: #374151; border: 1px solid #4b5563; }
+  .light .quicklog-dropdown { background: #fff; border: 1px solid #e5e7eb; }
+  .quicklog-item { display: flex; align-items: center; gap: 8px; padding: 10px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .dark .quicklog-item:hover { background: #4b5563; }
+  .light .quicklog-item:hover { background: #f3f4f6; }
+  .dark .quicklog-item { color: #e2e8f0; }
+  .light .quicklog-item { color: #111827; }
+
+  /* ── Phone: Add Trackable ── */
+  .type-selector { padding: 16px; }
+  .type-selector-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .dark .type-selector-title { color: #fff; }
+  .light .type-selector-title { color: #111827; }
+  .type-option { display: flex; align-items: center; padding: 14px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; gap: 12px; border: 2px solid transparent; }
+  .dark .type-option { background: #374151; }
+  .light .type-option { background: #fff; border: 1px solid #e5e7eb; }
+  .type-option.selected { border-color: #3b82f6 !important; }
+  .dark .type-option.selected { background: #1e3a5f; }
+  .light .type-option.selected { background: #eff6ff; }
+  .type-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .dark .type-icon { background: #4b5563; }
+  .light .type-icon { background: #f3f4f6; }
+  .type-info { flex: 1; }
+  .type-name { font-size: 14px; font-weight: 600; }
+  .dark .type-name { color: #fff; }
+  .light .type-name { color: #111827; }
+  .type-desc { font-size: 12px; margin-top: 2px; }
+  .dark .type-desc { color: #94a3b8; }
+  .light .type-desc { color: #6b7280; }
+  .type-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dark .type-radio { border-color: #4b5563; }
+  .light .type-radio { border-color: #d1d5db; }
+  .type-option.selected .type-radio { border-color: #3b82f6; }
+  .type-option.selected .type-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; }
+  .validation-note { margin: 16px 0; padding: 12px; border-radius: 8px; font-size: 13px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .dark .validation-note { background: #1e3a5f; color: #93c5fd; }
+  .light .validation-note { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+
+  /* ── Right Panel: Notes ── */
+  .notes { background: #151822; border-left: 1px solid #1e293b; }
+  .note-card { padding: 12px; border-radius: 8px; background: #1e293b; margin-bottom: 10px; font-size: 13px; line-height: 1.5; color: #cbd5e1; }
+  .note-card code { background: #334155; padding: 1px 5px; border-radius: 4px; font-size: 12px; color: #93c5fd; }
+  .note-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+  .tag-component { background: #1e3a5f; color: #93c5fd; }
+  .tag-data { background: #1a3329; color: #6ee7b7; }
+  .tag-route { background: #3b1f3f; color: #d8b4fe; }
+  .tag-nav { background: #3f2f1a; color: #fbbf24; }
+  .copy-btn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; background: #3b82f6; color: #fff; border: none; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; margin-top: 12px; }
+  .copy-btn:hover { background: #2563eb; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- LEFT: Controls -->
+  <div class="panel controls">
+    <h2>Sport Activity Tracking</h2>
+
+    <div class="control-group">
+      <label>Scenario</label>
+      <button class="scenario-btn active" onclick="setScenario('happy')" id="btn-happy">Sport Page — Happy Path</button>
+      <button class="scenario-btn" onclick="setScenario('empty')" id="btn-empty">Empty State</button>
+      <button class="scenario-btn" onclick="setScenario('expanded')" id="btn-expanded">Expanded Entry</button>
+      <button class="scenario-btn" onclick="setScenario('widget')" id="btn-widget">Dashboard Widget</button>
+      <button class="scenario-btn" onclick="setScenario('create')" id="btn-create">Add Sport Trackable</button>
+    </div>
+
+    <div class="control-group">
+      <label>Appearance</label>
+      <div class="toggle-row">
+        <span>Dark Mode</span>
+        <div class="toggle on" id="theme-toggle" onclick="toggleTheme()"></div>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Rest Day (Today)</label>
+      <div class="toggle-row">
+        <span>Toggle Rest Day</span>
+        <div class="toggle" id="rest-toggle" onclick="toggleRest()"></div>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Stats (Week)</label>
+      <div class="slider-row">
+        <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:#94a3b8">Sessions</span><span class="slider-val" id="sessions-val">3</span></div>
+        <input type="range" min="0" max="10" value="3" id="sessions-slider" oninput="updateStats()">
+      </div>
+      <div class="slider-row">
+        <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:#94a3b8">Streak (days)</span><span class="slider-val" id="streak-val">5</span></div>
+        <input type="range" min="0" max="30" value="5" id="streak-slider" oninput="updateStats()">
+      </div>
+      <div class="slider-row">
+        <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:#94a3b8">Duration (min)</span><span class="slider-val" id="duration-val">165</span></div>
+        <input type="range" min="0" max="600" value="165" step="5" id="duration-slider" oninput="updateStats()">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Week Display</label>
+      <select class="control-select" id="week-select" onchange="updateWeek()">
+        <option value="current">Mar 24 – Mar 30 (Current)</option>
+        <option value="prev">Mar 17 – Mar 23</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CENTER: Phone Preview -->
+  <div class="preview-area">
+    <div class="phone-frame dark" id="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" id="screen"></div>
+      <div class="fab" id="fab"><i class="fa-solid fa-plus"></i></div>
+      <div class="bottom-nav" id="bottom-nav">
+        <div class="nav-item"><i class="fa-solid fa-grip"></i><span>Dashboard</span></div>
+        <div class="nav-item"><i class="fa-solid fa-list-check"></i><span>Trackables</span></div>
+        <div class="nav-item active"><i class="fa-solid fa-dumbbell"></i><span>Sport</span></div>
+        <div class="nav-item"><i class="fa-solid fa-book"></i><span>Journal</span></div>
+        <div class="nav-item"><i class="fa-solid fa-bullseye"></i><span>Goals</span></div>
+        <div class="nav-item"><i class="fa-solid fa-tags"></i><span>Tags</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Implementation Notes -->
+  <div class="panel notes">
+    <h2>Implementation Notes</h2>
+    <div id="notes-content"></div>
+    <button class="copy-btn" onclick="copyNotes()"><i class="fa-solid fa-copy"></i> Copy Prompt</button>
+  </div>
+</div>
+
+<script>
+// ── State ──
+const state = {
+  scenario: 'happy',
+  darkMode: true,
+  restDay: false,
+  sessions: 3,
+  streak: 5,
+  duration: 165,
+  week: 'current',
+  quicklogOpen: false
+};
+
+function setScenario(s) {
+  state.scenario = s;
+  state.quicklogOpen = false;
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + s).classList.add('active');
+  render();
+}
+
+function toggleTheme() {
+  state.darkMode = !state.darkMode;
+  document.getElementById('theme-toggle').classList.toggle('on');
+  render();
+}
+
+function toggleRest() {
+  state.restDay = !state.restDay;
+  document.getElementById('rest-toggle').classList.toggle('on');
+  render();
+}
+
+function updateStats() {
+  state.sessions = +document.getElementById('sessions-slider').value;
+  state.streak = +document.getElementById('streak-slider').value;
+  state.duration = +document.getElementById('duration-slider').value;
+  document.getElementById('sessions-val').textContent = state.sessions;
+  document.getElementById('streak-val').textContent = state.streak;
+  document.getElementById('duration-val').textContent = state.duration;
+  render();
+}
+
+function updateWeek() {
+  state.week = document.getElementById('week-select').value;
+  render();
+}
+
+function toggleQuicklog(e) {
+  e && e.stopPropagation();
+  state.quicklogOpen = !state.quicklogOpen;
+  render();
+}
+
+function fmtDuration(mins) {
+  if (mins === 0) return '0m';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if (h === 0) return m + 'm';
+  if (m === 0) return h + 'h';
+  return h + 'h ' + m + 'm';
+}
+
+// ── Activities data ──
+const activities = {
+  current: [
+    { day: 'Today, Mar 30', entries: [
+      { icon: '🏊', name: 'Swimming', duration: '45m', time: '10:30', color: '#3b82f6',
+        fields: { Duration: '45 min', Distance: '1.2 km', Style: 'Freestyle', Notes: 'Felt great today' } }
+    ]},
+    { day: 'Saturday, Mar 29', entries: [
+      { icon: '🏃', name: 'Running', duration: '30m', time: '08:00', color: '#22c55e',
+        fields: { Duration: '30 min', Distance: '5.1 km', Pace: '5:53 /km' } }
+    ]},
+    { day: 'Friday, Mar 28', entries: [
+      { icon: '🧘', name: 'Yoga', duration: '60m', time: '18:00', color: '#a855f7',
+        fields: { Duration: '60 min', Type: 'Vinyasa flow' } }
+    ]},
+    { day: 'Thursday, Mar 27', entries: [] },
+    { day: 'Wednesday, Mar 26', entries: [
+      { icon: '🏋️', name: 'Weight Training', duration: '50m', time: '07:00', color: '#f97316',
+        fields: { Warmup: '10 min', 'Main Set': '40 min', Exercises: '5' } }
+    ]}
+  ],
+  prev: [
+    { day: 'Sunday, Mar 23', entries: [
+      { icon: '🏃', name: 'Running', duration: '35m', time: '09:00', color: '#22c55e',
+        fields: { Duration: '35 min', Distance: '6.0 km' } }
+    ]},
+    { day: 'Saturday, Mar 22', entries: [] },
+    { day: 'Friday, Mar 21', entries: [
+      { icon: '🏊', name: 'Swimming', duration: '40m', time: '11:00', color: '#3b82f6',
+        fields: { Duration: '40 min', Distance: '1.0 km' } }
+    ]}
+  ]
+};
+
+function renderActivityRow(entry, theme, expanded) {
+  const bg = theme === 'dark' ? 'rgba(255,255,255,0.05)' : entry.color + '15';
+  let html = `<div class="activity-row">
+    <div class="activity-icon" style="background:${bg}"><span>${entry.icon}</span></div>
+    <div class="activity-info">
+      <div class="activity-name">${entry.name}</div>
+      <div class="activity-meta">Sport activity</div>
+    </div>
+    <div style="text-align:right">
+      <div class="activity-duration">${entry.duration}</div>
+      <div class="activity-time">${entry.time}</div>
+    </div>
+  </div>`;
+  if (expanded) {
+    html += '<div class="expanded-fields">';
+    for (const [k, v] of Object.entries(entry.fields)) {
+      html += `<div class="field-row"><span class="field-label">${k}</span><span class="field-value">${v}</span></div>`;
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+function renderRestDayRow(dayLabel) {
+  const isToday = dayLabel.startsWith('Today');
+  const active = isToday && state.restDay;
+  return `<div class="rest-day-row ${active ? 'active' : ''}">
+    <div class="rest-day-left">
+      <span class="rest-day-icon">😴</span>
+      <span class="rest-day-label">${active ? 'Rest Day' : 'Mark as Rest Day'}</span>
+    </div>
+    <button class="rest-toggle ${active ? 'on' : ''}" ${isToday ? 'onclick="toggleRest()"' : ''}></button>
+  </div>`;
+}
+
+// ── Render engine ──
+function render() {
+  const theme = state.darkMode ? 'dark' : 'light';
+  const phone = document.getElementById('phone');
+  phone.className = 'phone-frame ' + theme;
+
+  const screen = document.getElementById('screen');
+  const fab = document.getElementById('fab');
+  const nav = document.getElementById('bottom-nav');
+  const notesEl = document.getElementById('notes-content');
+
+  // Update nav highlight
+  const navItems = nav.querySelectorAll('.nav-item');
+  navItems.forEach(n => n.classList.remove('active'));
+  if (state.scenario === 'widget') navItems[0].classList.add('active');
+  else if (state.scenario === 'create') navItems[1].classList.add('active');
+  else navItems[2].classList.add('active');
+
+  fab.style.display = (state.scenario === 'happy' || state.scenario === 'expanded') ? 'flex' : 'none';
+
+  const renderers = { happy: renderHappy, empty: renderEmpty, expanded: renderExpanded, widget: renderWidget, create: renderCreate };
+  const noteRenderers = { happy: notesHappy, empty: notesEmpty, expanded: notesExpanded, widget: notesWidget, create: notesCreate };
+  renderers[state.scenario](screen, theme);
+  noteRenderers[state.scenario](notesEl);
+}
+
+// ── Shared stats bar HTML ──
+function statsBarHTML() {
+  return `<div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value"><i class="fa-solid fa-calendar-check" style="font-size:14px;color:#3b82f6;margin-right:4px"></i>${state.sessions}</div>
+      <div class="stat-label">Sessions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value"><i class="fa-solid fa-clock" style="font-size:14px;color:#a855f7;margin-right:4px"></i>${fmtDuration(state.duration)}</div>
+      <div class="stat-label">Duration</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value"><span class="streak-fire">🔥</span> ${state.streak}d</div>
+      <div class="stat-label">Streak</div>
+    </div>
+  </div>`;
+}
+
+function weekNavHTML(label) {
+  return `<div class="week-nav">
+    <button class="week-nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
+    <span class="week-nav-label">${label}</span>
+    <button class="week-nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>`;
+}
+
+// ── Scenario: Happy Path ──
+function renderHappy(screen, theme) {
+  const weekLabel = state.week === 'current' ? 'Mar 24 – Mar 30' : 'Mar 17 – Mar 23';
+  const data = activities[state.week] || activities.current;
+
+  let html = `<div class="top-bar">
+    <span class="top-bar-title">Sport</span>
+    <button class="icon-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+  </div>` + weekNavHTML(weekLabel) + statsBarHTML();
+
+  for (const group of data) {
+    html += `<div class="day-group"><div class="day-header">${group.day}</div>`;
+    if (group.entries.length === 0) {
+      html += `<div class="no-activity">No activity</div>`;
+      html += renderRestDayRow(group.day);
+    } else {
+      for (const entry of group.entries) html += renderActivityRow(entry, theme, false);
+      if (group.day.startsWith('Today')) html += renderRestDayRow(group.day);
+    }
+    html += '</div>';
+  }
+  html += '<div style="height:80px"></div>';
+  screen.innerHTML = html;
+}
+
+// ── Scenario: Empty State ──
+function renderEmpty(screen) {
+  screen.innerHTML = `<div class="top-bar"><span class="top-bar-title">Sport</span></div>
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fa-solid fa-dumbbell"></i></div>
+      <div class="empty-title">Get Started with Sport Tracking</div>
+      <div class="empty-desc">Track your workouts, monitor your streak, and see your progress at a glance. Create your first sport activity to begin.</div>
+      <button class="empty-btn"><i class="fa-solid fa-plus"></i> Create Your First Sport</button>
+    </div>`;
+}
+
+// ── Scenario: Expanded Entry ──
+function renderExpanded(screen, theme) {
+  const data = activities.current;
+  let html = `<div class="top-bar">
+    <span class="top-bar-title">Sport</span>
+    <button class="icon-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+  </div>` + weekNavHTML('Mar 24 – Mar 30') + statsBarHTML();
+
+  for (const group of data) {
+    html += `<div class="day-group"><div class="day-header">${group.day}</div>`;
+    if (group.entries.length === 0) {
+      html += `<div class="no-activity">No activity</div>`;
+      html += renderRestDayRow(group.day);
+    } else {
+      for (const entry of group.entries) {
+        html += renderActivityRow(entry, theme, entry.name === 'Swimming');
+      }
+    }
+    html += '</div>';
+  }
+  html += '<div style="height:80px"></div>';
+  screen.innerHTML = html;
+}
+
+// ── Scenario: Dashboard Widget ──
+function renderWidget(screen, theme) {
+  screen.innerHTML = `<div class="top-bar"><span class="top-bar-title">Dashboard</span></div>
+    <div class="widget-container">
+      <div style="font-size:12px;margin-bottom:12px;${theme==='dark'?'color:#64748b':'color:#9ca3af'}"><i class="fa-solid fa-grip"></i> Other widgets above...</div>
+      <div class="widget-card">
+        <div class="widget-header">
+          <div class="widget-title"><i class="fa-solid fa-dumbbell" style="color:#3b82f6"></i> Sport This Week</div>
+          <button class="widget-plus" onclick="toggleQuicklog(event)"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        ${state.quicklogOpen ? `<div class="quicklog-dropdown">
+          <div class="quicklog-item"><span>🏊</span> Swimming</div>
+          <div class="quicklog-item"><span>🏃</span> Running</div>
+          <div class="quicklog-item"><span>🧘</span> Yoga</div>
+          <div class="quicklog-item"><span>🏋️</span> Weight Training</div>
+        </div>` : ''}
+        <div class="widget-stats">
+          <div class="widget-stat"><div class="widget-stat-val">${state.sessions}</div><div class="widget-stat-label">Sessions</div></div>
+          <div class="widget-stat"><div class="widget-stat-val">${fmtDuration(state.duration)}</div><div class="widget-stat-label">Duration</div></div>
+          <div class="widget-stat"><div class="widget-stat-val">🔥 ${state.streak}d</div><div class="widget-stat-label">Streak</div></div>
+        </div>
+      </div>
+      <div class="widget-context"><strong>Widget behavior:</strong><br>
+        • Tap stats area → navigates to /sport<br>
+        • [+] button → quick-log dropdown<br>
+        • Stats match Sport page calculations<br>
+        • Min size: 2×1 grid units, default: 3×1</div>
+      <div style="margin-top:16px;font-size:12px;${theme==='dark'?'color:#64748b':'color:#9ca3af'}"><i class="fa-solid fa-grip"></i> Other widgets below...</div>
+    </div>`;
+}
+
+// ── Scenario: Create Sport Trackable ──
+function renderCreate(screen, theme) {
+  screen.innerHTML = `<div class="top-bar">
+    <span class="top-bar-title">New Trackable</span>
+    <button class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="type-selector">
+    <div class="type-selector-title">Choose Type</div>
+    <div class="type-option" onclick="selectType(this)">
+      <div class="type-icon"><i class="fa-solid fa-list-check"></i></div>
+      <div class="type-info"><div class="type-name">Regular</div><div class="type-desc">Track habits, metrics, and custom data</div></div>
+      <div class="type-radio"></div>
+    </div>
+    <div class="type-option selected" onclick="selectType(this)">
+      <div class="type-icon" style="${theme==='dark'?'background:#1e3a5f':'background:#eff6ff'}"><i class="fa-solid fa-dumbbell" style="color:#3b82f6"></i></div>
+      <div class="type-info"><div class="type-name">Sport</div><div class="type-desc">Workout tracking with duration, stats, and streaks</div></div>
+      <div class="type-radio"></div>
+    </div>
+    <div class="validation-note">
+      <i class="fa-solid fa-circle-info" style="margin-top:2px;flex-shrink:0"></i>
+      <span>Sport trackables require at least one <strong>duration (time elapsed)</strong> field. This enables session counting and total duration stats.</span>
+    </div>
+    <div style="margin-top:20px;padding:12px;border-radius:8px;${theme==='dark'?'background:#374151':'background:#fff;border:1px solid #e5e7eb'}">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;${theme==='dark'?'color:#fff':'color:#111827'}">Next: Build your form</div>
+      <div style="font-size:12px;${theme==='dark'?'color:#94a3b8':'color:#6b7280'}">Add questions for the data you want to track (distance, reps, notes, etc.). The duration field will be validated before save.</div>
+    </div>
+  </div>`;
+}
+
+function selectType(el) {
+  el.parentElement.querySelectorAll('.type-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ── Notes per scenario ──
+function notesHappy(el) {
+  el.innerHTML = `
+    <div class="note-card"><span class="note-tag tag-route">Route</span><br><code>/sport</code> → <code>SportView.svelte</code><br>New route. Nav position: after Trackables, before Journal.</div>
+    <div class="note-card"><span class="note-tag tag-component">SportStatsBar</span><br>3 stats scoped to selected week:<br>• Sessions = count of sport entries<br>• Duration = sum of ALL <code>TIME_ELAPSED</code> fields<br>• Streak = consecutive days backwards (rest days preserve, don't increment)</div>
+    <div class="note-card"><span class="note-tag tag-component">SportWeekNav</span><br>Mon–Sun or Sun–Sat by locale. Stats update per week; streak always real-time.</div>
+    <div class="note-card"><span class="note-tag tag-component">SportActivityList</span><br>Groups entries by day. Each row: icon | name | duration | time. Tap to expand all fields.</div>
+    <div class="note-card"><span class="note-tag tag-component">RestDayToggle</span><br>Per-day toggle. Idempotent: on = create <code>RestDay</code> row, off = delete. One per calendar date.</div>
+    <div class="note-card"><span class="note-tag tag-data">Query</span><br>In-memory join: get sport formIds from TrackableStore → query entries by time range → filter by formId in JS.</div>
+    <div class="note-card"><span class="note-tag tag-nav">Bottom Bar</span><br>6 items: Dashboard | Trackables | <strong>Sport</strong> | Journal | Goals | Tags. Icon: <code>fa-dumbbell</code></div>`;
+}
+
+function notesEmpty(el) {
+  el.innerHTML = `
+    <div class="note-card"><span class="note-tag tag-component">Empty State</span><br>Shown when <code>getSportTrackables().length === 0</code>. CTA pre-sets <code>trackableType: 'sport'</code>.</div>
+    <div class="note-card"><span class="note-tag tag-component">Other Empty States</span><br>• No entries this week → "No activity" per day<br>• Widget quick-log with no sports → "Create a sport first"</div>`;
+}
+
+function notesExpanded(el) {
+  el.innerHTML = `
+    <div class="note-card"><span class="note-tag tag-component">Expanded Entry</span><br>Tap row to reveal all form field values as label:value pairs.</div>
+    <div class="note-card"><span class="note-tag tag-data">Data Source</span><br>Fields from <code>entry.answers</code> via form snapshot. Same extraction as Journal: <code>extractValueFromDisplay()</code></div>
+    <div class="note-card"><span class="note-tag tag-data">Multi-duration</span><br>"Weight Training" has 2 TIME_ELAPSED fields (Warmup + Main Set). Both summed for stats. Row shows total.</div>`;
+}
+
+function notesWidget(el) {
+  el.innerHTML = `
+    <div class="note-card"><span class="note-tag tag-component">SPORT_SUMMARY</span><br>New <code>DashboardWidgetType</code>. Same 3 stats, scoped to current week.</div>
+    <div class="note-card"><span class="note-tag tag-component">Quick-Log [+]</span><br>Dropdown lists sport trackables. Tapping opens <code>FormModal</code>. Stats update after log.</div>
+    <div class="note-card"><span class="note-tag tag-data">Settings</span><br>Minimal: just widget name (default "Sport This Week"). Size: min 2×1, default 3×1.</div>
+    <div class="note-card"><span class="note-tag tag-nav">Navigation</span><br>Tap stats → <code>/sport</code>. Primary Dashboard entry point.</div>`;
+}
+
+function notesCreate(el) {
+  el.innerHTML = `
+    <div class="note-card"><span class="note-tag tag-component">Type Selector</span><br>Added to trackable creation wizard. Regular (default) | Sport.</div>
+    <div class="note-card"><span class="note-tag tag-data">Validation</span><br>Sport: <code>trackableType: 'sport'</code>. Must have ≥1 TIME_ELAPSED question before save.</div>
+    <div class="note-card"><span class="note-tag tag-data">Migration</span><br>Dexie v25 → v26. <code>trackableType</code> index. Migrate existing rows via <code>bulkPut</code> with <code>'regular'</code>.</div>
+    <div class="note-card"><span class="note-tag tag-component">Type Switching</span><br>• Regular → Sport: if has TIME_ELAPSED<br>• Sport → Regular: always<br>• Remove last TIME_ELAPSED from sport: blocked</div>`;
+}
+
+// ── Copy Notes ──
+function copyNotes() {
+  const notes = document.getElementById('notes-content').innerText;
+  const header = 'Sport Activity Tracking — Implementation Notes (' + state.scenario + ')\n' + '='.repeat(50) + '\n\n';
+  navigator.clipboard.writeText(header + notes).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Prompt'; }, 1500);
+  });
+}
+
+// Close quicklog when clicking outside
+document.addEventListener('click', (e) => {
+  if (state.quicklogOpen && !e.target.closest('.widget-plus') && !e.target.closest('.quicklog-dropdown')) {
+    state.quicklogOpen = false;
+    render();
+  }
+});
+
+// ── Init ──
+render();
+</script>
+</body>
+</html>

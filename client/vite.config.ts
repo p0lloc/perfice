@@ -79,6 +79,9 @@ export default defineConfig((v) => {
         resolve: {
             alias: {
                 "@perfice": fileURLToPath(new URL("./src", import.meta.url)),
+                "perfice-android": fileURLToPath(
+                    new URL("./src/shims/perfice-android.ts", import.meta.url),
+                ),
             },
         }
     };
