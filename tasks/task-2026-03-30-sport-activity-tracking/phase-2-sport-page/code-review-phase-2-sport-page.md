@@ -167,7 +167,19 @@ No critical or major issues found.
 
 **Agent**: `documentation-accuracy-reviewer`
 
-*[Pending - agent writes findings.]*
+- [MINOR] **Step 3 references non-existent file**: The task doc Step 3 lists `client/src/views/trackable/EditTrackableView.svelte` as a target file, but this file does not exist. The type selector was implemented in `client/src/components/trackable/modals/create/CreateTrackableModal.svelte`. The step text hedges with "or the trackable creation component" but the primary file reference is inaccurate.
+  - Location: `tech-decomposition-phase-2-sport-page.md`, Step 3, line 155
+  - Suggestion: Replace `EditTrackableView.svelte` with `CreateTrackableModal.svelte` as the primary file reference
+
+- [MINOR] **Stale Linear issue status**: The Tracking section shows `Status: Ready for Implementation` but implementation is complete (all steps checked, success criteria met). This is stale metadata.
+  - Location: `tech-decomposition-phase-2-sport-page.md`, line 13
+  - Suggestion: Update to `Status: Done` or `In Review` to match actual state
+
+- [MINOR] **PR details still placeholder**: PR Details contain `[Added during implementation]` and `[Draft/Review/Merged]` despite the branch `feature/wyt-198-phase-2-sport-page` existing with completed implementation.
+  - Location: `tech-decomposition-phase-2-sport-page.md`, lines 17-18
+  - Suggestion: Fill in actual PR URL and set status to `Review`
+
+- [INFO] **Implementation steps 1 and 2 verified accurate**: All 7 component files exist at documented paths. Route registered in `App.svelte`. Sidebar link uses `faDumbbell`, positioned after Trackables/before Journal, no `showOnMobile: false` as specified. Type selector (Step 3) functions as described despite the file path discrepancy noted above.
 
 <!-- /SECTION:documentation -->
 
