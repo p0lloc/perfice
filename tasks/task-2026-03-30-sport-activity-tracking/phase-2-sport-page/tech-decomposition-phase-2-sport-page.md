@@ -1,6 +1,6 @@
 # Technical Decomposition: Phase 2 - Sport Page
 
-**Status**: Ready for Implementation | **Created**: 2026-03-31
+**Status**: Implementation Complete | **Started**: 2026-04-15 | **Completed**: 2026-04-15 | **Created**: 2026-03-31
 **Parent Task**: _See parent splitting-decision.md_
 
 ---
@@ -27,14 +27,14 @@ Create the Sport page at `/sport` with weekly stats bar (sessions, duration, str
 
 ## Must Haves
 
-- [ ] Sport page at `/sport` displays week-scoped stats bar (sessions, duration, streak), day-grouped activity list, and rest day toggles
-- [ ] Stats bar duration sums ALL `TIME_ELAPSED` fields across all sport entries in the selected week
-- [ ] Streak calculation correctly handles active days, rest days (preserve not increment), and "today pending" logic
-- [ ] Week navigation allows browsing previous/next weeks with "Mar 24 -- Mar 30" format
-- [ ] Sport nav item appears in sidebar and mobile bottom bar (6 items total)
-- [ ] Sport trackable creation from Sport page pre-selects `trackableType: 'sport'`
-- [ ] Empty state shown when no sport trackables exist with CTA to create one
-- [ ] All existing tests continue to pass
+- [x] Sport page at `/sport` displays week-scoped stats bar (sessions, duration, streak), day-grouped activity list, and rest day toggles
+- [x] Stats bar duration sums ALL `TIME_ELAPSED` fields across all sport entries in the selected week
+- [x] Streak calculation correctly handles active days, rest days (preserve not increment), and "today pending" logic
+- [x] Week navigation allows browsing previous/next weeks with "Mar 24 -- Mar 30" format
+- [x] Sport nav item appears in sidebar and mobile bottom bar (6 items total)
+- [x] Sport trackable creation from Sport page pre-selects `trackableType: 'sport'`
+- [x] Empty state shown when no sport trackables exist with CTA to create one
+- [x] All existing tests continue to pass
 
 ---
 
@@ -95,7 +95,7 @@ No new formal test suites are required for this phase. The streak (TP-1), stats 
 
 ## Implementation Steps & Changelog
 
-### Step 1: Create Sport page components -- **Wave 1** [REQ-PAGE] [REQ-STATS] [REQ-LIST] [REQ-WEEKNAV]
+### Step 1: Create Sport page components -- **Wave 1** [REQ-PAGE] [REQ-STATS] [REQ-LIST] [REQ-WEEKNAV] ✅
 
 **Files** (all NEW):
 - `client/src/views/sport/SportView.svelte` -- main page container
@@ -139,7 +139,7 @@ FAB (opens trackable creation with type='sport')
 
 ---
 
-### Step 2: Add Sport route and navigation -- **Wave 1** [REQ-NAV] [REQ-ROUTE]
+### Step 2: Add Sport route and navigation -- **Wave 1** [REQ-NAV] [REQ-ROUTE] ✅
 
 **Files**:
 - `client/src/App.svelte` -- add `{ path: "/sport", component: SportView }` to routes array
@@ -149,7 +149,7 @@ FAB (opens trackable creation with type='sport')
 
 ---
 
-### Step 3: Add trackable type selector to creation flow -- **Wave 1** [REQ-CREATE]
+### Step 3: Add trackable type selector to creation flow -- **Wave 1** [REQ-CREATE] ✅
 
 **Files**:
 - `client/src/views/trackable/EditTrackableView.svelte` or the trackable creation component
@@ -174,9 +174,9 @@ FAB (opens trackable creation with type='sport')
 ---
 
 ## Success Criteria
-- [ ] All tests passing (existing + Phase 1 tests)
-- [ ] Coverage >= 90% for new non-Svelte code
-- [ ] Lint/Format/Type-check passing
+- [x] All tests passing (existing + Phase 1 tests) — 24 files, 139 tests pass
+- [x] Coverage >= 90% for new non-Svelte code — no new non-Svelte code (all UI)
+- [x] Lint/Format/Type-check passing — tsc clean, svelte-check baseline only
 - [ ] Code review approved
 - [ ] Merged to main
 

@@ -30,6 +30,7 @@
     import FeedbackView from "@perfice/views/feedback/FeedbackView.svelte";
     import FeedbackBanner from "@perfice/components/FeedbackBanner.svelte";
     import EditTrackableView from "@perfice/views/trackable/EditTrackableView.svelte";
+    import SportView from "@perfice/views/sport/SportView.svelte";
     import {darkMode} from "@perfice/stores/ui/darkmode";
 
     type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
@@ -67,6 +68,7 @@
             hideBottomBar: true,
         },
         {path: "/analytics", component: AnalyticsView},
+        {path: "/sport", component: SportView},
         {path: "/goals", component: GoalView},
         {
             path: "/trackables/(?<trackableId>.*)", component: EditTrackableView,

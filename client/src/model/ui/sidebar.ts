@@ -2,6 +2,7 @@ import {
     faBook,
     faBullseye,
     faCog,
+    faDumbbell,
     faHome,
     faLineChart,
     faSquarePlus,
@@ -21,6 +22,7 @@ export interface SidebarLink {
 export const SIDEBAR_LINKS: SidebarLink[] = [
     {icon: faHome, path: "/", title: "Home"},
     {icon: faSquarePlus, path: "/trackables", title: "Track"},
+    {icon: faDumbbell, path: "/sport", title: "Sport"},
     {icon: faBook, path: "/journal", title: "Journal"},
     {icon: faBullseye, path: "/goals", title: "Goals"},
     {icon: faTags, path: "/tags", title: "Tags"},

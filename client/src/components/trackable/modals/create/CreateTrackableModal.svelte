@@ -13,29 +13,33 @@
     import {TRACKABLE_FORM_CATEGORY_DELIM, TRACKABLE_FORM_ENTITY_TYPE} from "@perfice/model/trackable/ui";
     import {NEW_FORM_ROUTE} from "@perfice/model/form/ui";
     import {navigate} from "@perfice/app";
+    import type {TrackableType} from "@perfice/model/trackable/trackable";
+    import {faDumbbell, faClipboardList} from "@fortawesome/free-solid-svg-icons";
 
     let modal: Modal;
 
     let {onSelectSuggestion, onSingleValue}: {
-        onSelectSuggestion: (categoryId: string | null, suggestion: TrackableSuggestion) => void
-        onSingleValue: (categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) => void
+        onSelectSuggestion: (categoryId: string | null, suggestion: TrackableSuggestion, trackableType: TrackableType) => void
+        onSingleValue: (categoryId: string | null, name: string, icon: string, type: FormQuestionDataType, trackableType: TrackableType) => void
     } = $props();
 
     let categoryId: string | null = $state("");
     let singleValue = $state(false);
+    let trackableType: TrackableType = $state('regular');
 
     let singleValueModal: CreateSingleValueTrackable;
 
-    export function open(addCategoryId: string | null) {
+    export function open(addCategoryId: string | null, initialType: TrackableType = 'regular') {
         singleValue = false;
         categoryId = addCategoryId;
+        trackableType = initialType;
         modal.open();
     }
 
     function onSave() {
         let result = singleValueModal.getData();
         if (result == null) return;
-        onSingleValue(categoryId, result.name, result.icon, result.type);
+        onSingleValue(categoryId, result.name, result.icon, result.type, trackableType);
         modal.close();
     }
 
@@ -52,7 +56,7 @@
     }
 
     function onSelected(categoryId: string | null, suggestion: TrackableSuggestion) {
-        onSelectSuggestion(categoryId, suggestion);
+        onSelectSuggestion(categoryId, suggestion, trackableType);
         modal.close();
     }
 </script>
@@ -60,6 +64,24 @@
 <Modal bind:this={modal} title="Create trackable" onConfirm={onSave}
        type={singleValue ? ModalType.CONFIRM_CANCEL : ModalType.CANCEL}>
     <div class="md:max-h-96 overflow-y-scroll scrollbar-hide">
+        <div class="flex gap-2 mb-4">
+            <button onclick={() => trackableType = 'regular'}
+                    class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border text-sm transition-colors
+                           {trackableType === 'regular'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                        : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}">
+                <Fa icon={faClipboardList} class="text-sm"/>
+                Regular
+            </button>
+            <button onclick={() => trackableType = 'sport'}
+                    class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border text-sm transition-colors
+                           {trackableType === 'sport'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                        : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}">
+                <Fa icon={faDumbbell} class="text-sm"/>
+                Sport
+            </button>
+        </div>
         {#if singleValue}
             <CreateSingleValueTrackable bind:this={singleValueModal}/>
         {:else}

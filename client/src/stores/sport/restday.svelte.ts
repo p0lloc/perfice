@@ -21,6 +21,14 @@ export class RestDayStore extends AsyncStore<RestDay[]> {
         this.set(this.restDayService.getRestDays());
     }
 
+    async toggle(date: string): Promise<void> {
+        await this.restDayService.toggle(date);
+    }
+
+    async getRestDaysInRange(startDate: string, endDate: string): Promise<RestDay[]> {
+        return this.restDayService.getRestDaysInRange(startDate, endDate);
+    }
+
     private async onRestDayCreated(restDay: RestDay) {
         this.updateResolved(v => [...v, restDay]);
     }

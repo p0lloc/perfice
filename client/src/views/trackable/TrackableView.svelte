@@ -2,7 +2,7 @@
     import TrackableList from "@perfice/components/trackable/TrackableList.svelte";
     import TitleAndCalendar from "@perfice/components/base/title/TitleAndCalendar.svelte";
     import FormModal from "@perfice/components/form/modals/FormModal.svelte";
-    import type {Trackable, TrackableCategory} from "@perfice/model/trackable/trackable";
+    import type {Trackable, TrackableCategory, TrackableType} from "@perfice/model/trackable/trackable";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
     import {faRuler} from "@fortawesome/free-solid-svg-icons";
     import {dateWithCurrentTime} from "@perfice/util/time/simple";
@@ -57,12 +57,12 @@
         createTrackableModal.open(categoryId);
     }
 
-    function onSuggestionSelected(categoryId: string | null, suggestion: TrackableSuggestion) {
-        trackables.createTrackableFromSuggestion(suggestion, categoryId);
+    function onSuggestionSelected(categoryId: string | null, suggestion: TrackableSuggestion, trackableType: TrackableType) {
+        trackables.createTrackableFromSuggestion(suggestion, categoryId, trackableType);
     }
 
-    function onSingleValue(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) {
-        trackables.createSingleValueTrackable({categoryId: categoryId, name: name, icon: icon, type: type});
+    function onSingleValue(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType, trackableType: TrackableType) {
+        trackables.createSingleValueTrackable({categoryId, name, icon, type, trackableType});
     }
 
     $effect(() =>

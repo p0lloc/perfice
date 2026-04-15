@@ -1,5 +1,5 @@
 import {AsyncStore} from "@perfice/stores/store";
-import {type Trackable, TrackableCardType, type TrackableCategory} from "@perfice/model/trackable/trackable";
+import {type Trackable, TrackableCardType, type TrackableCategory, type TrackableType} from "@perfice/model/trackable/trackable";
 import type {TrackableService} from "@perfice/services/trackable/trackable";
 import {writable, type Writable} from "svelte/store";
 import {dateToMidnight, dateWithCurrentTime} from "@perfice/util/time/simple";
@@ -39,8 +39,8 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         this.set(this.trackableService.getTrackables());
     }
 
-    async createTrackableFromSuggestion(suggestion: TrackableSuggestion, categoryId: string | null) {
-        await this.trackableService.createTrackableFromSuggestion(suggestion, categoryId);
+    async createTrackableFromSuggestion(suggestion: TrackableSuggestion, categoryId: string | null, trackableType: TrackableType = 'regular') {
+        await this.trackableService.createTrackableFromSuggestion(suggestion, categoryId, trackableType);
     }
 
 
@@ -200,13 +200,14 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         return trackable;
     }
 
-    async createSingleValueTrackable({categoryId, name, icon, type}: {
+    async createSingleValueTrackable({categoryId, name, icon, type, trackableType = 'regular'}: {
         categoryId: string | null,
         name: string,
         icon: string,
-        type: FormQuestionDataType
+        type: FormQuestionDataType,
+        trackableType?: TrackableType
     }) {
-        await this.trackableService.createSingleValueTrackable(categoryId, name, icon, type);
+        await this.trackableService.createSingleValueTrackable(categoryId, name, icon, type, trackableType);
     }
 
     async createTrackableGoalInEditState(trackable: Trackable): Promise<Variable | null> {
