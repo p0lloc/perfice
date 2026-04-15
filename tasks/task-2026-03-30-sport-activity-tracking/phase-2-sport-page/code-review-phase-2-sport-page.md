@@ -159,7 +159,34 @@ All 15 changed files were reviewed across components (`SportWeekNav`, `SportStat
 
 **Agent**: `code-quality-reviewer`
 
-*[Pending - agent writes findings or "No code quality issues found."]*
+- [MAJOR] **Duplicated duration extraction logic across SportActivityList and SportStatsService (3 instances)**: The `SportActivityList.svelte` component re-implements three pieces of logic that already exist in `SportStatsService`:
+  1. `unwrapDisplayValue` (`SportActivityList.svelte:63-67`) is identical to `stats.ts:16-20`
+  2. `timeElapsedFields` derived map (`SportActivityList.svelte:35-46`) duplicates the same map-building loop in `stats.ts:51-61`
+  3. `formatDurationMs` (`SportActivityList.svelte:70-74`) is identical to `SportStatsService.formatDuration` (`stats.ts:83-88`)
+  - Location: `client/src/components/sport/SportActivityList.svelte:35-74` and `client/src/services/sport/stats.ts:16-88`
+  - Suggestion: Extract `unwrapDisplayValue` and `formatDuration` as standalone utility functions (e.g., in a `@perfice/util/sport/format.ts` module or co-located in the service file as named exports). For the `timeElapsedFields` map, expose a static helper from `SportStatsService` or a shared function that both the service and the component can call. The component's `getEntryDurationMs` could then reuse that shared infrastructure.
+
+- [MINOR] **`getWeekBounds` computed twice per derivation**: `currentWeekStart` and `currentWeekEnd` each independently call `getWeekBounds(weekOffset)`, creating two separate Date object pairs when the offset changes. While not a performance problem at this scale, it is redundant computation and slightly confusing.
+  - Location: `client/src/views/sport/SportView.svelte:28-29`
+  - Suggestion: Derive a single `weekBounds` object, then derive `currentWeekStart` and `currentWeekEnd` from it:
+    ```ts
+    let weekBounds = $derived(getWeekBounds(weekOffset));
+    let currentWeekStart = $derived(weekBounds.start);
+    let currentWeekEnd = $derived(weekBounds.end);
+    ```
+
+- [MINOR] **`$effect` uses dummy variable assignments to trigger reactivity**: The `$effect` block assigns `currentWeekStart` and `currentWeekEnd` to unused `_start`/`_end` variables solely to register them as reactive dependencies. This is a Svelte 5 anti-pattern that obscures intent.
+  - Location: `client/src/views/sport/SportView.svelte:75-80`
+  - Suggestion: Reference the reactive values directly inside the effect without assignment, or restructure so `loadData` accepts the week bounds as parameters, making the dependency explicit:
+    ```ts
+    $effect(() => {
+        loadData(currentWeekStart, currentWeekEnd);
+    });
+    ```
+
+- [INFO] **Good component decomposition**: The six new components (`SportWeekNav`, `SportStatsBar`, `SportActivityList`, `SportActivityRow`, `RestDayToggle`, `SportEmptyState`) are well-scoped with clear single responsibilities, properly typed `$props()`, and consistent naming. The file organization under `components/sport/` follows the established project pattern.
+
+- [INFO] **`CreateTrackableModal` integration follows existing pattern**: The `onSuggestionSelected`/`onSingleValue` callback wiring in `SportView` mirrors the established pattern in `TrackableView`. While this is boilerplate, it is consistent with the codebase and not a new duplication introduced by this PR.
 
 <!-- /SECTION:code-quality -->
 
