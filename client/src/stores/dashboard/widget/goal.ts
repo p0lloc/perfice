@@ -18,6 +18,7 @@ export function GoalWidget(settings: DashboardGoalWidgetSettings, date: Date,
             if (goal == null) return;
 
             let value = await val;
+            if (value == null) return;
             resolve({goal, value});
         }));
     });

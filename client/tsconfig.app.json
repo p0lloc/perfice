@@ -16,7 +16,8 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "paths": {
-      "@perfice/*": ["./src/*"]
+      "@perfice/*": ["./src/*"],
+      "perfice-android": ["./src/shims/perfice-android.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]

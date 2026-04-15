@@ -28,7 +28,7 @@
     }
 
     async function save() {
-        await trackables.updateTrackableFromState($state.snapshot(editState));
+        await trackables.saveTrackableEdit(new Set([viewType]), $state.snapshot(editState) as EditTrackableState);
         close();
     }
 

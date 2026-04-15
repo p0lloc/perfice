@@ -60,6 +60,7 @@ import {AuthStore} from "@perfice/stores/remote/auth";
 import {RemoteStore} from "@perfice/stores/remote/remote";
 import {IntegrationStore} from "@perfice/stores/remote/integration";
 import {FeedbackStore} from "@perfice/stores/feedback/feedback";
+import {RestDayStore} from "@perfice/stores/sport/restday.svelte";
 
 export let storeProvider: StoreProvider;
 export let trackables: TrackableStore;
@@ -104,6 +105,7 @@ export let auth: AuthStore;
 export let remote: RemoteStore;
 
 export let feedback: FeedbackStore;
+export let restDays: RestDayStore;
 
 export class StoreProvider {
 
@@ -189,6 +191,11 @@ export class StoreProvider {
         auth = new AuthStore(this.services.auth);
         remote = new RemoteStore(this.services.remote);
         feedback = new FeedbackStore();
+
+        restDays = new RestDayStore(this.services.restDay);
+        this.services.sync.addObserver("restDays", async (updates) => {
+            restDays.applySyncUpdates(updates);
+        });
     }
 
     trackableValue(trackable: Trackable, date: Date, weekStart: WeekStart, key: string) {

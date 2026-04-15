@@ -104,6 +104,7 @@ export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trac
         id: crypto.randomUUID(),
         name: suggestion.name,
         icon: suggestion.icon,
+        trackableType: 'regular',
         formId: "",
         order: 0,
         goalId: null,
@@ -157,5 +158,10 @@ export function serializeCardSettingsToSuggestion(trackable: Trackable): Trackab
                 }
             }
         }
+        default:
+            return {
+                cardType: trackable.cardType,
+                cardSettings: trackable.cardSettings
+            } as unknown as TrackableSuggestionCardSettings;
     }
 }

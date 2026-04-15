@@ -30,12 +30,12 @@
 
     let {action}: { action: DashboardEditWidgetAction } = $props();
 
-    const RENDERERS: Record<DashboardWidgetType, Component<{
+    const RENDERERS: Partial<Record<DashboardWidgetType, Component<{
         settings: any,
         onChange: (settings: any) => void,
         forms: Form[],
         dependencies: Record<string, string>
-    }>> = {
+    }>>> = {
         [DashboardWidgetType.ENTRY_ROW]: EditEntryRowWidgetSidebar,
         [DashboardWidgetType.CHART]: EditChartWidgetSidebar,
         [DashboardWidgetType.TABLE]: EditTableWidgetSidebar,

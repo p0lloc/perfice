@@ -33,6 +33,8 @@ import {DexieUpdateQueueCollection} from "@perfice/db/dexie/sync";
 import {LazySyncServiceProvider, SyncedTable} from "@perfice/services/sync/sync";
 import {DexieLocalIntegrationCollection} from "@perfice/db/dexie/integration";
 import type {Integration} from "@perfice/model/integration/integration";
+import {DexieRestDayCollection} from "@perfice/db/dexie/restday";
+import type {RestDay} from "@perfice/model/sport/restday";
 
 export type DexieDB = Dexie & {
     trackables: Table<Trackable>;
@@ -56,12 +58,13 @@ export type DexieDB = Dexie & {
     encryptionKey: Table<EncryptionKey>;
     updateQueue: Table<OutgoingUpdate>;
     localIntegrations: Table<Integration>;
+    restDays: Table<RestDay>;
 };
 
 function loadDb(): DexieDB {
     const db = new Dexie('perfice-db') as DexieDB;
-    db.version(25).stores({
-        "trackables": "id, categoryId",
+    db.version(26).stores({
+        "trackables": "id, categoryId, trackableType",
         "variables": "id",
         "entries": "id, formId, snapshotId, timestamp, integration, [formId+timestamp], [timestamp+id]",
         "indices": "id, variableId, [variableId+timeScope]",
@@ -81,7 +84,8 @@ function loadDb(): DexieDB {
         "notifications": "id, entityId",
         "encryptionKey": "id",
         "updateQueue": "id, entityId, entityType",
-        "localIntegrations": "id, formId"
+        "localIntegrations": "id, formId",
+        "restDays": "id, date"
     });
 
     return db;
@@ -121,6 +125,7 @@ export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
     const updateQueueCollection = new DexieUpdateQueueCollection(db.updateQueue);
     const localIntegrationCollection = new DexieLocalIntegrationCollection(new SyncedTable(db.localIntegrations,
         "localIntegrations", syncServiceProvider));
+    const restDayCollection = new DexieRestDayCollection(new SyncedTable(db.restDays, "restDays", syncServiceProvider));
 
     return {
         tables: db._allTables,
@@ -146,6 +151,7 @@ export function setupDb(syncServiceProvider: LazySyncServiceProvider): {
             encryptionKey: encryptionKeyCollection,
             updateQueue: updateQueueCollection,
             localIntegrations: localIntegrationCollection,
+            restDays: restDayCollection,
 
             transaction: async (table, callback) => {
                 await db.transaction('rw', table, callback);

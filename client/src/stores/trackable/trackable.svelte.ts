@@ -177,6 +177,11 @@ export class TrackableStore extends AsyncStore<Trackable[]> {
         }
     }
 
+    async getSportTrackables(): Promise<Trackable[]> {
+        let all = await this.get();
+        return all.filter(t => (t.trackableType ?? 'regular') === 'sport');
+    }
+
     async fetchTrackables() {
         return await this.trackableService.getTrackables();
     }
