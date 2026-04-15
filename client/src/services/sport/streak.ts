@@ -2,7 +2,10 @@ import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {RestDay} from "@perfice/model/sport/restday";
 
 function toDateString(date: Date): string {
-    return date.toISOString().split('T')[0];
+    let y = date.getFullYear();
+    let m = String(date.getMonth() + 1).padStart(2, '0');
+    let d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
 
 function addDays(date: Date, days: number): Date {
@@ -10,6 +13,8 @@ function addDays(date: Date, days: number): Date {
     result.setDate(result.getDate() + days);
     return result;
 }
+
+const MAX_LOOKBACK_DAYS = 365;
 
 export class SportStreakService {
 
@@ -30,23 +35,11 @@ export class SportStreakService {
         }
 
         let todayStr = toDateString(today);
-        let streak = 0;
-        let current: Date;
+        let streak = entryDates.has(todayStr) ? 1 : 0;
+        let current = addDays(today, -1);
 
-        if (entryDates.has(todayStr)) {
-            // Today has an entry — count it and start walking from yesterday
-            streak = 1;
-            current = addDays(today, -1);
-        } else if (restDayDates.has(todayStr) && !entryDates.has(todayStr)) {
-            // Today is rest day (no entry) — preserve, start from yesterday
-            current = addDays(today, -1);
-        } else {
-            // Today pending — start from yesterday
-            current = addDays(today, -1);
-        }
-
-        // Walk backwards
-        while (true) {
+        // Walk backwards with bounded iteration
+        for (let i = 0; i < MAX_LOOKBACK_DAYS; i++) {
             let dateStr = toDateString(current);
             let hasEntry = entryDates.has(dateStr);
             let isRest = restDayDates.has(dateStr);

@@ -15,7 +15,7 @@ export interface SportWeekStats {
 
 function unwrapDisplayValue(value: PrimitiveValue): PrimitiveValue {
     if (value.type === PrimitiveValueType.DISPLAY) {
-        return (value.value as {value: PrimitiveValue}).value;
+        return value.value.value;
     }
     return value;
 }

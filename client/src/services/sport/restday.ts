@@ -47,7 +47,7 @@ export class RestDayService {
         this.observers.removeObserver(type, callback);
     }
 
-    async notifyObservers(type: EntityObserverType, restDay: RestDay): Promise<void> {
+    private async notifyObservers(type: EntityObserverType, restDay: RestDay): Promise<void> {
         await this.observers.notifyObservers(type, restDay);
     }
 }
