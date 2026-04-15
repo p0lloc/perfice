@@ -25,16 +25,16 @@
 
     let weekOffset = $state(0);
 
-    let currentWeekStart = $derived(getWeekBounds(weekOffset).start);
-    let currentWeekEnd = $derived(getWeekBounds(weekOffset).end);
-
-    function getWeekBounds(offset: number) {
+    let weekBounds = $derived.by(() => {
         let base = new Date();
-        base.setDate(base.getDate() + (offset * 7));
-        let start = dateToWeekStart(base, $weekStart);
-        let end = dateToWeekEnd(base, $weekStart);
-        return {start, end};
-    }
+        base.setDate(base.getDate() + (weekOffset * 7));
+        return {
+            start: dateToWeekStart(base, $weekStart),
+            end: dateToWeekEnd(base, $weekStart),
+        };
+    });
+    let currentWeekStart = $derived(weekBounds.start);
+    let currentWeekEnd = $derived(weekBounds.end);
 
     function prevWeek() { weekOffset--; }
     function nextWeek() { weekOffset++; }
@@ -46,29 +46,38 @@
     let allRestDays = $state<RestDay[]>([]);
     let loaded = $state(false);
 
+    let loadError = $state(false);
+
     async function loadData() {
-        let [st, f, rd] = await Promise.all([
-            trackables.getSportTrackables(),
-            $forms,
-            $restDays,
-        ]);
+        try {
+            loadError = false;
+            let [st, f, rd] = await Promise.all([
+                trackables.getSportTrackables(),
+                $forms,
+                $restDays,
+            ]);
 
-        sportTrackables = st;
-        allForms = f;
-        allRestDays = rd;
+            sportTrackables = st;
+            allForms = f;
+            allRestDays = rd;
 
-        let sportFormIds = sportTrackables.map(t => t.formId);
-        if (sportFormIds.length > 0) {
-            sportEntries = await journal.getSportEntries(
-                currentWeekStart.getTime(),
-                currentWeekEnd.getTime(),
-                sportFormIds
-            );
-        } else {
-            sportEntries = [];
+            let sportFormIds = sportTrackables.map(t => t.formId);
+            if (sportFormIds.length > 0) {
+                sportEntries = await journal.getSportEntries(
+                    currentWeekStart.getTime(),
+                    currentWeekEnd.getTime(),
+                    sportFormIds
+                );
+            } else {
+                sportEntries = [];
+            }
+
+            loaded = true;
+        } catch (e) {
+            console.error("Failed to load sport data:", e);
+            loadError = true;
+            loaded = true;
         }
-
-        loaded = true;
     }
 
     // Reload entries when week changes
@@ -98,8 +107,12 @@
     let hasSportTrackables = $derived(sportTrackables.length > 0);
 
     async function handleToggleRestDay(dateStr: string) {
-        await restDays.toggle(dateStr);
-        await loadData();
+        try {
+            await restDays.toggle(dateStr);
+            await loadData();
+        } catch (e) {
+            console.error("Failed to toggle rest day:", e);
+        }
     }
 
     function createSportTrackable() {
@@ -127,6 +140,10 @@
 
     {#if !loaded}
         <div class="py-8 text-center text-gray-400">Loading...</div>
+    {:else if loadError}
+        <div class="py-8 text-center text-red-500 dark:text-red-400">
+            Failed to load sport data. Please try refreshing.
+        </div>
     {:else if hasSportTrackables}
         <div class="mt-3">
             <SportStatsBar
