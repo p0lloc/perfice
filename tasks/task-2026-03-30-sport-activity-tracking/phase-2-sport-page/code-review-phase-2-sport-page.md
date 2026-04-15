@@ -152,11 +152,23 @@ No critical or major issues found.
 ---
 
 <!-- SECTION:test-coverage -->
-### Tests
+### Test Coverage
 
 **Agent**: `test-coverage-reviewer`
 
-*[Pending - agent writes findings.]*
+**Test suite execution**: 36 tests across 5 files (stats, filtering, validation, streak, restday) -- all passing from Phase 1. No new test files added in Phase 2.
+
+- [MAJOR] **Duplicated business logic in component lacks tests**: `SportActivityList.svelte` contains local copies of `unwrapDisplayValue` (lines ~55-67) and `formatDurationMs` (line ~70) that duplicate logic from `client/src/services/sport/stats.ts`. These component-local functions are not covered by existing service-level tests. If the component copies drift from the service originals, bugs will go undetected.
+  - Files: `client/src/components/sport/SportActivityList.svelte`
+  - Suggestion: Either (a) extract and re-export `unwrapDisplayValue` and a `formatDurationMs` helper from `stats.ts` so the component imports them (eliminating duplication and inheriting existing test coverage), or (b) add unit tests for the component-local versions covering edge cases: nested `{v: ...}` unwrapping, zero/negative duration, large duration values.
+
+- [MINOR] **Week navigation logic untested**: `SportView.svelte` contains week offset navigation (prev/next week), date range computation, and conditional stats display. While this is Svelte reactive state (harder to unit test), the date arithmetic (start/end of week from offset) could be extracted into a testable utility.
+  - Files: `client/src/views/sport/SportView.svelte`
+  - Suggestion: Extract week range calculation (`getWeekRange(offset: number): {start: Date, end: Date}`) into a pure function in a utility module, then add tests for: offset 0 = current week, negative offsets = past weeks, week boundary alignment (Monday start).
+
+- [INFO] **Phase 1 tests adequately cover service/store changes**: The `trackableType` parameter additions to `createTrackableFromSuggestion` and `createSingleValueTrackable` in `TrackableService` are covered by existing validation tests (`validation.test.ts` -- 10 tests). `RestDayStore.toggle()` and `getRestDaysInRange()` are thin pass-through wrappers tested at the service level (`restday.test.ts` -- 4 tests). No regression risk from Phase 2 modifications to these files.
+
+- [INFO] **Task doc claim assessment**: The task doc states "no coverage concerns since all new code was Svelte UI components." This is mostly accurate -- the 6 new Svelte components and 1 new view are primarily presentation. However, `SportActivityList.svelte` contains non-trivial business logic (duration extraction from form answers, value unwrapping) that was duplicated rather than imported from the tested service layer. This is a real coverage gap for logic that could silently break.
 
 <!-- /SECTION:test-coverage -->
 
