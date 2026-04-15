@@ -134,7 +134,21 @@ No critical or major issues found.
 
 **Agent**: `security-code-reviewer`
 
-*[Pending - agent writes findings or "No security issues found."]*
+*No security issues found.*
+
+All 15 changed files were reviewed across components (`SportWeekNav`, `SportStatsBar`, `RestDayToggle`, `SportActivityRow`, `SportActivityList`, `SportEmptyState`), the view (`SportView`), services (`SportStatsService`, `SportStreakService`, `RestDayService`), and the store (`RestDayStore`).
+
+- [INFO] **Svelte template interpolation is safe by default**: All user-derived data (`trackable.name`, `durationFormatted`, `entry.timestamp`, `sessions`, `streak`) is rendered via Svelte `{expression}` syntax, which auto-escapes HTML entities. No use of `{@html}` anywhere in the changed files -- no XSS surface.
+
+- [INFO] **No unsafe DOM manipulation**: No `innerHTML`, `document.createElement`, or `eval()` usage. All rendering is declarative through Svelte templates.
+
+- [INFO] **Date string input to RestDayService.toggle() is derived internally**: The `dateStr` passed to `onToggleRestDay` originates from `formatDateYYYYMMDD()` computed inside `SportActivityList.svelte` (line 88), not from user-controlled free-text input. The value flows through `RestDayStore.toggle()` -> `RestDayService.toggle()` -> `RestDayCollection` (Dexie/IndexedDB). No injection vector exists since IndexedDB uses structured queries, not string interpolation.
+
+- [INFO] **Bounded iteration in streak calculation**: `SportStreakService.calculateStreak()` uses `MAX_LOOKBACK_DAYS = 365` (line 17 of `streak.ts`) to cap the backward walk, preventing potential infinite loops from malformed data.
+
+- [INFO] **No sensitive data exposure**: No tokens, secrets, or PII are logged or exposed. Component props are strictly typed with TypeScript interfaces. No `console.log` of user data in any changed file.
+
+- [INFO] **crypto.randomUUID() for ID generation**: `RestDayService` (line 20) uses `crypto.randomUUID()` for rest day IDs, which produces cryptographically random UUIDs -- appropriate for client-side entity identification.
 
 <!-- /SECTION:security -->
 
