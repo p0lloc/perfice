@@ -202,7 +202,31 @@ No critical or major issues found.
 
 **Agent**: `performance-reviewer`
 
-*[Pending - agent writes findings or "No performance issues found."]*
+- [MAJOR] **`getWeekBounds` computed twice per reactive cycle**: `currentWeekStart` and `currentWeekEnd` are two independent `$derived` expressions that each call `getWeekBounds(weekOffset)`. On every `weekOffset` change, `getWeekBounds` runs twice, creating 4 `Date` objects and calling `dateToWeekStart` + `dateToWeekEnd` twice each.
+  - Location: `client/src/views/sport/SportView.svelte:28-29`
+  - Impact: Doubled computation on every week navigation. Low absolute cost but cascades downstream since `weekStats` and the `$effect` both depend on these derived values.
+  - Suggestion: Derive a single bounds object, then destructure:
+    ```ts
+    // Before (2 calls)
+    let currentWeekStart = $derived(getWeekBounds(weekOffset).start);
+    let currentWeekEnd = $derived(getWeekBounds(weekOffset).end);
+
+    // After (1 call)
+    let weekBounds = $derived(getWeekBounds(weekOffset));
+    let currentWeekStart = $derived(weekBounds.start);
+    let currentWeekEnd = $derived(weekBounds.end);
+    ```
+
+- [MAJOR] **Redundant re-filtering of already-scoped entries in `computeWeekStats`**: `loadData()` already fetches entries filtered by week range via `journal.getSportEntries(start, end, formIds)`. Then `computeWeekStats` filters the same array again by the same week range -- a wasted O(n) pass on every stats recomputation.
+  - Location: `client/src/services/sport/stats.ts:43-45` called from `SportView.svelte:92`
+  - Suggestion: Skip the filter in `computeWeekStats` since entries are already week-scoped, or document the pre-filtered contract.
+
+- [MINOR] **Duplicate `timeElapsedFields` map construction with linear `forms.find()`**: The same map-building logic exists in both `SportActivityList.svelte:35-45` and `SportStatsService.computeWeekStats:51-61`. Both use `forms.find()` (linear scan), making each O(trackables * forms) instead of O(trackables) with a pre-built form map.
+  - Location: `client/src/components/sport/SportActivityList.svelte:35-45` and `client/src/services/sport/stats.ts:51-61`
+  - Suggestion: Extract into a shared utility. Replace `forms.find()` with `new Map(forms.map(f => [f.id, f])).get(trackable.formId)`.
+
+- [INFO] **`dayGroups` O(days * entries) pattern is acceptable at current scale**: Iterates 7 days and filters all entries per day. With sport entries typically in single digits per week, this is fine.
+  - Location: `client/src/components/sport/SportActivityList.svelte:83-110`
 
 <!-- /SECTION:performance -->
 
