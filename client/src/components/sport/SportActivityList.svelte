@@ -3,10 +3,8 @@
     import type {Trackable} from "@perfice/model/trackable/trackable";
     import type {RestDay} from "@perfice/model/sport/restday";
     import type {Form} from "@perfice/model/form/form";
-    import {FormQuestionDataType} from "@perfice/model/form/form";
-    import {PrimitiveValueType} from "@perfice/model/primitive/primitive";
-    import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
     import {WEEK_DAYS_SHORT, MONTHS_SHORT, formatDateYYYYMMDD} from "@perfice/util/time/format";
+    import {buildTimeElapsedFieldsMap, getEntryDurationMs, formatDurationMs} from "@perfice/services/sport/stats";
     import SportActivityRow from "./SportActivityRow.svelte";
     import RestDayToggle from "./RestDayToggle.svelte";
 
@@ -30,49 +28,7 @@
 
     let trackableMap = $derived(new Map(trackables.map(t => [t.formId, t])));
     let restDaySet = $derived(new Set(restDays.map(r => r.date)));
-
-    // Build a map of formId -> TIME_ELAPSED question IDs for duration extraction
-    let timeElapsedFields = $derived.by(() => {
-        let fields = new Map<string, string[]>();
-        for (let trackable of trackables) {
-            let form = forms.find(f => f.id === trackable.formId);
-            if (!form) continue;
-            let qids = form.questions
-                .filter(q => q.dataType === FormQuestionDataType.TIME_ELAPSED)
-                .map(q => q.id);
-            if (qids.length > 0) fields.set(trackable.formId, qids);
-        }
-        return fields;
-    });
-
-    function getEntryDurationMs(entry: JournalEntry): number {
-        let fields = timeElapsedFields.get(entry.formId);
-        if (!fields) return 0;
-        let total = 0;
-        for (let fieldId of fields) {
-            let answer = entry.answers[fieldId];
-            if (answer == null) continue;
-            let unwrapped = unwrapDisplayValue(answer);
-            if (unwrapped.type === PrimitiveValueType.NUMBER) {
-                total += unwrapped.value;
-            }
-        }
-        return total;
-    }
-
-    function unwrapDisplayValue(value: PrimitiveValue): PrimitiveValue {
-        if (value.type === PrimitiveValueType.DISPLAY) {
-            return value.value.value;
-        }
-        return value;
-    }
-
-    function formatDurationMs(ms: number): string {
-        let totalMinutes = Math.floor(ms / 60000);
-        let hours = Math.floor(totalMinutes / 60);
-        let minutes = totalMinutes % 60;
-        return `${hours}h ${minutes}m`;
-    }
+    let timeElapsedFields = $derived(buildTimeElapsedFieldsMap(trackables, forms));
 
     function formatDayLabel(date: Date): string {
         let dayName = WEEK_DAYS_SHORT[date.getDay()];
@@ -126,7 +82,7 @@
                         <SportActivityRow
                             {entry}
                             trackable={trackableMap.get(entry.formId)}
-                            durationFormatted={formatDurationMs(getEntryDurationMs(entry))}
+                            durationFormatted={formatDurationMs(getEntryDurationMs(entry, timeElapsedFields))}
                         />
                     {/each}
                 </div>
