@@ -1,12 +1,28 @@
 // Bundler entry for the local Capacitor plugin when `android/dist/` has not been built.
 import { registerPlugin } from '@capacitor/core';
 
-import type { PerficePlugin } from '../../../android/src/definitions';
+export interface NativeIntegrationUpdate {
+    id: string;
+    identifier: string;
+    integrationId: string;
+    data: Record<string, any>;
+    timestamp: number;
+}
+
+export interface NativeIntegration {
+    id: string;
+    integrationType: string;
+    entityType: string;
+    formId: string;
+    fields: Record<string, string>;
+    options: Record<string, any>;
+}
+
+export interface PerficePlugin {
+    promptPermissions(): Promise<{ result: boolean }>;
+    getUpdates(): Promise<{ updates: NativeIntegrationUpdate[] }>;
+    syncIntegrations(integrations: { integrations: NativeIntegration[] }): Promise<void>;
+    fetchHistorical(request: { id: string }): Promise<{ oldest: number, count: number }>;
+}
 
 export const Perfice = registerPlugin<PerficePlugin>('Perfice', {});
-
-export type {
-    NativeIntegration,
-    NativeIntegrationUpdate,
-    PerficePlugin,
-} from '../../../android/src/definitions';

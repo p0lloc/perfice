@@ -132,7 +132,7 @@
 
     let supportedAggregateTypes = $derived.by(() => {
         if (availableQuestions.length == 0)
-            return [AGGREGATE_TYPES.find(t => t.value == AggregateType.COUNT)];
+            return [AGGREGATE_TYPES.find(t => t.value == AggregateType.COUNT)!];
 
         return AGGREGATE_TYPES;
     })

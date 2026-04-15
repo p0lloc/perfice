@@ -70,7 +70,7 @@ export class LocalIntegrationService {
         if (!Capacitor.isNativePlatform()) return [];
 
         let native = await Perfice.getUpdates();
-        return native.updates.map(u => ({
+        return native.updates.map((u: any) => ({
             id: u.id,
             integrationId: u.integrationId,
             identifier: u.identifier,

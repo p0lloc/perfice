@@ -74,9 +74,9 @@
     });
 </script>
 
-{#snippet loop(items)}
+{#snippet loop(items: any[])}
     {#each items as trackable, i (trackable.id)}
-        <div use:longPress onlong={onLongPress}>
+        <div use:longPress {...{"onlong": onLongPress}}>
             {@render item(trackable, i)}
         </div>
     {/each}

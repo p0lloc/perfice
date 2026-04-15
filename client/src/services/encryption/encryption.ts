@@ -32,7 +32,7 @@ export class EncryptionService {
 
         return await window.crypto.subtle.importKey(
             "raw",
-            hashed,
+            new Uint8Array(hashed as Uint8Array),
             {
                 name: "AES-GCM",
                 length: 256,

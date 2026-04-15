@@ -72,7 +72,8 @@ function serializeDisplaySettings(question: FormQuestion): FormQuestionSuggestio
             return {
                 displayType: FormQuestionDisplayType.RANGE,
                 displaySettings: {
-                    step: displaySettings.step
+                    step: displaySettings.step,
+                    labels: displaySettings.labels ?? null
                 }
             }
         }
@@ -335,7 +336,8 @@ export function parseDisplaySettings(v: FormQuestionSuggestionDisplaySettings): 
             return {
                 displayType: FormQuestionDisplayType.RANGE,
                 displaySettings: {
-                    step: v.displaySettings?.step ?? 1
+                    step: v.displaySettings?.step ?? 1,
+                    labels: v.displaySettings?.labels ?? null
                 }
             }
         }

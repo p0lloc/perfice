@@ -11,6 +11,7 @@
     import Fa from "svelte-fa";
     import {ButtonColor} from "@perfice/model/ui/button";
     import {pNull, pNumber, PrimitiveValueType, pString} from "@perfice/model/primitive/primitive";
+    import {FormQuestionDataType} from "@perfice/model/form/form";
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import GenericEditDeleteCard from "@perfice/components/base/card/GenericEditDeleteCard.svelte";
     import AddSourceButton from "@perfice/components/goal/editor/condition/comparison/AddSourceButton.svelte";
@@ -125,7 +126,7 @@
     {#each entries as entry, index}
         {#if typeof entry == "object"}
             {#if entry.value.type !== PrimitiveValueType.NULL }
-                <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(entry)}
+                <GenericEditDeleteCard text={variableEditProvider.textForConstantOrVariable(entry, FormQuestionDataType.NUMBER)}
                                        onEdit={() => editEntry(index)}
                                        onDelete={() => removeEntry(index)}/>
             {:else}

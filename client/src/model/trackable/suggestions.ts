@@ -158,5 +158,10 @@ export function serializeCardSettingsToSuggestion(trackable: Trackable): Trackab
                 }
             }
         }
+        default:
+            return {
+                cardType: trackable.cardType,
+                cardSettings: trackable.cardSettings
+            } as unknown as TrackableSuggestionCardSettings;
     }
 }
