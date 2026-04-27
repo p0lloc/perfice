@@ -1,19 +1,19 @@
 Perfice is your self-tracking and improvement companion! Empowering you to log different aspects of your life and see how they correlate with each other. Heavily customizable to help suit your needs. 
 
-# Trackables
+<b>Trackables</b>
 Track anything—sleep, mood, even... bathroom visits. Logging is fast and flexible. Visualize your data with clean charts and tables. Export effortlessly to CSV or JSON when you need it.
 
-# Analytics
+<b>Analytics</b>
 Uncover what really makes a difference. Explore correlations between what you track. Spot patterns that affect your well-being, like how your mood shifts by day of the week.
 
-# Goals
+<b>Goals</b>
 Stay focused with smart, custom goals. Combine multiple metrics into powerful formulas. Track progress automatically as you log, and stay motivated with visual streaks.
 
-# Tags
+<b>Tags</b>
 Tag your day in a tap. Headache? Super social? Tags let you quickly capture key experiences without breaking your flow.
 
-# Dashboard
+<b>Dashboard</b>
 Your entire life, at a glance. Arrange and resize widgets to build a dashboard that works for you. It’s your space—make it yours.
 
-# Integrations
+<b>Integrations</b>
 Integrations such as Android Health Connect allows you to automatically pull in health data from your wearables and find meaningful correlations.
