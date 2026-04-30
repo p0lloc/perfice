@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
-import {defineConfig} from 'vite'
-import {svelte} from '@sveltejs/vite-plugin-svelte'
-import {fileURLToPath, URL} from "node:url";
-import {VitePWA} from 'vite-plugin-pwa'
+import { defineConfig } from 'vite'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { fileURLToPath, URL } from "node:url";
+import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
@@ -76,6 +76,16 @@ export default defineConfig((v) => {
                 }
             })
         ],
+        build: process.env.CAPACITOR ? {
+            // Android app must be built without hashes for reproducibility in FDroid builds
+            rollupOptions: {
+                output: {
+                    entryFileNames: `assets/[name].js`,
+                    chunkFileNames: `assets/[name].js`,
+                    assetFileNames: `assets/[name].[ext]`,
+                },
+            }
+        } : undefined,
         resolve: {
             alias: {
                 "@perfice": fileURLToPath(new URL("./src", import.meta.url)),
