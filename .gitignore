@@ -36,3 +36,5 @@ deploy.sh
 
 .env.development
 .env
+
+push.sh

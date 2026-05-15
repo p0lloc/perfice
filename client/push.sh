@@ -1,1 +1,0 @@
-docker push ghcr.io/p0lloc/perfice_client:latest
