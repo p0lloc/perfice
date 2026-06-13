@@ -1,5 +1,6 @@
 import type {DashboardCollection} from "@perfice/db/collections";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import { v4 as uuidv4 } from "uuid";
 import type {Dashboard} from "@perfice/model/dashboard/dashboard";
 import type {Form} from "@perfice/model/form/form";
 
@@ -23,7 +24,7 @@ export class DashboardService {
 
     async createDashboard(name: string): Promise<Dashboard> {
         let dashboard = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name,
         };
 

@@ -21,6 +21,7 @@ import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "
 import type {AnalyticsSettingsService} from "@perfice/services/analytics/settings";
 import {parseTrackableSuggestion, type TrackableSuggestion} from "@perfice/model/trackable/suggestions";
 import {questionDataTypeRegistry} from "@perfice/model/form/data";
+import { v4 as uuidv4 } from "uuid";
 import type {GoalService} from "@perfice/services/goal/goal";
 
 export interface TrackableEntityProvider {
@@ -70,7 +71,7 @@ export class TrackableService implements TrackableEntityProvider {
     }
 
     async createSingleValueTrackable(categoryId: string | null, name: string, icon: string, type: FormQuestionDataType) {
-        const mainQuestionId = crypto.randomUUID();
+        const mainQuestionId = uuidv4();
 
         let dataDef = questionDataTypeRegistry.getDefinition(type);
         if (dataDef == null) return;
@@ -81,10 +82,10 @@ export class TrackableService implements TrackableEntityProvider {
         }
 
         let form: Form = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name,
             icon,
-            snapshotId: crypto.randomUUID(),
+            snapshotId: uuidv4(),
             format: [
                 {
                     dynamic: true,
@@ -128,7 +129,7 @@ export class TrackableService implements TrackableEntityProvider {
             cardType: card.cardType
         } as TrackableCardSettings;
 
-        const trackableId = crypto.randomUUID();
+        const trackableId = uuidv4();
         const dependencies: Record<string, string> = {
             value: `t_${trackableId}_list`,
             aggregate: `t_${trackableId}_aggregate`

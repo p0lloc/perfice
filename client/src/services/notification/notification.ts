@@ -3,6 +3,7 @@ import {NotificationType, type StoredNotification} from "@perfice/model/notifica
 import {Capacitor} from "@capacitor/core";
 import {NativeNotificationScheduler} from "@perfice/services/notification/native";
 import {WebNotificationScheduler} from "@perfice/services/notification/web";
+import { v4 as uuidv4 } from "uuid";
 
 export interface NotificationScheduler {
     scheduleStoredNotifications(notifications: StoredNotification[]): Promise<void>;
@@ -55,7 +56,7 @@ export class NotificationService {
                              hour: number, minutes: number, weekDay: number | null): Promise<StoredNotification> {
 
         let entity: StoredNotification = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type,
             nativeId: 0,
             entityId,

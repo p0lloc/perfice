@@ -30,6 +30,7 @@
     import DropdownButton from "@perfice/components/base/dropdown/DropdownButton.svelte";
     import { forms, reflections } from "@perfice/stores";
     import { navigate } from "@perfice/app";
+    import { v4 as uuidv4 } from "uuid";
 
     let { params }: { params: Record<string, string> } = $props();
     let reflection = $state<Reflection | undefined>(undefined);
@@ -61,7 +62,7 @@
     function createPage() {
         if (reflection == undefined) return;
         reflection.pages.push({
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "New page",
             icon: "\ud83c\udf19",
             description: "",
@@ -126,7 +127,7 @@
         let reflectionId = params.reflectionId;
         if (reflectionId == NEW_REFLECTION_ROUTE) {
             reflection = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: "New reflection",
                 pages: [],
                 openType: ReflectionAutoOpenType.DISABLE,

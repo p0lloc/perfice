@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import type {FormTemplateCollection} from "@perfice/db/collections";
 import type {FormTemplate} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
@@ -12,7 +13,7 @@ export class FormTemplateService {
 
     async createTemplate(formId: string, templateName: string, answers: Record<string, PrimitiveValue>) {
         await this.collection.createFormTemplate({
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             formId,
             name: templateName,
             answers

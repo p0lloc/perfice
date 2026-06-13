@@ -2,6 +2,7 @@ import {type Variable, type VariableTypeDef, VariableTypeName} from "@perfice/mo
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {type DashboardWidgetDefinition, DashboardWidgetType} from "@perfice/model/dashboard/dashboard";
 import {faList, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
 
 export interface DashboardEntryRowWidgetSettings {
     formId: string;
@@ -45,7 +46,7 @@ export class DashboardEntryRowWidgetDefinition implements DashboardWidgetDefinit
 
     createDependencies(settings: DashboardEntryRowWidgetSettings): Map<string, Variable> {
         return new Map([["list", {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "List",
             type: this.createTypeDef(settings)
         }]]);

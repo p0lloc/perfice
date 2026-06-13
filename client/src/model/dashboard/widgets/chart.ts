@@ -5,6 +5,7 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {faBarChart, faLineChart, faPieChart, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
 import {GroupVariableType} from "@perfice/services/variable/types/group";
+import { v4 as uuidv4 } from "uuid";
 
 export enum DashboardChartWidgetType {
     LINE = "line",
@@ -100,8 +101,8 @@ export class DashboardChartWidgetDefinition implements DashboardWidgetDefinition
 
     createDependencies(settings: DashboardChartWidgetSettings, dependencies?: Record<string, string>): Map<string, Variable> {
         const dependencyName = settings.groupBy != null ? "group" : "list";
-        let listVariableId = dependencies?.[dependencyName] ?? crypto.randomUUID();
-        let aggregateVariableId = dependencies?.["aggregate"] ?? crypto.randomUUID();
+        let listVariableId = dependencies?.[dependencyName] ?? uuidv4();
+        let aggregateVariableId = dependencies?.["aggregate"] ?? uuidv4();
 
         let map: Map<string, Variable> = new Map();
         if (settings.groupBy == null) {

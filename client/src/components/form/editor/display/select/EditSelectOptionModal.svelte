@@ -9,6 +9,7 @@
     import type {FormQuestionDataType} from "@perfice/model/form/form";
     import {type DataSettingValues, questionDataTypeRegistry} from "@perfice/model/form/data";
     import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
+    import { v4 as uuidv4 } from "uuid";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
@@ -38,7 +39,7 @@
             sameDisplayText = true;
 
             option = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 text: valueStr,
                 value: defaultValue,
                 icon: null,

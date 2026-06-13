@@ -3,6 +3,7 @@ import type {FormService} from "@perfice/services/form/form";
 import type {Form, FormQuestion, FormSnapshot, FormTemplate} from "@perfice/model/form/form";
 import {EntityObserverType} from "@perfice/services/observer";
 import {deleteIdentifiedInArray, updateIdentifiedInArray} from "@perfice/util/array";
+import { v4 as uuidv4 } from "uuid";
 import type {FormTemplateService} from "@perfice/services/form/template";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
@@ -64,11 +65,11 @@ export class FormStore extends AsyncStore<Form[]> {
 
     async createForm(entityType: string, name: string, icon: string, questions: FormQuestion[], format: TextOrDynamic[]) {
         let form: Form = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name,
             icon,
             questions,
-            snapshotId: crypto.randomUUID(),
+            snapshotId: uuidv4(),
             format
         }
 

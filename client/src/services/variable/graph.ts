@@ -15,6 +15,7 @@ import {
 } from "@perfice/model/variable/time/time";
 import {pNull, type PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {deserializeTimeScope, serializeTimeScope} from "@perfice/model/variable/time/serialization";
+import { v4 as uuidv4 } from "uuid";
 
 export interface FormIdDependent {
     /**
@@ -145,7 +146,7 @@ export class VariableGraph {
             await this.indexCollection.updateIndex({...cached, value});
         } else {
             await this.indexCollection.createIndex({
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 variableId: variable.id,
                 timeScope: serializeTimeScope(timeScope),
                 value,

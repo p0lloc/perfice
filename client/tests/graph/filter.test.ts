@@ -8,6 +8,7 @@ import {pDisplay, pJournalEntry, pList, pNumber, pString} from "../../src/model/
 import {mockEntry} from "../common";
 import {JournalEntry} from "../../src/model/journal/journal";
 import {FilterComparisonOperator} from "../../src/services/variable/filtering";
+import { v4 as uuidv4 } from "uuid";
 
 // Returns all entries with field > 10
 test("simple list variable with filter", async () => {
@@ -47,7 +48,7 @@ test("simple list variable with filter", async () => {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "ok",
                     operator: FilterComparisonOperator.GREATER_THAN,
                     value: pNumber(10.0)
@@ -117,7 +118,7 @@ test("simple list variable with list filter", async () => {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "beverage_type",
                     operator: FilterComparisonOperator.IN,
                     value: pList([pString("beer"), pString("wine")])
@@ -187,7 +188,7 @@ test("filtered list variable new entry", async () => {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "beverage_type",
                     operator: FilterComparisonOperator.IN,
                     value: pList([pString("beer"), pString("wine")])
@@ -286,13 +287,13 @@ test("simple list variable with multiple filters", async () => {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "ok",
                     operator: FilterComparisonOperator.GREATER_THAN,
                     value: pNumber(10.0)
                 },
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "ok",
                     operator: FilterComparisonOperator.LESS_THAN,
                     value: pNumber(20.0)
@@ -350,7 +351,7 @@ test("filtered list - update entry to be matching", async () => {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "ok",
                     operator: FilterComparisonOperator.GREATER_THAN,
                     value: pNumber(10.0)
@@ -421,7 +422,7 @@ test("filtered list - update entry to be filtered out", async () => {
             type: VariableTypeName.LIST,
             value: new ListVariableType("ok", {ok: true}, [
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     field: "ok",
                     operator: FilterComparisonOperator.GREATER_THAN,
                     value: pNumber(9.0)

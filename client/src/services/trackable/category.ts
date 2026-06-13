@@ -2,6 +2,7 @@ import type {TrackableCategoryCollection} from "@perfice/db/collections";
 import type {TrackableCategory} from "../../model/trackable/trackable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
 import {reorderGeneric} from "@perfice/util/array";
+import { v4 as uuidv4 } from "uuid";
 
 export interface TrackableCategoryEntityProvider {
     getCategories(): Promise<TrackableCategory[]>;
@@ -22,7 +23,7 @@ export class TrackableCategoryService implements TrackableCategoryEntityProvider
     }
 
     async createCategory(name: string): Promise<TrackableCategory> {
-        return this.createCategoryWithIdAndName(crypto.randomUUID(), name);
+        return this.createCategoryWithIdAndName(uuidv4(), name);
     }
 
     async createCategoryWithIdAndName(id: string, name: string): Promise<TrackableCategory> {

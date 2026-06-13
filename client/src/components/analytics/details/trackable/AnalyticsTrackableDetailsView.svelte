@@ -22,6 +22,7 @@
     import {type SearchEntity, SearchEntityMode, SearchEntityType} from "@perfice/model/journal/search/search";
     import {gotoJournalSearch} from "@perfice/stores/journal/search";
     import {TrackableSearchFilterType} from "@perfice/model/journal/search/trackable";
+    import { v4 as uuidv4 } from "uuid";
     import TrackableWeekDayAnalytics
         from "@perfice/components/analytics/details/trackable/TrackableWeekDayAnalytics.svelte";
 
@@ -50,13 +51,13 @@
     function showEntries() {
         let search: SearchEntity[] = [
             {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 type: SearchEntityType.TRACKABLE,
                 mode: SearchEntityMode.INCLUDE,
                 value: {
                     filters: [
                         {
-                            id: crypto.randomUUID(),
+                            id: uuidv4(),
                             type: TrackableSearchFilterType.ONE_OF,
                             value: {
                                 values: [id]
@@ -66,7 +67,7 @@
                 }
             },
             {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 type: SearchEntityType.DATE,
                 mode: SearchEntityMode.MUST_MATCH,
                 value: {

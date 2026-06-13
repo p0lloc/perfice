@@ -8,6 +8,7 @@ import type {Tag} from "@perfice/model/tag/tag";
 import {type DateSearch, DateSearchDefinition} from "@perfice/model/journal/search/date";
 import type {JournalEntryFilter} from "@perfice/services/variable/filtering";
 import {TimeRangeType} from "@perfice/model/variable/time/time";
+import { v4 as uuidv4 } from "uuid";
 import {
     faCalendar, faCheck,
     faFont,
@@ -133,7 +134,7 @@ export function createDefaultSearchEntity(type: SearchEntityType): SearchEntity 
     }
 
     return {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         mode: definition.getDefaultSearchMode(),
         ...data
     }
@@ -198,7 +199,7 @@ export function createDefaultSearch(): JournalSearch {
         name: "Search",
         entities: [
             {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 type: SearchEntityType.TRACKABLE,
                 mode: SearchEntityMode.INCLUDE,
                 value: {
@@ -206,7 +207,7 @@ export function createDefaultSearch(): JournalSearch {
                 }
             },
             {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 type: SearchEntityType.TAG,
                 mode: SearchEntityMode.INCLUDE,
                 value: {
@@ -214,7 +215,7 @@ export function createDefaultSearch(): JournalSearch {
                 }
             },
             {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 type: SearchEntityType.DATE,
                 mode: SearchEntityMode.MUST_MATCH,
                 value: {

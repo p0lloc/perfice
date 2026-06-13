@@ -6,6 +6,7 @@ import {ExportFileType} from "@perfice/services/export/formEntries/export";
 import {CsvImporter} from "@perfice/services/import/formEntries/csv";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
 import {JsonImporter} from "@perfice/services/import/formEntries/json";
+import { v4 as uuidv4 } from "uuid";
 import type {VariableService} from "@perfice/services/variable/variable";
 
 export interface ImportedEntry {
@@ -65,7 +66,7 @@ export class EntryImportService {
 
     private constructEntry(answers: Record<string, PrimitiveValue>, timestamp: number, form: Form): JournalEntry {
         return {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             formId: form.id,
             snapshotId: form.snapshotId,
             answers: answers,

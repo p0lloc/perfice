@@ -7,6 +7,7 @@
     import {pString} from "@perfice/model/primitive/primitive";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
+    import { v4 as uuidv4 } from "uuid";
 
     let {option, onChange, root = false, onDelete, onEdit}: {
         option: HierarchyOption,
@@ -18,7 +19,7 @@
 
     function onAddChild() {
         option.children.push({
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             text: "Option",
             value: pString("option"),
             children: [],

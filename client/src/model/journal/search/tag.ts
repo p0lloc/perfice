@@ -6,6 +6,7 @@ import {
 } from "@perfice/model/journal/search/search";
 import type {JournalEntry, TagEntry} from "../journal";
 import {faFilter, faFolder} from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
 
 export enum TagSearchFilterType {
     ONE_OF = "ONE_OF",
@@ -66,7 +67,7 @@ export function createTagSearchFilter(type: TagSearchFilterType): TagSearchFilte
     }
 
     return {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         ...filter
     };
 }

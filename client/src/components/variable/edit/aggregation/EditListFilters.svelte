@@ -5,6 +5,7 @@
     import EditListFilter from "@perfice/components/variable/edit/aggregation/EditListFilter.svelte";
     import {updateIdentifiedInArray} from "@perfice/util/array";
     import {FilterComparisonOperator, type JournalEntryFilter} from "@perfice/services/variable/filtering";
+    import { v4 as uuidv4 } from "uuid";
     import type {FormQuestion} from "@perfice/model/form/form";
 
     let {filters, onChange, fields, addButton = true}: {
@@ -16,7 +17,7 @@
 
     function addFilter() {
         onChange([...(filters ?? []), {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             field: "",
             operator: FilterComparisonOperator.EQUAL,
             value: pString("")

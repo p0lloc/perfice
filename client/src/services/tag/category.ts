@@ -3,6 +3,7 @@ import type {TagCategory} from "@perfice/model/tag/tag";
 import type {TagCategoryCollection} from "@perfice/db/collections";
 import type {TagService} from "@perfice/services/tag/tag";
 import {reorderGeneric} from "@perfice/util/array";
+import { v4 as uuidv4 } from "uuid";
 
 export interface TagCategoryEntityProvider {
     getCategories(): Promise<TagCategory[]>;
@@ -25,7 +26,7 @@ export class TagCategoryService implements TagCategoryEntityProvider {
     }
 
     async createCategory(name: string): Promise<TagCategory> {
-        return this.createCategoryWithIdAndName(crypto.randomUUID(), name);
+        return this.createCategoryWithIdAndName(uuidv4(), name);
     }
 
     async createCategoryWithIdAndName(id: string, name: string): Promise<TagCategory> {

@@ -17,6 +17,7 @@
     import {VariableTypeName} from "@perfice/model/variable/variable";
     import {ListVariableType} from "@perfice/services/variable/types/list";
     import {AggregateType, AggregateVariableType} from "@perfice/services/variable/types/aggregate";
+    import { v4 as uuidv4 } from "uuid";
 
     let {data, form, onChange}: {
         data: GoalVariableType,
@@ -38,7 +39,7 @@
     function addCondition() {
 
         let fieldId = form.questions.length > 0 ? form.questions[0].id : "";
-        let listVariableId = crypto.randomUUID();
+        let listVariableId = uuidv4();
         variableEditProvider.createVariable({
             id: listVariableId,
             name: "Goal condition",
@@ -50,7 +51,7 @@
             }
         });
 
-        let aggregateVariableId = crypto.randomUUID();
+        let aggregateVariableId = uuidv4();
         variableEditProvider.createVariable({
             id: aggregateVariableId,
             name: "Goal condition",
@@ -63,7 +64,7 @@
         onChange(
             new GoalVariableType(
                 [...data.getConditions(), {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     type: GoalConditionType.COMPARISON,
                     value: new ComparisonGoalCondition({
                         constant: false,

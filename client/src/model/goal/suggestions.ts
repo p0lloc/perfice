@@ -18,6 +18,7 @@ import type {Goal} from "@perfice/model/goal/goal";
 import {pNumber, pString} from "@perfice/model/primitive/primitive";
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
+import { v4 as uuidv4 } from "uuid";
 
 export interface GoalSuggestion {
     name: string;
@@ -66,7 +67,7 @@ export async function createConstantOrVariableSuggestion(suggestion: ConstantOrV
         let assignedVariables: Map<string, string> = new Map();
         for (let variable of suggestion.variables) {
             let def = createVariableSuggestion(variable, assignedForms, assignedQuestions, assignedVariables);
-            let variableId = crypto.randomUUID();
+            let variableId = uuidv4();
             assignedVariables.set(variable.id, variableId);
 
             await variableService.createVariable({
@@ -97,7 +98,7 @@ export async function createGoalSuggestion(suggestion: GoalSuggestion, goalServi
                 let target = await createConstantOrVariableSuggestion(condition.value.target, variableService, assignedForms, assignedQuestions);
 
                 conditions.push({
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     type: GoalConditionType.COMPARISON,
                     value: new ComparisonGoalCondition(source, condition.value.operator, target)
                 });
@@ -105,7 +106,7 @@ export async function createGoalSuggestion(suggestion: GoalSuggestion, goalServi
             }
             case GoalConditionType.GOAL_MET: {
                 conditions.push({
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     type: GoalConditionType.GOAL_MET,
                     value: new GoalMetGoalCondition(assignedGoals.get(condition.value.goal) ?? condition.value.goal)
                 });
@@ -114,7 +115,7 @@ export async function createGoalSuggestion(suggestion: GoalSuggestion, goalServi
     }
 
     let variable: Variable = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: suggestion.name,
         type: {
             type: VariableTypeName.GOAL,
@@ -125,7 +126,7 @@ export async function createGoalSuggestion(suggestion: GoalSuggestion, goalServi
     await variableService.createVariable(variable);
 
     let streakVariable: Variable = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: suggestion.name,
         type: {
             type: VariableTypeName.GOAL_STREAK,

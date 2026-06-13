@@ -1,4 +1,5 @@
 import trackableSuggestionsAsset from '@perfice/assets/trackable_suggestions.json?raw'
+import { v4 as uuidv4 } from "uuid";
 import {
     type LatestTrackableValueSettings,
     type TableTrackableValueSettings,
@@ -101,7 +102,7 @@ export function parseTrackableSuggestion(suggestion: TrackableSuggestion): [Trac
     let [form, assignedQuestions] = parseFormSuggestion(suggestion.form, suggestion.name, suggestion.icon);
 
     let trackable: Trackable = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: suggestion.name,
         icon: suggestion.icon,
         formId: "",

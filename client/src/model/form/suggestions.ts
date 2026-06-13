@@ -8,6 +8,7 @@ import type {RangeFormQuestionSettings} from "@perfice/model/form/display/range"
 import type {SelectGrid, SelectOption} from "@perfice/model/form/display/select";
 import type {SegmentedOption} from "@perfice/model/form/display/segmented";
 import {Capacitor} from "@capacitor/core";
+import { v4 as uuidv4 } from "uuid";
 
 export interface FormSuggestion {
     format: TextOrDynamic[];
@@ -144,7 +145,7 @@ export function parseFormSuggestion(suggestion: FormSuggestion, name: string, ic
     let questions = suggestion.questions.map(q => parseFormQuestionSuggestion(q, assignedQuestions));
 
     let form: Form = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         snapshotId: "",
         name,
         icon,
@@ -172,7 +173,7 @@ function parseBasicValue(v: string | number | boolean | null | undefined): Primi
 
 export function parseFormQuestionSuggestion(suggestion: FormQuestionSuggestion, assignedQuestions: Map<string, string>): FormQuestion {
     let existingId = suggestion.id;
-    let id = crypto.randomUUID();
+    let id = uuidv4();
     if (existingId != null) {
         assignedQuestions.set(existingId, id);
     }
@@ -264,7 +265,7 @@ export function parseDataSettings(v: FormQuestionSuggestionDataSettings): FormQu
 
 export function parseHierarchyOption(v: HierarchySuggestionOption, root: boolean): HierarchyOption {
     return {
-        id: root ? HIERARCHY_ROOT_ID : crypto.randomUUID(),
+        id: root ? HIERARCHY_ROOT_ID : uuidv4(),
         value: typeof v.value == "string" ? pString(v.value) : pNumber(v.value),
         text: v.text,
         color: v.color,
@@ -276,7 +277,7 @@ export function parseHierarchyOption(v: HierarchySuggestionOption, root: boolean
 export function parseSelectOption(v: SelectOptionSuggestion): SelectOption {
     let value = typeof v.value == "string" ? pString(v.value) : pNumber(v.value);
     return {
-        id: v.id ?? crypto.randomUUID(),
+        id: v.id ?? uuidv4(),
         text: v.text ?? primitiveAsString(value),
         value: value,
         icon: v.icon ?? null,
@@ -286,7 +287,7 @@ export function parseSelectOption(v: SelectOptionSuggestion): SelectOption {
 
 export function parseSegmentedItem(v: SegmentedItemSuggestion): SegmentedOption {
     return {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         value: typeof v.value == "string" ? pString(v.value) : pNumber(v.value),
         text: v.text
     }

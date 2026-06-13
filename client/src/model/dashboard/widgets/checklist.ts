@@ -5,6 +5,7 @@ import {
 } from "@perfice/model/sharedWidgets/checklist/checklist";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {faCheckCircle, faMagnifyingGlass, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
 
 export interface DashboardChecklistWidgetSettings extends ChecklistWidgetSettings {
 }
@@ -43,7 +44,7 @@ export class DashboardChecklistWidgetDefinition implements DashboardWidgetDefini
         let typeDefs = createChecklistDependencies(settings);
         for (let [key, value] of typeDefs) {
             map.set(key, {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: "Checklist",
                 type: value
             });

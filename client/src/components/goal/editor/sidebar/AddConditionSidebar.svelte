@@ -4,6 +4,7 @@
         type GoalAddConditionAction,
     } from "@perfice/model/goal/ui";
     import CardButton from "@perfice/components/base/button/CardButton.svelte";
+    import { v4 as uuidv4 } from "uuid";
     import {
         createGoalConditionValue,
         GoalConditionType,
@@ -16,7 +17,7 @@
 
     function onSelect(type: GoalConditionType) {
         action.onConditionSelected({
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type: type,
             // @ts-ignore
             value: createGoalConditionValue(type),

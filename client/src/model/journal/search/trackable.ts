@@ -6,6 +6,7 @@ import {
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {shouldFilterOutEntry} from "@perfice/services/variable/filtering";
 import {faCheck, faFilter, faFolder} from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
 
 export enum TrackableSearchFilterType {
     ONE_OF = "ONE_OF",
@@ -109,7 +110,7 @@ export function createTrackableSearchFilter(type: TrackableSearchFilterType): Tr
     }
 
     return {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         ...filter
     };
 }

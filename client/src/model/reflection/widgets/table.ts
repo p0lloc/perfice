@@ -3,6 +3,7 @@ import {type ReflectionWidgetAnswerState, type ReflectionWidgetDefinition, Refle
 import type {Variable, VariableTypeDef} from "@perfice/model/variable/variable";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import { v4 as uuidv4 } from "uuid";
 
 export interface ReflectionTableWidgetSettings extends TableWidgetSettings {
 }
@@ -24,7 +25,7 @@ export class ReflectionTableWidgetDefinition implements ReflectionWidgetDefiniti
 
     createDependencies(settings: ReflectionTableWidgetSettings): Map<string, Variable> {
         return new Map([["list", {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "List",
             type: createTypeDefForTableWidget(settings)
         }]]);

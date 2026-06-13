@@ -4,6 +4,7 @@ import {AggregateType, AggregateVariableType} from "@perfice/services/variable/t
 import {ListVariableType} from "@perfice/services/variable/types/list";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
 import {faHashtag, type IconDefinition} from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
 import type {JournalEntryFilter} from "@perfice/services/variable/filtering";
 
 export interface DashboardMetricWidgetSettings {
@@ -46,8 +47,8 @@ export class DashboardMetricWidgetDefinition implements DashboardWidgetDefinitio
     }
 
     createDependencies(settings: DashboardMetricWidgetSettings, dependencies?: Record<string, string>): Map<string, Variable> {
-        let listVariableId = dependencies?.["list_variable"] ?? crypto.randomUUID();
-        let aggregateVariableId = dependencies?.["aggregate"] ?? crypto.randomUUID();
+        let listVariableId = dependencies?.["list_variable"] ?? uuidv4();
+        let aggregateVariableId = dependencies?.["aggregate"] ?? uuidv4();
         return new Map([
             [
                 "list_variable",

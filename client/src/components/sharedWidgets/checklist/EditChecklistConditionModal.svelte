@@ -12,6 +12,7 @@
     import EditFormChecklistCondition from "@perfice/components/sharedWidgets/checklist/EditFormChecklistCondition.svelte";
     import type { Component } from "svelte";
     import EditTagChecklistCondition from "@perfice/components/sharedWidgets/checklist/EditTagChecklistCondition.svelte";
+    import { v4 as uuidv4 } from "uuid";
     import {
         CHECKLIST_CONDITION_TYPES,
         type ChecklistCondition,
@@ -44,7 +45,7 @@
             condition = editOption;
         } else {
             condition = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: "",
                 value: {
                     type: ChecklistConditionType.FORM,

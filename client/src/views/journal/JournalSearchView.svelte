@@ -27,6 +27,7 @@
     import {emptyPromise, resolvedUpdatePromise} from "@perfice/util/promise";
     import {constructSearchParam, parseSearchFromUrl} from "@perfice/stores/journal/search";
     import {back, navigate} from "@perfice/app";
+    import { v4 as uuidv4 } from "uuid";
 
     let search = $state<JournalSearch>({} as JournalSearch);
     let dependencies = $state({} as Promise<JournalSearchUiDependencies>);
@@ -82,7 +83,7 @@
             let name = prompt("Name?");
             if (name == null) return;
 
-            search.id = crypto.randomUUID();
+            search.id = uuidv4();
             search.name = name;
             await journalSearch.createSavedSearch($state.snapshot(search));
             savedSearches = resolvedUpdatePromise(savedSearches, v => [...v, search]);

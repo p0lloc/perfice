@@ -6,6 +6,7 @@
     import type {SegmentedOption} from "@perfice/model/form/display/segmented";
     import Button from "@perfice/components/base/button/Button.svelte";
     import PrimitiveVanillaInputField from "@perfice/components/form/valueInput/PrimitiveVanillaInputField.svelte";
+    import { v4 as uuidv4 } from "uuid";
     import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 
     let {dataType, dataSettings}: { dataType: FormQuestionDataType, dataSettings: DataSettingValues } = $props();
@@ -34,7 +35,7 @@
             valueStr = dataDef.serialize(defaultValue);
             sameDisplayText = true;
             option = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 text: valueStr,
                 value: dataDef.getDefaultValue(dataSettings),
             }

@@ -1,6 +1,7 @@
 import type {FormCollection, FormSnapshotCollection} from "@perfice/db/collections";
 import type {Form, FormSnapshot} from "@perfice/model/form/form";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import { v4 as uuidv4 } from "uuid";
 import type {JournalService} from "@perfice/services/journal/journal";
 
 export interface FormService {
@@ -81,7 +82,7 @@ export class BaseFormService implements FormService, FormEntityProvider {
 
         if (entriesReferencingSnapshot || create) {
             let snapshot: FormSnapshot = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 formId: form.id,
                 questions: form.questions,
                 format: form.format,

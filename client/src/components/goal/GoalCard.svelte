@@ -9,9 +9,10 @@
     import {goalValue, weekStart} from "@perfice/stores";
     import {navigate} from "@perfice/app";
     import {pNumber} from "@perfice/model/primitive/primitive";
+    import { v4 as uuidv4 } from "uuid";
 
     let {goal, date, onDelete}: { goal: Goal; date: Date, onDelete: () => void } = $props();
-    let cardId = crypto.randomUUID();
+    let cardId = uuidv4();
 
     let res = $derived(goalValue(goal.variableId, goal.streakVariableId, date, $weekStart, cardId));
 

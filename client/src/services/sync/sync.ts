@@ -14,6 +14,7 @@ import type {UpdateQueueCollection} from "@perfice/db/collections";
 import type {Table, WhereClause} from "dexie";
 import {type KyInstance} from "ky";
 import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+import { v4 as uuidv4 } from "uuid";
 import type {AuthService} from "@perfice/services/auth/auth";
 import type {AuthenticatedUser} from "@perfice/model/auth/auth";
 
@@ -286,7 +287,7 @@ export class SyncService {
             })),
             entityId: null,
             entityType,
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             operation: UpdateOperation.FULL_SYNC,
             timestamp: Date.now()
         };
@@ -308,7 +309,7 @@ export class SyncService {
         if (!this.isEnabled()) return;
         let deleteOperation = operation === UpdateOperation.DELETE;
         let update: OutgoingUpdate = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             operation,
             entityType,
             entityId: null,
@@ -337,7 +338,7 @@ export class SyncService {
         }
 
         let update: OutgoingUpdate = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             operation,
             entityType,
             entityId: entityId,
@@ -718,7 +719,7 @@ export class SyncService {
     }
 
     async updateKey() {
-        const blob = await this.encryptionService.encrypt({key: crypto.randomUUID()});
+        const blob = await this.encryptionService.encrypt({key: uuidv4()});
         const response = await this.getClient().put('key', {
             json: {key: blob},
         });

@@ -22,6 +22,7 @@ import {GroupVariableType} from "@perfice/services/variable/types/group";
 import {type Form, type FormQuestion, FormQuestionDataType} from "@perfice/model/form/form";
 import {formatValueAsDataType} from "@perfice/model/form/data";
 import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
+import { v4 as uuidv4 } from "uuid";
 
 export enum VariableChangeType {
     CREATE,
@@ -93,7 +94,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.LIST:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "List",
                         type: {
                             type: VariableTypeName.LIST,
@@ -104,7 +105,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.TAG:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "Tag",
                         type: {
                             type: VariableTypeName.TAG,
@@ -115,7 +116,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.LATEST:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "Tag",
                         type: {
                             type: VariableTypeName.LATEST,
@@ -126,7 +127,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.GROUP:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "Group",
                         type: {
                             type: VariableTypeName.GROUP,
@@ -137,7 +138,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.GOAL_STREAK:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "Goal streak",
                         type: {
                             type: VariableTypeName.GOAL_STREAK,
@@ -148,7 +149,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.AGGREGATE:
                 let listVariable: Variable = this.createVariablesFromType(VariableTypeName.LIST).variable;
                 let aggregateVariable: Variable = {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     name: "Aggregate",
                     type: {
                         type: VariableTypeName.AGGREGATE,
@@ -160,7 +161,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.GOAL:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "Goal",
                         type: {
                             type: VariableTypeName.GOAL,
@@ -171,7 +172,7 @@ export class VariableEditProvider implements VariableProvider {
             case VariableTypeName.CALCULATION:
                 return {
                     variable: {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: "Calculation",
                         type: {
                             type: VariableTypeName.CALCULATION,

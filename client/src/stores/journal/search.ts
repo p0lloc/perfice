@@ -16,6 +16,7 @@ import {journal, tagEntries} from "@perfice/stores";
 import {navigate} from "@perfice/app";
 import {TimeRangeType} from "@perfice/model/variable/time/time";
 import {addDaysDate, dateToMidnight} from "@perfice/util/time/simple";
+import { v4 as uuidv4 } from "uuid";
 
 export function parseSearchFromUrl(param: string): SearchEntity[] {
     try {
@@ -43,7 +44,7 @@ export function gotoJournalSearch(entities: SearchEntity[]) {
 export function createJournalDateSearch(date: Date): SearchEntity[] {
     return [
         {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type: SearchEntityType.TRACKABLE,
             mode: SearchEntityMode.INCLUDE,
             value: {
@@ -51,7 +52,7 @@ export function createJournalDateSearch(date: Date): SearchEntity[] {
             }
         },
         {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type: SearchEntityType.TAG,
             mode: SearchEntityMode.INCLUDE,
             value: {
@@ -59,7 +60,7 @@ export function createJournalDateSearch(date: Date): SearchEntity[] {
             }
         },
         {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type: SearchEntityType.DATE,
             mode: SearchEntityMode.MUST_MATCH,
             value: {

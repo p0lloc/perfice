@@ -22,6 +22,7 @@ import type {ReflectionService} from "@perfice/services/reflection/reflection";
 import {ReflectionAutoOpenType} from "@perfice/model/reflection/reflection";
 import {Capacitor} from "@capacitor/core";
 import {navigate} from "@perfice/app";
+import { v4 as uuidv4 } from "uuid";
 
 const ONBOARDING_KEY = "onboarded";
 const FINISH_ROUTE = "/";
@@ -140,17 +141,17 @@ export class OnboardingStore {
     }>) {
         for (let suggestion of REFLECTION_SUGGESTIONS) {
             await this.reflectionService.createReflection({
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: suggestion.name,
                 openType: ReflectionAutoOpenType.DISABLE,
                 pages: suggestion.pages.map(p => {
                     return {
-                        id: crypto.randomUUID(),
+                        id: uuidv4(),
                         name: p.name,
                         icon: p.icon,
                         description: p.description,
                         widgets: p.widgets.map(w => ({
-                                id: crypto.randomUUID(),
+                                id: uuidv4(),
                                 dependencies: {},
                                 ...manipulateReflectionSuggestionWidgetSettings(w, createdTrackables)
                             })

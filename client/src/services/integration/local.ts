@@ -4,6 +4,7 @@ import type {CreateIntegrationRequest} from "@perfice/services/integration/integ
 import type {Form} from "@perfice/model/form/form";
 import {Perfice} from "perfice-android";
 import {Capacitor} from "@capacitor/core";
+import { v4 as uuidv4 } from "uuid";
 
 export class LocalIntegrationService {
 
@@ -19,7 +20,7 @@ export class LocalIntegrationService {
 
     async createIntegration(request: CreateIntegrationRequest) {
         let integration: Integration = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             integrationType: request.integrationType,
             formId: request.formId,
             fields: request.fields,

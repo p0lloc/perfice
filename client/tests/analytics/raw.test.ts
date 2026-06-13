@@ -10,10 +10,11 @@ import {SimpleTimeScopeType, WeekStart} from "../../src/model/variable/time/time
 import {Form, FormQuestion, FormQuestionDataType, FormQuestionDisplayType} from "../../src/model/form/form";
 import {pNumber, pString} from "../../src/model/primitive/primitive";
 import {JournalEntry} from "../../src/model/journal/journal";
+import { v4 as uuidv4 } from "uuid";
 
 export function mockEntry(formId: string, answers: Record<string, any>, timestamp: number): JournalEntry {
     return {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         formId: formId,
         answers: answers,
         timestamp: timestamp,

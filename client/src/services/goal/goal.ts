@@ -5,6 +5,7 @@ import type {VariableService} from "@perfice/services/variable/variable";
 import {type Variable, VariableTypeName} from "@perfice/model/variable/variable";
 import type {GoalConditionValueResult} from "@perfice/stores/goal/value";
 import {GoalConditionType} from "@perfice/services/variable/types/goal";
+import { v4 as uuidv4 } from "uuid";
 
 export class GoalService {
 
@@ -28,7 +29,7 @@ export class GoalService {
 
     async createGoal(name: string, color: string, variable: Variable, streakVariable: Variable): Promise<Goal> {
         let goal: Goal = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             variableId: variable.id,
             color,
             name,

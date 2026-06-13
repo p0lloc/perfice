@@ -4,6 +4,7 @@ import {type Variable, VariableTypeName} from "@perfice/model/variable/variable"
 import {TagVariableType} from "../variable/types/tag";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import { v4 as uuidv4 } from "uuid";
 import type {TagEntryService} from "@perfice/services/tag/entry";
 
 export interface TagEntityProvider {
@@ -39,9 +40,9 @@ export class TagService implements TagEntityProvider {
 
     async createTag(name: string, categoryId: string | null, id?: string): Promise<void> {
         let tagCount = await this.tagCollection.count();
-        let tagId = id ?? crypto.randomUUID();
+        let tagId = id ?? uuidv4();
         let variable: Variable = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "Tag",
             type: {
                 type: VariableTypeName.TAG,

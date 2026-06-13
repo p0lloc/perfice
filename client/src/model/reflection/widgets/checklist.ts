@@ -10,6 +10,7 @@ import {
 } from "@perfice/model/sharedWidgets/checklist/checklist";
 import type {ChecklistData} from "@perfice/stores/sharedWidgets/checklist/checklist";
 import {SimpleTimeScopeType} from "@perfice/model/variable/time/time";
+import { v4 as uuidv4 } from "uuid";
 
 export interface ReflectionChecklistWidgetSettings extends ChecklistWidgetSettings {
 }
@@ -35,7 +36,7 @@ export class ReflectionChecklistWidgetDefinition implements ReflectionWidgetDefi
         let typeDefs = createChecklistDependencies(settings);
         for (let [key, value] of typeDefs) {
             map.set(key, {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: "Checklist",
                 type: value
             });

@@ -16,6 +16,7 @@ import type {FormService} from "@perfice/services/form/form";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
 import type {JournalEntry, TagEntry} from "@perfice/model/journal/journal";
 import {importPrimitive} from "@perfice/services/export/formEntries/export";
+import { v4 as uuidv4 } from "uuid";
 
 export interface OldImportFormat {
     collections: Record<string, any[]>;
@@ -192,7 +193,7 @@ export class OldFormatImporter {
     private async importJournalEntry(entry: OldJournalEntry) {
         if (entry.context.type == OldEntityType.TAG) {
             const tagEntry: TagEntry = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 timestamp: entry.timestamp,
                 tagId: entry.context.id,
             };
@@ -226,7 +227,7 @@ export class OldFormatImporter {
             .map(([key, value]) => [key, importPrimitive(value)]));
 
         let newEntry: JournalEntry = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             timestamp: entry.timestamp,
             integration: null,
             formId: formData.formId,
@@ -318,7 +319,7 @@ export class OldFormatImporter {
             name: form.name,
             icon: this.findEmoji(form.icon),
             format: this.getFormatFromForm(form),
-            snapshotId: crypto.randomUUID(),
+            snapshotId: uuidv4(),
             questions,
         })
     }

@@ -1,6 +1,7 @@
 import type {TagEntryCollection} from "@perfice/db/collections";
 import type {TagEntry} from "@perfice/model/journal/journal";
 import {type EntityObserverCallback, EntityObservers, EntityObserverType} from "@perfice/services/observer";
+import { v4 as uuidv4 } from "uuid";
 
 export class TagEntryService {
     private tagEntryCollection: TagEntryCollection;
@@ -17,7 +18,7 @@ export class TagEntryService {
 
     async logTagEntry(tagId: string, timestamp: number) {
         let entry: TagEntry = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             timestamp: timestamp,
             tagId: tagId,
         };

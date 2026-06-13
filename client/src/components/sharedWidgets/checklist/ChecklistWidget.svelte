@@ -13,6 +13,7 @@
     } from "@perfice/model/sharedWidgets/checklist/checklist";
     import { checklistWidget, forms, weekStart } from "@perfice/stores";
     import DashboardWidgetBase from "@perfice/components/dashboard/DashboardWidgetBase.svelte";
+    import { v4 as uuidv4 } from "uuid";
 
     let {
         settings,
@@ -65,7 +66,7 @@
                 );
                 if (form == null) return;
 
-                let newId = crypto.randomUUID();
+                let newId = uuidv4();
                 onCheck({
                     id: newId,
                     type: ChecklistConditionType.FORM,
@@ -78,7 +79,7 @@
                 });
                 break;
             case ChecklistConditionType.TAG: {
-                let newId = crypto.randomUUID();
+                let newId = uuidv4();
                 onCheck({
                     id: newId,
                     type: ChecklistConditionType.TAG,

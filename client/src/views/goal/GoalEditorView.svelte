@@ -20,6 +20,7 @@
     import {back, navigate} from "@perfice/app";
     import {createDefaultWeekDays, GoalStreakVariableType} from "@perfice/services/variable/types/goalStreak";
     import WeekDays from "@perfice/components/base/weekDays/WeekDays.svelte";
+    import { v4 as uuidv4 } from "uuid";
 
     let {params}: { params: Record<string, string> } = $props();
 
@@ -46,7 +47,7 @@
         streakVariable.type.value = new GoalStreakVariableType(variable.id, createDefaultWeekDays());
 
         goal = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "New goal",
             color: "#ff0000",
             variableId: variable.id,

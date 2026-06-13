@@ -15,6 +15,7 @@
     import DragAndDropContainer from "@perfice/components/base/dnd/DragAndDropContainer.svelte";
     import {dragHandle} from "svelte-dnd-action";
     import Fa from "svelte-fa";
+    import { v4 as uuidv4 } from "uuid";
 
     let {page, onDelete, onEdit, onEditWidget}: {
         page: ReflectionPage,
@@ -30,7 +31,7 @@
         if (definition == null) return;
 
         page.widgets.push({
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type,
             dependencies: {},
             settings: definition.getDefaultSettings(),

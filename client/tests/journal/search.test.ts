@@ -14,6 +14,7 @@ import {TrackableSearchFilterType} from "../../src/model/journal/search/trackabl
 import {FilterComparisonOperator} from "../../src/services/variable/filtering";
 import {pNumber} from "../../src/model/primitive/primitive";
 import {SavedSearchCollection} from "../../src/db/collections";
+import { v4 as uuidv4 } from "uuid";
 
 export class DummyTrackableEntityProvider implements TrackableEntityProvider {
 
@@ -268,7 +269,7 @@ test("search by answers", async () => {
                             value: {
                                 filters: [
                                     {
-                                        id: crypto.randomUUID(),
+                                        id: uuidv4(),
                                         field: "test",
                                         operator: FilterComparisonOperator.EQUAL,
                                         value: pNumber(13.0)

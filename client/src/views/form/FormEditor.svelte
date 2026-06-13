@@ -37,6 +37,7 @@
     import { forms } from "@perfice/stores";
     import { back } from "@perfice/app";
     import MobileTopBar from "@perfice/components/mobile/MobileTopBar.svelte";
+    import { v4 as uuidv4 } from "uuid";
 
     let {
         form,
@@ -84,7 +85,7 @@
         };
 
         let question: FormQuestion = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: "",
             unit: null,
             defaultValue: null,

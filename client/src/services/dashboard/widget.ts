@@ -8,6 +8,7 @@ import {
 } from "@perfice/model/dashboard/dashboard";
 import type {VariableService} from "@perfice/services/variable/variable";
 import {updateDependencies} from "../variable/dependencies";
+import { v4 as uuidv4 } from "uuid";
 
 export class DashboardWidgetService {
 
@@ -42,7 +43,7 @@ export class DashboardWidgetService {
         }
 
         let widget: DashboardWidget = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             type,
             display,
             dashboardId,

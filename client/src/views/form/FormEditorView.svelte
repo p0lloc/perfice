@@ -6,6 +6,7 @@
     import {onMount} from "svelte";
     import {forms} from "@perfice/stores";
     import FormEditor from "@perfice/views/form/FormEditor.svelte";
+    import { v4 as uuidv4 } from "uuid";
 
     let {params}: { params: Record<string, string> } = $props();
     let form = $state<Form | undefined>(undefined);
@@ -22,10 +23,10 @@
 
             creating = parts[1];
             form = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 name: "",
                 icon: "",
-                snapshotId: crypto.randomUUID(),
+                snapshotId: uuidv4(),
                 questions: [],
                 format: []
             }

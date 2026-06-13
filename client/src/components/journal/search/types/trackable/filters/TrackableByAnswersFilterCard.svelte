@@ -9,6 +9,7 @@
     import IconButton from "@perfice/components/base/button/IconButton.svelte";
     import {FilterComparisonOperator} from "@perfice/services/variable/filtering";
     import {pString} from "@perfice/model/primitive/primitive";
+    import { v4 as uuidv4 } from "uuid";
 
     let {
         filter,
@@ -28,7 +29,7 @@
         onChange({
             ...filter,
             filters: [...filter.filters, {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 field: "",
                 operator: FilterComparisonOperator.EQUAL,
                 value: pString("")

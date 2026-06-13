@@ -4,6 +4,7 @@
     import DndOptionList from "@perfice/components/form/editor/DndOptionList.svelte";
     import ControlledInlineCreateInput from "@perfice/components/base/inline/ControlledInlineCreateInput.svelte";
     import EditRangeLabelModal from "@perfice/components/form/editor/display/range/EditRangeLabelModal.svelte";
+    import { v4 as uuidv4 } from "uuid";
 
     let {settings, onChange, dataType, dataSettings}: {
         settings: RangeFormQuestionSettings,
@@ -21,7 +22,7 @@
 
     function onLabelAdd() {
         createInput.prompt(name => {
-            onLabelsChange([...(settings.labels ?? []), {id: crypto.randomUUID(), text: name}]);
+            onLabelsChange([...(settings.labels ?? []), {id: uuidv4(), text: name}]);
         });
     }
 

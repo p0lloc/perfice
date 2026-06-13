@@ -3,6 +3,7 @@ import type {JournalEntry} from "@perfice/model/journal/journal";
 import type {Form} from "@perfice/model/form/form";
 import type {PrimitiveValue} from "@perfice/model/primitive/primitive";
 import {formatAnswersIntoRepresentation} from "@perfice/model/trackable/ui";
+import { v4 as uuidv4 } from "uuid";
 import type {TextOrDynamic} from "@perfice/model/variable/variable";
 
 export enum JournalEntryObserverType {
@@ -77,7 +78,7 @@ export class BaseJournalService implements JournalService {
 
     async logEntry(form: Form, answers: Record<string, PrimitiveValue>, format: TextOrDynamic[], timestamp: number, integration?: string): Promise<JournalEntry> {
         let entry: JournalEntry = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             formId: form.id,
             snapshotId: form.snapshotId,
             answers,
