@@ -8,15 +8,15 @@ import {
     type PreprocessedEntity,
     UpdateOperation
 } from "@perfice/model/sync/sync";
-import type {EncryptionService} from "../encryption/encryption";
-import type {MigrationService} from "@perfice/db/migration/migration";
-import type {UpdateQueueCollection} from "@perfice/db/collections";
-import type {Table, WhereClause} from "dexie";
-import {type KyInstance} from "ky";
-import {type RemoteService, RemoteType} from "@perfice/services/remote/remote";
+import type { EncryptionService } from "../encryption/encryption";
+import type { MigrationService } from "@perfice/db/migration/migration";
+import type { UpdateQueueCollection } from "@perfice/db/collections";
+import type { Table, WhereClause } from "dexie";
+import { type KyInstance } from "ky";
+import { type RemoteService, RemoteType } from "@perfice/services/remote/remote";
 import { v4 as uuidv4 } from "uuid";
-import type {AuthService} from "@perfice/services/auth/auth";
-import type {AuthenticatedUser} from "@perfice/model/auth/auth";
+import type { AuthService } from "@perfice/services/auth/auth";
+import type { AuthenticatedUser } from "@perfice/model/auth/auth";
 
 export class LazySyncServiceProvider {
     private syncService: SyncService | null = null;
@@ -76,7 +76,8 @@ export const SYNCED_ENTITY_TYPES = [
     "reflections",
     "savedSearches",
     "notifications",
-    "analyticSettings"
+    "analyticSettings",
+    "localIntegrations"
 ];
 
 const SALT_STORAGE_KEY = "salt";
@@ -216,8 +217,8 @@ export class SyncService {
     private authService: AuthService;
 
     constructor(encryptionService: EncryptionService, migrationService: MigrationService,
-                updateQueueCollection: UpdateQueueCollection, transaction: (table: Table<any>, callback: () => Promise<void>) => Promise<void>,
-                tables: Record<string, Table<any>>, remoteService: RemoteService, authService: AuthService) {
+        updateQueueCollection: UpdateQueueCollection, transaction: (table: Table<any>, callback: () => Promise<void>) => Promise<void>,
+        tables: Record<string, Table<any>>, remoteService: RemoteService, authService: AuthService) {
         this.encryptionService = encryptionService;
         this.migrationService = migrationService;
         this.updateQueueCollection = updateQueueCollection;
@@ -248,7 +249,7 @@ export class SyncService {
             results[tableName] = await calculateChecksum(await table.toArray());
         }
 
-        return {...{all: await calculateChecksum(Object.values(results))}, ...results};
+        return { ...{ all: await calculateChecksum(Object.values(results)) }, ...results };
     }
 
     async load(): Promise<void> {
@@ -365,14 +366,14 @@ export class SyncService {
     async push(): Promise<string[]> {
         try {
             const response = await this.getClient().post('push', {
-                json: {updates: await this.encryptUpdates(this.updateQueue)}
+                json: { updates: await this.encryptUpdates(this.updateQueue) }
             });
 
             if (!response.ok) {
                 return [];
             }
 
-            const {ack} = await response.json<{ ack: string[] }>();
+            const { ack } = await response.json<{ ack: string[] }>();
             await this.removeAcknowledgedUpdates(ack);
             return ack;
         } catch (e) {
@@ -398,7 +399,7 @@ export class SyncService {
                 return false;
             }
 
-            const {key, updates} = await response.json<{ key: string | null, updates: IncomingUpdate[] }>();
+            const { key, updates } = await response.json<{ key: string | null, updates: IncomingUpdate[] }>();
             await this.verifyKey(key);
             await this.processUpdates(updates);
             return true;
@@ -411,7 +412,7 @@ export class SyncService {
 
     async fullPull(entityTypes?: string[], overwrite: boolean = true): Promise<void> {
         const response = await this.getClient().post('fullPull', {
-            json: {entityTypes},
+            json: { entityTypes },
         });
 
         if (!response.ok) {
@@ -719,9 +720,9 @@ export class SyncService {
     }
 
     async updateKey() {
-        const blob = await this.encryptionService.encrypt({key: uuidv4()});
+        const blob = await this.encryptionService.encrypt({ key: uuidv4() });
         const response = await this.getClient().put('key', {
-            json: {key: blob},
+            json: { key: blob },
         });
 
         if (!response.ok) {

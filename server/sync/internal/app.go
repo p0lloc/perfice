@@ -61,6 +61,7 @@ func NewSyncApp() *SyncApp {
 			"reflections",
 			"savedSearches",
 			"notifications",
+			"localIntegrations",
 		},
 	}
 }
