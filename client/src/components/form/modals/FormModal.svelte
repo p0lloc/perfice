@@ -16,6 +16,7 @@
     import { forms, journal } from "@perfice/stores";
     import { getDefaultFormAnswers } from "@perfice/model/form/data";
     import ObjectDatePicker from "@perfice/components/base/datePicker/ObjectDatePicker.svelte";
+    import LargeLogButton from "./LargeLogButton.svelte";
 
     let {
         largeLogButton = true,
@@ -190,12 +191,6 @@
     </div>
 
     {#if largeLogButton}
-        <button
-            onclick={confirm}
-            class="md:hidden z-10 fixed bottom-0 w-screen h-20 bg-green-500 flex-center
-    pointer-feedback:bg-green-600 text-white left-0"
-        >
-            <Fa icon={faCheck} size="2.0x" />
-        </button>
+        <LargeLogButton {confirm} />
     {/if}
 </Modal>
