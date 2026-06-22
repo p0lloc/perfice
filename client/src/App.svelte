@@ -1,17 +1,18 @@
 <script lang="ts">
-    import {appReady} from "./stores";
-    import type {Route} from "@mateothegreat/svelte5-router";
-    import {Router} from "@mateothegreat/svelte5-router";
+    import { appReady } from "./stores";
+    import type { Route } from "@mateothegreat/svelte5-router";
+    import { Router } from "@mateothegreat/svelte5-router";
     import TrackableView from "@perfice/views/trackable/TrackableView.svelte";
     import FormEditorView from "@perfice/views/form/FormEditorView.svelte";
-    import {closeContextMenus} from "@perfice/model/ui/context-menu";
+    import IntegrationHomeView from "@perfice/views/integration/IntegrationHomeView.svelte";
+    import { closeContextMenus } from "@perfice/model/ui/context-menu";
     import JournalView from "@perfice/views/journal/JournalView.svelte";
     import NavigationSidebar from "@perfice/components/sidebar/NavigationSidebar.svelte";
     import GoalView from "@perfice/views/goal/GoalView.svelte";
     import GoalEditorView from "@perfice/views/goal/GoalEditorView.svelte";
-    import {routingNavigatorState} from "@perfice/model/ui/router.svelte.js";
+    import { routingNavigatorState } from "@perfice/model/ui/router.svelte.js";
     import TagsView from "@perfice/views/tag/TagsView.svelte";
-    import {clearClosables} from "./model/ui/modal";
+    import { clearClosables } from "./model/ui/modal";
     import AnalyticsView from "@perfice/views/analytics/AnalyticsView.svelte";
     import AnalyticsDetailView from "@perfice/views/analytics/AnalyticsDetailView.svelte";
     import DashboardView from "@perfice/views/dashboard/DashboardView.svelte";
@@ -22,30 +23,30 @@
     import MobileDrawer from "@perfice/components/sidebar/drawer/MobileDrawer.svelte";
     import GlobalReflectionModal from "@perfice/components/reflection/GlobalReflectionModal.svelte";
     import OnboardingView from "@perfice/views/onboarding/OnboardingView.svelte";
-    import {ONBOARDING_ROUTE} from "@perfice/stores/onboarding/onboarding";
+    import { ONBOARDING_ROUTE } from "@perfice/stores/onboarding/onboarding";
     import SettingsView from "@perfice/views/settings/SettingsView.svelte";
-    import {BASE_URL} from "@perfice/app";
+    import { BASE_URL } from "@perfice/app";
     import GlobalSyncModals from "@perfice/components/sync/GlobalSyncModals.svelte";
     import GlobalIntegrationModals from "@perfice/components/integration/modals/GlobalIntegrationModals.svelte";
     import FeedbackView from "@perfice/views/feedback/FeedbackView.svelte";
     import FeedbackBanner from "@perfice/components/FeedbackBanner.svelte";
     import EditTrackableView from "@perfice/views/trackable/EditTrackableView.svelte";
-    import {darkMode} from "@perfice/stores/ui/darkmode";
+    import { darkMode } from "@perfice/stores/ui/darkmode";
 
-    type AppRoute = Route & { hideBottomBar?: boolean, customLayout?: boolean };
+    type AppRoute = Route & { hideBottomBar?: boolean; customLayout?: boolean };
 
     const routes: AppRoute[] = [
         {
             path: "/forms/(?<formId>.*)",
             component: FormEditorView,
-            hideBottomBar: true
+            hideBottomBar: true,
         },
         {
             path: "/goals/(?<goalId>.*)",
             component: GoalEditorView,
             hideBottomBar: true,
         },
-        {path: "/tags", component: TagsView},
+        { path: "/tags", component: TagsView },
         {
             path: "/journal/search/(?<search>.*)",
             component: JournalSearchView,
@@ -60,29 +61,35 @@
             path: "/journal/(?<search>.*)",
             component: JournalView,
         },
-        {path: "/journal", component: JournalView},
+        { path: "/journal", component: JournalView },
         {
             path: "/analytics/(?<subject>.*)",
             component: AnalyticsDetailView,
             hideBottomBar: true,
         },
-        {path: "/analytics", component: AnalyticsView},
-        {path: "/goals", component: GoalView},
+        { path: "/analytics", component: AnalyticsView },
+        { path: "/goals", component: GoalView },
         {
-            path: "/trackables/(?<trackableId>.*)", component: EditTrackableView,
-            hideBottomBar: true
+            path: "/trackables/(?<trackableId>.*)",
+            component: EditTrackableView,
+            hideBottomBar: true,
         },
-        {path: "/trackables", component: TrackableView},
+        { path: "/trackables", component: TrackableView },
         {
             path: "/reflections/(?<reflectionId>.*)",
             component: ReflectionEditorView,
             hideBottomBar: true,
         },
-        {path: "/reflections", component: ReflectionListView},
-        {path: ONBOARDING_ROUTE, component: OnboardingView, customLayout: true},
-        {path: "/settings", component: SettingsView},
-        {path: "/feedback", component: FeedbackView},
-        {path: "/", component: DashboardView},
+        { path: "/reflections", component: ReflectionListView },
+        { path: "/integrations", component: IntegrationHomeView },
+        {
+            path: ONBOARDING_ROUTE,
+            component: OnboardingView,
+            customLayout: true,
+        },
+        { path: "/settings", component: SettingsView },
+        { path: "/feedback", component: FeedbackView },
+        { path: "/", component: DashboardView },
     ];
 
     let customLayout = $state<boolean>(false);
@@ -94,12 +101,16 @@
 
     function fillRegexGroups(regexStr: string, params: Record<string, string>) {
         return regexStr.replace(/\(\?<(\w+)>[^)]+\)/g, (_, groupName) => {
-            return params[groupName] !== undefined ? params[groupName] : '';
+            return params[groupName] !== undefined ? params[groupName] : "";
         });
     }
 
     function isOnboarding() {
-        return routingNavigatorState.length > 0 && routingNavigatorState[routingNavigatorState.length - 1] == ONBOARDING_ROUTE;
+        return (
+            routingNavigatorState.length > 0 &&
+            routingNavigatorState[routingNavigatorState.length - 1] ==
+                ONBOARDING_ROUTE
+        );
     }
 
     function onRouterRoute(r: AppRoute) {
@@ -117,22 +128,22 @@
     }
 </script>
 
-<svelte:body onclick={onBodyClick}/>
+<svelte:body onclick={onBodyClick} />
 {#if $appReady}
     <div class="flex main-container" class:dark={$darkMode} id="main-container">
-        <GlobalSyncModals/>
-        <GlobalIntegrationModals/>
+        <GlobalSyncModals />
+        <GlobalIntegrationModals />
         {#if !customLayout}
-            <GlobalReflectionModal/>
-            <NavigationSidebar {hideBottomBar}/>
-            <MobileDrawer/>
-            <QuickLogField/>
+            <GlobalReflectionModal />
+            <NavigationSidebar {hideBottomBar} />
+            <MobileDrawer />
+            <QuickLogField />
         {/if}
         <div class="flex-1">
             {#if !isOnboarding()}
-                <FeedbackBanner/>
+                <FeedbackBanner />
             {/if}
-            <Router basePath={BASE_URL} post={onRouterRoute} {routes}/>
+            <Router basePath={BASE_URL} post={onRouterRoute} {routes} />
         </div>
     </div>
 {/if}

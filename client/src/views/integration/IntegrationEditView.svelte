@@ -1,33 +1,45 @@
 <script lang="ts">
-    import {forms, integrations} from "@perfice/stores";
-    import {faGears} from "@fortawesome/free-solid-svg-icons";
+    import { forms, integrations } from "@perfice/stores";
+    import { faGears } from "@fortawesome/free-solid-svg-icons";
     import Title from "@perfice/components/base/title/Title.svelte";
     import type {
         Integration,
         IntegrationEntityDefinition,
-        IntegrationType
+        IntegrationType,
     } from "@perfice/model/integration/integration";
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {navigate} from "@perfice/app";
-    import {onMount} from "svelte";
-    import type {Form} from "@perfice/model/form/form";
+    import { navigate } from "@perfice/app";
+    import { onMount } from "svelte";
+    import type { Form } from "@perfice/model/form/form";
     import IntegrationFieldEditor from "@perfice/components/integration/IntegrationFieldEditor.svelte";
-    import {ButtonColor} from "@perfice/model/ui/button";
+    import { ButtonColor } from "@perfice/model/ui/button";
     import Button from "@perfice/components/base/button/Button.svelte";
     import GenericDeleteModal from "@perfice/components/base/modal/generic/GenericDeleteModal.svelte";
     import IntegrationOptionEditor from "@perfice/components/integration/IntegrationOptionEditor.svelte";
     import GenericInfoModal from "@perfice/components/base/modal/generic/GenericInfoModal.svelte";
     import EditIntegrationWebhook from "@perfice/components/integration/EditIntegrationWebhook.svelte";
 
-    let {integrationId, back}: { integrationId: string, back: () => void } = $props();
+    let {
+        integrationId,
+        hideTitle = false,
+        back,
+    }: {
+        integrationId: string;
+        hideTitle?: boolean;
+        back: () => void;
+    } = $props();
     let fetchedHistoricalModal: GenericInfoModal;
     let fetchedHistoricalModalMessage = $state("");
 
     let integrationType: IntegrationType | undefined = $state(undefined);
-    let selectedEntity: IntegrationEntityDefinition | undefined = $state<IntegrationEntityDefinition | undefined>(undefined);
+    let selectedEntity: IntegrationEntityDefinition | undefined = $state<
+        IntegrationEntityDefinition | undefined
+    >(undefined);
     let form: Form | undefined = $state<Form | undefined>(undefined);
-    let integration: Integration | undefined = $state<Integration | undefined>(undefined);
+    let integration: Integration | undefined = $state<Integration | undefined>(
+        undefined,
+    );
 
     let fieldEditor: IntegrationFieldEditor;
     let optionEditor: IntegrationOptionEditor;
@@ -35,23 +47,29 @@
 
     onMount(async () => {
         let data = await integrations.load();
-        integration = data.integrations.find(i => i.id == integrationId);
+        integration = data.integrations.find((i) => i.id == integrationId);
         if (integration == null) {
             navigate(`/`);
             return;
         }
 
         let formById = await forms.getFormById(integration.formId);
-        let status = await integrations.fetchAuthenticationStatus(integration.integrationType);
+        let status = await integrations.fetchAuthenticationStatus(
+            integration.integrationType,
+        );
         if (!status || !formById) {
             back();
             return;
         }
 
-        integrationType = data.integrationTypes.find(i => i.integrationType == integration!.integrationType);
+        integrationType = data.integrationTypes.find(
+            (i) => i.integrationType == integration!.integrationType,
+        );
         if (integration == null || integrationType == null) return;
 
-        selectedEntity = integrationType.entities.find(e => e.entityType == integration!.entityType);
+        selectedEntity = integrationType.entities.find(
+            (e) => e.entityType == integration!.entityType,
+        );
         form = formById;
     });
 
@@ -80,14 +98,18 @@
 
     async function fetchHistorical() {
         if (!integration) return;
-        let result = await integrations.fetchHistorical(integration!.id, integration.integrationType);
+        let result = await integrations.fetchHistorical(
+            integration!.id,
+            integration.integrationType,
+        );
         if (result == null) {
-            fetchedHistoricalModalMessage = "Successfully fetched historical data for this integration"
+            fetchedHistoricalModalMessage =
+                "Successfully fetched historical data for this integration";
         } else {
             if (result.count == 0) {
                 fetchedHistoricalModalMessage = `No historical data found for this integration`;
             } else {
-                fetchedHistoricalModalMessage = `Fetched ${result.count} entries since ${new Date(result.oldest).toLocaleString()}`
+                fetchedHistoricalModalMessage = `Fetched ${result.count} entries since ${new Date(result.oldest).toLocaleString()}`;
             }
         }
 
@@ -95,23 +117,44 @@
     }
 </script>
 
-<GenericDeleteModal subject="this integration" {onDelete} bind:this={deleteModal}/>
-<GenericInfoModal title="Fetched data" message={fetchedHistoricalModalMessage}
-                  bind:this={fetchedHistoricalModal}/>
+<GenericDeleteModal
+    subject="this integration"
+    {onDelete}
+    bind:this={deleteModal}
+/>
+<GenericInfoModal
+    title="Fetched data"
+    message={fetchedHistoricalModalMessage}
+    bind:this={fetchedHistoricalModal}
+/>
 {#if integrationType && form && integration && selectedEntity}
     <div class="md:mt-8">
         <div class="justify-between flex items-center">
-            <Title title={integrationType.name} icon={faGears}/>
-            <Button onClick={deleteIntegration} color={ButtonColor.RED} class="md:flex">Delete integration
+            {#if !hideTitle}
+                <Title title={integrationType.name} icon={faGears} />
+            {/if}
+            <Button
+                onClick={deleteIntegration}
+                color={ButtonColor.RED}
+                class="md:flex"
+                >Delete integration
             </Button>
         </div>
-        <IntegrationFieldEditor {form} {selectedEntity} fields={integration.fields} bind:this={fieldEditor}/>
-        <IntegrationOptionEditor definition={selectedEntity.options} options={integration.options}
-                                 bind:this={optionEditor}/>
+        <IntegrationFieldEditor
+            {form}
+            {selectedEntity}
+            fields={integration.fields}
+            bind:this={fieldEditor}
+        />
+        <IntegrationOptionEditor
+            definition={selectedEntity.options}
+            options={integration.options}
+            bind:this={optionEditor}
+        />
 
         {#if integration.webhook}
             <div class="mb-8">
-                <EditIntegrationWebhook webhook={integration.webhook}/>
+                <EditIntegrationWebhook webhook={integration.webhook} />
             </div>
         {/if}
 

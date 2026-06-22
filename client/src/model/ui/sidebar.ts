@@ -2,9 +2,12 @@ import {
     faBook,
     faBullseye,
     faCog,
+    faGears,
     faHome,
     faLineChart,
+    faRotate,
     faSquarePlus,
+    faSquareShareNodes,
     faSun,
     faTags,
     type IconDefinition
@@ -19,12 +22,13 @@ export interface SidebarLink {
 }
 
 export const SIDEBAR_LINKS: SidebarLink[] = [
-    {icon: faHome, path: "/", title: "Home"},
-    {icon: faSquarePlus, path: "/trackables", title: "Track"},
-    {icon: faBook, path: "/journal", title: "Journal"},
-    {icon: faBullseye, path: "/goals", title: "Goals"},
-    {icon: faTags, path: "/tags", title: "Tags"},
-    {icon: faLineChart, path: "/analytics", title: "Analytics", showOnMobile: false},
-    {icon: faSun, path: "/reflections", title: "Reflections", showOnMobile: false},
-    {icon: faCog, path: "/settings", title: "Settings", bottom: true},
+    { icon: faHome, path: "/", title: "Home" },
+    { icon: faSquarePlus, path: "/trackables", title: "Track" },
+    { icon: faBook, path: "/journal", title: "Journal" },
+    { icon: faBullseye, path: "/goals", title: "Goals" },
+    { icon: faTags, path: "/tags", title: "Tags" },
+    { icon: faLineChart, path: "/analytics", title: "Analytics", showOnMobile: false },
+    { icon: faSun, path: "/reflections", title: "Reflections", showOnMobile: false },
+    { icon: faSquareShareNodes, path: "/integrations", title: "Integrations", showOnMobile: false },
+    { icon: faCog, path: "/settings", title: "Settings", bottom: true },
 ];
