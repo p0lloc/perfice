@@ -18,7 +18,7 @@
 </script>
 
 <button
-    class="border-2 p-2 rounded-xl aspect-square flex flex-col justify-center items-center"
+    class="border-2 dark-border p-2 rounded-xl aspect-square flex flex-col justify-center items-center"
     class:w-24={!grid}
     class:selected
     onclick={onClick}

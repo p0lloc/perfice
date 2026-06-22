@@ -1,9 +1,13 @@
 <script lang="ts">
-    import type {SelectFormQuestionSettings, SelectOption} from "@perfice/model/form/display/select";
-    import type {FormFieldProps} from "@perfice/model/form/ui";
+    import type {
+        SelectFormQuestionSettings,
+        SelectOption,
+    } from "@perfice/model/form/display/select";
+    import type { FormFieldProps } from "@perfice/model/form/ui";
     import SelectOptionButton from "@perfice/components/form/fields/select/SelectOptionButton.svelte";
 
-    let {displaySettings, disabled, value, onChange, unit}: FormFieldProps = $props();
+    let { displaySettings, disabled, value, onChange, unit }: FormFieldProps =
+        $props();
 
     function selectOption(o: SelectOption) {
         if (disabled) return;
@@ -12,7 +16,7 @@
         if (Array.isArray(value)) {
             let newValues;
             if (isOptionSelected(o)) {
-                newValues = value.filter(v => v != o.value.value);
+                newValues = value.filter((v) => v != o.value.value);
             } else {
                 newValues = [...value, selectedValue.value];
             }
@@ -26,7 +30,7 @@
     function isOptionSelected(o: SelectOption): boolean {
         // Value is array when multiple values can be selected
         if (Array.isArray(value)) {
-            return value.some(v => v == o.value.value);
+            return value.some((v) => v == o.value.value);
         } else {
             return value == o.value.value;
         }
@@ -36,11 +40,13 @@
 </script>
 
 {#if display.grid != null}
-    <div class="grid gap-2 select-grid"
-         style:--width="{Math.min(display.grid.itemsPerRow / 4, 1) * 75}%"
-         class:select-grid-border={display.grid.border}
-         class:bg-white={display.grid.border}
-         style:grid-template-columns="repeat({display.grid.itemsPerRow}, minmax(0, 1fr))">
+    <div
+        class={`grid gap-2 select-grid 
+        ${display.grid.border ? "bg-white dark:bg-gray-900 dark-border border p-4 rounded-xl" : ""}`}
+        style:--width="{Math.min(display.grid.itemsPerRow / 4, 1) * 75}%"
+        style:grid-template-columns="repeat({display.grid.itemsPerRow},
+        minmax(0, 1fr))"
+    >
         {@render list(display)}
     </div>
 {:else}
@@ -51,17 +57,18 @@
 
 {#snippet list(display: SelectFormQuestionSettings)}
     {#each display.options as option}
-        <SelectOptionButton selected={isOptionSelected(option)} {option} onClick={() => selectOption(option)}
-                            {unit}
-                            grid={display.grid != null}/>
+        <SelectOptionButton
+            selected={isOptionSelected(option)}
+            {option}
+            onClick={() => selectOption(option)}
+            {unit}
+            grid={display.grid != null}
+        />
     {/each}
 {/snippet}
 
 <style>
     @reference "../../../../app.css";
-    .select-grid-border {
-        @apply border p-4 rounded-xl;
-    }
 
     .select-grid {
         width: 100%;
