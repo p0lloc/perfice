@@ -1,11 +1,19 @@
 <script lang="ts">
     // noinspection ES6UnusedImports
     import Fa from "svelte-fa";
-    import {faCalendarAlt, faChevronLeft, faChevronRight,} from "@fortawesome/free-solid-svg-icons";
-    import {addDaysDate, dateToMidnight, getDaysDifference,} from "@perfice/util/time/simple";
+    import {
+        faCalendarAlt,
+        faChevronLeft,
+        faChevronRight,
+    } from "@fortawesome/free-solid-svg-icons";
+    import {
+        addDaysDate,
+        dateToMidnight,
+        getDaysDifference,
+    } from "@perfice/util/time/simple";
     import CalendarScrollItem from "@perfice/components/base/calendarScroll/CalendarScrollItem.svelte";
 
-    let {value, onChange}: { value: Date; onChange: (value: Date) => void } =
+    let { value, onChange }: { value: Date; onChange: (value: Date) => void } =
         $props();
     let datePickerElement: HTMLInputElement | undefined = $state();
 
@@ -27,9 +35,7 @@
 
     function openDatePicker() {
         if (datePickerElement == null) return;
-        datePickerElement.classList.remove("hidden");
         datePickerElement.showPicker();
-        datePickerElement.classList.add("hidden");
     }
 
     function onDatePickerChange(e: { currentTarget: HTMLInputElement }) {
@@ -56,39 +62,39 @@
 </script>
 
 <div
-        class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border dark-border
+    class="flex items-center md:flex-wrap justify-center gap-2 md:border-0 border dark-border
     px-4 md:px-0 w-full rounded-xl md:w-auto md:h-12 h-10 overflow-hidden md:bg-inherit"
 >
     <button onclick={left} class="mr-3">
-        <Fa icon={faChevronLeft}/>
+        <Fa icon={faChevronLeft} />
     </button>
 
     <div class="flex items-center md:gap-2 md:flex-initial flex-1 h-full">
         {#each dates as date}
             <CalendarScrollItem
-                    onClick={() => onChange(date)}
-                    selectedValue={value}
-                    value={date}
+                onClick={() => onChange(date)}
+                selectedValue={value}
+                value={date}
             />
         {/each}
     </div>
     <div class="md:w-10 flex items-center">
         <button onclick={right} class="ml-3" class:hidden={atEnd}>
-            <Fa icon={faChevronRight}/>
+            <Fa icon={faChevronRight} />
         </button>
         {#if atEnd}
             <div class="md:flex items-center justify-center">
                 <input
-                        type="date"
-                        class="hidden"
-                        onchange={onDatePickerChange}
-                        bind:this={datePickerElement}
+                    type="date"
+                    class="w-0 h-0 invisible"
+                    onchange={onDatePickerChange}
+                    bind:this={datePickerElement}
                 />
                 <button
-                        onclick={openDatePicker}
-                        class="dark:bg-inherit bg-white md:p-2 py-2 md:border dark:md:border-gray-500 rounded-full hover-feedback md:ml-2"
+                    onclick={openDatePicker}
+                    class="dark:bg-inherit bg-white md:p-2 py-2 md:border dark:md:border-gray-500 rounded-full hover-feedback md:ml-2"
                 >
-                    <Fa icon={faCalendarAlt}/>
+                    <Fa icon={faCalendarAlt} />
                 </button>
             </div>
         {/if}
